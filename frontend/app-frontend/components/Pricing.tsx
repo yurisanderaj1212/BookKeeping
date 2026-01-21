@@ -1,0 +1,143 @@
+import Link from 'next/link'
+
+export default function Pricing() {
+  const plans = [
+    {
+      name: 'Free Trial',
+      description: 'Perfect for getting started',
+      price: '$0',
+      period: '/month',
+      highlight: 'First 30 days free',
+      features: [
+        'Dashboard access',
+        'Manual transactions',
+        'Basic reports',
+        'Up to 50 transactions/month',
+        'Email support',
+      ],
+      cta: 'Start Free Trial',
+      ctaLink: '/auth/register',
+      popular: false,
+    },
+    {
+      name: 'Pro Plan',
+      description: 'For serious businesses',
+      price: '$9.99',
+      period: '/month',
+      highlight: 'Billed monthly after trial',
+      features: [
+        'Everything in Free',
+        'Unlimited transactions',
+        'Bank integration (Plaid)',
+        'Advanced analytics',
+        'Week close feature',
+        'Team management',
+        'Priority support',
+        'Automatic backups',
+        'Custom categories',
+      ],
+      cta: 'Upgrade to Pro',
+      ctaLink: '/auth/register',
+      popular: true,
+    },
+  ]
+
+  return (
+    <div id="pricing" className="py-24 bg-white">
+      <div className="mx-auto max-w-7xl px-6 lg:px-8">
+        <div className="mx-auto max-w-2xl text-center">
+          <h2 className="text-3xl font-bold tracking-tight text-navy-800 sm:text-4xl">
+            Simple, Transparent Pricing
+          </h2>
+          <p className="mt-4 text-lg leading-8 text-slate-600">
+            Start free, upgrade when you're ready. No hidden fees.
+          </p>
+        </div>
+        
+        <div className="mx-auto mt-16 grid max-w-lg grid-cols-1 items-center gap-y-6 sm:mt-20 sm:gap-y-0 lg:max-w-4xl lg:grid-cols-2">
+          {plans.map((plan, planIdx) => (
+            <div
+              key={plan.name}
+              className={`${
+                plan.popular
+                  ? 'relative bg-gradient-to-br from-primary-400 via-primary-500 to-cyan-500 text-white shadow-strong ring-2 ring-primary-400 lg:z-10 lg:rounded-b-none'
+                  : 'bg-white/60 shadow-soft lg:rounded-r-none'
+              } rounded-3xl p-8 lg:mx-0 lg:flex lg:max-w-none lg:flex-col lg:justify-center lg:py-16`}
+            >
+              {plan.popular && (
+                <div className="absolute -top-5 left-0 right-0 mx-auto w-32 rounded-full bg-gradient-to-r from-yellow-400 to-orange-500 px-3 py-2 text-sm font-medium text-white text-center shadow-lg">
+                  Popular
+                </div>
+              )}
+              
+              <div className="mx-auto max-w-xs lg:mx-0 lg:flex-auto">
+                <h3 className={`text-2xl font-bold tracking-tight ${
+                  plan.popular ? 'text-white' : 'text-navy-800'
+                }`}>
+                  {plan.name}
+                </h3>
+                <p className={`mt-6 text-base leading-7 ${
+                  plan.popular ? 'text-blue-100' : 'text-slate-600'
+                }`}>
+                  {plan.description}
+                </p>
+                <p className="mt-6 flex items-baseline gap-x-1">
+                  <span className={`text-5xl font-bold tracking-tight ${
+                    plan.popular ? 'text-white' : 'text-navy-800'
+                  }`}>
+                    {plan.price}
+                  </span>
+                  <span className={`text-sm font-semibold leading-6 ${
+                    plan.popular ? 'text-blue-100' : 'text-slate-600'
+                  }`}>
+                    {plan.period}
+                  </span>
+                </p>
+                <p className={`mt-3 text-sm leading-6 font-medium ${
+                  plan.popular ? 'text-cyan-200' : 'text-primary-600'
+                }`}>
+                  {plan.highlight}
+                </p>
+                
+                <ul role="list" className={`mt-8 space-y-3 text-sm leading-6 ${
+                  plan.popular ? 'text-blue-100' : 'text-slate-600'
+                }`}>
+                  {plan.features.map((feature) => (
+                    <li key={feature} className="flex gap-x-3">
+                      <svg
+                        className={`h-6 w-5 flex-none ${
+                          plan.popular ? 'text-cyan-200' : 'text-primary-500'
+                        }`}
+                        viewBox="0 0 20 20"
+                        fill="currentColor"
+                        aria-hidden="true"
+                      >
+                        <path
+                          fillRule="evenodd"
+                          d="M16.704 4.153a.75.75 0 01.143 1.052l-8 10.5a.75.75 0 01-1.127.075l-4.5-4.5a.75.75 0 011.06-1.06l3.894 3.893 7.48-9.817a.75.75 0 011.05-.143z"
+                          clipRule="evenodd"
+                        />
+                      </svg>
+                      {feature}
+                    </li>
+                  ))}
+                </ul>
+                
+                <Link
+                  href={plan.ctaLink}
+                  className={`${
+                    plan.popular
+                      ? 'bg-white text-primary-600 shadow-sm hover:bg-blue-50 focus-visible:outline-white'
+                      : 'bg-primary-50 text-primary-600 hover:bg-primary-100 focus-visible:outline-primary-600'
+                  } mt-8 block w-full rounded-lg px-3 py-2 text-center text-sm font-semibold focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 transition-all duration-200`}
+                >
+                  {plan.cta}
+                </Link>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  )
+}

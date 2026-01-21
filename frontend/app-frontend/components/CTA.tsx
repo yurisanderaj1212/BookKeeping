@@ -1,0 +1,58 @@
+import Link from 'next/link'
+
+export default function CTA() {
+  return (
+    <div className="bg-primary-500">
+      <div className="px-6 py-24 sm:px-6 sm:py-32 lg:px-8">
+        <div className="mx-auto max-w-2xl text-center">
+          <h2 className="text-3xl font-bold tracking-tight text-white sm:text-4xl">
+            Ready to Take Control of Your Finances?
+          </h2>
+          <p className="mx-auto mt-6 max-w-xl text-lg leading-8 text-primary-100">
+            Join thousands of businesses managing their bookkeeping with ease
+          </p>
+          <div className="mt-10 flex items-center justify-center gap-x-6">
+            <Link
+              href="/auth/register"
+              className="bg-white px-8 py-3 text-lg font-semibold text-primary-600 shadow-sm hover:bg-primary-50 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white rounded-lg transition-all duration-200 hover:shadow-medium"
+            >
+              Start Your Free Trial Today
+            </Link>
+          </div>
+        </div>
+      </div>
+      
+      {/* Footer */}
+      <footer className="bg-navy-800">
+        <div className="mx-auto max-w-7xl px-6 py-12 lg:px-8">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center space-x-2">
+              <div className="w-8 h-8 bg-primary-500 rounded-lg flex items-center justify-center">
+                <span className="text-white font-bold text-sm">CN</span>
+              </div>
+              <span className="text-lg font-bold text-white">Chill Numbers</span>
+            </div>
+            
+            <div className="flex space-x-6">
+              <Link href="/privacy" className="text-slate-400 hover:text-white transition-colors">
+                Privacy Policy
+              </Link>
+              <Link href="/terms" className="text-slate-400 hover:text-white transition-colors">
+                Terms of Service
+              </Link>
+              <Link href="/contact" className="text-slate-400 hover:text-white transition-colors">
+                Contact
+              </Link>
+            </div>
+          </div>
+          
+          <div className="mt-8 border-t border-slate-700 pt-8">
+            <p className="text-center text-sm text-slate-400">
+              © 2024 Chill Numbers. All rights reserved.
+            </p>
+          </div>
+        </div>
+      </footer>
+    </div>
+  )
+}
