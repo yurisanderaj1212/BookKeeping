@@ -47,9 +47,9 @@ export default function ForgotPasswordPage() {
                 </svg>
               </div>
               
-              <h2 className="text-2xl font-bold text-navy-800 mb-2">Check your email</h2>
+              <h2 className="text-2xl font-bold text-navy-800 mb-2">Revisa tu email</h2>
               <p className="text-slate-600 mb-6">
-                We've sent password reset instructions to{' '}
+                Hemos enviado las instrucciones para restablecer tu contraseña a{' '}
                 <span className="font-medium text-navy-800">{email}</span>
               </p>
 
@@ -63,13 +63,13 @@ export default function ForgotPasswordPage() {
                     </div>
                     <div className="ml-3">
                       <h3 className="text-sm font-medium text-blue-800">
-                        Didn't receive the email?
+                        ¿No recibiste el email?
                       </h3>
                       <div className="mt-2 text-sm text-blue-700">
                         <ul className="list-disc pl-5 space-y-1">
-                          <li>Check your spam folder</li>
-                          <li>Make sure you entered the correct email</li>
-                          <li>Wait a few minutes for the email to arrive</li>
+                          <li>Revisa tu carpeta de spam</li>
+                          <li>Asegúrate de haber ingresado el email correcto</li>
+                          <li>Espera unos minutos para que llegue el email</li>
                         </ul>
                       </div>
                     </div>
@@ -80,7 +80,7 @@ export default function ForgotPasswordPage() {
                   onClick={handleResendEmail}
                   className="w-full flex justify-center py-3 px-4 border border-primary-300 rounded-lg shadow-sm text-sm font-medium text-primary-700 bg-primary-50 hover:bg-primary-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 transition-colors"
                 >
-                  Resend email
+                  Reenviar email
                 </button>
 
                 <div className="text-center">
@@ -88,7 +88,7 @@ export default function ForgotPasswordPage() {
                     href="/auth/login"
                     className="text-sm font-medium text-primary-600 hover:text-primary-500"
                   >
-                    ← Back to sign in
+                    ← Volver al inicio de sesión
                   </Link>
                 </div>
               </div>
@@ -99,7 +99,7 @@ export default function ForgotPasswordPage() {
             <p className="text-sm text-slate-600">
               Need help?{' '}
               <Link href="/contact" className="font-medium text-primary-600 hover:text-primary-500">
-                Contact support
+                Contactar soporte
               </Link>
             </p>
           </div>
@@ -121,10 +121,10 @@ export default function ForgotPasswordPage() {
         </div>
         
         <h2 className="mt-6 text-center text-3xl font-bold text-navy-800">
-          Forgot your password?
+          ¿Olvidaste tu contraseña?
         </h2>
         <p className="mt-2 text-center text-sm text-slate-600">
-          No worries! Enter your email and we'll send you reset instructions.
+          ¡No te preocupes! Ingresa tu email y te enviaremos las instrucciones para restablecerla.
         </p>
       </div>
 
@@ -133,7 +133,7 @@ export default function ForgotPasswordPage() {
           <form className="space-y-6" onSubmit={handleSubmit}>
             <div>
               <label htmlFor="email" className="block text-sm font-medium text-slate-700">
-                Email address
+                Dirección de email
               </label>
               <div className="mt-1">
                 <input
@@ -145,7 +145,7 @@ export default function ForgotPasswordPage() {
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   className="appearance-none block w-full px-3 py-3 border border-slate-300 rounded-lg placeholder-slate-400 focus:outline-none focus:ring-primary-500 focus:border-primary-500 sm:text-sm"
-                  placeholder="Enter your email address"
+                  placeholder="Ingresa tu dirección de email"
                 />
               </div>
             </div>
@@ -162,10 +162,10 @@ export default function ForgotPasswordPage() {
                       <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
                       <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                     </svg>
-                    Sending...
+                    Enviando...
                   </div>
                 ) : (
-                  'Send reset instructions'
+                  'Enviar instrucciones'
                 )}
               </button>
             </div>
@@ -177,7 +177,7 @@ export default function ForgotPasswordPage() {
                 href="/auth/login"
                 className="text-sm font-medium text-primary-600 hover:text-primary-500"
               >
-                ← Back to sign in
+                ← Volver al inicio de sesión
               </Link>
             </div>
           </div>
@@ -185,9 +185,9 @@ export default function ForgotPasswordPage() {
 
         <div className="mt-6 text-center">
           <p className="text-sm text-slate-600">
-            Don't have an account?{' '}
+            ¿No tienes una cuenta?{' '}
             <Link href="/auth/register" className="font-medium text-primary-600 hover:text-primary-500">
-              Sign up for free
+              Regístrate gratis
             </Link>
           </p>
         </div>

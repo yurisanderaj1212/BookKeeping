@@ -2,7 +2,6 @@
 
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts'
 import { MonthlyData } from '../../data/dashboard-data'
-import { useLanguage } from '../../hooks/useLanguage'
 import { MoreHorizontal, TrendingUp } from 'lucide-react'
 
 interface MonthlyChartProps {
@@ -10,19 +9,10 @@ interface MonthlyChartProps {
 }
 
 const CustomTooltip = ({ active, payload, label }: any) => {
-  const { language } = useLanguage()
-  
   const formatCurrency = (amount: number): string => {
-    if (language === 'es') {
-      return new Intl.NumberFormat('es-ES', {
-        style: 'currency',
-        currency: 'EUR'
-      }).format(amount)
-    }
-    
-    return new Intl.NumberFormat('en-US', {
+    return new Intl.NumberFormat('es-ES', {
       style: 'currency',
-      currency: 'USD'
+      currency: 'EUR'
     }).format(amount)
   }
 
@@ -32,8 +22,8 @@ const CustomTooltip = ({ active, payload, label }: any) => {
         <p className="font-medium text-gray-900 mb-2">{label}</p>
         {payload.map((entry: any, index: number) => (
           <p key={index} className="text-sm" style={{ color: entry.color }}>
-            {entry.dataKey === 'income' ? 'Income' : 
-             entry.dataKey === 'expenses' ? 'Expenses' : 'Profit'}: {formatCurrency(entry.value)}
+            {entry.dataKey === 'income' ? 'Ingresos' : 
+             entry.dataKey === 'expenses' ? 'Gastos' : 'Ganancia'}: {formatCurrency(entry.value)}
           </p>
         ))}
       </div>
@@ -62,8 +52,8 @@ export default function MonthlyChart({ data }: MonthlyChartProps) {
     <div className="bg-white rounded-xl border border-gray-200 p-6 hover:shadow-lg transition-shadow duration-300">
       <div className="flex items-center justify-between mb-6">
         <div>
-          <h3 className="text-lg font-semibold text-gray-900">Monthly Trends</h3>
-          <p className="text-sm text-gray-500 mt-1">Performance over the last 6 months</p>
+          <h3 className="text-lg font-semibold text-gray-900">Tendencias Mensuales</h3>
+          <p className="text-sm text-gray-500 mt-1">Rendimiento en los últimos 6 meses</p>
         </div>
         <button className="p-2 hover:bg-gray-100 rounded-lg transition-colors duration-200">
           <MoreHorizontal className="w-5 h-5 text-gray-400" />
@@ -103,7 +93,7 @@ export default function MonthlyChart({ data }: MonthlyChartProps) {
             <Line 
               type="monotone" 
               dataKey="income" 
-              name="Income"
+              name="Ingresos"
               stroke="#20B2AA" 
               strokeWidth={3}
               dot={{ fill: '#20B2AA', strokeWidth: 2, r: 6 }}
@@ -113,7 +103,7 @@ export default function MonthlyChart({ data }: MonthlyChartProps) {
             <Line 
               type="monotone" 
               dataKey="expenses" 
-              name="Expenses"
+              name="Gastos"
               stroke="#FF8C42" 
               strokeWidth={3}
               dot={{ fill: '#FF8C42', strokeWidth: 2, r: 6 }}
@@ -124,7 +114,7 @@ export default function MonthlyChart({ data }: MonthlyChartProps) {
             <Line 
               type="monotone" 
               dataKey="profit" 
-              name="Profit"
+              name="Ganancia"
               stroke="#6366F1" 
               strokeWidth={3}
               dot={{ fill: '#6366F1', strokeWidth: 2, r: 6 }}
@@ -142,7 +132,7 @@ export default function MonthlyChart({ data }: MonthlyChartProps) {
         <div className="flex items-center justify-between">
           <div className="flex items-center space-x-2">
             <TrendingUp className={`w-4 h-4 ${growth >= 0 ? 'text-green-600' : 'text-red-600'}`} />
-            <span className="text-sm text-gray-600">Monthly Growth</span>
+            <span className="text-sm text-gray-600">Crecimiento Mensual</span>
           </div>
           <span className={`text-sm font-semibold ${growth >= 0 ? 'text-green-600' : 'text-red-600'}`}>
             {growth >= 0 ? '+' : ''}{growth.toFixed(1)}%

@@ -6,17 +6,17 @@ export default function CTA() {
       <div className="px-6 py-24 sm:px-6 sm:py-32 lg:px-8">
         <div className="mx-auto max-w-2xl text-center">
           <h2 className="text-3xl font-bold tracking-tight text-white sm:text-4xl">
-            Ready to Take Control of Your Finances?
+            ¿Listo para Tomar Control de Tus Finanzas?
           </h2>
           <p className="mx-auto mt-6 max-w-xl text-lg leading-8 text-primary-100">
-            Join thousands of businesses managing their bookkeeping with ease
+            Únete a miles de negocios que gestionan su contabilidad con facilidad
           </p>
           <div className="mt-10 flex items-center justify-center gap-x-6">
             <Link
               href="/auth/register"
               className="bg-white px-8 py-3 text-lg font-semibold text-primary-600 shadow-sm hover:bg-primary-50 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white rounded-lg transition-all duration-200 hover:shadow-medium"
             >
-              Start Your Free Trial Today
+              Comienza Tu Prueba Gratuita Hoy
             </Link>
           </div>
         </div>
@@ -35,13 +35,13 @@ export default function CTA() {
             
             <div className="flex space-x-6">
               <Link href="/privacy" className="text-slate-400 hover:text-white transition-colors">
-                Privacy Policy
+                Política de Privacidad
               </Link>
               <Link href="/terms" className="text-slate-400 hover:text-white transition-colors">
-                Terms of Service
+                Términos de Servicio
               </Link>
               <Link href="/contact" className="text-slate-400 hover:text-white transition-colors">
-                Contact
+                Contacto
               </Link>
             </div>
           </div>

@@ -3,40 +3,40 @@ import Link from 'next/link'
 export default function Pricing() {
   const plans = [
     {
-      name: 'Free Trial',
-      description: 'Perfect for getting started',
+      name: 'Prueba Gratuita',
+      description: 'Perfecto para comenzar',
       price: '$0',
-      period: '/month',
-      highlight: 'First 30 days free',
+      period: '/mes',
+      highlight: 'Primeros 30 días gratis',
       features: [
-        'Dashboard access',
-        'Manual transactions',
-        'Basic reports',
-        'Up to 50 transactions/month',
-        'Email support',
+        'Acceso al panel',
+        'Transacciones manuales',
+        'Reportes básicos',
+        'Hasta 50 transacciones/mes',
+        'Soporte por email',
       ],
-      cta: 'Start Free Trial',
+      cta: 'Comenzar Prueba Gratuita',
       ctaLink: '/auth/register',
       popular: false,
     },
     {
-      name: 'Pro Plan',
-      description: 'For serious businesses',
+      name: 'Plan Pro',
+      description: 'Para negocios serios',
       price: '$9.99',
-      period: '/month',
-      highlight: 'Billed monthly after trial',
+      period: '/mes',
+      highlight: 'Facturado mensualmente después de la prueba',
       features: [
-        'Everything in Free',
-        'Unlimited transactions',
-        'Bank integration (Plaid)',
-        'Advanced analytics',
-        'Week close feature',
-        'Team management',
-        'Priority support',
-        'Automatic backups',
-        'Custom categories',
+        'Todo en Gratuito',
+        'Transacciones ilimitadas',
+        'Integración bancaria (Plaid)',
+        'Análisis avanzado',
+        'Función de cierre semanal',
+        'Gestión de equipo',
+        'Soporte prioritario',
+        'Respaldos automáticos',
+        'Categorías personalizadas',
       ],
-      cta: 'Upgrade to Pro',
+      cta: 'Actualizar a Pro',
       ctaLink: '/auth/register',
       popular: true,
     },
@@ -47,10 +47,10 @@ export default function Pricing() {
       <div className="mx-auto max-w-7xl px-6 lg:px-8">
         <div className="mx-auto max-w-2xl text-center">
           <h2 className="text-3xl font-bold tracking-tight text-navy-800 sm:text-4xl">
-            Simple, Transparent Pricing
+            Precios Simples y Transparentes
           </h2>
           <p className="mt-4 text-lg leading-8 text-slate-600">
-            Start free, upgrade when you're ready. No hidden fees.
+            Comienza gratis, actualiza cuando estés listo. Sin tarifas ocultas.
           </p>
         </div>
         

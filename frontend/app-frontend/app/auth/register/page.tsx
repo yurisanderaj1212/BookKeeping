@@ -2,21 +2,19 @@
 
 import { useState } from 'react'
 import Link from 'next/link'
-import { useLanguage } from '../../../hooks/useLanguage'
 
 // Lista de empleos comunes en Estados Unidos
 const US_JOBS = [
-  'Accountant', 'Administrative Assistant', 'Architect', 'Attorney/Lawyer', 'Barber/Hairstylist',
-  'Business Owner', 'Carpenter', 'Chef/Cook', 'Consultant', 'Contractor', 'Dentist', 'Designer',
-  'Developer/Programmer', 'Doctor/Physician', 'Electrician', 'Engineer', 'Entrepreneur',
-  'Financial Advisor', 'Freelancer', 'Graphic Designer', 'Insurance Agent', 'Manager',
-  'Marketing Specialist', 'Mechanic', 'Nurse', 'Photographer', 'Plumber', 'Real Estate Agent',
-  'Retail Manager', 'Sales Representative', 'Teacher/Educator', 'Therapist', 'Veterinarian',
-  'Writer/Author', 'Other'
+  'Contador', 'Asistente Administrativo', 'Arquitecto', 'Abogado', 'Barbero/Estilista',
+  'Dueño de Negocio', 'Carpintero', 'Chef/Cocinero', 'Consultor', 'Contratista', 'Dentista', 'Diseñador',
+  'Desarrollador/Programador', 'Doctor/Médico', 'Electricista', 'Ingeniero', 'Emprendedor',
+  'Asesor Financiero', 'Freelancer', 'Diseñador Gráfico', 'Agente de Seguros', 'Gerente',
+  'Especialista en Marketing', 'Mecánico', 'Enfermero', 'Fotógrafo', 'Plomero', 'Agente Inmobiliario',
+  'Gerente de Retail', 'Representante de Ventas', 'Maestro/Educador', 'Terapeuta', 'Veterinario',
+  'Escritor/Autor', 'Otro'
 ]
 
 export default function RegisterPage() {
-  const { t } = useLanguage()
   const [formData, setFormData] = useState({
     firstName: '',
     lastName: '',
@@ -63,10 +61,10 @@ export default function RegisterPage() {
   }
 
   const getPasswordStrengthText = () => {
-    if (passwordStrength < 25) return 'Very Weak'
-    if (passwordStrength < 50) return 'Weak'
-    if (passwordStrength < 75) return 'Good'
-    return 'Strong'
+    if (passwordStrength < 25) return 'Muy Débil'
+    if (passwordStrength < 50) return 'Débil'
+    if (passwordStrength < 75) return 'Buena'
+    return 'Fuerte'
   }
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -91,13 +89,13 @@ export default function RegisterPage() {
               <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
               </svg>
-              {t('register.badge')}
+              30 días de prueba gratis - Sin tarjeta requerida
             </div>
 
             <div className="mb-8">
-              <h3 className="text-3xl font-bold mb-4">{t('register.title')}</h3>
+              <h3 className="text-3xl font-bold mb-4">Comienza tu viaje hacia el éxito financiero</h3>
               <p className="text-primary-100 text-lg leading-relaxed mb-8">
-                {t('register.description')}
+                Únete a más de 10,000 negocios que ya confían en Chill Numbers para gestionar sus finanzas de manera simple y efectiva.
               </p>
             </div>
 
@@ -110,8 +108,8 @@ export default function RegisterPage() {
                   </svg>
                 </div>
                 <div>
-                  <h4 className="font-semibold">{t('register.feature1.title')}</h4>
-                  <p className="text-primary-100 text-sm">{t('register.feature1.desc')}</p>
+                  <h4 className="font-semibold">Configuración en 5 minutos</h4>
+                  <p className="text-primary-100 text-sm">Empieza a usar la plataforma inmediatamente</p>
                 </div>
               </div>
 
@@ -122,8 +120,8 @@ export default function RegisterPage() {
                   </svg>
                 </div>
                 <div>
-                  <h4 className="font-semibold">{t('register.feature2.title')}</h4>
-                  <p className="text-primary-100 text-sm">{t('register.feature2.desc')}</p>
+                  <h4 className="font-semibold">Seguridad de nivel bancario</h4>
+                  <p className="text-primary-100 text-sm">Tus datos están protegidos con encriptación de 256 bits</p>
                 </div>
               </div>
 
@@ -134,8 +132,8 @@ export default function RegisterPage() {
                   </svg>
                 </div>
                 <div>
-                  <h4 className="font-semibold">{t('register.feature3.title')}</h4>
-                  <p className="text-primary-100 text-sm">{t('register.feature3.desc')}</p>
+                  <h4 className="font-semibold">Soporte 24/7</h4>
+                  <p className="text-primary-100 text-sm">Nuestro equipo está siempre disponible para ayudarte</p>
                 </div>
               </div>
 
@@ -146,8 +144,8 @@ export default function RegisterPage() {
                   </svg>
                 </div>
                 <div>
-                  <h4 className="font-semibold">{t('register.feature4.title')}</h4>
-                  <p className="text-primary-100 text-sm">{t('register.feature4.desc')}</p>
+                  <h4 className="font-semibold">Cancela cuando quieras</h4>
+                  <p className="text-primary-100 text-sm">Sin compromisos ni penalizaciones</p>
                 </div>
               </div>
             </div>
@@ -156,15 +154,15 @@ export default function RegisterPage() {
             <div className="grid grid-cols-3 gap-6 text-center">
               <div>
                 <div className="text-2xl font-bold">10K+</div>
-                <div className="text-primary-200 text-sm">{t('register.stats.users')}</div>
+                <div className="text-primary-200 text-sm">Usuarios activos</div>
               </div>
               <div>
                 <div className="text-2xl font-bold">99.9%</div>
-                <div className="text-primary-200 text-sm">{t('register.stats.uptime')}</div>
+                <div className="text-primary-200 text-sm">Uptime</div>
               </div>
               <div>
                 <div className="text-2xl font-bold">4.9</div>
-                <div className="text-primary-200 text-sm">{t('register.stats.rating')}</div>
+                <div className="text-primary-200 text-sm">Calificación</div>
               </div>
             </div>
           </div>
@@ -183,9 +181,9 @@ export default function RegisterPage() {
           </div>
 
           <div>
-            <h2 className="text-3xl font-bold text-navy-800">{t('common.createAccount')}</h2>
+            <h2 className="text-3xl font-bold text-navy-800">Crea tu cuenta</h2>
             <p className="mt-2 text-sm text-slate-600">
-              {t('common.freeTrialSubtitle')}
+              Comienza tu prueba gratuita de 30 días. No se requiere tarjeta de crédito.
             </p>
           </div>
 
@@ -195,7 +193,7 @@ export default function RegisterPage() {
               <div className="grid grid-cols-2 gap-3">
                 <div>
                   <label htmlFor="firstName" className="block text-sm font-medium text-slate-700">
-                    First name
+                    Nombre
                   </label>
                   <input
                     id="firstName"
@@ -210,7 +208,7 @@ export default function RegisterPage() {
                 </div>
                 <div>
                   <label htmlFor="lastName" className="block text-sm font-medium text-slate-700">
-                    Last name
+                    Apellido
                   </label>
                   <input
                     id="lastName"
@@ -227,7 +225,7 @@ export default function RegisterPage() {
 
               <div>
                 <label htmlFor="email" className="block text-sm font-medium text-slate-700">
-                  Email address
+                  Dirección de email
                 </label>
                 <input
                   id="email"
@@ -245,7 +243,7 @@ export default function RegisterPage() {
               <div className="grid grid-cols-2 gap-3">
                 <div>
                   <label htmlFor="company" className="block text-sm font-medium text-slate-700">
-                    Company <span className="text-slate-400">(optional)</span>
+                    Empresa <span className="text-slate-400">(opcional)</span>
                   </label>
                   <input
                     id="company"
@@ -254,12 +252,12 @@ export default function RegisterPage() {
                     value={formData.company}
                     onChange={handleInputChange}
                     className="mt-1 appearance-none block w-full px-3 py-2.5 border border-slate-300 rounded-lg placeholder-slate-400 focus:outline-none focus:ring-primary-500 focus:border-primary-500 sm:text-sm"
-                    placeholder="Your company"
+                    placeholder="Tu empresa"
                   />
                 </div>
                 <div>
                   <label htmlFor="occupation" className="block text-sm font-medium text-slate-700">
-                    Occupation <span className="text-slate-400">(optional)</span>
+                    Ocupación <span className="text-slate-400">(opcional)</span>
                   </label>
                   <select
                     id="occupation"
@@ -268,7 +266,7 @@ export default function RegisterPage() {
                     onChange={handleInputChange}
                     className="mt-1 block w-full px-3 py-2.5 border border-slate-300 rounded-lg focus:outline-none focus:ring-primary-500 focus:border-primary-500 sm:text-sm"
                   >
-                    <option value="">Select occupation</option>
+                    <option value="">Seleccionar ocupación</option>
                     {US_JOBS.map((job) => (
                       <option key={job} value={job}>
                         {job}
@@ -281,7 +279,7 @@ export default function RegisterPage() {
               {formData.occupation === 'Other' && (
                 <div>
                   <label htmlFor="customOccupation" className="block text-sm font-medium text-slate-700">
-                    Please specify your occupation
+                    Por favor especifica tu ocupación
                   </label>
                   <input
                     id="customOccupation"
@@ -290,14 +288,14 @@ export default function RegisterPage() {
                     value={formData.customOccupation}
                     onChange={handleInputChange}
                     className="mt-1 appearance-none block w-full px-3 py-2.5 border border-slate-300 rounded-lg placeholder-slate-400 focus:outline-none focus:ring-primary-500 focus:border-primary-500 sm:text-sm"
-                    placeholder="Enter your occupation"
+                    placeholder="Ingresa tu ocupación"
                   />
                 </div>
               )}
 
               <div>
                 <label htmlFor="password" className="block text-sm font-medium text-slate-700">
-                  Password
+                  Contraseña
                 </label>
                 <div className="mt-1 relative">
                   <input
@@ -308,7 +306,7 @@ export default function RegisterPage() {
                     value={formData.password}
                     onChange={handleInputChange}
                     className="appearance-none block w-full px-3 py-2.5 pr-10 border border-slate-300 rounded-lg placeholder-slate-400 focus:outline-none focus:ring-primary-500 focus:border-primary-500 sm:text-sm"
-                    placeholder="Minimum 8 characters"
+                    placeholder="Mínimo 8 caracteres"
                   />
                   <button
                     type="button"
@@ -344,7 +342,7 @@ export default function RegisterPage() {
 
               <div>
                 <label htmlFor="confirmPassword" className="block text-sm font-medium text-slate-700">
-                  Confirm password
+                  Confirmar contraseña
                 </label>
                 <div className="mt-1 relative">
                   <input
@@ -355,7 +353,7 @@ export default function RegisterPage() {
                     value={formData.confirmPassword}
                     onChange={handleInputChange}
                     className="appearance-none block w-full px-3 py-2.5 pr-10 border border-slate-300 rounded-lg placeholder-slate-400 focus:outline-none focus:ring-primary-500 focus:border-primary-500 sm:text-sm"
-                    placeholder="Confirm your password"
+                    placeholder="Confirma tu contraseña"
                   />
                   <button
                     type="button"
@@ -375,7 +373,7 @@ export default function RegisterPage() {
                   </button>
                 </div>
                 {formData.confirmPassword && formData.password !== formData.confirmPassword && (
-                  <p className="mt-1 text-sm text-red-600">Passwords do not match</p>
+                  <p className="mt-1 text-sm text-red-600">Las contraseñas no coinciden</p>
                 )}
               </div>
 
@@ -393,13 +391,13 @@ export default function RegisterPage() {
                 </div>
                 <div className="ml-3 text-sm">
                   <label htmlFor="agreeToTerms" className="text-slate-700">
-                    I agree to the{' '}
+                    Acepto los{' '}
                     <Link href="/terms" className="font-medium text-primary-600 hover:text-primary-500">
-                      Terms of Service
+                      Términos de Servicio
                     </Link>{' '}
-                    and{' '}
+                    y la{' '}
                     <Link href="/privacy" className="font-medium text-primary-600 hover:text-primary-500">
-                      Privacy Policy
+                      Política de Privacidad
                     </Link>
                   </label>
                 </div>
@@ -411,7 +409,7 @@ export default function RegisterPage() {
                   disabled={!formData.agreeToTerms || formData.password !== formData.confirmPassword}
                   className="w-full flex justify-center py-2.5 px-4 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-primary-500 hover:bg-primary-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
                 >
-                  Create account
+                  Crear cuenta
                 </button>
               </div>
             </form>
@@ -423,7 +421,7 @@ export default function RegisterPage() {
                   <div className="w-full border-t border-slate-300" />
                 </div>
                 <div className="relative flex justify-center text-sm">
-                  <span className="px-2 bg-slate-50 text-slate-500">Or sign up with</span>
+                  <span className="px-2 bg-slate-50 text-slate-500">O regístrate con</span>
                 </div>
               </div>
 
@@ -459,9 +457,9 @@ export default function RegisterPage() {
             <div className="mt-6">
               <div className="text-center">
                 <span className="text-sm text-slate-600">
-                  Already have an account?{' '}
+                  ¿Ya tienes una cuenta?{' '}
                   <Link href="/auth/login" className="font-medium text-primary-600 hover:text-primary-500">
-                    Sign in
+                    Iniciar sesión
                   </Link>
                 </span>
               </div>

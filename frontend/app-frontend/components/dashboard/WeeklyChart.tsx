@@ -2,7 +2,6 @@
 
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts'
 import { WeeklyData } from '../../data/dashboard-data'
-import { useLanguage } from '../../hooks/useLanguage'
 import { MoreHorizontal } from 'lucide-react'
 
 interface WeeklyChartProps {
@@ -10,19 +9,10 @@ interface WeeklyChartProps {
 }
 
 const CustomTooltip = ({ active, payload, label }: any) => {
-  const { language } = useLanguage()
-  
   const formatCurrency = (amount: number): string => {
-    if (language === 'es') {
-      return new Intl.NumberFormat('es-ES', {
-        style: 'currency',
-        currency: 'EUR'
-      }).format(amount)
-    }
-    
-    return new Intl.NumberFormat('en-US', {
+    return new Intl.NumberFormat('es-ES', {
       style: 'currency',
-      currency: 'USD'
+      currency: 'EUR'
     }).format(amount)
   }
 
@@ -32,8 +22,8 @@ const CustomTooltip = ({ active, payload, label }: any) => {
         <p className="font-medium text-gray-900 mb-2">{label}</p>
         {payload.map((entry: any, index: number) => (
           <p key={index} className="text-sm" style={{ color: entry.color }}>
-            {entry.dataKey === 'income' ? 'Income' : 
-             entry.dataKey === 'expenses' ? 'Expenses' : 'Profit'}: {formatCurrency(entry.value)}
+            {entry.dataKey === 'income' ? 'Ingresos' : 
+             entry.dataKey === 'expenses' ? 'Gastos' : 'Ganancia'}: {formatCurrency(entry.value)}
           </p>
         ))}
       </div>
@@ -45,7 +35,7 @@ const CustomTooltip = ({ active, payload, label }: any) => {
 export default function WeeklyChart({ data }: WeeklyChartProps) {
   // Transform data for Recharts - show only last 4 weeks (current month)
   const chartData = data.slice(-4).map((week, index) => ({
-    name: `Week ${index + 1}`,
+    name: `Semana ${index + 1}`,
     income: week.income,
     expenses: week.expenses,
     profit: week.income - week.expenses
@@ -55,8 +45,8 @@ export default function WeeklyChart({ data }: WeeklyChartProps) {
     <div className="bg-white rounded-xl border border-gray-200 p-6 hover:shadow-lg transition-shadow duration-300">
       <div className="flex items-center justify-between mb-6">
         <div>
-          <h3 className="text-lg font-semibold text-gray-900">Weekly Comparison</h3>
-          <p className="text-sm text-gray-500 mt-1">Income vs Expenses by Week</p>
+          <h3 className="text-lg font-semibold text-gray-900">Comparación Semanal</h3>
+          <p className="text-sm text-gray-500 mt-1">Ingresos vs Gastos por Semana</p>
         </div>
         <button className="p-2 hover:bg-gray-100 rounded-lg transition-colors duration-200">
           <MoreHorizontal className="w-5 h-5 text-gray-400" />
@@ -96,7 +86,7 @@ export default function WeeklyChart({ data }: WeeklyChartProps) {
             />
             <Bar 
               dataKey="income" 
-              name="Income"
+              name="Ingresos"
               fill="#20B2AA" 
               radius={[4, 4, 0, 0]}
               animationDuration={1000}
@@ -104,7 +94,7 @@ export default function WeeklyChart({ data }: WeeklyChartProps) {
             />
             <Bar 
               dataKey="expenses" 
-              name="Expenses"
+              name="Gastos"
               fill="#FF6B6B" 
               radius={[4, 4, 0, 0]}
               animationDuration={1000}
@@ -112,7 +102,7 @@ export default function WeeklyChart({ data }: WeeklyChartProps) {
             />
             <Bar 
               dataKey="profit" 
-              name="Profit"
+              name="Ganancia"
               fill="#4ECDC4" 
               radius={[4, 4, 0, 0]}
               animationDuration={1000}
