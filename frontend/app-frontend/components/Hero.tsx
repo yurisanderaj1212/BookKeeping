@@ -70,7 +70,7 @@ export default function Hero() {
               href="/auth/register" 
               className="bg-primary-500 text-white px-6 py-2 rounded-lg hover:bg-primary-600 transition-colors"
             >
-              Get Started
+              Comenzar
             </Link>
           </div>
 
@@ -97,8 +97,8 @@ export default function Hero() {
           </h1>
           
           <p className="mt-6 text-lg leading-8 text-blue-200 max-w-2xl mx-auto">
-            Manage your business finances with ease. No accounting knowledge required. 
-            Track income, expenses, and grow your business with confidence.
+            Gestiona las finanzas de tu negocio con facilidad. No se requiere conocimiento contable. 
+            Rastrea ingresos, gastos y haz crecer tu negocio con confianza.
           </p>
           
           <div className="mt-10 flex items-center justify-center gap-x-6">
@@ -106,7 +106,7 @@ export default function Hero() {
               href="/auth/register"
               className="bg-primary-500 px-8 py-3 text-lg font-semibold text-white shadow-sm hover:bg-primary-600 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-500 rounded-lg transition-all duration-200 hover:shadow-medium"
             >
-              Start Free Trial
+              Prueba Gratuita
             </Link>
             <button
               onClick={() => document.getElementById('features')?.scrollIntoView({ behavior: 'smooth' })}

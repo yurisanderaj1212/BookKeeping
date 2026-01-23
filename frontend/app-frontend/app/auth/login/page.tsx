@@ -2,10 +2,8 @@
 
 import { useState } from 'react'
 import Link from 'next/link'
-import { useLanguage } from '../../../hooks/useLanguage'
 
 export default function LoginPage() {
-  const { t } = useLanguage()
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [showPassword, setShowPassword] = useState(false)
@@ -36,9 +34,9 @@ export default function LoginPage() {
           </div>
 
           <div>
-            <h2 className="text-3xl font-bold text-navy-800">{t('login.welcome')}</h2>
+            <h2 className="text-3xl font-bold text-navy-800">Bienvenido de vuelta</h2>
             <p className="mt-2 text-sm text-slate-600">
-              {t('login.subtitle')}
+              Inicia sesión en tu cuenta para continuar gestionando tus finanzas
             </p>
           </div>
 
@@ -47,7 +45,7 @@ export default function LoginPage() {
             <form className="space-y-4" onSubmit={handleSubmit}>
               <div>
                 <label htmlFor="email" className="block text-sm font-medium text-slate-700">
-                  Email address
+                  Dirección de email
                 </label>
                 <div className="mt-1">
                   <input
@@ -59,14 +57,14 @@ export default function LoginPage() {
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     className="appearance-none block w-full px-3 py-2.5 border border-slate-300 rounded-lg placeholder-slate-400 focus:outline-none focus:ring-primary-500 focus:border-primary-500 sm:text-sm"
-                    placeholder="Enter your email"
+                    placeholder="Ingresa tu email"
                   />
                 </div>
               </div>
 
               <div>
                 <label htmlFor="password" className="block text-sm font-medium text-slate-700">
-                  Password
+                  Contraseña
                 </label>
                 <div className="mt-1 relative">
                   <input
@@ -78,7 +76,7 @@ export default function LoginPage() {
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                     className="appearance-none block w-full px-3 py-2.5 pr-10 border border-slate-300 rounded-lg placeholder-slate-400 focus:outline-none focus:ring-primary-500 focus:border-primary-500 sm:text-sm"
-                    placeholder="Enter your password"
+                    placeholder="Ingresa tu contraseña"
                   />
                   <button
                     type="button"
@@ -110,13 +108,13 @@ export default function LoginPage() {
                     className="h-4 w-4 text-primary-600 focus:ring-primary-500 border-slate-300 rounded"
                   />
                   <label htmlFor="remember-me" className="ml-2 block text-sm text-slate-700">
-                    Remember me
+                    Recordarme
                   </label>
                 </div>
 
                 <div className="text-sm">
                   <Link href="/auth/forgot-password" className="font-medium text-primary-600 hover:text-primary-500">
-                    Forgot your password?
+                    ¿Olvidaste tu contraseña?
                   </Link>
                 </div>
               </div>
@@ -126,7 +124,7 @@ export default function LoginPage() {
                   type="submit"
                   className="w-full flex justify-center py-2.5 px-4 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-primary-500 hover:bg-primary-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 transition-colors"
                 >
-                  Sign in
+                  Iniciar sesión
                 </button>
               </div>
             </form>
@@ -138,7 +136,7 @@ export default function LoginPage() {
                   <div className="w-full border-t border-slate-300" />
                 </div>
                 <div className="relative flex justify-center text-sm">
-                  <span className="px-2 bg-slate-50 text-slate-500">Or continue with</span>
+                  <span className="px-2 bg-slate-50 text-slate-500">O continúa con</span>
                 </div>
               </div>
 
@@ -184,9 +182,9 @@ export default function LoginPage() {
             <div className="mt-6">
               <div className="text-center">
                 <span className="text-sm text-slate-600">
-                  Don't have an account?{' '}
+                  ¿No tienes una cuenta?{' '}
                   <Link href="/auth/register" className="font-medium text-primary-600 hover:text-primary-500">
-                    Sign up for free
+                    Regístrate gratis
                   </Link>
                 </span>
               </div>
@@ -204,13 +202,13 @@ export default function LoginPage() {
               <svg className="w-4 h-4 mr-2 text-yellow-300" fill="currentColor" viewBox="0 0 20 20">
                 <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
               </svg>
-              {t('login.rating')}
+              Calificación 4.9/5 por más de 10,000 usuarios
             </div>
 
             <div className="mb-6">
-              <h3 className="text-2xl font-bold mb-3">{t('login.title')}</h3>
+              <h3 className="text-2xl font-bold mb-3">Gestiona tus finanzas con confianza</h3>
               <p className="text-primary-100 text-base leading-relaxed mb-6">
-                {t('login.description')}
+                Únete a miles de negocios que ya simplifican su contabilidad con nuestra plataforma intuitiva y segura.
               </p>
             </div>
 
@@ -223,8 +221,8 @@ export default function LoginPage() {
                   </svg>
                 </div>
                 <div>
-                  <h4 className="font-semibold text-sm">{t('login.feature1.title')}</h4>
-                  <p className="text-primary-100 text-xs">{t('login.feature1.desc')}</p>
+                  <h4 className="font-semibold text-sm">Dashboard en tiempo real</h4>
+                  <p className="text-primary-100 text-xs">Visualiza tus ingresos y gastos al instante</p>
                 </div>
               </div>
 
@@ -235,8 +233,8 @@ export default function LoginPage() {
                   </svg>
                 </div>
                 <div>
-                  <h4 className="font-semibold text-sm">{t('login.feature2.title')}</h4>
-                  <p className="text-primary-100 text-xs">{t('login.feature2.desc')}</p>
+                  <h4 className="font-semibold text-sm">Integración bancaria</h4>
+                  <p className="text-primary-100 text-xs">Conecta tus cuentas y sincroniza automáticamente</p>
                 </div>
               </div>
 
@@ -247,8 +245,8 @@ export default function LoginPage() {
                   </svg>
                 </div>
                 <div>
-                  <h4 className="font-semibold text-sm">{t('login.feature3.title')}</h4>
-                  <p className="text-primary-100 text-xs">{t('login.feature3.desc')}</p>
+                  <h4 className="font-semibold text-sm">Reportes inteligentes</h4>
+                  <p className="text-primary-100 text-xs">Genera informes profesionales en segundos</p>
                 </div>
               </div>
             </div>
@@ -263,11 +261,11 @@ export default function LoginPage() {
                 ))}
               </div>
               <p className="text-primary-100 text-xs italic mb-2 text-center">
-                {t('login.testimonial')}
+                "Chill Numbers transformó completamente la manera en que manejo las finanzas de mi negocio. Ahora todo es más claro y organizado."
               </p>
               <div className="text-center">
-                <p className="text-white font-semibold text-xs">{t('login.testimonial.name')}</p>
-                <p className="text-primary-200 text-xs">{t('login.testimonial.title')}</p>
+                <p className="text-white font-semibold text-xs">María Rodríguez</p>
+                <p className="text-primary-200 text-xs">CEO, TechStart Inc.</p>
               </div>
             </div>
 

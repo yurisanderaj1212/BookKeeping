@@ -1,7 +1,6 @@
 'use client'
 
 import { Transaction } from '../../data/dashboard-data'
-import { useLanguage } from '../../hooks/useLanguage'
 import { format } from 'date-fns'
 import { ArrowUpRight, ArrowDownRight, MoreHorizontal, Eye } from 'lucide-react'
 
@@ -10,19 +9,10 @@ interface RecentTransactionsProps {
 }
 
 export default function RecentTransactions({ transactions }: RecentTransactionsProps) {
-  const { language } = useLanguage()
-  
   const formatCurrency = (amount: number): string => {
-    if (language === 'es') {
-      return new Intl.NumberFormat('es-ES', {
-        style: 'currency',
-        currency: 'EUR'
-      }).format(amount)
-    }
-    
-    return new Intl.NumberFormat('en-US', {
+    return new Intl.NumberFormat('es-ES', {
       style: 'currency',
-      currency: 'USD'
+      currency: 'EUR'
     }).format(amount)
   }
 
@@ -51,12 +41,12 @@ export default function RecentTransactions({ transactions }: RecentTransactionsP
     <div className="bg-white rounded-xl border border-gray-200 p-6 hover:shadow-lg transition-shadow duration-300 h-full flex flex-col">
       <div className="flex items-center justify-between mb-6">
         <div>
-          <h3 className="text-lg font-semibold text-gray-900">Recent Transactions</h3>
-          <p className="text-sm text-gray-500 mt-1">Latest financial activities</p>
+          <h3 className="text-lg font-semibold text-gray-900">Transacciones Recientes</h3>
+          <p className="text-sm text-gray-500 mt-1">Últimas actividades financieras</p>
         </div>
         <button className="text-primary-600 hover:text-primary-700 text-sm font-medium flex items-center space-x-1 hover:bg-primary-50 px-3 py-1.5 rounded-lg transition-colors duration-200">
           <Eye className="w-4 h-4" />
-          <span>View All</span>
+          <span>Ver Todas</span>
         </button>
       </div>
 
@@ -111,8 +101,8 @@ export default function RecentTransactions({ transactions }: RecentTransactionsP
             <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
               <ArrowUpRight className="w-8 h-8 text-gray-400" />
             </div>
-            <p className="text-gray-500 text-sm">No transactions yet</p>
-            <p className="text-gray-400 text-xs mt-1">Add your first transaction to get started</p>
+            <p className="text-gray-500 text-sm">No hay transacciones aún</p>
+            <p className="text-gray-400 text-xs mt-1">Agrega tu primera transacción para comenzar</p>
           </div>
         </div>
       )}

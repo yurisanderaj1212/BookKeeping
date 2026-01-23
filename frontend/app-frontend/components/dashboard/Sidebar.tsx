@@ -26,25 +26,25 @@ interface MenuItem {
 const menuItems: MenuItem[] = [
   {
     id: 'dashboard',
-    label: 'Summary',
+    label: 'Resumen',
     icon: LayoutDashboard,
     href: '/dashboard'
   },
   {
     id: 'transactions',
-    label: 'Transactions',
+    label: 'Transacciones',
     icon: Receipt,
-    href: '/dashboard/transactions'
+    href: '/transactions'
   },
   {
     id: 'reports',
-    label: 'Reports',
+    label: 'Reportes',
     icon: FileText,
     href: '/dashboard/reports'
   },
   {
     id: 'analytics',
-    label: 'Analytics',
+    label: 'Análisis',
     icon: BarChart3,
     href: '/dashboard/analytics'
   },
@@ -56,7 +56,7 @@ const menuItems: MenuItem[] = [
   },
   {
     id: 'membership',
-    label: 'Membership',
+    label: 'Membresía',
     icon: Users,
     href: '/dashboard/membership'
   }
@@ -129,7 +129,7 @@ export default function Sidebar({ onLogout }: SidebarProps) {
           className="w-full flex items-center space-x-3 px-3 py-2 text-gray-600 hover:bg-red-50 hover:text-red-600 rounded-lg transition-all duration-200 group"
         >
           <LogOut className="w-4 h-4 group-hover:text-red-600" />
-          <span className="font-medium text-sm">Logout</span>
+          <span className="font-medium text-sm">Cerrar Sesión</span>
         </button>
       </div>
     </div>

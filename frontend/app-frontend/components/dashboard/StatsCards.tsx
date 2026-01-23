@@ -1,7 +1,6 @@
 'use client'
 
 import { formatPercentage } from '../../data/dashboard-data'
-import { useLanguage } from '../../hooks/useLanguage'
 import { TrendingUp, TrendingDown, DollarSign, CreditCard, PiggyBank, Clock } from 'lucide-react'
 
 interface StatCardProps {
@@ -14,20 +13,11 @@ interface StatCardProps {
 }
 
 function StatCard({ title, amount, change, icon, color, delay = 0 }: StatCardProps) {
-  const { language } = useLanguage()
-  
-  // Format currency based on language
+  // Format currency in Spanish
   const formatCurrency = (amount: number): string => {
-    if (language === 'es') {
-      return new Intl.NumberFormat('es-ES', {
-        style: 'currency',
-        currency: 'EUR'
-      }).format(amount)
-    }
-    
-    return new Intl.NumberFormat('en-US', {
+    return new Intl.NumberFormat('es-ES', {
       style: 'currency',
-      currency: 'USD'
+      currency: 'EUR'
     }).format(amount)
   }
   const colorClasses = {
@@ -87,7 +77,7 @@ function StatCard({ title, amount, change, icon, color, delay = 0 }: StatCardPro
             <span className={`text-xs font-medium ${changeColor}`}>
               {formatPercentage(change)}
             </span>
-            <span className="text-xs text-gray-500">from last week</span>
+            <span className="text-xs text-gray-500">desde la semana pasada</span>
           </div>
         </div>
         <div className={`${colorClasses[color].bg} p-4 rounded-xl group-hover:scale-110 transition-transform duration-200`}>
@@ -148,7 +138,7 @@ export default function StatsCards({
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
       <StatCard
-        title="Total Income"
+        title="Ingresos Totales"
         amount={totalIncome}
         change={incomeChange}
         color="green"
@@ -157,7 +147,7 @@ export default function StatsCards({
       />
       
       <StatCard
-        title="Total Expenses"
+        title="Gastos Totales"
         amount={totalExpenses}
         change={expensesChange}
         color="red"
@@ -166,7 +156,7 @@ export default function StatsCards({
       />
       
       <StatCard
-        title="Net Profit"
+        title="Ganancia Neta"
         amount={netProfit}
         change={profitChange}
         color="blue"
@@ -175,7 +165,7 @@ export default function StatsCards({
       />
       
       <StatCard
-        title="Pending Items"
+        title="Elementos Pendientes"
         amount={pending}
         change={pendingChange}
         color="yellow"

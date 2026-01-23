@@ -348,17 +348,10 @@ export const mockStatsData: StatsData = {
 }
 
 // Helper functions
-export const formatCurrency = (amount: number, language: 'en' | 'es' = 'en'): string => {
-  if (language === 'es') {
-    return new Intl.NumberFormat('es-ES', {
-      style: 'currency',
-      currency: 'EUR'
-    }).format(amount)
-  }
-  
-  return new Intl.NumberFormat('en-US', {
+export const formatCurrency = (amount: number): string => {
+  return new Intl.NumberFormat('es-ES', {
     style: 'currency',
-    currency: 'USD'
+    currency: 'EUR'
   }).format(amount)
 }
 

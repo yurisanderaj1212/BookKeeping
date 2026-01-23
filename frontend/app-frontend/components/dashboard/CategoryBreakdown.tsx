@@ -3,7 +3,6 @@
 import { useState, useEffect } from 'react'
 import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip, Legend } from 'recharts'
 import { CategoryData } from '../../data/dashboard-data'
-import { useLanguage } from '../../hooks/useLanguage'
 import { MoreHorizontal } from 'lucide-react'
 
 interface CategoryBreakdownProps {
@@ -11,19 +10,10 @@ interface CategoryBreakdownProps {
 }
 
 const CustomTooltip = ({ active, payload }: any) => {
-  const { language } = useLanguage()
-  
   const formatCurrency = (amount: number): string => {
-    if (language === 'es') {
-      return new Intl.NumberFormat('es-ES', {
-        style: 'currency',
-        currency: 'EUR'
-      }).format(amount)
-    }
-    
-    return new Intl.NumberFormat('en-US', {
+    return new Intl.NumberFormat('es-ES', {
       style: 'currency',
-      currency: 'USD'
+      currency: 'EUR'
     }).format(amount)
   }
 
@@ -33,10 +23,10 @@ const CustomTooltip = ({ active, payload }: any) => {
       <div className="bg-white p-3 border border-gray-200 rounded-lg shadow-lg">
         <p className="font-medium text-gray-900 mb-2">{data.name}</p>
         <p className="text-sm text-gray-600">
-          Amount: <span className="font-semibold">{formatCurrency(data.value)}</span>
+          Monto: <span className="font-semibold">{formatCurrency(data.value)}</span>
         </p>
         <p className="text-sm text-gray-600">
-          Percentage: <span className="font-semibold">{data.percentage}%</span>
+          Porcentaje: <span className="font-semibold">{data.percentage}%</span>
         </p>
       </div>
     )
@@ -50,7 +40,6 @@ const renderCustomizedLabel = ({ cx, cy, midAngle, innerRadius, outerRadius, per
 }
 
 export default function CategoryBreakdown({ categories }: CategoryBreakdownProps) {
-  const { language } = useLanguage()
   const [mounted, setMounted] = useState(false)
   
   useEffect(() => {
@@ -58,16 +47,9 @@ export default function CategoryBreakdown({ categories }: CategoryBreakdownProps
   }, [])
   
   const formatCurrency = (amount: number): string => {
-    if (language === 'es') {
-      return new Intl.NumberFormat('es-ES', {
-        style: 'currency',
-        currency: 'EUR'
-      }).format(amount)
-    }
-    
-    return new Intl.NumberFormat('en-US', {
+    return new Intl.NumberFormat('es-ES', {
       style: 'currency',
-      currency: 'USD'
+      currency: 'EUR'
     }).format(amount)
   }
 
@@ -84,8 +66,8 @@ export default function CategoryBreakdown({ categories }: CategoryBreakdownProps
     <div className="bg-white rounded-xl border border-gray-200 p-6 hover:shadow-lg transition-shadow duration-300 h-full flex flex-col">
       <div className="flex items-center justify-between mb-6">
         <div>
-          <h3 className="text-lg font-semibold text-gray-900">Income by Category</h3>
-          <p className="text-sm text-gray-500 mt-1">Distribution of revenue sources</p>
+          <h3 className="text-lg font-semibold text-gray-900">Ingresos por Categoría</h3>
+          <p className="text-sm text-gray-500 mt-1">Distribución de fuentes de ingresos</p>
         </div>
         <div className="flex items-center space-x-2">
           {categories.length > 4 && (
@@ -164,8 +146,8 @@ export default function CategoryBreakdown({ categories }: CategoryBreakdownProps
             <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
               <PieChart className="w-8 h-8 text-gray-400" />
             </div>
-            <p className="text-gray-500 text-sm">No categories yet</p>
-            <p className="text-gray-400 text-xs mt-1">Add transactions to see category breakdown</p>
+            <p className="text-gray-500 text-sm">No hay categorías aún</p>
+            <p className="text-gray-400 text-xs mt-1">Agrega transacciones para ver el desglose por categorías</p>
           </div>
         </div>
       )}
