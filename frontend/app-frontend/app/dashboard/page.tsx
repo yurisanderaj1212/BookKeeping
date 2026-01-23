@@ -19,6 +19,28 @@ import {
 export default function DashboardPage() {
   const router = useRouter()
 
+  const handleQuickAction = (actionId: string) => {
+    switch (actionId) {
+      case 'add-transaction':
+        router.push('/transactions')
+        break
+      case 'generate-report':
+        // TODO: Implement report generation
+        console.log('Generating report...')
+        break
+      case 'view-analytics':
+        // TODO: Navigate to analytics page
+        console.log('Viewing analytics...')
+        break
+      case 'connect-bank':
+        // TODO: Implement bank connection
+        console.log('Connecting bank...')
+        break
+      default:
+        break
+    }
+  }
+
   const handleLogout = async () => {
     // TODO: Implement actual logout logic
     console.log('Logging out...')
@@ -28,32 +50,32 @@ export default function DashboardPage() {
   const quickActions = [
     {
       id: 'add-transaction',
-      title: 'Add Transaction',
-      description: 'Record new income or expense',
+      title: 'Agregar Transacción',
+      description: 'Registrar nuevo ingreso o gasto',
       icon: Plus,
       color: 'bg-primary-500 hover:bg-primary-600',
       textColor: 'text-white'
     },
     {
       id: 'generate-report',
-      title: 'Generate Report',
-      description: 'Create financial statements',
+      title: 'Generar Reporte',
+      description: 'Crear estados financieros',
       icon: Download,
       color: 'bg-orange-500 hover:bg-orange-600',
       textColor: 'text-white'
     },
     {
       id: 'view-analytics',
-      title: 'View Analytics',
-      description: 'Detailed financial insights',
+      title: 'Ver Análisis',
+      description: 'Información financiera detallada',
       icon: BarChart3,
       color: 'bg-purple-500 hover:bg-purple-600',
       textColor: 'text-white'
     },
     {
       id: 'connect-bank',
-      title: 'Connect Bank',
-      description: 'Link your bank account',
+      title: 'Conectar Banco',
+      description: 'Vincular tu cuenta bancaria',
       icon: Landmark,
       color: 'bg-green-500 hover:bg-green-600',
       textColor: 'text-white'
@@ -71,17 +93,20 @@ export default function DashboardPage() {
         <div className="mb-8">
           <div className="flex items-center justify-between">
             <div>
-              <h1 className="text-3xl font-bold text-gray-900">Summary</h1>
-              <p className="text-gray-600 mt-2">Welcome back! Here's your financial overview</p>
+              <h1 className="text-3xl font-bold text-gray-900">Resumen</h1>
+              <p className="text-gray-600 mt-2">¡Bienvenido de vuelta! Aquí está tu resumen financiero</p>
             </div>
             <div className="flex items-center space-x-4">
               <button className="bg-white border border-gray-300 text-gray-700 px-4 py-2.5 rounded-lg hover:bg-gray-50 transition-colors duration-200 flex items-center space-x-2 shadow-sm">
                 <Download className="w-4 h-4" />
-                <span>Export</span>
+                <span>Exportar</span>
               </button>
-              <button className="bg-primary-500 text-white px-4 py-2.5 rounded-lg hover:bg-primary-600 transition-colors duration-200 flex items-center space-x-2 shadow-sm">
+              <button 
+                onClick={() => router.push('/transactions')}
+                className="bg-primary-500 text-white px-4 py-2.5 rounded-lg hover:bg-primary-600 transition-colors duration-200 flex items-center space-x-2 shadow-sm"
+              >
                 <Plus className="w-4 h-4" />
-                <span>Add Transaction</span>
+                <span>Agregar Transacción</span>
               </button>
             </div>
           </div>
@@ -117,13 +142,14 @@ export default function DashboardPage() {
 
         {/* Quick Actions */}
         <div className="bg-white rounded-xl border border-gray-200 p-6 shadow-sm">
-          <h3 className="text-lg font-semibold text-gray-900 mb-6">Quick Actions</h3>
+          <h3 className="text-lg font-semibold text-gray-900 mb-6">Acciones Rápidas</h3>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
             {quickActions.map((action, index) => {
               const Icon = action.icon
               return (
                 <button
                   key={action.id}
+                  onClick={() => handleQuickAction(action.id)}
                   className={`${action.color} ${action.textColor} p-6 rounded-xl transition-all duration-200 transform hover:scale-105 hover:shadow-lg group`}
                   style={{ 
                     animationDelay: `${index * 100}ms`,
