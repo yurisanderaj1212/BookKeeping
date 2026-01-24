@@ -2,17 +2,8 @@
 
 import { useState } from 'react'
 import { Edit, Trash2 } from 'lucide-react'
-
-interface Transaction {
-  id: string
-  type: 'income' | 'expense'
-  amount: number
-  description: string
-  category: string
-  date: string
-  status: 'pending' | 'completed'
-  notes?: string
-}
+import { getCategoryName, getCategoryColor } from '@/data/categories-data'
+import { Transaction } from '@/data/transactions-data'
 
 interface TransactionListProps {
   transactions: Transaction[]
@@ -39,42 +30,33 @@ export default function TransactionList({
     return dateString
   }
 
-  const getCategoryLabel = (category: string) => {
-    const categoryLabels: Record<string, string> = {
-      services: 'Servicios',
-      sales: 'Ventas',
-      consulting: 'Consultoría',
-      office: 'Oficina',
-      software: 'Software',
-      marketing: 'Marketing',
-      utilities: 'Servicios Públicos',
-      travel: 'Viajes',
-      meals: 'Comidas',
-      investments: 'Inversiones',
-      other_income: 'Otros Ingresos',
-      other_expense: 'Otros Gastos'
-    }
-
-    return categoryLabels[category] || category
+  const getCategoryLabel = (categoryId: string) => {
+    return getCategoryName(categoryId)
   }
 
-  const getCategoryColor = (category: string) => {
-    const colors: Record<string, string> = {
-      services: 'bg-blue-100 text-blue-800',
-      sales: 'bg-green-100 text-green-800',
-      consulting: 'bg-purple-100 text-purple-800',
-      office: 'bg-orange-100 text-orange-800',
-      software: 'bg-indigo-100 text-indigo-800',
-      marketing: 'bg-pink-100 text-pink-800',
-      utilities: 'bg-yellow-100 text-yellow-800',
-      travel: 'bg-cyan-100 text-cyan-800',
-      meals: 'bg-red-100 text-red-800',
-      investments: 'bg-emerald-100 text-emerald-800',
-      other_income: 'bg-gray-100 text-gray-800',
-      other_expense: 'bg-gray-100 text-gray-800'
+  const getCategoryColorClass = (categoryId: string) => {
+    // Convert hex color to Tailwind classes based on category type
+    const categoryName = getCategoryName(categoryId)
+    
+    // Default colors for different categories
+    const colorMap: Record<string, string> = {
+      'Ventas': 'bg-green-100 text-green-800',
+      'Servicios': 'bg-blue-100 text-blue-800',
+      'Consultoría': 'bg-purple-100 text-purple-800',
+      'Inversiones': 'bg-emerald-100 text-emerald-800',
+      'Otros Ingresos': 'bg-gray-100 text-gray-800',
+      'Oficina': 'bg-orange-100 text-orange-800',
+      'Marketing': 'bg-pink-100 text-pink-800',
+      'Viajes': 'bg-cyan-100 text-cyan-800',
+      'Servicios Públicos': 'bg-yellow-100 text-yellow-800',
+      'Software': 'bg-indigo-100 text-indigo-800',
+      'Equipos': 'bg-slate-100 text-slate-800',
+      'Servicios Profesionales': 'bg-violet-100 text-violet-800',
+      'Alquiler': 'bg-rose-100 text-rose-800',
+      'Otros Gastos': 'bg-gray-100 text-gray-800'
     }
 
-    return colors[category] || 'bg-gray-100 text-gray-800'
+    return colorMap[categoryName] || 'bg-gray-100 text-gray-800'
   }
 
   const filteredTransactions = transactions
@@ -158,7 +140,7 @@ export default function TransactionList({
 
               {/* Category */}
               <td className="px-4 py-4 text-center">
-                <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getCategoryColor(transaction.category)}`}>
+                <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getCategoryColorClass(transaction.category)}`}>
                   {getCategoryLabel(transaction.category)}
                 </span>
               </td>

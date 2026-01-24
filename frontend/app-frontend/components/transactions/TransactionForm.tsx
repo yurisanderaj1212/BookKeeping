@@ -2,12 +2,14 @@
 
 import { useState, useEffect } from 'react'
 import { X } from 'lucide-react'
+import { getCategoriesByType } from '@/data/categories-data'
+import { Transaction } from '@/data/transactions-data'
 
 interface TransactionFormProps {
   isOpen: boolean
   onClose: () => void
-  onSave: (transaction: any) => void
-  transaction?: any
+  onSave: (transaction: Transaction) => void
+  transaction?: Transaction | null
   mode: 'create' | 'edit'
 }
 
@@ -33,7 +35,7 @@ export default function TransactionForm({
 
   // Update form data when transaction changes (for editing)
   useEffect(() => {
-    if (transaction) {
+    if (transaction && transaction !== null) {
       setFormData({
         type: transaction.type || 'income',
         amount: transaction.amount?.toString() || '',
@@ -60,22 +62,14 @@ export default function TransactionForm({
   }, [transaction, isOpen])
 
   const categories = {
-    income: [
-      { value: 'services', label: 'Servicios' },
-      { value: 'sales', label: 'Ventas' },
-      { value: 'consulting', label: 'Consultoría' },
-      { value: 'investments', label: 'Inversiones' },
-      { value: 'other_income', label: 'Otros Ingresos' }
-    ],
-    expense: [
-      { value: 'office', label: 'Oficina' },
-      { value: 'software', label: 'Software' },
-      { value: 'marketing', label: 'Marketing' },
-      { value: 'utilities', label: 'Servicios Públicos' },
-      { value: 'travel', label: 'Viajes' },
-      { value: 'meals', label: 'Comidas' },
-      { value: 'other_expense', label: 'Otros Gastos' }
-    ]
+    income: getCategoriesByType('income').map(cat => ({
+      value: cat.id,
+      label: cat.name
+    })),
+    expense: getCategoriesByType('expense').map(cat => ({
+      value: cat.id,
+      label: cat.name
+    }))
   }
 
   const validateForm = () => {
@@ -105,8 +99,10 @@ export default function TransactionForm({
     e.preventDefault()
     
     if (validateForm()) {
-      const transactionData = {
+      const transactionData: Transaction = {
         ...formData,
+        type: formData.type as 'income' | 'expense',
+        status: formData.status as 'pending' | 'completed',
         amount: parseFloat(formData.amount),
         id: transaction?.id || Date.now().toString()
       }

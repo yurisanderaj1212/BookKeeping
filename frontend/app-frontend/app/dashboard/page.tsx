@@ -1,7 +1,7 @@
 'use client'
 
 import { useRouter } from 'next/navigation'
-import { Plus, Download, BarChart3, Landmark } from 'lucide-react'
+import { Plus, BarChart3, Landmark, FileText } from 'lucide-react'
 import Sidebar from '../../components/dashboard/Sidebar'
 import StatsCards from '../../components/dashboard/StatsCards'
 import WeeklyChart from '../../components/dashboard/WeeklyChart'
@@ -12,7 +12,7 @@ import {
   mockStatsData,
   mockWeeklyData,
   mockMonthlyData,
-  mockTransactions,
+  dashboardTransactions,
   mockCategoryData
 } from '../../data/dashboard-data'
 
@@ -60,7 +60,7 @@ export default function DashboardPage() {
       id: 'generate-report',
       title: 'Generar Reporte',
       description: 'Crear estados financieros',
-      icon: Download,
+      icon: FileText,
       color: 'bg-orange-500 hover:bg-orange-600',
       textColor: 'text-white'
     },
@@ -83,27 +83,27 @@ export default function DashboardPage() {
   ]
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="flex min-h-screen bg-gray-50">
       {/* Sidebar */}
       <Sidebar onLogout={handleLogout} />
 
       {/* Main Content */}
-      <div className="ml-64 p-8">
+      <div className="flex-1 ml-64">
         {/* Header */}
-        <div className="mb-8">
-          <div className="flex items-center justify-between">
-            <div>
-              <h1 className="text-3xl font-bold text-gray-900">Resumen</h1>
-              <p className="text-gray-600 mt-2">¡Bienvenido de vuelta! Aquí está tu resumen financiero</p>
-            </div>
-            <div className="flex items-center space-x-4">
-              <button className="bg-white border border-gray-300 text-gray-700 px-4 py-2.5 rounded-lg hover:bg-gray-50 transition-colors duration-200 flex items-center space-x-2 shadow-sm">
-                <Download className="w-4 h-4" />
-                <span>Exportar</span>
-              </button>
+        <div className="bg-white border-b border-gray-200 sticky top-0 z-10">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="flex items-center justify-between h-20">
+              <div>
+                <h1 className="text-2xl font-bold text-gray-900">
+                  Resumen
+                </h1>
+                <p className="text-sm text-gray-500 mt-1">
+                  ¡Bienvenido de vuelta! Aquí está tu resumen financiero
+                </p>
+              </div>
               <button 
                 onClick={() => router.push('/transactions')}
-                className="bg-primary-500 text-white px-4 py-2.5 rounded-lg hover:bg-primary-600 transition-colors duration-200 flex items-center space-x-2 shadow-sm"
+                className="bg-primary-600 text-white px-4 py-2 rounded-lg hover:bg-primary-700 transition-colors duration-200 flex items-center space-x-2"
               >
                 <Plus className="w-4 h-4" />
                 <span>Agregar Transacción</span>
@@ -111,6 +111,9 @@ export default function DashboardPage() {
             </div>
           </div>
         </div>
+
+        {/* Content */}
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
 
         {/* Stats Cards */}
         <StatsCards
@@ -133,7 +136,7 @@ export default function DashboardPage() {
         {/* Bottom Row - Same height cards */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
           <div className="h-[600px]">
-            <RecentTransactions transactions={mockTransactions} />
+            <RecentTransactions transactions={dashboardTransactions} />
           </div>
           <div className="h-[600px]">
             <CategoryBreakdown categories={mockCategoryData} />
@@ -142,31 +145,32 @@ export default function DashboardPage() {
 
         {/* Quick Actions */}
         <div className="bg-white rounded-xl border border-gray-200 p-6 shadow-sm">
-          <h3 className="text-lg font-semibold text-gray-900 mb-6">Acciones Rápidas</h3>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+          <h3 className="text-lg font-semibold text-gray-900 mb-4">Acciones Rápidas</h3>
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
             {quickActions.map((action, index) => {
               const Icon = action.icon
               return (
                 <button
                   key={action.id}
                   onClick={() => handleQuickAction(action.id)}
-                  className={`${action.color} ${action.textColor} p-6 rounded-xl transition-all duration-200 transform hover:scale-105 hover:shadow-lg group`}
+                  className={`${action.color} ${action.textColor} p-4 rounded-lg transition-all duration-200 transform hover:scale-105 hover:shadow-md group`}
                   style={{ 
                     animationDelay: `${index * 100}ms`,
                     animation: 'fadeInScale 0.5s ease-out forwards'
                   }}
                 >
                   <div className="flex flex-col items-center text-center">
-                    <div className="w-12 h-12 bg-white/20 rounded-lg flex items-center justify-center mb-3 group-hover:bg-white/30 transition-colors duration-200">
-                      <Icon className="w-6 h-6" />
+                    <div className="w-8 h-8 bg-white/20 rounded-lg flex items-center justify-center mb-2 group-hover:bg-white/30 transition-colors duration-200">
+                      <Icon className="w-4 h-4" />
                     </div>
-                    <h4 className="font-semibold text-sm mb-1">{action.title}</h4>
-                    <p className="text-xs opacity-90">{action.description}</p>
+                    <h4 className="font-medium text-xs mb-1">{action.title}</h4>
+                    <p className="text-xs opacity-90 leading-tight">{action.description}</p>
                   </div>
                 </button>
               )
             })}
           </div>
+        </div>
         </div>
       </div>
 
