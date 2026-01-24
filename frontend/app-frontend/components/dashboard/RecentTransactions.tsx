@@ -1,14 +1,18 @@
 'use client'
 
 import { Transaction } from '../../data/dashboard-data'
+import { getCategoryName } from '../../data/categories-data'
 import { format } from 'date-fns'
 import { ArrowUpRight, ArrowDownRight, MoreHorizontal, Eye } from 'lucide-react'
+import { useRouter } from 'next/navigation'
 
 interface RecentTransactionsProps {
   transactions: Transaction[]
 }
 
 export default function RecentTransactions({ transactions }: RecentTransactionsProps) {
+  const router = useRouter()
+  
   const formatCurrency = (amount: number): string => {
     return new Intl.NumberFormat('es-ES', {
       style: 'currency',
@@ -44,7 +48,10 @@ export default function RecentTransactions({ transactions }: RecentTransactionsP
           <h3 className="text-lg font-semibold text-gray-900">Transacciones Recientes</h3>
           <p className="text-sm text-gray-500 mt-1">Últimas actividades financieras</p>
         </div>
-        <button className="text-primary-600 hover:text-primary-700 text-sm font-medium flex items-center space-x-1 hover:bg-primary-50 px-3 py-1.5 rounded-lg transition-colors duration-200">
+        <button 
+          onClick={() => router.push('/transactions')}
+          className="text-primary-600 hover:text-primary-700 text-sm font-medium flex items-center space-x-1 hover:bg-primary-50 px-3 py-1.5 rounded-lg transition-colors duration-200"
+        >
           <Eye className="w-4 h-4" />
           <span>Ver Todas</span>
         </button>
@@ -70,7 +77,7 @@ export default function RecentTransactions({ transactions }: RecentTransactionsP
                     {transaction.description}
                   </p>
                   <div className="flex items-center space-x-2 mt-1">
-                    <span className="text-xs text-gray-500">{transaction.category}</span>
+                    <span className="text-xs text-gray-500">{getCategoryName(transaction.category)}</span>
                     <span className="text-xs text-gray-300">•</span>
                     <span className="text-xs text-gray-500">{formatDate(transaction.date)}</span>
                   </div>

@@ -3,7 +3,8 @@
 import { useState, useEffect } from 'react'
 import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip, Legend } from 'recharts'
 import { CategoryData } from '../../data/dashboard-data'
-import { MoreHorizontal } from 'lucide-react'
+import { MoreHorizontal, Eye } from 'lucide-react'
+import { useRouter } from 'next/navigation'
 
 interface CategoryBreakdownProps {
   categories: CategoryData[]
@@ -40,6 +41,7 @@ const renderCustomizedLabel = ({ cx, cy, midAngle, innerRadius, outerRadius, per
 }
 
 export default function CategoryBreakdown({ categories }: CategoryBreakdownProps) {
+  const router = useRouter()
   const [mounted, setMounted] = useState(false)
   
   useEffect(() => {
@@ -69,16 +71,13 @@ export default function CategoryBreakdown({ categories }: CategoryBreakdownProps
           <h3 className="text-lg font-semibold text-gray-900">Ingresos por Categoría</h3>
           <p className="text-sm text-gray-500 mt-1">Distribución de fuentes de ingresos</p>
         </div>
-        <div className="flex items-center space-x-2">
-          {categories.length > 4 && (
-            <button className="text-primary-600 hover:text-primary-700 text-sm font-medium flex items-center space-x-1 hover:bg-primary-50 px-3 py-1.5 rounded-lg transition-colors duration-200">
-              <span>Ver todas</span>
-            </button>
-          )}
-          <button className="p-2 hover:bg-gray-100 rounded-lg transition-colors duration-200">
-            <MoreHorizontal className="w-5 h-5 text-gray-400" />
-          </button>
-        </div>
+        <button 
+          onClick={() => router.push('/categories')}
+          className="text-primary-600 hover:text-primary-700 text-sm font-medium flex items-center space-x-1 hover:bg-primary-50 px-3 py-1.5 rounded-lg transition-colors duration-200"
+        >
+          <Eye className="w-4 h-4" />
+          <span>Ver Todas</span>
+        </button>
       </div>
 
       {categories.length > 0 ? (

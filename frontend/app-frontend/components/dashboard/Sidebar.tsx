@@ -12,7 +12,8 @@ import {
   Settings, 
   Crown,
   LogOut,
-  User
+  User,
+  Tag
 } from 'lucide-react'
 
 interface MenuItem {
@@ -35,6 +36,12 @@ const menuItems: MenuItem[] = [
     label: 'Transacciones',
     icon: Receipt,
     href: '/transactions'
+  },
+  {
+    id: 'categories',
+    label: 'Categorías',
+    icon: Tag,
+    href: '/categories'
   },
   {
     id: 'reports',
