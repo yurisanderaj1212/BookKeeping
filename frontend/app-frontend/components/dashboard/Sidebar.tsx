@@ -13,7 +13,8 @@ import {
   Crown,
   LogOut,
   User,
-  Tag
+  Tag,
+  Calendar
 } from 'lucide-react'
 
 interface MenuItem {
@@ -47,13 +48,19 @@ const menuItems: MenuItem[] = [
     id: 'reports',
     label: 'Reportes',
     icon: FileText,
-    href: '/dashboard/reports'
+    href: '/reports'
   },
   {
     id: 'analytics',
     label: 'Análisis',
     icon: BarChart3,
-    href: '/dashboard/analytics'
+    href: '/analytics'
+  },
+  {
+    id: 'week-close',
+    label: 'Cierre Semanal',
+    icon: Calendar,
+    href: '/week-close'
   },
   {
     id: 'admin',

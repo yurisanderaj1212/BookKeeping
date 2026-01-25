@@ -13,6 +13,7 @@ export interface Transaction {
 
 // Mock transactions data - single source of truth
 export const mockTransactions: Transaction[] = [
+  // 2024 Transactions
   {
     id: '1',
     type: 'income',
@@ -198,6 +199,8 @@ export const mockTransactions: Transaction[] = [
     date: '2024-01-01',
     status: 'completed'
   },
+
+  // 2023 Transactions
   {
     id: '21',
     type: 'expense',
@@ -242,10 +245,147 @@ export const mockTransactions: Transaction[] = [
     category: 'expense-marketing',
     date: '2023-12-27',
     status: 'completed'
+  },
+  {
+    id: '26',
+    type: 'income',
+    amount: 2200.00,
+    description: 'Q4 Consulting Revenue',
+    category: 'income-consulting',
+    date: '2023-11-15',
+    status: 'completed'
+  },
+  {
+    id: '27',
+    type: 'expense',
+    amount: 300.00,
+    description: 'Office Equipment',
+    category: 'expense-equipment',
+    date: '2023-11-10',
+    status: 'completed'
+  },
+  {
+    id: '28',
+    type: 'income',
+    amount: 1800.00,
+    description: 'Website Redesign Project',
+    category: 'income-services',
+    date: '2023-10-20',
+    status: 'completed'
+  },
+  {
+    id: '29',
+    type: 'expense',
+    amount: 150.00,
+    description: 'Marketing Tools',
+    category: 'expense-marketing',
+    date: '2023-10-15',
+    status: 'completed'
+  },
+  {
+    id: '30',
+    type: 'income',
+    amount: 3500.00,
+    description: 'Q3 Sales Revenue',
+    category: 'income-sales',
+    date: '2023-09-30',
+    status: 'completed'
+  },
+
+  // 2022 Transactions
+  {
+    id: '31',
+    type: 'income',
+    amount: 2800.00,
+    description: 'Year-end Bonus Project',
+    category: 'income-services',
+    date: '2022-12-20',
+    status: 'completed'
+  },
+  {
+    id: '32',
+    type: 'expense',
+    amount: 500.00,
+    description: 'Annual Software Licenses',
+    category: 'expense-software',
+    date: '2022-12-15',
+    status: 'completed'
+  },
+  {
+    id: '33',
+    type: 'income',
+    amount: 1900.00,
+    description: 'Holiday Season Sales',
+    category: 'income-sales',
+    date: '2022-12-10',
+    status: 'completed'
+  },
+  {
+    id: '34',
+    type: 'expense',
+    amount: 250.00,
+    description: 'Office Renovation',
+    category: 'expense-office',
+    date: '2022-11-25',
+    status: 'completed'
+  },
+  {
+    id: '35',
+    type: 'income',
+    amount: 3200.00,
+    description: 'Large Client Contract',
+    category: 'income-consulting',
+    date: '2022-11-01',
+    status: 'completed'
+  },
+  {
+    id: '36',
+    type: 'expense',
+    amount: 180.00,
+    description: 'Utilities Q4',
+    category: 'expense-utilities',
+    date: '2022-10-30',
+    status: 'completed'
+  },
+  {
+    id: '37',
+    type: 'income',
+    amount: 1600.00,
+    description: 'Autumn Campaign Revenue',
+    category: 'income-sales',
+    date: '2022-10-15',
+    status: 'completed'
+  },
+  {
+    id: '38',
+    type: 'expense',
+    amount: 120.00,
+    description: 'Professional Development',
+    category: 'expense-professional',
+    date: '2022-09-20',
+    status: 'completed'
+  },
+  {
+    id: '39',
+    type: 'income',
+    amount: 2400.00,
+    description: 'Summer Project Completion',
+    category: 'income-services',
+    date: '2022-08-30',
+    status: 'completed'
+  },
+  {
+    id: '40',
+    type: 'expense',
+    amount: 350.00,
+    description: 'Marketing Campaign Q3',
+    category: 'expense-marketing',
+    date: '2022-08-15',
+    status: 'completed'
   }
 ]
 
-// Helper functions for transactions
+// Helper functions for transactions with date filtering
 export const getTransactionById = (id: string): Transaction | undefined => {
   return mockTransactions.find(transaction => transaction.id === id)
 }
@@ -267,6 +407,55 @@ export const getTransactionsByDateRange = (startDate: string, endDate: string): 
   })
 }
 
+// New filtered functions for reports
+export const getTotalIncomeFiltered = (startDate?: string, endDate?: string): number => {
+  let transactions = mockTransactions.filter(t => t.type === 'income')
+  
+  if (startDate && endDate) {
+    transactions = getTransactionsByDateRange(startDate, endDate).filter(t => t.type === 'income')
+  }
+  
+  return transactions.reduce((sum, t) => sum + t.amount, 0)
+}
+
+export const getTotalExpensesFiltered = (startDate?: string, endDate?: string): number => {
+  let transactions = mockTransactions.filter(t => t.type === 'expense')
+  
+  if (startDate && endDate) {
+    transactions = getTransactionsByDateRange(startDate, endDate).filter(t => t.type === 'expense')
+  }
+  
+  return transactions.reduce((sum, t) => sum + t.amount, 0)
+}
+
+export const getNetProfitFiltered = (startDate?: string, endDate?: string): number => {
+  return getTotalIncomeFiltered(startDate, endDate) - getTotalExpensesFiltered(startDate, endDate)
+}
+
+// Helper function to generate date ranges from period selection
+export const getDateRangeFromPeriod = (period: string, year: string, month: string) => {
+  switch (period) {
+    case 'month':
+      const startOfMonth = `${year}-${month.padStart(2, '0')}-01`
+      const endOfMonth = new Date(parseInt(year), parseInt(month), 0).toISOString().split('T')[0]
+      return { startDate: startOfMonth, endDate: endOfMonth }
+    
+    case 'quarter':
+      const quarterNum = Math.ceil(parseInt(month) / 3)
+      const startMonth = ((quarterNum - 1) * 3 + 1).toString().padStart(2, '0')
+      const endMonth = (quarterNum * 3).toString().padStart(2, '0')
+      const startOfQuarter = `${year}-${startMonth}-01`
+      const endOfQuarter = new Date(parseInt(year), parseInt(endMonth), 0).toISOString().split('T')[0]
+      return { startDate: startOfQuarter, endDate: endOfQuarter }
+    
+    case 'year':
+      return { startDate: `${year}-01-01`, endDate: `${year}-12-31` }
+    
+    default:
+      return { startDate: undefined, endDate: undefined }
+  }
+}
+
 export const getTotalIncome = (): number => {
   return mockTransactions
     .filter(t => t.type === 'income')
@@ -285,6 +474,25 @@ export const getNetProfit = (): number => {
 
 export const getPendingTransactions = (): Transaction[] => {
   return mockTransactions.filter(t => t.status === 'pending')
+}
+
+export const getPendingTransactionsCount = (): number => {
+  return getPendingTransactions().length
+}
+
+export const getCompletedTransactions = (): Transaction[] => {
+  return mockTransactions.filter(t => t.status === 'completed')
+}
+
+export const getTransactionStats = () => {
+  return {
+    totalIncome: getTotalIncome(),
+    totalExpenses: getTotalExpenses(),
+    netProfit: getNetProfit(),
+    pendingCount: getPendingTransactionsCount(),
+    completedCount: getCompletedTransactions().length,
+    totalTransactions: mockTransactions.length
+  }
 }
 
 export const formatCurrency = (amount: number): string => {

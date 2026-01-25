@@ -145,26 +145,28 @@ export default function DashboardPage() {
 
         {/* Quick Actions */}
         <div className="bg-white rounded-xl border border-gray-200 p-6 shadow-sm">
-          <h3 className="text-lg font-semibold text-gray-900 mb-4">Acciones Rápidas</h3>
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+          <h3 className="text-lg font-semibold text-gray-900 mb-6">Acciones Rápidas</h3>
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
             {quickActions.map((action, index) => {
               const Icon = action.icon
               return (
                 <button
                   key={action.id}
                   onClick={() => handleQuickAction(action.id)}
-                  className={`${action.color} ${action.textColor} p-4 rounded-lg transition-all duration-200 transform hover:scale-105 hover:shadow-md group`}
+                  className={`${action.color} ${action.textColor} p-4 rounded-lg transition-all duration-200 hover:scale-105 hover:shadow-md group`}
                   style={{ 
                     animationDelay: `${index * 100}ms`,
                     animation: 'fadeInScale 0.5s ease-out forwards'
                   }}
                 >
-                  <div className="flex flex-col items-center text-center">
-                    <div className="w-8 h-8 bg-white/20 rounded-lg flex items-center justify-center mb-2 group-hover:bg-white/30 transition-colors duration-200">
+                  <div className="flex items-center space-x-3">
+                    <div className="w-8 h-8 bg-white/20 rounded-md flex items-center justify-center group-hover:bg-white/30 transition-colors duration-200 flex-shrink-0">
                       <Icon className="w-4 h-4" />
                     </div>
-                    <h4 className="font-medium text-xs mb-1">{action.title}</h4>
-                    <p className="text-xs opacity-90 leading-tight">{action.description}</p>
+                    <div className="text-left flex-1 min-w-0">
+                      <h4 className="font-semibold text-sm truncate">{action.title}</h4>
+                      <p className="text-xs opacity-90 truncate">{action.description}</p>
+                    </div>
                   </div>
                 </button>
               )

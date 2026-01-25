@@ -1,6 +1,6 @@
 // Mock data for dashboard - will be replaced with API calls later
 import { getCategoryName, getCategoryIcon, getCategoryColor } from './categories-data'
-import { mockTransactions, getTotalIncome, getTotalExpenses, getNetProfit, getPendingTransactions, formatCurrency } from './transactions-data'
+import { mockTransactions, getTotalIncome, getTotalExpenses, getNetProfit, getPendingTransactionsCount, formatCurrency } from './transactions-data'
 
 export interface Transaction {
   id: string
@@ -118,7 +118,7 @@ export const mockStatsData: StatsData = {
   totalIncome: getTotalIncome(),
   totalExpenses: getTotalExpenses(),
   netProfit: getNetProfit(),
-  pending: getPendingTransactions().reduce((sum, t) => sum + t.amount, 0),
+  pending: getPendingTransactionsCount(), // Count of pending transactions
   incomeChange: 12.5,
   expensesChange: -8.2,
   profitChange: 15.3,
