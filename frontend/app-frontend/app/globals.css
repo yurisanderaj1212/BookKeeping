@@ -118,6 +118,18 @@ body {
   border: 2px solid rgba(32, 178, 170, 0.3) !important;
 }
 
+/* Special highlight for sidebar with border box */
+.tour-highlight[data-tour="sidebar"] {
+  border: 4px solid #20B2AA !important;
+  border-radius: 12px;
+  box-shadow: 
+    0 0 0 2px rgba(32, 178, 170, 0.6),
+    0 0 0 6px rgba(32, 178, 170, 0.3),
+    0 0 40px rgba(32, 178, 170, 0.4),
+    0 6px 30px rgba(0, 0, 0, 0.15);
+  background-color: rgba(32, 178, 170, 0.08) !important;
+}
+
 @keyframes tour-pulse {
   0% {
     box-shadow: 
@@ -142,8 +154,37 @@ body {
   }
 }
 
+/* Special pulse animation for sidebar */
+@keyframes sidebar-pulse {
+  0% {
+    box-shadow: 
+      0 0 0 2px rgba(32, 178, 170, 0.6),
+      0 0 0 6px rgba(32, 178, 170, 0.3),
+      0 0 40px rgba(32, 178, 170, 0.4),
+      0 6px 30px rgba(0, 0, 0, 0.15);
+  }
+  50% {
+    box-shadow: 
+      0 0 0 4px rgba(32, 178, 170, 0.8),
+      0 0 0 10px rgba(32, 178, 170, 0.4),
+      0 0 50px rgba(32, 178, 170, 0.6),
+      0 8px 35px rgba(0, 0, 0, 0.2);
+  }
+  100% {
+    box-shadow: 
+      0 0 0 2px rgba(32, 178, 170, 0.6),
+      0 0 0 6px rgba(32, 178, 170, 0.3),
+      0 0 40px rgba(32, 178, 170, 0.4),
+      0 6px 30px rgba(0, 0, 0, 0.15);
+  }
+}
+
 .tour-highlight {
   animation: tour-pulse 2s ease-in-out infinite;
+}
+
+.tour-highlight[data-tour="sidebar"] {
+  animation: sidebar-pulse 2s ease-in-out infinite;
 }
 
 /* Tour overlay to dim background */

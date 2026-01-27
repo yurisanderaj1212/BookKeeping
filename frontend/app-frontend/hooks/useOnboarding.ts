@@ -70,6 +70,11 @@ export function useOnboarding() {
   }, [isOnboardingOpen])
 
   const startOnboarding = () => {
+    // Reset any existing progress and start from beginning
+    localStorage.removeItem(ONBOARDING_STORAGE_KEY)
+    localStorage.setItem(WELCOME_SHOWN_KEY, 'true')
+    localStorage.setItem(TOUR_PROGRESS_KEY, '0')
+    setIsOnboardingCompleted(false)
     setIsOnboardingOpen(true)
   }
 

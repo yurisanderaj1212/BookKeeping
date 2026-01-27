@@ -97,9 +97,12 @@ export default function Sidebar({ onLogout, onToggle }: SidebarProps) {
   }
 
   return (
-    <div className={`fixed left-0 top-0 h-full bg-white border-r border-gray-200 flex flex-col shadow-sm transition-all duration-300 ${
-      isCollapsed ? 'w-16' : 'w-64'
-    }`}>
+    <div 
+      className={`fixed left-0 top-0 h-full bg-white border-r border-gray-200 flex flex-col shadow-sm transition-all duration-300 ${
+        isCollapsed ? 'w-16' : 'w-64'
+      }`}
+      data-tour="sidebar"
+    >
       {/* Logo */}
       <div className="flex items-center justify-between p-4 border-b border-gray-100">
         {!isCollapsed && (

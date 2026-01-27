@@ -210,16 +210,20 @@ export default function DashboardPage() {
 
         {/* Charts Row */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
-          <WeeklyChart data={mockWeeklyData} />
-          <MonthlyChart data={mockMonthlyData} />
+          <div className="min-w-0">
+            <WeeklyChart data={mockWeeklyData} />
+          </div>
+          <div className="min-w-0">
+            <MonthlyChart data={mockMonthlyData} />
+          </div>
         </div>
 
         {/* Bottom Row - Same height cards */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
-          <div className="h-[600px]">
+          <div className="h-[600px] min-w-0">
             <RecentTransactions transactions={dashboardTransactions} />
           </div>
-          <div className="h-[600px]">
+          <div className="h-[600px] min-w-0">
             <CategoryBreakdown categories={mockCategoryData} />
           </div>
         </div>

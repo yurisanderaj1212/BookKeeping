@@ -257,12 +257,18 @@ export default function OnboardingTour({ isOpen, onClose, onComplete }: Onboardi
         const targetElement = document.querySelector(step.target)
         
         if (targetElement && step.target !== 'body') {
-          // Scroll to element smoothly
-          targetElement.scrollIntoView({ 
-            behavior: 'smooth', 
-            block: 'center',
-            inline: 'center'
-          })
+          // Special handling for sidebar step - don't scroll, keep message visible
+          if (step.target === '[data-tour="sidebar"]') {
+            // For sidebar, ensure the page is scrolled to top so tooltip is visible
+            window.scrollTo({ top: 0, behavior: 'smooth' })
+          } else {
+            // For other elements, scroll to center
+            targetElement.scrollIntoView({ 
+              behavior: 'smooth', 
+              block: 'center',
+              inline: 'center'
+            })
+          }
           
           // Add highlight effect after scroll
           setTimeout(() => {

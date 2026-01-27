@@ -58,21 +58,26 @@ export default function TourTooltipWithArrow({
       const spaceLeft = rect.left
       const spaceRight = windowWidth - rect.right
 
-      // Determine best position based on available space and screen position
-      const positions = [
-        { pos: 'bottom', space: spaceBottom, minSpace: tooltipHeight + margin },
-        { pos: 'top', space: spaceTop, minSpace: tooltipHeight + margin },
-        { pos: 'right', space: spaceRight, minSpace: tooltipWidth + margin },
-        { pos: 'left', space: spaceLeft, minSpace: tooltipWidth + margin }
-      ]
-
-      // Sort by available space and find the best fit
-      const validPositions = positions.filter(p => p.space >= p.minSpace)
-      if (validPositions.length > 0) {
-        bestPosition = validPositions.sort((a, b) => b.space - a.space)[0].pos as any
+      // Special handling for sidebar step - always position to the right
+      if (target === '[data-tour="sidebar"]') {
+        bestPosition = 'right'
       } else {
-        // Fallback: choose position with most space even if not ideal
-        bestPosition = positions.sort((a, b) => b.space - a.space)[0].pos as any
+        // Determine best position based on available space and screen position
+        const positions = [
+          { pos: 'bottom', space: spaceBottom, minSpace: tooltipHeight + margin },
+          { pos: 'top', space: spaceTop, minSpace: tooltipHeight + margin },
+          { pos: 'right', space: spaceRight, minSpace: tooltipWidth + margin },
+          { pos: 'left', space: spaceLeft, minSpace: tooltipWidth + margin }
+        ]
+
+        // Sort by available space and find the best fit
+        const validPositions = positions.filter(p => p.space >= p.minSpace)
+        if (validPositions.length > 0) {
+          bestPosition = validPositions.sort((a, b) => b.space - a.space)[0].pos as any
+        } else {
+          // Fallback: choose position with most space even if not ideal
+          bestPosition = positions.sort((a, b) => b.space - a.space)[0].pos as any
+        }
       }
 
       const centerX = rect.left + scrollLeft + rect.width / 2
@@ -152,7 +157,9 @@ export default function TourTooltipWithArrow({
           break
 
         case 'right':
-          const rightX = Math.min(windowWidth - tooltipWidth - margin, rect.right + scrollLeft + arrowSize + 10)
+          // For sidebar, position tooltip further to the right to avoid overlap
+          const rightOffset = target === '[data-tour="sidebar"]' ? 20 : 10
+          const rightX = Math.min(windowWidth - tooltipWidth - margin, rect.right + scrollLeft + arrowSize + rightOffset)
           const rightY = Math.max(margin, Math.min(windowHeight - tooltipHeight - margin, centerY - tooltipHeight / 2))
           
           style = {
