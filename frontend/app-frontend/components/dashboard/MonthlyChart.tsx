@@ -1,6 +1,6 @@
 'use client'
 
-import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts'
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts'
 import { MonthlyData } from '../../data/dashboard-data'
 import { MoreHorizontal, TrendingUp } from 'lucide-react'
 
@@ -63,67 +63,58 @@ export default function MonthlyChart({ data }: MonthlyChartProps) {
       <div className="h-80 w-full">
         <div className="w-full h-full min-w-0 min-h-0">
           <ResponsiveContainer width="100%" height="100%">
-            <LineChart
+            <BarChart
               data={chartData}
               margin={{
                 top: 20,
                 right: 30,
                 left: 20,
-              bottom: 5,
-            }}
-          >
-            <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
-            <XAxis 
-              dataKey="name" 
-              axisLine={false}
-              tickLine={false}
-              tick={{ fontSize: 12, fill: '#6b7280' }}
-            />
-            <YAxis 
-              axisLine={false}
-              tickLine={false}
-              tick={{ fontSize: 12, fill: '#6b7280' }}
-              tickFormatter={(value) => `$${(value / 1000).toFixed(0)}k`}
-            />
-            <Tooltip content={<CustomTooltip />} />
-            <Legend 
-              wrapperStyle={{ paddingTop: '20px' }}
-              iconType="circle"
-            />
-            <Line 
-              type="monotone" 
-              dataKey="income" 
-              name="Ingresos"
-              stroke="#20B2AA" 
-              strokeWidth={3}
-              dot={{ fill: '#20B2AA', strokeWidth: 2, r: 6 }}
-              activeDot={{ r: 8, stroke: '#20B2AA', strokeWidth: 2 }}
-              animationDuration={1500}
-            />
-            <Line 
-              type="monotone" 
-              dataKey="expenses" 
-              name="Gastos"
-              stroke="#FF8C42" 
-              strokeWidth={3}
-              dot={{ fill: '#FF8C42', strokeWidth: 2, r: 6 }}
-              activeDot={{ r: 8, stroke: '#FF8C42', strokeWidth: 2 }}
-              animationDuration={1500}
-              animationBegin={300}
-            />
-            <Line 
-              type="monotone" 
-              dataKey="profit" 
-              name="Ganancia"
-              stroke="#6366F1" 
-              strokeWidth={3}
-              dot={{ fill: '#6366F1', strokeWidth: 2, r: 6 }}
-              activeDot={{ r: 8, stroke: '#6366F1', strokeWidth: 2 }}
-              animationDuration={1500}
-              animationBegin={600}
-            />
-          </LineChart>
-        </ResponsiveContainer>
+                bottom: 5,
+              }}
+            >
+              <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
+              <XAxis 
+                dataKey="name" 
+                axisLine={false}
+                tickLine={false}
+                tick={{ fontSize: 12, fill: '#6b7280' }}
+              />
+              <YAxis 
+                axisLine={false}
+                tickLine={false}
+                tick={{ fontSize: 12, fill: '#6b7280' }}
+                tickFormatter={(value) => `${(value / 1000).toFixed(0)}k`}
+              />
+              <Tooltip content={<CustomTooltip />} />
+              <Legend 
+                wrapperStyle={{ paddingTop: '20px' }}
+                iconType="rect"
+              />
+              <Bar 
+                dataKey="income" 
+                name="Ingresos"
+                fill="#20B2AA" 
+                radius={[4, 4, 0, 0]}
+                animationDuration={1500}
+              />
+              <Bar 
+                dataKey="expenses" 
+                name="Gastos"
+                fill="#FF8C42" 
+                radius={[4, 4, 0, 0]}
+                animationDuration={1500}
+                animationBegin={300}
+              />
+              <Bar 
+                dataKey="profit" 
+                name="Ganancia"
+                fill="#6366F1" 
+                radius={[4, 4, 0, 0]}
+                animationDuration={1500}
+                animationBegin={600}
+              />
+            </BarChart>
+          </ResponsiveContainer>
         </div>
       </div>
 

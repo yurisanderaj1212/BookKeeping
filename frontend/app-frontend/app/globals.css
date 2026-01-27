@@ -102,3 +102,69 @@ body {
 .card {
   @apply bg-white rounded-xl transition-shadow duration-300;
 }
+
+/* Tour highlight effect - More visible and prominent */
+.tour-highlight {
+  position: relative;
+  z-index: 40;
+  border-radius: 8px;
+  box-shadow: 
+    0 0 0 4px rgba(32, 178, 170, 0.4),
+    0 0 0 8px rgba(32, 178, 170, 0.2),
+    0 0 30px rgba(32, 178, 170, 0.3),
+    0 4px 20px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease-in-out;
+  background-color: rgba(32, 178, 170, 0.05) !important;
+  border: 2px solid rgba(32, 178, 170, 0.3) !important;
+}
+
+@keyframes tour-pulse {
+  0% {
+    box-shadow: 
+      0 0 0 4px rgba(32, 178, 170, 0.4),
+      0 0 0 8px rgba(32, 178, 170, 0.2),
+      0 0 30px rgba(32, 178, 170, 0.3),
+      0 4px 20px rgba(0, 0, 0, 0.1);
+  }
+  50% {
+    box-shadow: 
+      0 0 0 6px rgba(32, 178, 170, 0.6),
+      0 0 0 12px rgba(32, 178, 170, 0.3),
+      0 0 40px rgba(32, 178, 170, 0.5),
+      0 6px 25px rgba(0, 0, 0, 0.15);
+  }
+  100% {
+    box-shadow: 
+      0 0 0 4px rgba(32, 178, 170, 0.4),
+      0 0 0 8px rgba(32, 178, 170, 0.2),
+      0 0 30px rgba(32, 178, 170, 0.3),
+      0 4px 20px rgba(0, 0, 0, 0.1);
+  }
+}
+
+.tour-highlight {
+  animation: tour-pulse 2s ease-in-out infinite;
+}
+
+/* Tour overlay to dim background */
+.tour-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.3);
+  z-index: 30;
+  pointer-events: none;
+}
+
+/* Tour spotlight effect */
+.tour-spotlight {
+  position: absolute;
+  background-color: transparent;
+  border-radius: 8px;
+  box-shadow: 0 0 0 9999px rgba(0, 0, 0, 0.3);
+  z-index: 35;
+  pointer-events: none;
+  transition: all 0.3s ease-in-out;
+}

@@ -23,7 +23,7 @@ export default function CTA() {
       </div>
       
       {/* Footer */}
-      <footer className="bg-navy-800">
+      <footer className="bg-gradient-to-br from-blue-900 via-blue-800 to-indigo-800">
         <div className="mx-auto max-w-7xl px-6 py-12 lg:px-8">
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-2">
@@ -34,21 +34,21 @@ export default function CTA() {
             </div>
             
             <div className="flex space-x-6">
-              <Link href="/privacy" className="text-slate-400 hover:text-white transition-colors">
+              <Link href="/privacy" className="text-blue-200 hover:text-white transition-colors">
                 Política de Privacidad
               </Link>
-              <Link href="/terms" className="text-slate-400 hover:text-white transition-colors">
+              <Link href="/terms" className="text-blue-200 hover:text-white transition-colors">
                 Términos de Servicio
               </Link>
-              <Link href="/contact" className="text-slate-400 hover:text-white transition-colors">
+              <Link href="/contact" className="text-blue-200 hover:text-white transition-colors">
                 Contacto
               </Link>
             </div>
           </div>
           
-          <div className="mt-8 border-t border-slate-700 pt-8">
-            <p className="text-center text-sm text-slate-400">
-              © 2024 Chill Numbers. All rights reserved.
+          <div className="mt-8 border-t border-blue-700 pt-8">
+            <p className="text-center text-sm text-blue-200">
+              © 2024 Chill Numbers. Todos los derechos reservados.
             </p>
           </div>
         </div>

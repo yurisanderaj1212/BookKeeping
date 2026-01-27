@@ -1,6 +1,7 @@
 import Hero from '@/components/Hero'
 import Features from '@/components/Features'
 import Benefits from '@/components/Benefits'
+import About from '@/components/About'
 import Pricing from '@/components/Pricing'
 import CTA from '@/components/CTA'
 
@@ -10,6 +11,7 @@ export default function Home() {
       <Hero />
       <Features />
       <Benefits />
+      <About />
       <Pricing />
       <CTA />
     </main>

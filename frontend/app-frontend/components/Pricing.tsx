@@ -7,7 +7,7 @@ export default function Pricing() {
       description: 'Perfecto para comenzar',
       price: '$0',
       period: '/mes',
-      highlight: 'Primeros 30 días gratis',
+      highlight: 'Primeros 2 meses gratis',
       features: [
         'Acceso al panel',
         'Transacciones manuales',
@@ -20,8 +20,31 @@ export default function Pricing() {
       popular: false,
     },
     {
-      name: 'Plan Pro',
-      description: 'Para negocios serios',
+      name: 'Plan Anual',
+      description: 'El mejor valor para tu negocio',
+      price: '$99.99',
+      period: '/año',
+      highlight: 'Ahorra $19.89 al año',
+      features: [
+        'Todo en Gratuito',
+        'Transacciones ilimitadas',
+        'Integración bancaria (Plaid)',
+        'Análisis avanzado',
+        'Función de cierre semanal',
+        'Gestión de equipo',
+        'Soporte prioritario',
+        'Respaldos automáticos',
+        'Categorías personalizadas',
+        'Reportes por email',
+        'Acceso multiplataforma',
+      ],
+      cta: 'Elegir Plan Anual',
+      ctaLink: '/auth/register',
+      popular: true,
+    },
+    {
+      name: 'Plan Mensual',
+      description: 'Flexibilidad mes a mes',
       price: '$9.99',
       period: '/mes',
       highlight: 'Facturado mensualmente después de la prueba',
@@ -36,9 +59,9 @@ export default function Pricing() {
         'Respaldos automáticos',
         'Categorías personalizadas',
       ],
-      cta: 'Actualizar a Pro',
+      cta: 'Elegir Plan Mensual',
       ctaLink: '/auth/register',
-      popular: true,
+      popular: false,
     },
   ]
 
@@ -54,14 +77,14 @@ export default function Pricing() {
           </p>
         </div>
         
-        <div className="mx-auto mt-16 grid max-w-lg grid-cols-1 items-center gap-y-6 sm:mt-20 sm:gap-y-0 lg:max-w-4xl lg:grid-cols-2">
+        <div className="mx-auto mt-16 grid max-w-lg grid-cols-1 items-center gap-y-6 sm:mt-20 sm:gap-y-0 lg:max-w-6xl lg:grid-cols-3">
           {plans.map((plan, planIdx) => (
             <div
               key={plan.name}
               className={`${
                 plan.popular
-                  ? 'relative bg-gradient-to-br from-primary-400 via-primary-500 to-cyan-500 text-white shadow-strong ring-2 ring-primary-400 lg:z-10 lg:rounded-b-none'
-                  : 'bg-white/60 shadow-soft lg:rounded-r-none'
+                  ? 'relative bg-gradient-to-br from-primary-400 via-primary-500 to-cyan-500 text-white shadow-strong ring-2 ring-primary-400 lg:z-10 scale-105'
+                  : 'bg-white/60 shadow-soft'
               } rounded-3xl p-8 lg:mx-0 lg:flex lg:max-w-none lg:flex-col lg:justify-center lg:py-16`}
             >
               {plan.popular && (

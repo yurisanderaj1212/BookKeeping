@@ -1,5 +1,6 @@
 'use client'
 
+import { useState } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { ArrowLeft, Download } from 'lucide-react'
 import Sidebar from '@/components/dashboard/Sidebar'
@@ -9,6 +10,7 @@ import { exportReportData, showExportModal } from '@/services/exportService'
 export default function ProfitLossDetailedPage() {
   const router = useRouter()
   const searchParams = useSearchParams()
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(false)
   
   const period = searchParams.get('period') || 'month'
   const year = searchParams.get('year') || '2024'
@@ -16,6 +18,10 @@ export default function ProfitLossDetailedPage() {
 
   const handleLogout = async () => {
     router.push('/auth/login')
+  }
+
+  const handleSidebarToggle = (isCollapsed: boolean) => {
+    setSidebarCollapsed(isCollapsed)
   }
 
   const handleBack = () => {
@@ -30,9 +36,9 @@ export default function ProfitLossDetailedPage() {
 
   return (
     <div className="flex min-h-screen bg-gray-50">
-      <Sidebar onLogout={handleLogout} />
+      <Sidebar onLogout={handleLogout} onToggle={handleSidebarToggle} />
       
-      <div className="flex-1 ml-64">
+      <div className={`flex-1 transition-all duration-300 ${sidebarCollapsed ? 'ml-16' : 'ml-64'}`}>
         {/* Header */}
         <div className="bg-white border-b border-gray-200 sticky top-0 z-10">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">

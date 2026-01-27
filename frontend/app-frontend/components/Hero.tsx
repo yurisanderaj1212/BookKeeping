@@ -44,7 +44,7 @@ export default function Hero() {
                   : 'text-white/90 hover:text-white'
               }`}
             >
-              Features
+              Funciones
             </button>
             <button 
               onClick={() => document.getElementById('benefits')?.scrollIntoView({ behavior: 'smooth' })}
@@ -54,7 +54,17 @@ export default function Hero() {
                   : 'text-white/90 hover:text-white'
               }`}
             >
-              Benefits
+              Beneficios
+            </button>
+            <button 
+              onClick={() => document.getElementById('about')?.scrollIntoView({ behavior: 'smooth' })}
+              className={`transition-colors duration-300 cursor-pointer ${
+                isScrolled 
+                  ? 'text-slate-600 hover:text-primary-500' 
+                  : 'text-white/90 hover:text-white'
+              }`}
+            >
+              Sobre Nosotros
             </button>
             <button 
               onClick={() => document.getElementById('pricing')?.scrollIntoView({ behavior: 'smooth' })}
@@ -64,7 +74,7 @@ export default function Hero() {
                   : 'text-white/90 hover:text-white'
               }`}
             >
-              Pricing
+              Precios
             </button>
             <Link 
               href="/auth/register" 
@@ -91,9 +101,9 @@ export default function Hero() {
       <div className="relative px-6 py-32 lg:px-8 flex items-center min-h-screen">
         <div className="mx-auto max-w-4xl text-center">
           <h1 className="text-4xl font-bold tracking-tight text-white sm:text-6xl">
-            Simple Bookkeeping
+            Contabilidad Simple
             <br />
-            <span className="text-blue-200">for Everyone</span>
+            <span className="text-blue-200">para Todos</span>
           </h1>
           
           <p className="mt-6 text-lg leading-8 text-blue-200 max-w-2xl mx-auto">
@@ -112,7 +122,7 @@ export default function Hero() {
               onClick={() => document.getElementById('features')?.scrollIntoView({ behavior: 'smooth' })}
               className="text-lg font-semibold leading-6 text-blue-100 hover:text-white transition-colors cursor-pointer"
             >
-              Learn More <span aria-hidden="true">→</span>
+              Conocer Más <span aria-hidden="true">→</span>
             </button>
           </div>
         </div>

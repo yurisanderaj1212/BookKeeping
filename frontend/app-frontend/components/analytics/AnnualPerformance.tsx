@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, BarChart, Bar } from 'recharts'
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts'
 import { Calendar, TrendingUp, BarChart3 } from 'lucide-react'
 import { formatCurrency, getTotalIncomeFiltered, getTotalExpensesFiltered } from '@/data/transactions-data'
 
@@ -13,7 +13,6 @@ interface AnnualPerformanceProps {
 
 export default function AnnualPerformance({ year }: AnnualPerformanceProps) {
   const [mounted, setMounted] = useState(false)
-  const [chartType, setChartType] = useState<'line' | 'bar'>('line')
   
   useEffect(() => {
     setMounted(true)
@@ -55,9 +54,6 @@ export default function AnnualPerformance({ year }: AnnualPerformanceProps) {
   const bestMonth = annualData.reduce((best, current) => 
     current.beneficio > best.beneficio ? current : best
   )
-  const worstMonth = annualData.reduce((worst, current) => 
-    current.beneficio < worst.beneficio ? current : worst
-  )
 
   const CustomTooltip = ({ active, payload, label }: any) => {
     if (active && payload && payload.length) {
@@ -84,32 +80,6 @@ export default function AnnualPerformance({ year }: AnnualPerformanceProps) {
           <p className="text-sm text-gray-500 mt-1">
             Ingresos y gastos mensuales a lo largo del año
           </p>
-        </div>
-        <div className="flex items-center space-x-3">
-          <div className="flex bg-gray-100 rounded-lg p-1">
-            <button
-              onClick={() => setChartType('line')}
-              className={`px-3 py-1 text-sm font-medium rounded-md transition-colors duration-200 flex items-center space-x-1 ${
-                chartType === 'line'
-                  ? 'bg-white text-gray-900 shadow-sm'
-                  : 'text-gray-500 hover:text-gray-700'
-              }`}
-            >
-              <TrendingUp className="w-3 h-3" />
-              <span>Líneas</span>
-            </button>
-            <button
-              onClick={() => setChartType('bar')}
-              className={`px-3 py-1 text-sm font-medium rounded-md transition-colors duration-200 flex items-center space-x-1 ${
-                chartType === 'bar'
-                  ? 'bg-white text-gray-900 shadow-sm'
-                  : 'text-gray-500 hover:text-gray-700'
-              }`}
-            >
-              <BarChart3 className="w-3 h-3" />
-              <span>Barras</span>
-            </button>
-          </div>
         </div>
       </div>
 
@@ -164,74 +134,41 @@ export default function AnnualPerformance({ year }: AnnualPerformanceProps) {
         </div>
       </div>
 
-      {/* Annual Performance Chart */}
+      {/* Annual Performance Chart - Only Bars */}
       <div className="h-96">
         {mounted ? (
           <ResponsiveContainer width="100%" height="100%">
-            {chartType === 'line' ? (
-              <LineChart data={annualData} margin={{ top: 20, right: 30, left: 20, bottom: 5 }}>
-                <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
-                <XAxis 
-                  dataKey="monthShort" 
-                  axisLine={false}
-                  tickLine={false}
-                  tick={{ fontSize: 12, fill: '#6b7280' }}
-                />
-                <YAxis 
-                  axisLine={false}
-                  tickLine={false}
-                  tick={{ fontSize: 12, fill: '#6b7280' }}
-                  tickFormatter={(value) => `€${(value / 1000).toFixed(0)}k`}
-                />
-                <Tooltip content={<CustomTooltip />} />
-                <Line 
-                  type="monotone" 
-                  dataKey="ingresos" 
-                  stroke="#10b981" 
-                  strokeWidth={3}
-                  dot={{ fill: '#10b981', strokeWidth: 2, r: 4 }}
-                  activeDot={{ r: 6, stroke: '#10b981', strokeWidth: 2 }}
-                  name="Ingresos"
-                />
-                <Line 
-                  type="monotone" 
-                  dataKey="gastos" 
-                  stroke="#ef4444" 
-                  strokeWidth={3}
-                  dot={{ fill: '#ef4444', strokeWidth: 2, r: 4 }}
-                  activeDot={{ r: 6, stroke: '#ef4444', strokeWidth: 2 }}
-                  name="Gastos"
-                />
-                <Line 
-                  type="monotone" 
-                  dataKey="beneficio" 
-                  stroke="#3b82f6" 
-                  strokeWidth={2}
-                  strokeDasharray="5 5"
-                  dot={{ fill: '#3b82f6', strokeWidth: 2, r: 3 }}
-                  name="Beneficio"
-                />
-              </LineChart>
-            ) : (
-              <BarChart data={annualData} margin={{ top: 20, right: 30, left: 20, bottom: 5 }}>
-                <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
-                <XAxis 
-                  dataKey="monthShort" 
-                  axisLine={false}
-                  tickLine={false}
-                  tick={{ fontSize: 12, fill: '#6b7280' }}
-                />
-                <YAxis 
-                  axisLine={false}
-                  tickLine={false}
-                  tick={{ fontSize: 12, fill: '#6b7280' }}
-                  tickFormatter={(value) => `€${(value / 1000).toFixed(0)}k`}
-                />
-                <Tooltip content={<CustomTooltip />} />
-                <Bar dataKey="ingresos" fill="#10b981" radius={[4, 4, 0, 0]} name="Ingresos" />
-                <Bar dataKey="gastos" fill="#ef4444" radius={[4, 4, 0, 0]} name="Gastos" />
-              </BarChart>
-            )}
+            <BarChart data={annualData} margin={{ top: 20, right: 30, left: 20, bottom: 5 }}>
+              <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
+              <XAxis 
+                dataKey="monthShort" 
+                axisLine={false}
+                tickLine={false}
+                tick={{ fontSize: 12, fill: '#6b7280' }}
+              />
+              <YAxis 
+                axisLine={false}
+                tickLine={false}
+                tick={{ fontSize: 12, fill: '#6b7280' }}
+                tickFormatter={(value) => `€${(value / 1000).toFixed(0)}k`}
+              />
+              <Tooltip content={<CustomTooltip />} />
+              <Bar 
+                dataKey="ingresos" 
+                fill="#10b981" 
+                radius={[4, 4, 0, 0]} 
+                name="Ingresos"
+                animationDuration={1500}
+              />
+              <Bar 
+                dataKey="gastos" 
+                fill="#ef4444" 
+                radius={[4, 4, 0, 0]} 
+                name="Gastos"
+                animationDuration={1500}
+                animationBegin={300}
+              />
+            </BarChart>
           </ResponsiveContainer>
         ) : (
           <div className="h-96 flex items-center justify-center bg-gray-50 rounded-lg">

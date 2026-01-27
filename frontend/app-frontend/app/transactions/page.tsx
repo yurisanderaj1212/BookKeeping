@@ -5,6 +5,8 @@ import { Plus, Search, Filter, Download, Calendar } from 'lucide-react'
 import TransactionForm from '../../components/transactions/TransactionForm'
 import TransactionList from '../../components/transactions/TransactionList'
 import Sidebar from '../../components/dashboard/Sidebar'
+import OnboardingTour from '../../components/onboarding/OnboardingTour'
+import { useOnboarding } from '../../hooks/useOnboarding'
 import { mockTransactions, Transaction } from '../../data/transactions-data'
 
 export default function TransactionsPage() {
@@ -15,6 +17,14 @@ export default function TransactionsPage() {
   const [showForm, setShowForm] = useState(false)
   const [editingTransaction, setEditingTransaction] = useState<Transaction | null>(null)
   const [transactions, setTransactions] = useState<Transaction[]>(mockTransactions)
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(false)
+
+  // Onboarding hook
+  const {
+    isOnboardingOpen,
+    closeOnboarding,
+    completeOnboarding
+  } = useOnboarding()
 
   const handleCreateTransaction = () => {
     setEditingTransaction(null)
@@ -114,13 +124,17 @@ export default function TransactionsPage() {
     console.log('Logging out...')
   }
 
+  const handleSidebarToggle = (isCollapsed: boolean) => {
+    setSidebarCollapsed(isCollapsed)
+  }
+
   return (
     <div className="flex min-h-screen bg-gray-50">
       {/* Sidebar */}
-      <Sidebar onLogout={handleLogout} />
+      <Sidebar onLogout={handleLogout} onToggle={handleSidebarToggle} />
       
       {/* Main Content */}
-      <div className="flex-1 ml-64">
+      <div className={`flex-1 transition-all duration-300 ${sidebarCollapsed ? 'ml-16' : 'ml-64'}`}>
         {/* Header */}
         <div className="bg-white border-b border-gray-200 sticky top-0 z-10">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -144,6 +158,7 @@ export default function TransactionsPage() {
                 <button 
                   onClick={handleCreateTransaction}
                   className="bg-primary-600 text-white px-4 py-2 rounded-lg hover:bg-primary-700 transition-colors duration-200 flex items-center space-x-2"
+                  data-tour="add-transaction-btn"
                 >
                   <Plus className="w-4 h-4" />
                   <span>Nueva Transacción</span>
@@ -154,8 +169,8 @@ export default function TransactionsPage() {
         </div>
 
         {/* Filters and Search */}
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-        <div className="bg-white rounded-lg border border-gray-200 p-6 mb-6">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6" data-tour="transactions-main">
+        <div className="bg-white rounded-lg border border-gray-200 p-6 mb-6" data-tour="transaction-filters">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
             {/* Search */}
             <div className="relative">
@@ -227,11 +242,13 @@ export default function TransactionsPage() {
         </div>
 
         {/* Transactions List */}
-        <TransactionList
-          transactions={filteredTransactions}
-          onEdit={handleEditTransaction}
-          onDelete={handleDeleteTransaction}
-        />
+        <div data-tour="transaction-list">
+          <TransactionList
+            transactions={filteredTransactions}
+            onEdit={handleEditTransaction}
+            onDelete={handleDeleteTransaction}
+          />
+        </div>
         </div>
 
         {/* Transaction Form Modal */}
@@ -243,6 +260,13 @@ export default function TransactionsPage() {
           mode={editingTransaction ? 'edit' : 'create'}
         />
       </div>
+
+      {/* Onboarding Tour */}
+      <OnboardingTour
+        isOpen={isOnboardingOpen}
+        onClose={closeOnboarding}
+        onComplete={completeOnboarding}
+      />
     </div>
   )
 }

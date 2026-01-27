@@ -105,6 +105,7 @@ interface StatsCardsProps {
   expensesChange: number
   profitChange: number
   pendingChange: number
+  periodLabel?: string
 }
 
 export default function StatsCards({
@@ -115,45 +116,57 @@ export default function StatsCards({
   incomeChange,
   expensesChange,
   profitChange,
-  pendingChange
+  pendingChange,
+  periodLabel
 }: StatsCardsProps) {
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-      <StatCard
-        title="Ingresos totales"
-        amount={totalIncome}
-        change={incomeChange}
-        color="green"
-        delay={0}
-        icon={<DollarSign className="w-5 h-5" />}
-      />
+    <div className="mb-8">
+      {/* Period Label */}
+      {periodLabel && (
+        <div className="mb-4">
+          <p className="text-sm text-gray-600 font-medium">
+            Mostrando datos de: <span className="text-primary-600">{periodLabel}</span>
+          </p>
+        </div>
+      )}
       
-      <StatCard
-        title="Gastos totales"
-        amount={totalExpenses}
-        change={expensesChange}
-        color="red"
-        delay={100}
-        icon={<CreditCard className="w-5 h-5" />}
-      />
-      
-      <StatCard
-        title="Beneficio neto"
-        amount={netProfit}
-        change={profitChange}
-        color="blue"
-        delay={200}
-        icon={<TrendingUp className="w-5 h-5" />}
-      />
-      
-      <StatCard
-        title="Asuntos pendientes"
-        amount={pending}
-        change={pendingChange}
-        color="purple"
-        delay={300}
-        icon={<Clock className="w-5 h-5" />}
-      />
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        <StatCard
+          title="Ingresos totales"
+          amount={totalIncome}
+          change={incomeChange}
+          color="green"
+          delay={0}
+          icon={<DollarSign className="w-5 h-5" />}
+        />
+        
+        <StatCard
+          title="Gastos totales"
+          amount={totalExpenses}
+          change={expensesChange}
+          color="red"
+          delay={100}
+          icon={<CreditCard className="w-5 h-5" />}
+        />
+        
+        <StatCard
+          title="Beneficio neto"
+          amount={netProfit}
+          change={profitChange}
+          color="blue"
+          delay={200}
+          icon={<TrendingUp className="w-5 h-5" />}
+        />
+        
+        <StatCard
+          title="Asuntos pendientes"
+          amount={pending}
+          change={pendingChange}
+          color="purple"
+          delay={300}
+          icon={<Clock className="w-5 h-5" />}
+        />
+      </div>
     </div>
   )
 }

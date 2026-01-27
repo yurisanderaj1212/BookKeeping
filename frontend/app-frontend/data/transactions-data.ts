@@ -1,5 +1,7 @@
 // Centralized transactions data - will be replaced with API calls later
 
+import { calculatePayrollExpenses } from './employees-data'
+
 export interface Transaction {
   id: string
   type: 'income' | 'expense'
@@ -29,7 +31,7 @@ export const mockTransactions: Transaction[] = [
     type: 'expense',
     amount: 450.00,
     description: 'Office Supplies',
-    category: 'expense-office',
+    category: 'expense-office-supplies',
     date: '2024-01-19',
     status: 'completed',
     notes: 'Stationery and equipment'
@@ -86,7 +88,7 @@ export const mockTransactions: Transaction[] = [
     type: 'income',
     amount: 1500.00,
     description: 'Freelance Project',
-    category: 'income-services',
+    category: 'income-freelance',
     date: '2024-01-13',
     status: 'completed'
   },
@@ -94,11 +96,11 @@ export const mockTransactions: Transaction[] = [
     id: '9',
     type: 'expense',
     amount: 75.00,
-    description: 'This is a very long transaction description that should be truncated properly without causing horizontal scroll issues in the table layout and should show ellipsis when it exceeds the column width',
-    category: 'expense-office',
+    description: 'Business Lunch with Client',
+    category: 'expense-meals',
     date: '2024-01-12',
     status: 'pending',
-    notes: 'This is also a very long note that should be truncated properly to prevent layout issues'
+    notes: 'Meeting with potential client'
   },
   {
     id: '10',
@@ -184,7 +186,7 @@ export const mockTransactions: Transaction[] = [
   {
     id: '19',
     type: 'expense',
-    amount: 150.00,
+    amount: 1500.00,
     description: 'Office Rent',
     category: 'expense-rent',
     date: '2024-01-02',
@@ -425,7 +427,27 @@ export const getTotalExpensesFiltered = (startDate?: string, endDate?: string): 
     transactions = getTransactionsByDateRange(startDate, endDate).filter(t => t.type === 'expense')
   }
   
-  return transactions.reduce((sum, t) => sum + t.amount, 0)
+  const transactionExpenses = transactions.reduce((sum, t) => sum + t.amount, 0)
+  
+  // Add payroll expenses based on date range
+  let payrollExpenses = 0
+  if (startDate && endDate) {
+    const start = new Date(startDate)
+    const end = new Date(endDate)
+    const daysDiff = Math.ceil((end.getTime() - start.getTime()) / (1000 * 60 * 60 * 24))
+    
+    if (daysDiff <= 7) {
+      payrollExpenses = calculatePayrollExpenses('week')
+    } else if (daysDiff <= 31) {
+      payrollExpenses = calculatePayrollExpenses('month')
+    } else {
+      payrollExpenses = calculatePayrollExpenses('year')
+    }
+  } else {
+    payrollExpenses = calculatePayrollExpenses('month')
+  }
+  
+  return transactionExpenses + payrollExpenses
 }
 
 export const getNetProfitFiltered = (startDate?: string, endDate?: string): number => {
@@ -463,9 +485,14 @@ export const getTotalIncome = (): number => {
 }
 
 export const getTotalExpenses = (): number => {
-  return mockTransactions
+  const transactionExpenses = mockTransactions
     .filter(t => t.type === 'expense')
     .reduce((sum, t) => sum + t.amount, 0)
+  
+  // Add monthly payroll expenses
+  const payrollExpenses = calculatePayrollExpenses('month')
+  
+  return transactionExpenses + payrollExpenses
 }
 
 export const getNetProfit = (): number => {
@@ -500,4 +527,178 @@ export const formatCurrency = (amount: number): string => {
     style: 'currency',
     currency: 'EUR'
   }).format(amount)
+}
+
+// Helper function to get current week dates (using 2024 for demo data)
+export const getCurrentWeekDates = () => {
+  // Using January 2024 for demo purposes since that's where our data is
+  const startOfWeek = new Date('2024-01-15') // Monday
+  const endOfWeek = new Date('2024-01-21') // Sunday
+  
+  return {
+    startDate: startOfWeek.toISOString().split('T')[0],
+    endDate: endOfWeek.toISOString().split('T')[0]
+  }
+}
+
+// Helper function to get current month dates (using 2024 for demo data)
+export const getCurrentMonthDates = () => {
+  const startOfMonth = new Date('2024-01-01')
+  const endOfMonth = new Date('2024-01-31')
+  
+  return {
+    startDate: startOfMonth.toISOString().split('T')[0],
+    endDate: endOfMonth.toISOString().split('T')[0]
+  }
+}
+
+// Helper function to get current year dates (using 2024 for demo data)
+export const getCurrentYearDates = () => {
+  const startOfYear = new Date('2024-01-01')
+  const endOfYear = new Date('2024-12-31')
+  
+  return {
+    startDate: startOfYear.toISOString().split('T')[0],
+    endDate: endOfYear.toISOString().split('T')[0]
+  }
+}
+
+// Functions to get data by period
+export const getDataByPeriod = (period: 'week' | 'month' | 'year') => {
+  let dateRange
+  
+  switch (period) {
+    case 'week':
+      dateRange = getCurrentWeekDates()
+      break
+    case 'month':
+      dateRange = getCurrentMonthDates()
+      break
+    case 'year':
+      dateRange = getCurrentYearDates()
+      break
+    default:
+      dateRange = getCurrentWeekDates()
+  }
+  
+  const totalIncome = getTotalIncomeFiltered(dateRange.startDate, dateRange.endDate)
+  const totalExpenses = getTotalExpensesFiltered(dateRange.startDate, dateRange.endDate)
+  const netProfit = totalIncome - totalExpenses
+  const pendingCount = mockTransactions.filter(t => {
+    const transactionDate = new Date(t.date)
+    const startDate = new Date(dateRange.startDate)
+    const endDate = new Date(dateRange.endDate)
+    return t.status === 'pending' && transactionDate >= startDate && transactionDate <= endDate
+  }).length
+  
+  return {
+    totalIncome,
+    totalExpenses,
+    netProfit,
+    pendingCount,
+    period,
+    dateRange
+  }
+}
+
+// Function to get period label
+export const getPeriodLabel = (period: 'week' | 'month' | 'year') => {
+  switch (period) {
+    case 'week':
+      return `Semana del 15-21 enero 2024`
+    case 'month':
+      return `Enero 2024`
+    case 'year':
+      return `Año 2024`
+    default:
+      return 'Período actual'
+  }
+}
+
+// Helper functions to get previous period dates for comparison
+export const getPreviousWeekDates = () => {
+  const startOfWeek = new Date('2024-01-08') // Previous Monday
+  const endOfWeek = new Date('2024-01-14') // Previous Sunday
+  
+  return {
+    startDate: startOfWeek.toISOString().split('T')[0],
+    endDate: endOfWeek.toISOString().split('T')[0]
+  }
+}
+
+export const getPreviousMonthDates = () => {
+  const startOfMonth = new Date('2023-12-01')
+  const endOfMonth = new Date('2023-12-31')
+  
+  return {
+    startDate: startOfMonth.toISOString().split('T')[0],
+    endDate: endOfMonth.toISOString().split('T')[0]
+  }
+}
+
+export const getPreviousYearDates = () => {
+  const startOfYear = new Date('2023-01-01')
+  const endOfYear = new Date('2023-12-31')
+  
+  return {
+    startDate: startOfYear.toISOString().split('T')[0],
+    endDate: endOfYear.toISOString().split('T')[0]
+  }
+}
+
+// Function to calculate percentage change
+export const calculatePercentageChange = (current: number, previous: number): number => {
+  if (previous === 0) {
+    return current > 0 ? 100 : 0
+  }
+  return ((current - previous) / previous) * 100
+}
+
+// Function to get data with percentage changes
+export const getDataWithChanges = (period: 'week' | 'month' | 'year') => {
+  // Get current period data
+  const currentData = getDataByPeriod(period)
+  
+  // Get previous period dates
+  let previousDateRange
+  switch (period) {
+    case 'week':
+      previousDateRange = getPreviousWeekDates()
+      break
+    case 'month':
+      previousDateRange = getPreviousMonthDates()
+      break
+    case 'year':
+      previousDateRange = getPreviousYearDates()
+      break
+    default:
+      previousDateRange = getPreviousWeekDates()
+  }
+  
+  // Calculate previous period data (including payroll)
+  const previousIncome = getTotalIncomeFiltered(previousDateRange.startDate, previousDateRange.endDate)
+  const previousExpenses = getTotalExpensesFiltered(previousDateRange.startDate, previousDateRange.endDate)
+  const previousNetProfit = previousIncome - previousExpenses
+  const previousPendingCount = mockTransactions.filter(t => {
+    const transactionDate = new Date(t.date)
+    const startDate = new Date(previousDateRange.startDate)
+    const endDate = new Date(previousDateRange.endDate)
+    return t.status === 'pending' && transactionDate >= startDate && transactionDate <= endDate
+  }).length
+  
+  // Calculate percentage changes
+  const incomeChange = calculatePercentageChange(currentData.totalIncome, previousIncome)
+  const expensesChange = calculatePercentageChange(currentData.totalExpenses, previousExpenses)
+  const profitChange = calculatePercentageChange(currentData.netProfit, previousNetProfit)
+  const pendingChange = calculatePercentageChange(currentData.pendingCount, previousPendingCount)
+  
+  return {
+    ...currentData,
+    changes: {
+      incomeChange,
+      expensesChange,
+      profitChange,
+      pendingChange
+    }
+  }
 }
