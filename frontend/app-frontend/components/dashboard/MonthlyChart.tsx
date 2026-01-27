@@ -2,7 +2,7 @@
 
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts'
 import { MonthlyData } from '../../data/dashboard-data'
-import { MoreHorizontal, TrendingUp } from 'lucide-react'
+import { MoreHorizontal } from 'lucide-react'
 
 interface MonthlyChartProps {
   data: MonthlyData[]
@@ -41,13 +41,6 @@ export default function MonthlyChart({ data }: MonthlyChartProps) {
     profit: month.income - month.expenses
   }))
 
-  // Calculate growth
-  const currentMonth = data[data.length - 1]
-  const previousMonth = data[data.length - 2]
-  const growth = previousMonth ? 
-    ((currentMonth.income - currentMonth.expenses) - (previousMonth.income - previousMonth.expenses)) / 
-    (previousMonth.income - previousMonth.expenses) * 100 : 0
-
   return (
     <div className="bg-white rounded-xl border border-gray-200 p-6 hover:shadow-lg transition-shadow duration-300">
       <div className="flex items-center justify-between mb-6">
@@ -60,18 +53,18 @@ export default function MonthlyChart({ data }: MonthlyChartProps) {
         </button>
       </div>
 
-      <div className="h-80 w-full">
-        <div className="w-full h-full min-w-0 min-h-0">
-          <ResponsiveContainer width="100%" height="100%">
-            <BarChart
-              data={chartData}
-              margin={{
-                top: 20,
-                right: 30,
-                left: 20,
-                bottom: 5,
-              }}
-            >
+      <div className="h-96 w-full min-h-0">
+        <ResponsiveContainer width="100%" height="100%">
+          <BarChart
+            data={chartData}
+            margin={{
+              top: 20,
+              right: 30,
+              left: 20,
+              bottom: 5,
+            }}
+            barCategoryGap="10%"
+          >
               <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
               <XAxis 
                 dataKey="name" 
@@ -115,20 +108,6 @@ export default function MonthlyChart({ data }: MonthlyChartProps) {
               />
             </BarChart>
           </ResponsiveContainer>
-        </div>
-      </div>
-
-      {/* Growth indicator */}
-      <div className="mt-4 pt-4 border-t border-gray-100">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center space-x-2">
-            <TrendingUp className={`w-4 h-4 ${growth >= 0 ? 'text-green-600' : 'text-red-600'}`} />
-            <span className="text-sm text-gray-600">Crecimiento Mensual</span>
-          </div>
-          <span className={`text-sm font-semibold ${growth >= 0 ? 'text-green-600' : 'text-red-600'}`}>
-            {growth >= 0 ? '+' : ''}{growth.toFixed(1)}%
-          </span>
-        </div>
       </div>
     </div>
   )

@@ -49,12 +49,13 @@ export const dashboardTransactions: Transaction[] = mockTransactions.map(transac
   categoryIcon: getCategoryIcon(transaction.category)
 }))
 
-// Mock weekly data (last 4 weeks of current month)
+// Mock weekly data (last 5 weeks of current month)
 export const mockWeeklyData: WeeklyData[] = [
   { week: 'Week 1', income: 4200, expenses: 1800 },
   { week: 'Week 2', income: 3800, expenses: 2100 },
   { week: 'Week 3', income: 5200, expenses: 1900 },
-  { week: 'Week 4', income: 4600, expenses: 2300 }
+  { week: 'Week 4', income: 4600, expenses: 2300 },
+  { week: 'Week 5', income: 4900, expenses: 2000 }
 ]
 
 // Mock monthly data (last 6 months)

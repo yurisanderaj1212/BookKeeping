@@ -1,10 +1,7 @@
 @import "tailwindcss";
 
-/* Chill Numbers Brand Colors */
+/* Chill Numbers Brand Colors - Tailwind CSS v4 Theme */
 @theme {
-  --color-hero-start: #1e3a8a;
-  --color-hero-middle: #1e40af;
-  --color-hero-end: #3730a3;
   --color-primary-50: #f0fdfc;
   --color-primary-100: #ccfbf1;
   --color-primary-200: #99f6e4;
@@ -59,6 +56,10 @@
   --color-error-700: #b91c1c;
   --color-error-800: #991b1b;
   --color-error-900: #7f1d1d;
+  
+  --color-hero-start: #1e3a8a;
+  --color-hero-middle: #1e40af;
+  --color-hero-end: #3730a3;
   
   --font-sans: var(--font-geist-sans), system-ui, sans-serif;
   --font-mono: var(--font-geist-mono), monospace;

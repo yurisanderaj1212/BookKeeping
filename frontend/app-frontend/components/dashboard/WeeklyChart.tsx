@@ -33,8 +33,8 @@ const CustomTooltip = ({ active, payload, label }: any) => {
 }
 
 export default function WeeklyChart({ data }: WeeklyChartProps) {
-  // Transform data for Recharts - show only last 4 weeks (current month)
-  const chartData = data.slice(-4).map((week, index) => ({
+  // Transform data for Recharts - show last 5 weeks (full month)
+  const chartData = data.slice(-5).map((week, index) => ({
     name: `Semana ${index + 1}`,
     income: week.income,
     expenses: week.expenses,
@@ -53,19 +53,18 @@ export default function WeeklyChart({ data }: WeeklyChartProps) {
         </button>
       </div>
 
-      <div className="h-80 w-full">
-        <div className="w-full h-full min-w-0 min-h-0">
-          <ResponsiveContainer width="100%" height="100%">
-            <BarChart
-              data={chartData}
-              margin={{
-                top: 20,
-                right: 30,
-                left: 20,
-                bottom: 5,
-              }}
-              barCategoryGap="20%"
-            >
+      <div className="h-96 w-full min-h-0">
+        <ResponsiveContainer width="100%" height="100%">
+          <BarChart
+            data={chartData}
+            margin={{
+              top: 20,
+              right: 30,
+              left: 20,
+              bottom: 5,
+            }}
+            barCategoryGap="10%"
+          >
             <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
             <XAxis 
               dataKey="name" 
@@ -108,9 +107,8 @@ export default function WeeklyChart({ data }: WeeklyChartProps) {
               animationDuration={1000}
               animationBegin={400}
             />
-          </BarChart>
-        </ResponsiveContainer>
-        </div>
+            </BarChart>
+          </ResponsiveContainer>
       </div>
     </div>
   )
