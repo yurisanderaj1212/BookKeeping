@@ -52,3 +52,7 @@ CodeCoverage/
 *.VisualState.xml
 TestResult.xml
 nunit-*.xml
+
+# Exclude mobile project and VS Code settings that are not part of main project
+frontend/.vscode/
+frontend/bookkeeping-mobile/
