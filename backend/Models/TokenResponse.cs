@@ -1,4 +1,4 @@
-﻿using WebApplication2.Dto;
+using WebApplication2.Dto;
 
 public class TokenResponse
 {

@@ -1,4 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 using WebApplication2.Models;  // Asegúrate de importar tus modelos
 
 namespace WebApplication2.Data;

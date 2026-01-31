@@ -1,4 +1,4 @@
-﻿// DTO para User (sin PasswordHash)
+// DTO para User (sin PasswordHash)
 namespace WebApplication2.Dto;
 public class UserDto
 {

@@ -1,6 +1,33 @@
 @WebApplication2_HostAddress = http://localhost:5088
 
-GET {{WebApplication2_HostAddress}}/weatherforecast/
+# Test de registro de usuario
+POST {{WebApplication2_HostAddress}}/api/auth/register
+Content-Type: application/json
+
+{
+  "email": "test@example.com",
+  "password": "Test123!@#",
+  "confirmPassword": "Test123!@#",
+  "firstName": "Usuario",
+  "lastName": "Prueba"
+}
+
+###
+
+# Test de login de usuario
+POST {{WebApplication2_HostAddress}}/api/auth/login
+Content-Type: application/json
+
+{
+  "email": "test@example.com",
+  "password": "Test123!@#"
+}
+
+###
+
+# Test de endpoint protegido (ejemplo)
+GET {{WebApplication2_HostAddress}}/api/protected
+Authorization: Bearer YOUR_TOKEN_HERE
 Accept: application/json
 
 ###

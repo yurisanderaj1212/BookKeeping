@@ -1,0 +1,380 @@
+'use client'
+
+import { useState, useEffect } from 'react'
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, LineChart, Line } from 'recharts'
+import { Calendar, TrendingUp, TrendingDown, ArrowUpRight, ArrowDownRight } from 'lucide-react'
+import { formatCurrency, getTotalIncomeFiltered, getTotalExpensesFiltered } from '@/data/transactions-data'
+
+interface YearComparisonProps {
+  period: string
+  year: string
+  month: string
+}
+
+export default function YearComparison({ year }: YearComparisonProps) {
+  const [mounted, setMounted] = useState(false)
+  const [chartType, setChartType] = useState<'bar' | 'line'>('bar')
+  
+  useEffect(() => {
+    setMounted(true)
+  }, [])
+
+  // Generate comparison data for multiple years
+  const generateYearComparisonData = () => {
+    const currentYear = parseInt(year)
+    const years = [currentYear - 2, currentYear - 1, currentYear]
+    
+    return years.map(yearNum => {
+      const yearStart = `${yearNum}-01-01`
+      const yearEnd = `${yearNum}-12-31`
+      
+      const yearlyIncome = getTotalIncomeFiltered(yearStart, yearEnd)
+      const yearlyExpenses = getTotalExpensesFiltered(yearStart, yearEnd)
+      const yearlyProfit = yearlyIncome - yearlyExpenses
+      const profitMargin = yearlyIncome > 0 ? (yearlyProfit / yearlyIncome) * 100 : 0
+      
+      return {
+        year: yearNum.toString(),
+        ingresos: yearlyIncome,
+        gastos: yearlyExpenses,
+        beneficio: yearlyProfit,
+        margen: profitMargin
+      }
+    })
+  }
+
+  const yearComparisonData = generateYearComparisonData()
+  
+  // Calculate year-over-year growth
+  const calculateGrowth = (current: number, previous: number) => {
+    if (previous === 0) return current > 0 ? 100 : 0
+    return ((current - previous) / previous) * 100
+  }
+
+  const currentYearData = yearComparisonData.find(d => d.year === year)
+  const previousYearData = yearComparisonData.find(d => d.year === (parseInt(year) - 1).toString())
+  
+  const incomeGrowth = currentYearData && previousYearData ? 
+    calculateGrowth(currentYearData.ingresos, previousYearData.ingresos) : 0
+  const expenseGrowth = currentYearData && previousYearData ? 
+    calculateGrowth(currentYearData.gastos, previousYearData.gastos) : 0
+  const profitGrowth = currentYearData && previousYearData ? 
+    calculateGrowth(currentYearData.beneficio, previousYearData.beneficio) : 0
+
+  // Find best and worst performing years
+  const bestYear = yearComparisonData.reduce((best, current) => 
+    current.beneficio > best.beneficio ? current : best
+  )
+  const worstYear = yearComparisonData.reduce((worst, current) => 
+    current.beneficio < worst.beneficio ? current : worst
+  )
+
+  const CustomTooltip = ({ active, payload, label }: any) => {
+    if (active && payload && payload.length) {
+      return (
+        <div className="bg-white p-3 border border-gray-200 rounded-lg shadow-lg">
+          <p className="font-medium text-gray-900 mb-2">Año {label}</p>
+          {payload.map((entry: any, index: number) => (
+            <p key={index} className="text-sm" style={{ color: entry.color }}>
+              {entry.dataKey === 'ingresos' ? 'Ingresos' : 
+               entry.dataKey === 'gastos' ? 'Gastos' : 
+               entry.dataKey === 'beneficio' ? 'Beneficio' : 'Margen'}: 
+              {entry.dataKey === 'margen' ? `${entry.value.toFixed(1)}%` : formatCurrency(entry.value)}
+            </p>
+          ))}
+        </div>
+      )
+    }
+    return null
+  }
+
+  const GrowthCard = ({ 
+    title, 
+    current, 
+    previous, 
+    growth, 
+    isPercentage = false 
+  }: {
+    title: string
+    current: number
+    previous: number
+    growth: number
+    isPercentage?: boolean
+  }) => {
+    const isPositive = growth >= 0
+    const Icon = isPositive ? ArrowUpRight : ArrowDownRight
+    const colorClass = isPositive ? 'text-green-600' : 'text-red-600'
+    const bgClass = isPositive ? 'bg-green-100' : 'bg-red-100'
+
+    return (
+      <div className="bg-white rounded-lg border border-gray-200 p-4">
+        <div className="flex items-center justify-between mb-3">
+          <h4 className="text-sm font-medium text-gray-600">{title}</h4>
+          <div className={`${bgClass} p-1 rounded-full`}>
+            <Icon className={`w-4 h-4 ${colorClass}`} />
+          </div>
+        </div>
+        
+        <div className="space-y-2">
+          <div className="flex items-center justify-between">
+            <span className="text-xs text-gray-500">{year}</span>
+            <span className="text-lg font-bold text-gray-900">
+              {isPercentage ? `${current.toFixed(1)}%` : formatCurrency(current)}
+            </span>
+          </div>
+          <div className="flex items-center justify-between">
+            <span className="text-xs text-gray-500">{parseInt(year) - 1}</span>
+            <span className="text-sm text-gray-600">
+              {isPercentage ? `${previous.toFixed(1)}%` : formatCurrency(previous)}
+            </span>
+          </div>
+          <div className="flex items-center justify-between pt-2 border-t border-gray-100">
+            <span className="text-xs text-gray-500">Crecimiento</span>
+            <span className={`text-sm font-medium ${colorClass}`}>
+              {isPositive ? '+' : ''}{growth.toFixed(1)}%
+            </span>
+          </div>
+        </div>
+      </div>
+    )
+  }
+
+  return (
+    <div className="bg-white rounded-lg border border-gray-200 p-6 mb-8">
+      <div className="flex items-center justify-between mb-6">
+        <div>
+          <h3 className="text-lg font-semibold text-gray-900">Comparación entre Años</h3>
+          <p className="text-sm text-gray-500 mt-1">
+            Análisis comparativo de rendimiento anual
+          </p>
+        </div>
+        <div className="flex items-center space-x-3">
+          <div className="flex bg-gray-100 rounded-lg p-1">
+            <button
+              onClick={() => setChartType('bar')}
+              className={`px-3 py-1 text-sm font-medium rounded-md transition-colors duration-200 ${
+                chartType === 'bar'
+                  ? 'bg-white text-gray-900 shadow-sm'
+                  : 'text-gray-500 hover:text-gray-700'
+              }`}
+            >
+              Barras
+            </button>
+            <button
+              onClick={() => setChartType('line')}
+              className={`px-3 py-1 text-sm font-medium rounded-md transition-colors duration-200 ${
+                chartType === 'line'
+                  ? 'bg-white text-gray-900 shadow-sm'
+                  : 'text-gray-500 hover:text-gray-700'
+              }`}
+            >
+              Tendencia
+            </button>
+          </div>
+        </div>
+      </div>
+
+      {/* Year-over-Year Growth Cards */}
+      {currentYearData && previousYearData && (
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
+          <GrowthCard
+            title="Ingresos"
+            current={currentYearData.ingresos}
+            previous={previousYearData.ingresos}
+            growth={incomeGrowth}
+          />
+          <GrowthCard
+            title="Gastos"
+            current={currentYearData.gastos}
+            previous={previousYearData.gastos}
+            growth={expenseGrowth}
+          />
+          <GrowthCard
+            title="Beneficio"
+            current={currentYearData.beneficio}
+            previous={previousYearData.beneficio}
+            growth={profitGrowth}
+          />
+          <GrowthCard
+            title="Margen"
+            current={currentYearData.margen}
+            previous={previousYearData.margen}
+            growth={calculateGrowth(currentYearData.margen, previousYearData.margen)}
+            isPercentage={true}
+          />
+        </div>
+      )}
+
+      {/* Year Comparison Chart */}
+      <div className="h-80 mb-6">
+        {mounted ? (
+          <ResponsiveContainer width="100%" height="100%">
+            {chartType === 'bar' ? (
+              <BarChart data={yearComparisonData} margin={{ top: 20, right: 30, left: 20, bottom: 5 }}>
+                <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
+                <XAxis 
+                  dataKey="year" 
+                  axisLine={false}
+                  tickLine={false}
+                  tick={{ fontSize: 12, fill: '#6b7280' }}
+                />
+                <YAxis 
+                  axisLine={false}
+                  tickLine={false}
+                  tick={{ fontSize: 12, fill: '#6b7280' }}
+                  tickFormatter={(value) => `€${(value / 1000).toFixed(0)}k`}
+                />
+                <Tooltip content={<CustomTooltip />} />
+                <Bar dataKey="ingresos" fill="#10b981" radius={[4, 4, 0, 0]} name="Ingresos" />
+                <Bar dataKey="gastos" fill="#ef4444" radius={[4, 4, 0, 0]} name="Gastos" />
+                <Bar dataKey="beneficio" fill="#3b82f6" radius={[4, 4, 0, 0]} name="Beneficio" />
+              </BarChart>
+            ) : (
+              <LineChart data={yearComparisonData} margin={{ top: 20, right: 30, left: 20, bottom: 5 }}>
+                <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
+                <XAxis 
+                  dataKey="year" 
+                  axisLine={false}
+                  tickLine={false}
+                  tick={{ fontSize: 12, fill: '#6b7280' }}
+                />
+                <YAxis 
+                  axisLine={false}
+                  tickLine={false}
+                  tick={{ fontSize: 12, fill: '#6b7280' }}
+                  tickFormatter={(value) => `€${(value / 1000).toFixed(0)}k`}
+                />
+                <Tooltip content={<CustomTooltip />} />
+                <Line 
+                  type="monotone" 
+                  dataKey="ingresos" 
+                  stroke="#10b981" 
+                  strokeWidth={3}
+                  dot={{ fill: '#10b981', strokeWidth: 2, r: 5 }}
+                  name="Ingresos"
+                />
+                <Line 
+                  type="monotone" 
+                  dataKey="gastos" 
+                  stroke="#ef4444" 
+                  strokeWidth={3}
+                  dot={{ fill: '#ef4444', strokeWidth: 2, r: 5 }}
+                  name="Gastos"
+                />
+                <Line 
+                  type="monotone" 
+                  dataKey="beneficio" 
+                  stroke="#3b82f6" 
+                  strokeWidth={3}
+                  dot={{ fill: '#3b82f6', strokeWidth: 2, r: 5 }}
+                  name="Beneficio"
+                />
+              </LineChart>
+            )}
+          </ResponsiveContainer>
+        ) : (
+          <div className="h-80 flex items-center justify-center bg-gray-50 rounded-lg">
+            <div className="text-gray-400">Cargando gráfico...</div>
+          </div>
+        )}
+      </div>
+
+      {/* Year Comparison Table */}
+      <div>
+        <h4 className="text-md font-semibold text-gray-900 mb-4">Resumen por Año</h4>
+        <div className="overflow-hidden">
+          <table className="w-full table-fixed">
+            <thead className="bg-gray-50">
+              <tr>
+                <th className="w-[15%] px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Año
+                </th>
+                <th className="w-[20%] px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Ingresos
+                </th>
+                <th className="w-[20%] px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Gastos
+                </th>
+                <th className="w-[20%] px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Beneficio
+                </th>
+                <th className="w-[15%] px-4 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Margen
+                </th>
+                <th className="w-[10%] px-4 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Ranking
+                </th>
+              </tr>
+            </thead>
+            <tbody className="bg-white divide-y divide-gray-200">
+              {yearComparisonData.map((yearData, index) => (
+                <tr key={index} className={`hover:bg-gray-50 ${yearData.year === year ? 'bg-blue-50' : ''}`}>
+                  <td className="px-4 py-3">
+                    <div className="flex items-center space-x-2">
+                      <span className="font-medium text-gray-900">{yearData.year}</span>
+                      {yearData.year === year && (
+                        <span className="bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded-full">
+                          Actual
+                        </span>
+                      )}
+                    </div>
+                  </td>
+                  <td className="px-4 py-3 text-right text-green-600 font-semibold">
+                    {formatCurrency(yearData.ingresos)}
+                  </td>
+                  <td className="px-4 py-3 text-right text-red-600 font-semibold">
+                    {formatCurrency(yearData.gastos)}
+                  </td>
+                  <td className={`px-4 py-3 text-right font-semibold ${
+                    yearData.beneficio >= 0 ? 'text-blue-600' : 'text-orange-600'
+                  }`}>
+                    {formatCurrency(yearData.beneficio)}
+                  </td>
+                  <td className="px-4 py-3 text-center font-medium text-gray-700">
+                    {yearData.margen.toFixed(1)}%
+                  </td>
+                  <td className="px-4 py-3 text-center">
+                    <div className={`w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold mx-auto ${
+                      yearData.year === bestYear.year ? 'bg-green-100 text-green-800' :
+                      yearData.year === worstYear.year ? 'bg-red-100 text-red-800' :
+                      'bg-gray-100 text-gray-600'
+                    }`}>
+                      {index + 1}
+                    </div>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      {/* Performance Insights */}
+      <div className="mt-6 grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div className="bg-green-50 rounded-lg p-4">
+          <div className="flex items-center space-x-2 mb-2">
+            <TrendingUp className="w-4 h-4 text-green-600" />
+            <span className="text-sm font-medium text-green-800">Mejor Año</span>
+          </div>
+          <p className="text-lg font-bold text-green-700">{bestYear.year}</p>
+          <p className="text-xs text-green-600">
+            Beneficio: {formatCurrency(bestYear.beneficio)}
+          </p>
+        </div>
+
+        <div className="bg-blue-50 rounded-lg p-4">
+          <div className="flex items-center space-x-2 mb-2">
+            <Calendar className="w-4 h-4 text-blue-600" />
+            <span className="text-sm font-medium text-blue-800">Crecimiento Promedio</span>
+          </div>
+          <p className="text-lg font-bold text-blue-700">
+            {yearComparisonData.length > 1 ? 
+              (((yearComparisonData[yearComparisonData.length - 1].beneficio / yearComparisonData[0].beneficio) ** (1 / (yearComparisonData.length - 1)) - 1) * 100).toFixed(1) 
+              : 0}%
+          </p>
+          <p className="text-xs text-blue-600">Anual compuesto</p>
+        </div>
+      </div>
+    </div>
+  )
+}
