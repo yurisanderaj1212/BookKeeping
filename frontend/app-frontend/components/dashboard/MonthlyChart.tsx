@@ -1,5 +1,6 @@
 'use client'
 
+import { useState, useEffect } from 'react'
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts'
 import { MonthlyData } from '../../data/dashboard-data'
 import { MoreHorizontal } from 'lucide-react'
@@ -33,6 +34,32 @@ const CustomTooltip = ({ active, payload, label }: any) => {
 }
 
 export default function MonthlyChart({ data }: MonthlyChartProps) {
+  const [dimensions, setDimensions] = useState({ width: 0, height: 320 })
+
+  useEffect(() => {
+    const updateDimensions = () => {
+      const container = document.getElementById('monthly-chart-container')
+      if (container) {
+        setDimensions({
+          width: container.offsetWidth,
+          height: 320
+        })
+      }
+    }
+
+    // Actualizar dimensiones inmediatamente y después de un pequeño delay
+    updateDimensions()
+    const timer = setTimeout(updateDimensions, 100)
+
+    // Actualizar en resize
+    window.addEventListener('resize', updateDimensions)
+
+    return () => {
+      clearTimeout(timer)
+      window.removeEventListener('resize', updateDimensions)
+    }
+  }, [])
+
   // Transform data for Recharts
   const chartData = data.map((month) => ({
     name: month.month,
@@ -53,18 +80,19 @@ export default function MonthlyChart({ data }: MonthlyChartProps) {
         </button>
       </div>
 
-      <div className="h-96 w-full min-h-0">
-        <ResponsiveContainer width="100%" height="100%">
-          <BarChart
-            data={chartData}
-            margin={{
-              top: 20,
-              right: 30,
-              left: 20,
-              bottom: 5,
-            }}
-            barCategoryGap="10%"
-          >
+      <div id="monthly-chart-container" className="w-full" style={{ height: 320 }}>
+        {dimensions.width > 0 && (
+          <ResponsiveContainer width={dimensions.width} height={dimensions.height}>
+            <BarChart
+              data={chartData}
+              margin={{
+                top: 20,
+                right: 30,
+                left: 20,
+                bottom: 5,
+              }}
+              barCategoryGap="10%"
+            >
               <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
               <XAxis 
                 dataKey="name" 
@@ -108,6 +136,7 @@ export default function MonthlyChart({ data }: MonthlyChartProps) {
               />
             </BarChart>
           </ResponsiveContainer>
+        )}
       </div>
     </div>
   )

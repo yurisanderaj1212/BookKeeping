@@ -42,10 +42,30 @@ const renderCustomizedLabel = ({ cx, cy, midAngle, innerRadius, outerRadius, per
 
 export default function CategoryBreakdown({ categories }: CategoryBreakdownProps) {
   const router = useRouter()
-  const [mounted, setMounted] = useState(false)
+  const [dimensions, setDimensions] = useState({ width: 0, height: 256 })
   
   useEffect(() => {
-    setMounted(true)
+    const updateDimensions = () => {
+      const container = document.getElementById('category-chart-container')
+      if (container) {
+        setDimensions({
+          width: container.offsetWidth,
+          height: 256
+        })
+      }
+    }
+
+    // Actualizar dimensiones inmediatamente y después de un pequeño delay
+    updateDimensions()
+    const timer = setTimeout(updateDimensions, 100)
+
+    // Actualizar en resize
+    window.addEventListener('resize', updateDimensions)
+
+    return () => {
+      clearTimeout(timer)
+      window.removeEventListener('resize', updateDimensions)
+    }
   }, [])
   
   const formatCurrency = (amount: number): string => {
@@ -83,34 +103,32 @@ export default function CategoryBreakdown({ categories }: CategoryBreakdownProps
       {categories.length > 0 ? (
         <div className="flex-1 flex flex-col">
           {/* Pie Chart */}
-          <div className="h-64 mb-6 w-full flex items-center justify-center">
-            {mounted ? (
-              <div className="w-80 h-64">
-                <ResponsiveContainer width="100%" height="100%">
-                  <PieChart>
-                    <Pie
-                      data={chartData}
-                      cx="50%"
-                      cy="50%"
-                      labelLine={false}
-                      label={renderCustomizedLabel}
-                      outerRadius={80}
-                      innerRadius={40}
-                      fill="#8884d8"
-                      dataKey="value"
-                      animationBegin={0}
-                      animationDuration={1000}
-                    >
-                      {chartData.map((entry, index) => (
-                        <Cell key={`cell-${index}`} fill={entry.color} />
-                      ))}
-                    </Pie>
-                    <Tooltip content={<CustomTooltip />} />
-                  </PieChart>
-                </ResponsiveContainer>
-              </div>
+          <div id="category-chart-container" className="mb-6 w-full flex items-center justify-center" style={{ height: 256 }}>
+            {dimensions.width > 0 ? (
+              <ResponsiveContainer width={dimensions.width} height={dimensions.height}>
+                <PieChart>
+                  <Pie
+                    data={chartData}
+                    cx="50%"
+                    cy="50%"
+                    labelLine={false}
+                    label={renderCustomizedLabel}
+                    outerRadius={80}
+                    innerRadius={40}
+                    fill="#8884d8"
+                    dataKey="value"
+                    animationBegin={0}
+                    animationDuration={1000}
+                  >
+                    {chartData.map((entry, index) => (
+                      <Cell key={`cell-${index}`} fill={entry.color} />
+                    ))}
+                  </Pie>
+                  <Tooltip content={<CustomTooltip />} />
+                </PieChart>
+              </ResponsiveContainer>
             ) : (
-              <div className="w-80 h-64 flex items-center justify-center bg-gray-50 rounded-lg">
+              <div className="w-full h-full flex items-center justify-center bg-gray-50 rounded-lg">
                 <div className="text-gray-400">Cargando gráfico...</div>
               </div>
             )}

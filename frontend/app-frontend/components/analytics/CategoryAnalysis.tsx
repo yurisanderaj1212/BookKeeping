@@ -15,11 +15,31 @@ interface CategoryAnalysisProps {
 
 export default function CategoryAnalysis({ period }: CategoryAnalysisProps) {
   const router = useRouter()
-  const [mounted, setMounted] = useState(false)
+  const [dimensions, setDimensions] = useState({ width: 0, height: 320 })
   const [activeTab, setActiveTab] = useState<'income' | 'expense'>('income')
   
   useEffect(() => {
-    setMounted(true)
+    const updateDimensions = () => {
+      const container = document.getElementById('category-analysis-chart-container')
+      if (container) {
+        setDimensions({
+          width: container.offsetWidth,
+          height: 320
+        })
+      }
+    }
+
+    // Actualizar dimensiones inmediatamente y después de un pequeño delay
+    updateDimensions()
+    const timer = setTimeout(updateDimensions, 100)
+
+    // Actualizar en resize
+    window.addEventListener('resize', updateDimensions)
+
+    return () => {
+      clearTimeout(timer)
+      window.removeEventListener('resize', updateDimensions)
+    }
   }, [])
 
   // Generate real category data from transactions
@@ -159,9 +179,9 @@ export default function CategoryAnalysis({ period }: CategoryAnalysisProps) {
           <h4 className="text-md font-medium text-gray-900 mb-4">
             Distribución de {activeTab === 'income' ? 'Ingresos' : 'Gastos'}
           </h4>
-          <div className="h-80 flex items-center justify-center">
-            {mounted ? (
-              <ResponsiveContainer width="100%" height="100%">
+          <div id="category-analysis-chart-container" className="w-full flex items-center justify-center" style={{ height: 320 }}>
+            {dimensions.width > 0 ? (
+              <ResponsiveContainer width={dimensions.width} height={dimensions.height}>
                 <PieChart>
                   <Pie
                     data={currentData}

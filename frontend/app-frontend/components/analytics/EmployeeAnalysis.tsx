@@ -1,5 +1,6 @@
 'use client'
 
+import { useState, useEffect } from 'react'
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell } from 'recharts'
 import { Users, DollarSign, TrendingUp, Clock } from 'lucide-react'
 import { 
@@ -15,6 +16,42 @@ interface EmployeeAnalysisProps {
 }
 
 export default function EmployeeAnalysis({ period }: EmployeeAnalysisProps) {
+  const [pieChartDimensions, setPieChartDimensions] = useState({ width: 0, height: 256 })
+  const [barChartDimensions, setBarChartDimensions] = useState({ width: 0, height: 256 })
+
+  useEffect(() => {
+    const updateDimensions = () => {
+      const pieContainer = document.getElementById('payroll-pie-chart-container')
+      const barContainer = document.getElementById('position-bar-chart-container')
+      
+      if (pieContainer) {
+        setPieChartDimensions({
+          width: pieContainer.offsetWidth,
+          height: 256
+        })
+      }
+      
+      if (barContainer) {
+        setBarChartDimensions({
+          width: barContainer.offsetWidth,
+          height: 256
+        })
+      }
+    }
+
+    // Actualizar dimensiones inmediatamente y después de un pequeño delay
+    updateDimensions()
+    const timer = setTimeout(updateDimensions, 100)
+
+    // Actualizar en resize
+    window.addEventListener('resize', updateDimensions)
+
+    return () => {
+      clearTimeout(timer)
+      window.removeEventListener('resize', updateDimensions)
+    }
+  }, [])
+
   const activeEmployees = getActiveEmployees()
   const totalPayroll = getTotalPayroll()
 
@@ -160,26 +197,32 @@ export default function EmployeeAnalysis({ period }: EmployeeAnalysisProps) {
           <h3 className="text-lg font-semibold text-gray-900 mb-4">
             Distribución por Tipo de Nómina
           </h3>
-          <div className="h-64">
-            <ResponsiveContainer width="100%" height="100%">
-              <PieChart>
-                <Pie
-                  data={payrollDistribution}
-                  cx="50%"
-                  cy="50%"
-                  labelLine={false}
-                  label={({ name, percentage }: any) => `${name} (${percentage.toFixed(0)}%)`}
-                  outerRadius={80}
-                  fill="#8884d8"
-                  dataKey="count"
-                >
-                  {payrollDistribution.map((entry, index) => (
-                    <Cell key={`cell-${index}`} fill={colors[index % colors.length]} />
-                  ))}
-                </Pie>
-                <Tooltip />
-              </PieChart>
-            </ResponsiveContainer>
+          <div id="payroll-pie-chart-container" className="w-full" style={{ height: 256 }}>
+            {pieChartDimensions.width > 0 ? (
+              <ResponsiveContainer width={pieChartDimensions.width} height={pieChartDimensions.height}>
+                <PieChart>
+                  <Pie
+                    data={payrollDistribution}
+                    cx="50%"
+                    cy="50%"
+                    labelLine={false}
+                    label={({ name, percentage }: any) => `${name} (${percentage.toFixed(0)}%)`}
+                    outerRadius={80}
+                    fill="#8884d8"
+                    dataKey="count"
+                  >
+                    {payrollDistribution.map((entry, index) => (
+                      <Cell key={`cell-${index}`} fill={colors[index % colors.length]} />
+                    ))}
+                  </Pie>
+                  <Tooltip />
+                </PieChart>
+              </ResponsiveContainer>
+            ) : (
+              <div className="w-full h-full flex items-center justify-center bg-gray-50 rounded-lg">
+                <div className="text-gray-400">Cargando gráfico...</div>
+              </div>
+            )}
           </div>
         </div>
 
@@ -188,18 +231,24 @@ export default function EmployeeAnalysis({ period }: EmployeeAnalysisProps) {
           <h3 className="text-lg font-semibold text-gray-900 mb-4">
             Costo por Posición
           </h3>
-          <div className="h-64">
-            <ResponsiveContainer width="100%" height="100%">
-              <BarChart data={positionCosts} layout="horizontal">
-                <CartesianGrid strokeDasharray="3 3" />
-                <XAxis type="number" tickFormatter={(value) => formatSalary(value * periodMultiplier)} />
-                <YAxis dataKey="position" type="category" width={100} fontSize={12} />
-                <Tooltip 
-                  formatter={(value: number | undefined) => [formatSalary((value || 0) * periodMultiplier), `Costo ${getPeriodLabel()}`]}
-                />
-                <Bar dataKey="cost" fill="#20B2AA" />
-              </BarChart>
-            </ResponsiveContainer>
+          <div id="position-bar-chart-container" className="w-full" style={{ height: 256 }}>
+            {barChartDimensions.width > 0 ? (
+              <ResponsiveContainer width={barChartDimensions.width} height={barChartDimensions.height}>
+                <BarChart data={positionCosts} layout="horizontal">
+                  <CartesianGrid strokeDasharray="3 3" />
+                  <XAxis type="number" tickFormatter={(value) => formatSalary(value * periodMultiplier)} />
+                  <YAxis dataKey="position" type="category" width={100} fontSize={12} />
+                  <Tooltip 
+                    formatter={(value: number | undefined) => [formatSalary((value || 0) * periodMultiplier), `Costo ${getPeriodLabel()}`]}
+                  />
+                  <Bar dataKey="cost" fill="#20B2AA" />
+                </BarChart>
+              </ResponsiveContainer>
+            ) : (
+              <div className="w-full h-full flex items-center justify-center bg-gray-50 rounded-lg">
+                <div className="text-gray-400">Cargando gráfico...</div>
+              </div>
+            )}
           </div>
         </div>
       </div>

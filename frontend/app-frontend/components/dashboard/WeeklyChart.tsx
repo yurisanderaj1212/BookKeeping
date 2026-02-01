@@ -1,5 +1,6 @@
 'use client'
 
+import { useState, useEffect } from 'react'
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts'
 import { WeeklyData } from '../../data/dashboard-data'
 import { MoreHorizontal } from 'lucide-react'
@@ -33,6 +34,33 @@ const CustomTooltip = ({ active, payload, label }: any) => {
 }
 
 export default function WeeklyChart({ data }: WeeklyChartProps) {
+  const [dimensions, setDimensions] = useState({ width: 0, height: 320 })
+  const containerRef = useState<HTMLDivElement | null>(null)
+
+  useEffect(() => {
+    const updateDimensions = () => {
+      const container = document.getElementById('weekly-chart-container')
+      if (container) {
+        setDimensions({
+          width: container.offsetWidth,
+          height: 320
+        })
+      }
+    }
+
+    // Actualizar dimensiones inmediatamente y después de un pequeño delay
+    updateDimensions()
+    const timer = setTimeout(updateDimensions, 100)
+
+    // Actualizar en resize
+    window.addEventListener('resize', updateDimensions)
+
+    return () => {
+      clearTimeout(timer)
+      window.removeEventListener('resize', updateDimensions)
+    }
+  }, [])
+
   // Transform data for Recharts - show last 5 weeks (full month)
   const chartData = data.slice(-5).map((week, index) => ({
     name: `Semana ${index + 1}`,
@@ -53,62 +81,64 @@ export default function WeeklyChart({ data }: WeeklyChartProps) {
         </button>
       </div>
 
-      <div className="h-96 w-full min-h-0">
-        <ResponsiveContainer width="100%" height="100%">
-          <BarChart
-            data={chartData}
-            margin={{
-              top: 20,
-              right: 30,
-              left: 20,
-              bottom: 5,
-            }}
-            barCategoryGap="10%"
-          >
-            <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
-            <XAxis 
-              dataKey="name" 
-              axisLine={false}
-              tickLine={false}
-              tick={{ fontSize: 12, fill: '#6b7280' }}
-            />
-            <YAxis 
-              axisLine={false}
-              tickLine={false}
-              tick={{ fontSize: 12, fill: '#6b7280' }}
-              tickFormatter={(value) => `$${(value / 1000).toFixed(0)}k`}
-            />
-            <Tooltip content={<CustomTooltip />} />
-            <Legend 
-              wrapperStyle={{ paddingTop: '20px' }}
-              iconType="circle"
-            />
-            <Bar 
-              dataKey="income" 
-              name="Ingresos"
-              fill="#20B2AA" 
-              radius={[4, 4, 0, 0]}
-              animationDuration={1000}
-              animationBegin={0}
-            />
-            <Bar 
-              dataKey="expenses" 
-              name="Gastos"
-              fill="#FF6B6B" 
-              radius={[4, 4, 0, 0]}
-              animationDuration={1000}
-              animationBegin={200}
-            />
-            <Bar 
-              dataKey="profit" 
-              name="Ganancia"
-              fill="#4ECDC4" 
-              radius={[4, 4, 0, 0]}
-              animationDuration={1000}
-              animationBegin={400}
-            />
+      <div id="weekly-chart-container" className="w-full" style={{ height: 320 }}>
+        {dimensions.width > 0 && (
+          <ResponsiveContainer width={dimensions.width} height={dimensions.height}>
+            <BarChart
+              data={chartData}
+              margin={{
+                top: 20,
+                right: 30,
+                left: 20,
+                bottom: 5,
+              }}
+              barCategoryGap="10%"
+            >
+              <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
+              <XAxis 
+                dataKey="name" 
+                axisLine={false}
+                tickLine={false}
+                tick={{ fontSize: 12, fill: '#6b7280' }}
+              />
+              <YAxis 
+                axisLine={false}
+                tickLine={false}
+                tick={{ fontSize: 12, fill: '#6b7280' }}
+                tickFormatter={(value) => `$${(value / 1000).toFixed(0)}k`}
+              />
+              <Tooltip content={<CustomTooltip />} />
+              <Legend 
+                wrapperStyle={{ paddingTop: '20px' }}
+                iconType="circle"
+              />
+              <Bar 
+                dataKey="income" 
+                name="Ingresos"
+                fill="#20B2AA" 
+                radius={[4, 4, 0, 0]}
+                animationDuration={1000}
+                animationBegin={0}
+              />
+              <Bar 
+                dataKey="expenses" 
+                name="Gastos"
+                fill="#FF6B6B" 
+                radius={[4, 4, 0, 0]}
+                animationDuration={1000}
+                animationBegin={200}
+              />
+              <Bar 
+                dataKey="profit" 
+                name="Ganancia"
+                fill="#4ECDC4" 
+                radius={[4, 4, 0, 0]}
+                animationDuration={1000}
+                animationBegin={400}
+              />
             </BarChart>
           </ResponsiveContainer>
+        )}
       </div>
     </div>
   )

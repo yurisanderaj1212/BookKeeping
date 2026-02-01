@@ -12,11 +12,31 @@ interface YearComparisonProps {
 }
 
 export default function YearComparison({ year }: YearComparisonProps) {
-  const [mounted, setMounted] = useState(false)
+  const [dimensions, setDimensions] = useState({ width: 0, height: 320 })
   const [chartType, setChartType] = useState<'bar' | 'line'>('bar')
   
   useEffect(() => {
-    setMounted(true)
+    const updateDimensions = () => {
+      const container = document.getElementById('year-comparison-chart-container')
+      if (container) {
+        setDimensions({
+          width: container.offsetWidth,
+          height: 320
+        })
+      }
+    }
+
+    // Actualizar dimensiones inmediatamente y después de un pequeño delay
+    updateDimensions()
+    const timer = setTimeout(updateDimensions, 100)
+
+    // Actualizar en resize
+    window.addEventListener('resize', updateDimensions)
+
+    return () => {
+      clearTimeout(timer)
+      window.removeEventListener('resize', updateDimensions)
+    }
   }, [])
 
   // Generate comparison data for multiple years
@@ -206,9 +226,9 @@ export default function YearComparison({ year }: YearComparisonProps) {
       )}
 
       {/* Year Comparison Chart */}
-      <div className="h-80 mb-6">
-        {mounted ? (
-          <ResponsiveContainer width="100%" height="100%">
+      <div id="year-comparison-chart-container" className="w-full mb-6" style={{ height: 320 }}>
+        {dimensions.width > 0 ? (
+          <ResponsiveContainer width={dimensions.width} height={dimensions.height}>
             {chartType === 'bar' ? (
               <BarChart data={yearComparisonData} margin={{ top: 20, right: 30, left: 20, bottom: 5 }}>
                 <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
@@ -273,7 +293,7 @@ export default function YearComparison({ year }: YearComparisonProps) {
             )}
           </ResponsiveContainer>
         ) : (
-          <div className="h-80 flex items-center justify-center bg-gray-50 rounded-lg">
+          <div className="w-full h-full flex items-center justify-center bg-gray-50 rounded-lg">
             <div className="text-gray-400">Cargando gráfico...</div>
           </div>
         )}

@@ -12,11 +12,31 @@ interface CashFlowAnalysisProps {
 }
 
 export default function CashFlowAnalysis({ period }: CashFlowAnalysisProps) {
-  const [mounted, setMounted] = useState(false)
+  const [dimensions, setDimensions] = useState({ width: 0, height: 320 })
   const [viewType, setViewType] = useState<'daily' | 'weekly'>('weekly')
   
   useEffect(() => {
-    setMounted(true)
+    const updateDimensions = () => {
+      const container = document.getElementById('cashflow-chart-container')
+      if (container) {
+        setDimensions({
+          width: container.offsetWidth,
+          height: 320
+        })
+      }
+    }
+
+    // Actualizar dimensiones inmediatamente y después de un pequeño delay
+    updateDimensions()
+    const timer = setTimeout(updateDimensions, 100)
+
+    // Actualizar en resize
+    window.addEventListener('resize', updateDimensions)
+
+    return () => {
+      clearTimeout(timer)
+      window.removeEventListener('resize', updateDimensions)
+    }
   }, [])
 
   // Generate cash flow data
@@ -191,12 +211,12 @@ export default function CashFlowAnalysis({ period }: CashFlowAnalysisProps) {
         </div>
 
         {/* Cash Flow Chart */}
-        <div className="h-80">
+        <div id="cashflow-chart-container" className="w-full" style={{ height: 320 }}>
           <h4 className="text-md font-medium text-gray-900 mb-4">
             Flujo de Efectivo {viewType === 'daily' ? 'Diario' : 'Semanal'}
           </h4>
-          {mounted ? (
-            <ResponsiveContainer width="100%" height="100%">
+          {dimensions.width > 0 ? (
+            <ResponsiveContainer width={dimensions.width} height={dimensions.height}>
               <LineChart data={cashFlowData} margin={{ top: 20, right: 30, left: 20, bottom: 5 }}>
                 <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
                 <XAxis 
@@ -232,7 +252,7 @@ export default function CashFlowAnalysis({ period }: CashFlowAnalysisProps) {
               </LineChart>
             </ResponsiveContainer>
           ) : (
-            <div className="h-80 flex items-center justify-center bg-gray-50 rounded-lg">
+            <div className="w-full h-full flex items-center justify-center bg-gray-50 rounded-lg">
               <div className="text-gray-400">Cargando gráfico...</div>
             </div>
           )}

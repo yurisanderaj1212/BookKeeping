@@ -12,10 +12,30 @@ interface PerformanceMetricsProps {
 }
 
 export default function PerformanceMetrics({ period }: PerformanceMetricsProps) {
-  const [mounted, setMounted] = useState(false)
+  const [dimensions, setDimensions] = useState({ width: 0, height: 320 })
   
   useEffect(() => {
-    setMounted(true)
+    const updateDimensions = () => {
+      const container = document.getElementById('performance-chart-container')
+      if (container) {
+        setDimensions({
+          width: container.offsetWidth,
+          height: 320
+        })
+      }
+    }
+
+    // Actualizar dimensiones inmediatamente y después de un pequeño delay
+    updateDimensions()
+    const timer = setTimeout(updateDimensions, 100)
+
+    // Actualizar en resize
+    window.addEventListener('resize', updateDimensions)
+
+    return () => {
+      clearTimeout(timer)
+      window.removeEventListener('resize', updateDimensions)
+    }
   }, [])
 
   // Calculate KPIs
@@ -213,9 +233,9 @@ export default function PerformanceMetrics({ period }: PerformanceMetricsProps) 
         <div className="bg-white rounded-lg border border-gray-200 p-6">
           <h4 className="text-md font-semibold text-gray-900 mb-4">Análisis de Transacciones</h4>
           
-          <div className="h-80">
-            {mounted ? (
-              <ResponsiveContainer width="100%" height="100%">
+          <div id="performance-chart-container" className="w-full" style={{ height: 320 }}>
+            {dimensions.width > 0 ? (
+              <ResponsiveContainer width={dimensions.width} height={dimensions.height}>
                 <BarChart data={transactionMetrics} margin={{ top: 20, right: 30, left: 20, bottom: 5 }}>
                   <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
                   <XAxis 
@@ -236,7 +256,7 @@ export default function PerformanceMetrics({ period }: PerformanceMetricsProps) 
                 </BarChart>
               </ResponsiveContainer>
             ) : (
-              <div className="h-80 flex items-center justify-center bg-gray-50 rounded-lg">
+              <div className="w-full h-full flex items-center justify-center bg-gray-50 rounded-lg">
                 <div className="text-gray-400">Cargando gráfico...</div>
               </div>
             )}
