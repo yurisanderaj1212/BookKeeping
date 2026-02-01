@@ -2,18 +2,39 @@
 
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
+import { useAuth } from '@/hooks/useAuth'
 import { ArrowLeft, Download } from 'lucide-react'
 import Sidebar from '../../../components/dashboard/Sidebar'
 import EmployeeSummaryReport from '../../../components/reports/EmployeeSummaryReport'
 
 export default function EmployeeSummaryPage() {
   const router = useRouter()
+  
+  // TODOS LOS HOOKS AL INICIO
+  const { user, isLoading, isAuthenticated, logout } = useAuth()
   const [period, setPeriod] = useState<'week' | 'month' | 'year'>('week')
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false)
 
+  // RETURNS CONDICIONALES DESPUÉS DE TODOS LOS HOOKS
+  // Mostrar loading mientras se verifica la autenticación
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-slate-50 flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary-500 mx-auto mb-4"></div>
+          <p className="text-slate-600">Verificando autenticación...</p>
+        </div>
+      </div>
+    )
+  }
+  
+  // Si no está autenticado, el hook ya redirigió al login
+  if (!isAuthenticated) {
+    return null
+  }
+
   const handleLogout = async () => {
-    console.log('Logging out...')
-    router.push('/auth/login')
+    logout() // Usar la función logout del hook useAuth
   }
 
   const handleSidebarToggle = (isCollapsed: boolean) => {

@@ -1,10 +1,11 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import Toast from '@/components/ui/Toast'
 import { useToast } from '@/hooks/useToast'
+import { useAuth } from '@/hooks/useAuth'
 
 // Lista de empleos comunes en Estados Unidos
 const US_JOBS = [
@@ -20,6 +21,31 @@ const US_JOBS = [
 export default function RegisterPage() {
   const router = useRouter()
   const { toast, showSuccess, showError, showWarning, hideToast } = useToast()
+  const { isAuthenticated, isLoading: authLoading } = useAuth()
+  
+  // Si ya está autenticado, redirigir al dashboard
+  useEffect(() => {
+    if (!authLoading && isAuthenticated) {
+      router.replace('/dashboard')
+    }
+  }, [authLoading, isAuthenticated, router])
+
+  // Mostrar loading mientras se verifica la autenticación
+  if (authLoading) {
+    return (
+      <div className="min-h-screen bg-slate-50 flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary-500 mx-auto mb-4"></div>
+          <p className="text-slate-600">Verificando autenticación...</p>
+        </div>
+      </div>
+    )
+  }
+
+  // Si ya está autenticado, no mostrar nada (ya se redirigió)
+  if (isAuthenticated) {
+    return null
+  }
   
   const [formData, setFormData] = useState({
     firstName: '',

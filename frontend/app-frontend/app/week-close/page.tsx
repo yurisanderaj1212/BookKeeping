@@ -2,6 +2,7 @@
 
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
+import { useAuth } from '@/hooks/useAuth'
 import { 
   Calendar, 
   Lock, 
@@ -17,7 +18,7 @@ import {
 import Sidebar from '@/components/dashboard/Sidebar'
 import OnboardingTour from '@/components/onboarding/OnboardingTour'
 import { useOnboarding } from '@/hooks/useOnboarding'
-import { 
+import {
   mockTransactions, 
   formatCurrency, 
   getTotalIncomeFiltered, 
@@ -41,6 +42,9 @@ interface WeekData {
 
 export default function WeekClosePage() {
   const router = useRouter()
+  
+  // TODOS LOS HOOKS AL INICIO
+  const { user, isLoading, isAuthenticated, logout } = useAuth()
   const [selectedYear, setSelectedYear] = useState('2024')
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false)
   const [selectedMonth, setSelectedMonth] = useState('01')
@@ -56,8 +60,26 @@ export default function WeekClosePage() {
     completeOnboarding
   } = useOnboarding()
 
+  // RETURNS CONDICIONALES DESPUÉS DE TODOS LOS HOOKS
+  // Mostrar loading mientras se verifica la autenticación
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-slate-50 flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary-500 mx-auto mb-4"></div>
+          <p className="text-slate-600">Verificando autenticación...</p>
+        </div>
+      </div>
+    )
+  }
+  
+  // Si no está autenticado, el hook ya redirigió al login
+  if (!isAuthenticated) {
+    return null
+  }
+
   const handleLogout = async () => {
-    router.push('/auth/login')
+    logout() // Usar la función logout del hook useAuth
   }
 
   const handleSidebarToggle = (isCollapsed: boolean) => {
@@ -354,57 +376,61 @@ export default function WeekClosePage() {
           </div>
 
           {/* Summary Cards */}
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-            <div className="bg-white rounded-lg border border-gray-200 p-6">
-              <div className="flex items-center space-x-3 mb-4">
-                <div className="bg-green-100 p-2 rounded-lg">
-                  <TrendingUp className="w-5 h-5 text-green-600" />
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 lg:gap-6 mb-8">
+            <div className="bg-white rounded-lg border border-gray-200 p-4 lg:p-6">
+              <div className="flex items-center space-x-3 mb-2">
+                <div className="bg-green-100 p-2 rounded-lg flex-shrink-0">
+                  <TrendingUp className="w-4 h-4 lg:w-5 lg:h-5 text-green-600" />
                 </div>
-                <div>
-                  <p className="text-sm text-gray-600">Ingresos del Mes</p>
-                  <p className="text-2xl font-bold text-green-700">{formatCurrency(totalIncome)}</p>
-                </div>
-              </div>
-            </div>
-
-            <div className="bg-white rounded-lg border border-gray-200 p-6">
-              <div className="flex items-center space-x-3 mb-4">
-                <div className="bg-red-100 p-2 rounded-lg">
-                  <TrendingDown className="w-5 h-5 text-red-600" />
-                </div>
-                <div>
-                  <p className="text-sm text-gray-600">Gastos del Mes</p>
-                  <p className="text-2xl font-bold text-red-700">{formatCurrency(totalExpenses)}</p>
+                <div className="min-w-0 flex-1">
+                  <p className="text-xs lg:text-sm text-gray-600 truncate">Ingresos del Mes</p>
+                  <p className="text-lg lg:text-2xl font-bold text-green-700 truncate" title={formatCurrency(totalIncome)}>
+                    {formatCurrency(totalIncome)}
+                  </p>
                 </div>
               </div>
             </div>
 
-            <div className="bg-white rounded-lg border border-gray-200 p-6">
-              <div className="flex items-center space-x-3 mb-4">
-                <div className={`${totalNetProfit >= 0 ? 'bg-blue-100' : 'bg-orange-100'} p-2 rounded-lg`}>
-                  <DollarSign className={`w-5 h-5 ${totalNetProfit >= 0 ? 'text-blue-600' : 'text-orange-600'}`} />
+            <div className="bg-white rounded-lg border border-gray-200 p-4 lg:p-6">
+              <div className="flex items-center space-x-3 mb-2">
+                <div className="bg-red-100 p-2 rounded-lg flex-shrink-0">
+                  <TrendingDown className="w-4 h-4 lg:w-5 lg:h-5 text-red-600" />
                 </div>
-                <div>
-                  <p className="text-sm text-gray-600">Beneficio Neto</p>
-                  <p className={`text-2xl font-bold ${totalNetProfit >= 0 ? 'text-blue-700' : 'text-orange-700'}`}>
+                <div className="min-w-0 flex-1">
+                  <p className="text-xs lg:text-sm text-gray-600 truncate">Gastos del Mes</p>
+                  <p className="text-lg lg:text-2xl font-bold text-red-700 truncate" title={formatCurrency(totalExpenses)}>
+                    {formatCurrency(totalExpenses)}
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            <div className="bg-white rounded-lg border border-gray-200 p-4 lg:p-6">
+              <div className="flex items-center space-x-3 mb-2">
+                <div className={`${totalNetProfit >= 0 ? 'bg-blue-100' : 'bg-orange-100'} p-2 rounded-lg flex-shrink-0`}>
+                  <DollarSign className={`w-4 h-4 lg:w-5 lg:h-5 ${totalNetProfit >= 0 ? 'text-blue-600' : 'text-orange-600'}`} />
+                </div>
+                <div className="min-w-0 flex-1">
+                  <p className="text-xs lg:text-sm text-gray-600 truncate">Beneficio Neto</p>
+                  <p className={`text-lg lg:text-2xl font-bold truncate ${totalNetProfit >= 0 ? 'text-blue-700' : 'text-orange-700'}`} title={formatCurrency(totalNetProfit)}>
                     {formatCurrency(totalNetProfit)}
                   </p>
                 </div>
               </div>
             </div>
 
-            <div className="bg-white rounded-lg border border-gray-200 p-6">
-              <div className="flex items-center space-x-3 mb-4">
-                <div className="bg-purple-100 p-2 rounded-lg">
-                  <CheckCircle className="w-5 h-5 text-purple-600" />
+            <div className="bg-white rounded-lg border border-gray-200 p-4 lg:p-6">
+              <div className="flex items-center space-x-3 mb-2">
+                <div className="bg-purple-100 p-2 rounded-lg flex-shrink-0">
+                  <CheckCircle className="w-4 h-4 lg:w-5 lg:h-5 text-purple-600" />
                 </div>
-                <div>
-                  <p className="text-sm text-gray-600">Estado de Cierres</p>
-                  <p className="text-lg font-bold text-purple-700">
+                <div className="min-w-0 flex-1">
+                  <p className="text-xs lg:text-sm text-gray-600 truncate">Estado de Cierres</p>
+                  <p className="text-base lg:text-lg font-bold text-purple-700 truncate">
                     {closedWeeks}/{weeklyData.length} Cerradas
                   </p>
                   {pendingWeeks > 0 && (
-                    <p className="text-xs text-yellow-600">{pendingWeeks} pendientes</p>
+                    <p className="text-xs text-yellow-600 truncate">{pendingWeeks} pendientes</p>
                   )}
                 </div>
               </div>
@@ -413,7 +439,7 @@ export default function WeekClosePage() {
 
           {/* Weekly Data Table */}
           <div className="bg-white rounded-lg border border-gray-200">
-            <div className="p-6 border-b border-gray-200">
+            <div className="p-4 lg:p-6 border-b border-gray-200">
               <h3 className="text-lg font-semibold text-gray-900">
                 Cierres Semanales - {getMonthName(selectedMonth)} {selectedYear}
               </h3>
@@ -422,7 +448,8 @@ export default function WeekClosePage() {
               </p>
             </div>
 
-            <div className="overflow-hidden">
+            {/* Vista de tabla para pantallas grandes */}
+            <div className="hidden lg:block overflow-hidden">
               <table className="w-full table-fixed">
                 <thead className="bg-gray-50">
                   <tr>
@@ -455,6 +482,88 @@ export default function WeekClosePage() {
                   ))}
                 </tbody>
               </table>
+            </div>
+
+            {/* Vista de cartas para pantallas pequeñas y medianas */}
+            <div className="lg:hidden divide-y divide-gray-200">
+              {weeklyData.map((week) => (
+                <div key={week.weekNumber} className="p-4">
+                  <div className="flex items-center justify-between mb-3">
+                    <div className="flex items-center space-x-3">
+                      <div className={`p-2 rounded-lg ${getStatusColor(week.status)}`}>
+                        {getStatusIcon(week.status)}
+                      </div>
+                      <div>
+                        <p className="font-medium text-gray-900">Semana {week.weekNumber}</p>
+                        <p className="text-sm text-gray-500">
+                          {new Date(week.startDate).toLocaleDateString('es-ES')} - {new Date(week.endDate).toLocaleDateString('es-ES')}
+                        </p>
+                      </div>
+                    </div>
+                    <span className={`inline-flex px-2 py-1 text-xs font-medium rounded-full ${getStatusColor(week.status)}`}>
+                      {getStatusText(week.status)}
+                    </span>
+                  </div>
+
+                  <div className="grid grid-cols-2 gap-3 mb-3">
+                    <div className="bg-gray-50 rounded-lg p-3">
+                      <p className="text-xs text-gray-500 mb-1">Transacciones</p>
+                      <p className="text-sm font-medium text-gray-900">{week.transactionCount}</p>
+                      {week.pendingTransactions > 0 && (
+                        <p className="text-xs text-yellow-600">{week.pendingTransactions} pendientes</p>
+                      )}
+                    </div>
+                    <div className="bg-gray-50 rounded-lg p-3">
+                      <p className="text-xs text-gray-500 mb-1">Beneficio</p>
+                      <p className={`text-sm font-semibold truncate ${week.netProfit >= 0 ? 'text-blue-600' : 'text-orange-600'}`} title={formatCurrency(week.netProfit)}>
+                        {formatCurrency(week.netProfit)}
+                      </p>
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-2 gap-3 mb-3">
+                    <div className="bg-green-50 rounded-lg p-3">
+                      <p className="text-xs text-gray-500 mb-1">Ingresos</p>
+                      <p className="text-sm font-semibold text-green-600 truncate" title={formatCurrency(week.income)}>
+                        {formatCurrency(week.income)}
+                      </p>
+                    </div>
+                    <div className="bg-red-50 rounded-lg p-3">
+                      <p className="text-xs text-gray-500 mb-1">Gastos</p>
+                      <p className="text-sm font-semibold text-red-600 truncate" title={formatCurrency(week.expenses)}>
+                        {formatCurrency(week.expenses)}
+                      </p>
+                    </div>
+                  </div>
+
+                  <div className="flex items-center justify-center space-x-4">
+                    <button
+                      onClick={() => handleViewWeekDetails(week)}
+                      className="flex items-center space-x-2 px-3 py-2 text-sm text-blue-600 hover:text-blue-700 hover:bg-blue-50 rounded-lg transition-colors duration-200"
+                    >
+                      <Eye className="w-4 h-4" />
+                      <span>Ver detalles</span>
+                    </button>
+                    {week.status === 'open' || week.status === 'pending' ? (
+                      <button
+                        onClick={() => handleCloseWeek(week)}
+                        className="flex items-center space-x-2 px-3 py-2 text-sm text-green-600 hover:text-green-700 hover:bg-green-50 rounded-lg transition-colors duration-200"
+                      >
+                        <Lock className="w-4 h-4" />
+                        <span>Cerrar</span>
+                      </button>
+                    ) : (
+                      <button
+                        onClick={() => handleReopenWeek(week)}
+                        className="flex items-center space-x-2 px-3 py-2 text-sm text-yellow-600 hover:text-yellow-700 hover:bg-yellow-50 rounded-lg transition-colors duration-200"
+                      >
+                        <Unlock className="w-4 h-4" />
+                        <span>Reabrir</span>
+                      </button>
+                    )}
+                  </div>
+                </div>
+              ))}
             </div>
 
             {weeklyData.length === 0 && (
@@ -492,11 +601,12 @@ export default function WeekClosePage() {
       {/* Modal de Detalles de Semana */}
       {showDetailsModal && selectedWeek && (
         <div className="fixed inset-0 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-lg max-w-4xl w-full max-h-[90vh] overflow-y-auto shadow-xl border border-gray-200">
-            <div className="p-6 border-b border-gray-200">
+          <div className="bg-black bg-opacity-50 absolute inset-0" onClick={() => setShowDetailsModal(false)}></div>
+          <div className="bg-white rounded-lg max-w-4xl w-full max-h-[90vh] overflow-y-auto shadow-xl border border-gray-200 relative">
+            <div className="p-4 lg:p-6 border-b border-gray-200">
               <div className="flex items-center justify-between">
                 <div>
-                  <h3 className="text-xl font-semibold text-gray-900">
+                  <h3 className="text-lg lg:text-xl font-semibold text-gray-900">
                     Detalles de Semana {selectedWeek.weekNumber}
                   </h3>
                   <p className="text-sm text-gray-500 mt-1">
@@ -505,7 +615,7 @@ export default function WeekClosePage() {
                 </div>
                 <button
                   onClick={() => setShowDetailsModal(false)}
-                  className="text-gray-400 hover:text-gray-600 transition-colors duration-200"
+                  className="text-gray-400 hover:text-gray-600 transition-colors duration-200 p-1"
                 >
                   <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
@@ -514,41 +624,45 @@ export default function WeekClosePage() {
               </div>
             </div>
 
-            <div className="p-6">
+            <div className="p-4 lg:p-6">
               {/* Resumen de la Semana */}
-              <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
-                <div className="bg-gray-50 rounded-lg p-4">
+              <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 lg:gap-4 mb-6">
+                <div className="bg-gray-50 rounded-lg p-3 lg:p-4">
                   <div className="flex items-center space-x-2 mb-2">
                     <div className={`p-1 rounded ${getStatusColor(selectedWeek.status)}`}>
                       {getStatusIcon(selectedWeek.status)}
                     </div>
-                    <span className="text-sm font-medium text-gray-600">Estado</span>
+                    <span className="text-xs lg:text-sm font-medium text-gray-600">Estado</span>
                   </div>
-                  <p className="text-lg font-semibold text-gray-900">{getStatusText(selectedWeek.status)}</p>
+                  <p className="text-sm lg:text-lg font-semibold text-gray-900">{getStatusText(selectedWeek.status)}</p>
                 </div>
 
-                <div className="bg-green-50 rounded-lg p-4">
+                <div className="bg-green-50 rounded-lg p-3 lg:p-4">
                   <div className="flex items-center space-x-2 mb-2">
-                    <TrendingUp className="w-4 h-4 text-green-600" />
-                    <span className="text-sm font-medium text-gray-600">Ingresos</span>
+                    <TrendingUp className="w-3 h-3 lg:w-4 lg:h-4 text-green-600" />
+                    <span className="text-xs lg:text-sm font-medium text-gray-600">Ingresos</span>
                   </div>
-                  <p className="text-lg font-semibold text-green-700">{formatCurrency(selectedWeek.income)}</p>
+                  <p className="text-sm lg:text-lg font-semibold text-green-700 truncate" title={formatCurrency(selectedWeek.income)}>
+                    {formatCurrency(selectedWeek.income)}
+                  </p>
                 </div>
 
-                <div className="bg-red-50 rounded-lg p-4">
+                <div className="bg-red-50 rounded-lg p-3 lg:p-4">
                   <div className="flex items-center space-x-2 mb-2">
-                    <TrendingDown className="w-4 h-4 text-red-600" />
-                    <span className="text-sm font-medium text-gray-600">Gastos</span>
+                    <TrendingDown className="w-3 h-3 lg:w-4 lg:h-4 text-red-600" />
+                    <span className="text-xs lg:text-sm font-medium text-gray-600">Gastos</span>
                   </div>
-                  <p className="text-lg font-semibold text-red-700">{formatCurrency(selectedWeek.expenses)}</p>
+                  <p className="text-sm lg:text-lg font-semibold text-red-700 truncate" title={formatCurrency(selectedWeek.expenses)}>
+                    {formatCurrency(selectedWeek.expenses)}
+                  </p>
                 </div>
 
-                <div className={`${selectedWeek.netProfit >= 0 ? 'bg-blue-50' : 'bg-orange-50'} rounded-lg p-4`}>
+                <div className={`${selectedWeek.netProfit >= 0 ? 'bg-blue-50' : 'bg-orange-50'} rounded-lg p-3 lg:p-4`}>
                   <div className="flex items-center space-x-2 mb-2">
-                    <DollarSign className={`w-4 h-4 ${selectedWeek.netProfit >= 0 ? 'text-blue-600' : 'text-orange-600'}`} />
-                    <span className="text-sm font-medium text-gray-600">Beneficio</span>
+                    <DollarSign className={`w-3 h-3 lg:w-4 lg:h-4 ${selectedWeek.netProfit >= 0 ? 'text-blue-600' : 'text-orange-600'}`} />
+                    <span className="text-xs lg:text-sm font-medium text-gray-600">Beneficio</span>
                   </div>
-                  <p className={`text-lg font-semibold ${selectedWeek.netProfit >= 0 ? 'text-blue-700' : 'text-orange-700'}`}>
+                  <p className={`text-sm lg:text-lg font-semibold truncate ${selectedWeek.netProfit >= 0 ? 'text-blue-700' : 'text-orange-700'}`} title={formatCurrency(selectedWeek.netProfit)}>
                     {formatCurrency(selectedWeek.netProfit)}
                   </p>
                 </div>
@@ -556,64 +670,110 @@ export default function WeekClosePage() {
 
               {/* Transacciones de la Semana */}
               <div className="mb-6">
-                <h4 className="text-lg font-semibold text-gray-900 mb-4">
+                <h4 className="text-base lg:text-lg font-semibold text-gray-900 mb-4">
                   Transacciones de la Semana ({selectedWeek.transactionCount})
                 </h4>
                 
                 {selectedWeek.transactionCount > 0 ? (
                   <div className="bg-gray-50 rounded-lg overflow-hidden">
-                    <table className="w-full">
-                      <thead className="bg-gray-100">
-                        <tr>
-                          <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Fecha</th>
-                          <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Descripción</th>
-                          <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Tipo</th>
-                          <th className="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase">Monto</th>
-                          <th className="px-4 py-3 text-center text-xs font-medium text-gray-500 uppercase">Estado</th>
-                        </tr>
-                      </thead>
-                      <tbody className="divide-y divide-gray-200">
-                        {mockTransactions
-                          .filter(t => {
-                            const transactionDate = new Date(t.date)
-                            const weekStart = new Date(selectedWeek.startDate)
-                            const weekEnd = new Date(selectedWeek.endDate)
-                            return transactionDate >= weekStart && transactionDate <= weekEnd
-                          })
-                          .slice(0, 10)
-                          .map((transaction, index) => (
-                            <tr key={index} className="hover:bg-gray-50">
-                              <td className="px-4 py-3 text-sm text-gray-900">
-                                {new Date(transaction.date).toLocaleDateString('es-ES')}
-                              </td>
-                              <td className="px-4 py-3 text-sm text-gray-900">{transaction.description}</td>
-                              <td className="px-4 py-3">
-                                <span className={`inline-flex px-2 py-1 text-xs font-medium rounded-full ${
-                                  transaction.type === 'income' 
-                                    ? 'bg-green-100 text-green-800' 
-                                    : 'bg-red-100 text-red-800'
-                                }`}>
-                                  {transaction.type === 'income' ? 'Ingreso' : 'Gasto'}
-                                </span>
-                              </td>
-                              <td className="px-4 py-3 text-sm text-right font-medium">
-                                <span className={transaction.type === 'income' ? 'text-green-600' : 'text-red-600'}>
+                    {/* Vista de tabla para pantallas grandes */}
+                    <div className="hidden lg:block">
+                      <table className="w-full">
+                        <thead className="bg-gray-100">
+                          <tr>
+                            <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Fecha</th>
+                            <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Descripción</th>
+                            <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Tipo</th>
+                            <th className="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase">Monto</th>
+                            <th className="px-4 py-3 text-center text-xs font-medium text-gray-500 uppercase">Estado</th>
+                          </tr>
+                        </thead>
+                        <tbody className="divide-y divide-gray-200">
+                          {mockTransactions
+                            .filter(t => {
+                              const transactionDate = new Date(t.date)
+                              const weekStart = new Date(selectedWeek.startDate)
+                              const weekEnd = new Date(selectedWeek.endDate)
+                              return transactionDate >= weekStart && transactionDate <= weekEnd
+                            })
+                            .slice(0, 10)
+                            .map((transaction, index) => (
+                              <tr key={index} className="hover:bg-gray-50">
+                                <td className="px-4 py-3 text-sm text-gray-900">
+                                  {new Date(transaction.date).toLocaleDateString('es-ES')}
+                                </td>
+                                <td className="px-4 py-3 text-sm text-gray-900">{transaction.description}</td>
+                                <td className="px-4 py-3">
+                                  <span className={`inline-flex px-2 py-1 text-xs font-medium rounded-full ${
+                                    transaction.type === 'income' 
+                                      ? 'bg-green-100 text-green-800' 
+                                      : 'bg-red-100 text-red-800'
+                                  }`}>
+                                    {transaction.type === 'income' ? 'Ingreso' : 'Gasto'}
+                                  </span>
+                                </td>
+                                <td className="px-4 py-3 text-sm text-right font-medium">
+                                  <span className={transaction.type === 'income' ? 'text-green-600' : 'text-red-600'}>
+                                    {formatCurrency(transaction.amount)}
+                                  </span>
+                                </td>
+                                <td className="px-4 py-3 text-center">
+                                  <span className={`inline-flex px-2 py-1 text-xs font-medium rounded-full ${
+                                    transaction.status === 'completed' 
+                                      ? 'bg-green-100 text-green-800' 
+                                      : 'bg-yellow-100 text-yellow-800'
+                                  }`}>
+                                    {transaction.status === 'completed' ? 'Completada' : 'Pendiente'}
+                                  </span>
+                                </td>
+                              </tr>
+                            ))}
+                        </tbody>
+                      </table>
+                    </div>
+
+                    {/* Vista de cartas para pantallas pequeñas */}
+                    <div className="lg:hidden divide-y divide-gray-200">
+                      {mockTransactions
+                        .filter(t => {
+                          const transactionDate = new Date(t.date)
+                          const weekStart = new Date(selectedWeek.startDate)
+                          const weekEnd = new Date(selectedWeek.endDate)
+                          return transactionDate >= weekStart && transactionDate <= weekEnd
+                        })
+                        .slice(0, 10)
+                        .map((transaction, index) => (
+                          <div key={index} className="p-4">
+                            <div className="flex items-center justify-between mb-2">
+                              <div>
+                                <p className="text-sm font-medium text-gray-900 truncate">{transaction.description}</p>
+                                <p className="text-xs text-gray-500">{new Date(transaction.date).toLocaleDateString('es-ES')}</p>
+                              </div>
+                              <div className="text-right">
+                                <p className={`text-sm font-semibold ${transaction.type === 'income' ? 'text-green-600' : 'text-red-600'}`}>
                                   {formatCurrency(transaction.amount)}
-                                </span>
-                              </td>
-                              <td className="px-4 py-3 text-center">
-                                <span className={`inline-flex px-2 py-1 text-xs font-medium rounded-full ${
-                                  transaction.status === 'completed' 
-                                    ? 'bg-green-100 text-green-800' 
-                                    : 'bg-yellow-100 text-yellow-800'
-                                }`}>
-                                  {transaction.status === 'completed' ? 'Completada' : 'Pendiente'}
-                                </span>
-                              </td>
-                            </tr>
-                          ))}
-                      </tbody>
-                    </table>
+                                </p>
+                              </div>
+                            </div>
+                            <div className="flex items-center justify-between">
+                              <span className={`inline-flex px-2 py-1 text-xs font-medium rounded-full ${
+                                transaction.type === 'income' 
+                                  ? 'bg-green-100 text-green-800' 
+                                  : 'bg-red-100 text-red-800'
+                              }`}>
+                                {transaction.type === 'income' ? 'Ingreso' : 'Gasto'}
+                              </span>
+                              <span className={`inline-flex px-2 py-1 text-xs font-medium rounded-full ${
+                                transaction.status === 'completed' 
+                                  ? 'bg-green-100 text-green-800' 
+                                  : 'bg-yellow-100 text-yellow-800'
+                              }`}>
+                                {transaction.status === 'completed' ? 'Completada' : 'Pendiente'}
+                              </span>
+                            </div>
+                          </div>
+                        ))}
+                    </div>
                     
                     {selectedWeek.transactionCount > 10 && (
                       <div className="px-4 py-3 bg-gray-100 text-center text-sm text-gray-500">
@@ -648,10 +808,10 @@ export default function WeekClosePage() {
               </div>
             </div>
 
-            <div className="px-6 py-4 bg-gray-50 border-t border-gray-200 flex justify-end space-x-3">
+            <div className="px-4 lg:px-6 py-4 bg-gray-50 border-t border-gray-200 flex flex-col sm:flex-row justify-end space-y-2 sm:space-y-0 sm:space-x-3">
               <button
                 onClick={() => setShowDetailsModal(false)}
-                className="px-4 py-2 text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors duration-200"
+                className="px-4 py-2 text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors duration-200 text-sm"
               >
                 Cerrar
               </button>
@@ -661,7 +821,7 @@ export default function WeekClosePage() {
                     setShowDetailsModal(false)
                     handleCloseWeek(selectedWeek)
                   }}
-                  className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors duration-200 flex items-center space-x-2"
+                  className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors duration-200 flex items-center justify-center space-x-2 text-sm"
                 >
                   <Lock className="w-4 h-4" />
                   <span>Cerrar Semana</span>
@@ -673,7 +833,7 @@ export default function WeekClosePage() {
                     setShowDetailsModal(false)
                     handleReopenWeek(selectedWeek)
                   }}
-                  className="px-4 py-2 bg-yellow-600 text-white rounded-lg hover:bg-yellow-700 transition-colors duration-200 flex items-center space-x-2"
+                  className="px-4 py-2 bg-yellow-600 text-white rounded-lg hover:bg-yellow-700 transition-colors duration-200 flex items-center justify-center space-x-2 text-sm"
                 >
                   <Unlock className="w-4 h-4" />
                   <span>Reabrir Semana</span>
@@ -687,23 +847,24 @@ export default function WeekClosePage() {
       {/* Modal de Confirmación de Acción */}
       {showActionModal && selectedWeek && (
         <div className="fixed inset-0 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-lg max-w-md w-full shadow-xl border border-gray-200">
-            <div className="p-6">
+          <div className="bg-black bg-opacity-50 absolute inset-0" onClick={() => setShowActionModal(false)}></div>
+          <div className="bg-white rounded-lg max-w-md w-full shadow-xl border border-gray-200 relative">
+            <div className="p-4 lg:p-6">
               <div className="flex items-center space-x-3 mb-4">
-                <div className={`p-2 rounded-lg ${
+                <div className={`p-2 rounded-lg flex-shrink-0 ${
                   actionType === 'close' ? 'bg-green-100' : 'bg-yellow-100'
                 }`}>
                   {actionType === 'close' ? (
-                    <Lock className="w-6 h-6 text-green-600" />
+                    <Lock className="w-5 h-5 lg:w-6 lg:h-6 text-green-600" />
                   ) : (
-                    <Unlock className="w-6 h-6 text-yellow-600" />
+                    <Unlock className="w-5 h-5 lg:w-6 lg:h-6 text-yellow-600" />
                   )}
                 </div>
-                <div>
-                  <h3 className="text-lg font-semibold text-gray-900">
+                <div className="min-w-0 flex-1">
+                  <h3 className="text-base lg:text-lg font-semibold text-gray-900">
                     {actionType === 'close' ? 'Cerrar Semana' : 'Reabrir Semana'}
                   </h3>
-                  <p className="text-sm text-gray-500">
+                  <p className="text-sm text-gray-500 truncate">
                     Semana {selectedWeek.weekNumber} ({new Date(selectedWeek.startDate).toLocaleDateString('es-ES')} - {new Date(selectedWeek.endDate).toLocaleDateString('es-ES')})
                   </p>
                 </div>
@@ -767,16 +928,16 @@ export default function WeekClosePage() {
                 )}
               </div>
 
-              <div className="flex space-x-3">
+              <div className="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-3">
                 <button
                   onClick={() => setShowActionModal(false)}
-                  className="flex-1 px-4 py-2 text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors duration-200"
+                  className="flex-1 px-4 py-2 text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors duration-200 text-sm"
                 >
                   Cancelar
                 </button>
                 <button
                   onClick={confirmAction}
-                  className={`flex-1 px-4 py-2 text-white rounded-lg transition-colors duration-200 ${
+                  className={`flex-1 px-4 py-2 text-white rounded-lg transition-colors duration-200 text-sm ${
                     actionType === 'close' 
                       ? 'bg-green-600 hover:bg-green-700' 
                       : 'bg-yellow-600 hover:bg-yellow-700'

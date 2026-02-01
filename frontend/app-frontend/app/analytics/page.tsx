@@ -6,6 +6,7 @@ import { Download, Calendar, TrendingUp, BarChart3 } from 'lucide-react'
 import Sidebar from '@/components/dashboard/Sidebar'
 import OnboardingTour from '@/components/onboarding/OnboardingTour'
 import { useOnboarding } from '@/hooks/useOnboarding'
+import { useAuth } from '@/hooks/useAuth'
 import ReportsOverview from '@/components/analytics/ReportsOverview'
 import CategoryAnalysis from '@/components/analytics/CategoryAnalysis'
 import AnnualPerformance from '@/components/analytics/AnnualPerformance'
@@ -17,23 +18,40 @@ import { exportAnalyticsData, showExportModal } from '@/services/exportService'
 
 export default function ReportsPage() {
   const router = useRouter()
+  
+  // TODOS LOS HOOKS AL INICIO
+  const { user, isLoading, isAuthenticated, logout } = useAuth()
   const [selectedPeriod, setSelectedPeriod] = useState<'week' | 'month' | 'year'>('week')
   const [selectedYear, setSelectedYear] = useState('2024')
   const [selectedMonth, setSelectedMonth] = useState('01')
   const [selectedWeek, setSelectedWeek] = useState('1')
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false)
-
-  // Onboarding hook
   const {
     isOnboardingOpen,
     closeOnboarding,
     completeOnboarding
   } = useOnboarding()
 
+  // RETURNS CONDICIONALES DESPUÉS DE TODOS LOS HOOKS
+  // Mostrar loading mientras se verifica la autenticación
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-slate-50 flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary-500 mx-auto mb-4"></div>
+          <p className="text-slate-600">Verificando autenticación...</p>
+        </div>
+      </div>
+    )
+  }
+  
+  // Si no está autenticado, el hook ya redirigió al login
+  if (!isAuthenticated) {
+    return null
+  }
+
   const handleLogout = async () => {
-    // TODO: Implement actual logout logic
-    console.log('Logging out...')
-    router.push('/auth/login')
+    logout() // Usar la función logout del hook useAuth
   }
 
   const handleSidebarToggle = (isCollapsed: boolean) => {

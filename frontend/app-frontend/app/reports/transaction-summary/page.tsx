@@ -6,8 +6,10 @@ import { ArrowLeft, Download } from 'lucide-react'
 import Sidebar from '@/components/dashboard/Sidebar'
 import TransactionSummaryReport from '@/components/reports/TransactionSummaryReport'
 import { exportReportData, showExportModal } from '@/services/exportService'
+import { useAuth } from '@/hooks/useAuth'
 
 export default function TransactionSummaryPage() {
+  const { logout, isLoading } = useAuth()
   const router = useRouter()
   const searchParams = useSearchParams()
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false)
@@ -16,8 +18,17 @@ export default function TransactionSummaryPage() {
   const year = searchParams.get('year') || '2024'
   const month = searchParams.get('month') || '01'
 
+  // Mostrar loading mientras se verifica la autenticación
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-primary-600"></div>
+      </div>
+    )
+  }
+
   const handleLogout = async () => {
-    router.push('/auth/login')
+    logout()
   }
 
   const handleSidebarToggle = (isCollapsed: boolean) => {

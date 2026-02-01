@@ -15,6 +15,7 @@ import OnboardingTour from '../../components/onboarding/OnboardingTour'
 import HelpButton from '../../components/onboarding/HelpButton'
 import WelcomeModal from '../../components/onboarding/WelcomeModal'
 import { useOnboarding } from '../../hooks/useOnboarding'
+import { useAuth } from '../../hooks/useAuth'
 import {
   mockWeeklyData,
   mockMonthlyData,
@@ -25,10 +26,13 @@ import { getDataWithChanges, getPeriodLabel } from '../../data/transactions-data
 
 export default function DashboardPage() {
   const router = useRouter()
+  
+  // TODOS LOS HOOKS DEBEN IR AL INICIO - ANTES DE CUALQUIER RETURN CONDICIONAL
+  const { user, isLoading, isAuthenticated, logout } = useAuth()
   const [selectedPeriod, setSelectedPeriod] = useState<'week' | 'month' | 'year'>('week')
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false)
   
-  // Onboarding hook
+  // Onboarding hook - DEBE IR AQUÍ, NO DESPUÉS DE LOS RETURNS
   const {
     isOnboardingOpen,
     isOnboardingCompleted,
@@ -43,7 +47,26 @@ export default function DashboardPage() {
   // Get data based on selected period with percentage changes
   const periodDataWithChanges = getDataWithChanges(selectedPeriod)
   const periodLabel = getPeriodLabel(selectedPeriod)
+  
+  // AHORA SÍ PODEMOS HACER RETURNS CONDICIONALES
+  // Mostrar loading mientras se verifica la autenticación
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-slate-50 flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary-500 mx-auto mb-4"></div>
+          <p className="text-slate-600">Verificando autenticación...</p>
+        </div>
+      </div>
+    )
+  }
+  
+  // Si no está autenticado, el hook ya redirigió al login
+  if (!isAuthenticated) {
+    return null
+  }
 
+  // FUNCIONES DEL COMPONENTE
   const handleSidebarToggle = (isCollapsed: boolean) => {
     setSidebarCollapsed(isCollapsed)
   }
@@ -69,9 +92,7 @@ export default function DashboardPage() {
   }
 
   const handleLogout = async () => {
-    // TODO: Implement actual logout logic
-    console.log('Logging out...')
-    router.push('/auth/login')
+    logout() // Usar la función logout del hook useAuth
   }
 
   const quickActions = [

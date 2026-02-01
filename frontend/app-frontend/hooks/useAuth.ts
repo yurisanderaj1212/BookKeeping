@@ -1,56 +1,77 @@
 'use client'
 
-import { ReactNode } from 'react'
+import { useState, useEffect } from 'react'
+import { useRouter, usePathname } from 'next/navigation'
+import { 
+  isAuthenticated, 
+  getCurrentUser, 
+  clearAuthData, 
+  isProtectedRoute, 
+  isAuthRoute,
+  type User 
+} from '@/lib/auth'
 
-interface User {
-  id: string
-  email: string
-  firstName: string
-  lastName: string
-  company?: string
-  occupation?: string
-  role: string
-  isEmailVerified: boolean
-  createdAt: string
-}
+/**
+ * Hook personalizado para manejar autenticación y protección de rutas
+ */
+export function useAuth() {
+  const [user, setUser] = useState<User | null>(null)
+  const [isLoading, setIsLoading] = useState(true)
+  const router = useRouter()
+  const pathname = usePathname()
 
-interface AuthContextType {
-  user: User | null
-  isAuthenticated: boolean
-  isLoading: boolean
-  login: (email: string, password: string) => Promise<{ success: boolean; error?: string }>
-  register: (userData: {
-    email: string
-    password: string
-    firstName: string
-    lastName: string
-    company?: string
-    occupation?: string
-  }) => Promise<{ success: boolean; error?: string }>
-  logout: () => Promise<void>
-  forgotPassword: (email: string) => Promise<{ success: boolean; error?: string }>
-  loginWithGoogle: () => void
-  loginWithMicrosoft: () => void
-  loginWithApple: () => void
-}
+  useEffect(() => {
+    checkAuthStatus()
+  }, [pathname])
 
-export function AuthProvider({ children }: { children: ReactNode }) {
-  // Simplified version - just return children for now
-  return children
-}
+  const checkAuthStatus = () => {
+    setIsLoading(true)
+    
+    try {
+      const authenticated = isAuthenticated()
+      const currentUser = getCurrentUser()
+      
+      if (authenticated && currentUser) {
+        setUser(currentUser)
+        
+        // Si está autenticado y trata de acceder a rutas de auth, redirigir al dashboard
+        if (isAuthRoute(pathname)) {
+          router.replace('/dashboard')
+          return
+        }
+      } else {
+        setUser(null)
+        
+        // Si no está autenticado y trata de acceder a rutas protegidas, redirigir al login
+        if (isProtectedRoute(pathname)) {
+          router.replace('/auth/login')
+          return
+        }
+      }
+    } catch (error) {
+      console.error('Error checking auth status:', error)
+      setUser(null)
+      clearAuthData()
+      
+      if (isProtectedRoute(pathname)) {
+        router.replace('/auth/login')
+      }
+    } finally {
+      setIsLoading(false)
+    }
+  }
 
-export function useAuth(): AuthContextType {
-  // Simplified version for now
+  const logout = () => {
+    clearAuthData()
+    setUser(null)
+    router.replace('/auth/login')
+  }
+
   return {
-    user: null,
-    isAuthenticated: false,
-    isLoading: false,
-    login: async () => ({ success: false }),
-    register: async () => ({ success: false }),
-    logout: async () => {},
-    forgotPassword: async () => ({ success: false }),
-    loginWithGoogle: () => {},
-    loginWithMicrosoft: () => {},
-    loginWithApple: () => {},
+    user,
+    isAuthenticated: !!user,
+    isLoading,
+    logout,
+    checkAuthStatus
   }
 }

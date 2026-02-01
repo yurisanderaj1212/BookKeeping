@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
+import { useAuth } from '@/hooks/useAuth'
 import { 
   Bell, 
   Filter, 
@@ -36,6 +37,9 @@ import {
 
 export default function NotificationsPage() {
   const router = useRouter()
+  
+  // TODOS LOS HOOKS AL INICIO
+  const { user, isLoading, isAuthenticated, logout } = useAuth()
   const [notifications, setNotifications] = useState<Notification[]>(mockNotifications)
   const [searchTerm, setSearchTerm] = useState('')
   const [filter, setFilter] = useState<'all' | 'unread' | 'read'>('all')
@@ -44,6 +48,24 @@ export default function NotificationsPage() {
   const [selectedNotifications, setSelectedNotifications] = useState<string[]>([])
   const [showFilters, setShowFilters] = useState(false)
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false)
+
+  // RETURNS CONDICIONALES DESPUÉS DE TODOS LOS HOOKS
+  // Mostrar loading mientras se verifica la autenticación
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-slate-50 flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary-500 mx-auto mb-4"></div>
+          <p className="text-slate-600">Verificando autenticación...</p>
+        </div>
+      </div>
+    )
+  }
+  
+  // Si no está autenticado, el hook ya redirigió al login
+  if (!isAuthenticated) {
+    return null
+  }
 
   const stats = getNotificationStats()
 
@@ -68,8 +90,7 @@ export default function NotificationsPage() {
   }).sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime())
 
   const handleLogout = async () => {
-    console.log('Logging out...')
-    router.push('/auth/login')
+    logout() // Usar la función logout del hook useAuth
   }
 
   const handleSidebarToggle = (isCollapsed: boolean) => {

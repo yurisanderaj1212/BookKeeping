@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useCallback } from 'react'
 import { useRouter } from 'next/navigation'
+import { useAuth } from '@/hooks/useAuth'
 import { 
   User, 
   Building2, 
@@ -472,6 +473,9 @@ const CompanyTab = ({
 
 export default function SettingsPage() {
   const router = useRouter()
+  
+  // TODOS LOS HOOKS AL INICIO
+  const { user, isLoading: authLoading, isAuthenticated, logout } = useAuth()
   const [activeTab, setActiveTab] = useState('profile')
   const [isLoading, setIsLoading] = useState(false)
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false)
@@ -544,15 +548,7 @@ export default function SettingsPage() {
     loginAlerts: true
   })
 
-  const handleLogout = async () => {
-    console.log('Logging out...')
-    router.push('/auth/login')
-  }
-
-  const handleSidebarToggle = (isCollapsed: boolean) => {
-    setSidebarCollapsed(isCollapsed)
-  }
-
+  // Todos los useCallback también al inicio
   const handleSave = useCallback(async (section: string) => {
     setIsLoading(true)
     // Simulate API call
@@ -570,6 +566,32 @@ export default function SettingsPage() {
       alert('Cuenta eliminada')
     }
   }, [])
+
+  // RETURNS CONDICIONALES DESPUÉS DE TODOS LOS HOOKS
+  // Mostrar loading mientras se verifica la autenticación
+  if (authLoading) {
+    return (
+      <div className="min-h-screen bg-slate-50 flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary-500 mx-auto mb-4"></div>
+          <p className="text-slate-600">Verificando autenticación...</p>
+        </div>
+      </div>
+    )
+  }
+  
+  // Si no está autenticado, el hook ya redirigió al login
+  if (!isAuthenticated) {
+    return null
+  }
+
+  const handleLogout = async () => {
+    logout() // Usar la función logout del hook useAuth
+  }
+
+  const handleSidebarToggle = (isCollapsed: boolean) => {
+    setSidebarCollapsed(isCollapsed)
+  }
 
   const tabs = [
     { id: 'profile', label: 'Perfil Personal', icon: User },

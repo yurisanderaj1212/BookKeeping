@@ -104,7 +104,7 @@ export default function Sidebar({ onLogout, onToggle }: SidebarProps) {
       data-tour="sidebar"
     >
       {/* Logo */}
-      <div className="flex items-center justify-between p-4 border-b border-gray-100">
+      <div className="flex items-center justify-between p-4 border-b border-gray-100 flex-shrink-0">
         {!isCollapsed && (
           <div className="flex items-center space-x-3">
             <div className="w-8 h-8 bg-primary-500 rounded-lg flex items-center justify-center">
@@ -139,10 +139,10 @@ export default function Sidebar({ onLogout, onToggle }: SidebarProps) {
         </button>
       </div>
 
-      {/* Navigation */}
-      <nav className="flex-1 px-3 py-4 overflow-y-auto">
+      {/* Navigation - Flex-1 para ocupar el espacio disponible */}
+      <nav className="flex-1 px-3 py-4 flex flex-col">
         {/* Main Menu */}
-        <div className="mb-6">
+        <div className="flex-1">
           <ul className="space-y-1">
             {menuItems.map((item) => {
               const isActive = pathname === item.href
@@ -176,10 +176,10 @@ export default function Sidebar({ onLogout, onToggle }: SidebarProps) {
           </ul>
         </div>
 
-        {/* Settings Section */}
-        <div className="border-t border-gray-200 pt-4">
+        {/* Settings Section - Más cerca del perfil */}
+        <div className="border-t border-gray-200 pt-3 flex-shrink-0">
           {!isCollapsed && (
-            <p className="px-3 text-xs font-semibold text-gray-400 uppercase tracking-wider mb-3">
+            <p className="px-3 text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2">
               Sistema
             </p>
           )}
@@ -218,12 +218,12 @@ export default function Sidebar({ onLogout, onToggle }: SidebarProps) {
         </div>
       </nav>
 
-      {/* User section */}
-      <div className="p-3 border-t border-gray-100">
+      {/* User section - Más cerca de la sección Sistema */}
+      <div className="p-3 border-t border-gray-100 flex-shrink-0">
         {!isCollapsed ? (
           <>
-            <div className="flex items-center space-x-3 mb-3 p-2 rounded-lg bg-gray-50">
-              <div className="w-8 h-8 bg-primary-100 rounded-full flex items-center justify-center">
+            <div className="flex items-center space-x-3 mb-2 p-2.5 rounded-lg bg-gray-50">
+              <div className="w-9 h-9 bg-primary-100 rounded-full flex items-center justify-center flex-shrink-0">
                 <User className="w-4 h-4 text-primary-600" />
               </div>
               <div className="flex-1 min-w-0">
@@ -236,13 +236,13 @@ export default function Sidebar({ onLogout, onToggle }: SidebarProps) {
               onClick={onLogout}
               className="w-full flex items-center space-x-3 px-3 py-2 text-gray-600 hover:bg-red-50 hover:text-red-600 rounded-lg transition-all duration-200 group"
             >
-              <LogOut className="w-4 h-4 group-hover:text-red-600" />
+              <LogOut className="w-4 h-4 group-hover:text-red-600 flex-shrink-0" />
               <span className="font-medium text-sm">Cerrar Sesión</span>
             </button>
           </>
         ) : (
           <div className="flex flex-col items-center space-y-2">
-            <div className="w-8 h-8 bg-primary-100 rounded-full flex items-center justify-center">
+            <div className="w-9 h-9 bg-primary-100 rounded-full flex items-center justify-center">
               <User className="w-4 h-4 text-primary-600" />
             </div>
             

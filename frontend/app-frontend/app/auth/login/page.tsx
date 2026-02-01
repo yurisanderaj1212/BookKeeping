@@ -5,10 +5,12 @@ import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import Toast from '@/components/ui/Toast'
 import { useToast } from '@/hooks/useToast'
+import { useAuth } from '@/hooks/useAuth'
 
 export default function LoginPage() {
   const router = useRouter()
   const { toast, showError, hideToast } = useToast()
+  const { isAuthenticated, isLoading: authLoading } = useAuth()
   
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
@@ -17,6 +19,13 @@ export default function LoginPage() {
   const [errors, setErrors] = useState<Record<string, string>>({})
   const [formKey, setFormKey] = useState(Date.now()) // Key único para forzar re-render
   // const [rememberMe, setRememberMe] = useState(false) // Comentado temporalmente
+
+  // Si ya está autenticado, redirigir al dashboard
+  useEffect(() => {
+    if (!authLoading && isAuthenticated) {
+      router.replace('/dashboard')
+    }
+  }, [authLoading, isAuthenticated, router])
 
   // Limpiar cualquier autocompletado o datos guardados al cargar la página
   useEffect(() => {
@@ -43,6 +52,24 @@ export default function LoginPage() {
     
     return () => clearTimeout(timer)
   }, [])
+
+  // RETURNS CONDICIONALES DESPUÉS DE TODOS LOS HOOKS
+  // Mostrar loading mientras se verifica la autenticación
+  if (authLoading) {
+    return (
+      <div className="min-h-screen bg-slate-50 flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary-500 mx-auto mb-4"></div>
+          <p className="text-slate-600">Verificando autenticación...</p>
+        </div>
+      </div>
+    )
+  }
+
+  // Si ya está autenticado, no mostrar nada (ya se redirigió)
+  if (isAuthenticated) {
+    return null
+  }
 
   // Función para limpiar errores cuando el usuario empieza a corregir
   const handleEmailChange = (e: React.ChangeEvent<HTMLInputElement>) => {
