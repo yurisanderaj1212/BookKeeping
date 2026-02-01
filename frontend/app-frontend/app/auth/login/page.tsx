@@ -1,18 +1,217 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import Link from 'next/link'
+import { useRouter } from 'next/navigation'
+import Toast from '@/components/ui/Toast'
+import { useToast } from '@/hooks/useToast'
 
 export default function LoginPage() {
+  const router = useRouter()
+  const { toast, showError, hideToast } = useToast()
+  
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [showPassword, setShowPassword] = useState(false)
-  const [rememberMe, setRememberMe] = useState(false)
+  const [isLoading, setIsLoading] = useState(false)
+  const [errors, setErrors] = useState<Record<string, string>>({})
+  const [formKey, setFormKey] = useState(Date.now()) // Key único para forzar re-render
+  // const [rememberMe, setRememberMe] = useState(false) // Comentado temporalmente
 
-  const handleSubmit = (e: React.FormEvent) => {
+  // Limpiar cualquier autocompletado o datos guardados al cargar la página
+  useEffect(() => {
+    // Asegurar que los campos estén vacíos
+    setEmail('')
+    setPassword('')
+    setErrors({})
+    
+    // Regenerar key para forzar re-render del formulario
+    setFormKey(Date.now())
+    
+    // Limpieza adicional después de que el navegador haya intentado autocompletar
+    const timer = setTimeout(() => {
+      setEmail('')
+      setPassword('')
+      
+      // Limpiar físicamente los campos del DOM
+      const emailInput = document.querySelector('input[name="username"]') as HTMLInputElement
+      const passwordInput = document.querySelector('input[name="user-password"]') as HTMLInputElement
+      
+      if (emailInput) emailInput.value = ''
+      if (passwordInput) passwordInput.value = ''
+    }, 100)
+    
+    return () => clearTimeout(timer)
+  }, [])
+
+  // Función para limpiar errores cuando el usuario empieza a corregir
+  const handleEmailChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value
+    setEmail(value)
+    
+    // Limpiar error de email cuando el usuario empieza a escribir
+    if (errors.email) {
+      setErrors(prev => {
+        const newErrors = { ...prev }
+        delete newErrors.email
+        return newErrors
+      })
+    }
+  }
+
+  const handlePasswordChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value
+    setPassword(value)
+    
+    // Limpiar error de password cuando el usuario empieza a escribir
+    if (errors.password) {
+      setErrors(prev => {
+        const newErrors = { ...prev }
+        delete newErrors.password
+        return newErrors
+      })
+    }
+  }
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    // TODO: Implement login logic
-    console.log('Login attempt:', { email, password, rememberMe })
+    setIsLoading(true)
+    setErrors({})
+    
+    // Validaciones del frontend que coinciden con el backend (LoginRequest)
+    const newErrors: Record<string, string> = {}
+    
+    if (!email.trim()) {
+      newErrors.email = 'El email es requerido'
+    } else {
+      // Validación de formato de email
+      const emailRegex = /^[^@\s]+@[^@\s]+\.[^@\s]+$/
+      if (!emailRegex.test(email)) {
+        newErrors.email = 'El formato del email no es válido'
+      }
+    }
+    
+    if (!password) {
+      newErrors.password = 'La contraseña es requerida'
+    } else if (password.length < 8) {
+      newErrors.password = 'La contraseña debe tener al menos 8 caracteres'
+    }
+    
+    if (Object.keys(newErrors).length > 0) {
+      setErrors(newErrors)
+      setIsLoading(false)
+      return
+    }
+    
+    // Preparar datos para enviar al backend (solo los campos que necesita)
+    const loginData = {
+      email: email,
+      password: password
+    }
+    
+    console.log('Login attempt:', loginData)
+    
+    try {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/auth/login`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(loginData),
+      })
+
+      if (response.ok) {
+        const result = await response.json()
+        console.log('Login successful:', result)
+        
+        // Guardar el token en localStorage
+        localStorage.setItem('token', result.token)
+        localStorage.setItem('user', JSON.stringify(result.user))
+        
+        // Redirección directa al dashboard (sin toast)
+        router.push('/dashboard')
+        
+      } else {
+        // Manejar errores del backend
+        if (response.status === 401) {
+          // Error 401 (Unauthorized) = Credenciales inválidas
+          // Aplicar lógica inteligente para mostrar errores más específicos
+          
+          // Si el email no tiene formato válido, error en email
+          const emailRegex = /^[^@\s]+@[^@\s]+\.[^@\s]+$/
+          if (!emailRegex.test(email)) {
+            setErrors({ 
+              email: 'El formato del email no es válido'
+            })
+            return
+          }
+          
+          // Si la contraseña es muy corta, error en contraseña
+          if (password.length < 8) {
+            setErrors({ 
+              password: 'La contraseña debe tener al menos 8 caracteres'
+            })
+            return
+          }
+          
+          // Si ambos campos parecen válidos, mostrar error genérico en ambos
+          // (para mantener seguridad pero dar mejor UX)
+          setErrors({ 
+            email: 'Email o contraseña incorrectos',
+            password: 'Email o contraseña incorrectos'
+          })
+          return
+        }
+        
+        let errorMessage = 'Error en el login'
+        
+        try {
+          const errorData = await response.json()
+          
+          // Manejar errores de validación del backend (ModelState)
+          if (errorData.errors) {
+            const backendErrors: Record<string, string> = {}
+            Object.keys(errorData.errors).forEach(key => {
+              const fieldName = key.toLowerCase()
+              backendErrors[fieldName] = errorData.errors[key][0]
+            })
+            setErrors(backendErrors)
+            return
+          } else if (errorData.message) {
+            errorMessage = errorData.message
+          }
+        } catch {
+          // Si no es JSON, intentar obtener como texto
+          try {
+            const textError = await response.text()
+            
+            // Manejar el error específico de "Credenciales inválidas"
+            if (textError.includes('Credenciales inválidas')) {
+              // Mostrar error genérico en ambos campos para no dar pistas sobre qué está mal
+              setErrors({ 
+                email: 'Las credenciales proporcionadas son incorrectas',
+                password: 'Las credenciales proporcionadas son incorrectas'
+              })
+              return
+            }
+            
+            errorMessage = textError
+          } catch {
+            errorMessage = `Error ${response.status}: ${response.statusText}`
+          }
+        }
+        
+        // Solo mostrar toast para errores NO relacionados con credenciales (500, 503, etc.)
+        if (response.status !== 401) {
+          showError(errorMessage)
+        }
+      }
+    } catch (error) {
+      console.error('Network error:', error)
+      showError('Error de conexión. Por favor verifica tu conexión a internet e intenta de nuevo.')
+    } finally {
+      setIsLoading(false)
+    }
   }
 
   const handleSocialLogin = (provider: string) => {
@@ -23,43 +222,55 @@ export default function LoginPage() {
   return (
     <div className="min-h-screen bg-slate-50 flex">
       {/* Left Column - Form */}
-      <div className="flex-1 flex flex-col justify-center py-12 px-4 sm:px-6 lg:px-20 xl:px-24">
+      <div className="flex-1 flex flex-col justify-center py-6 px-4 sm:px-6 lg:px-20 xl:px-24">
         <div className="mx-auto w-full max-w-sm lg:w-96">
           {/* Logo */}
-          <div className="flex items-center space-x-2 mb-8">
-            <div className="w-10 h-10 bg-primary-500 rounded-lg flex items-center justify-center">
-              <span className="text-white font-bold text-lg">CN</span>
+          <div className="flex items-center space-x-2 mb-4">
+            <div className="w-8 h-8 bg-primary-500 rounded-lg flex items-center justify-center">
+              <span className="text-white font-bold text-sm">CN</span>
             </div>
-            <span className="text-2xl font-bold text-navy-800">Chill Numbers</span>
+            <span className="text-xl font-bold text-navy-800">Chill Numbers</span>
           </div>
 
           <div>
-            <h2 className="text-3xl font-bold text-navy-800">Bienvenido de vuelta</h2>
-            <p className="mt-2 text-sm text-slate-600">
-              Inicia sesión en tu cuenta para continuar gestionando tus finanzas
+            <h2 className="text-2xl font-bold text-navy-800">Bienvenido de vuelta</h2>
+            <p className="mt-1 text-sm text-slate-600">
+              Inicia sesión en tu cuenta para continuar
             </p>
           </div>
 
-          <div className="mt-6">
+          <div className="mt-4">
             {/* Email Form */}
-            <form className="space-y-4" onSubmit={handleSubmit}>
+            <form key={formKey} className="space-y-3" onSubmit={handleSubmit} autoComplete="off">
+              {/* Campos falsos para confundir al navegador */}
+              <input type="text" style={{display: 'none'}} />
+              <input type="password" style={{display: 'none'}} />
+              
               <div>
                 <label htmlFor="email" className="block text-sm font-medium text-slate-700">
-                  Dirección de email
+                  Email
                 </label>
                 <div className="mt-1">
                   <input
                     id="email"
-                    name="email"
+                    name="username" // Cambiar name para confundir al navegador
                     type="email"
-                    autoComplete="email"
+                    autoComplete="new-password" // Truco para evitar autocompletado
+                    autoCorrect="off"
+                    autoCapitalize="off"
+                    spellCheck="false"
                     required
                     value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    className="appearance-none block w-full px-3 py-2.5 border border-slate-300 rounded-lg placeholder-slate-400 focus:outline-none focus:ring-primary-500 focus:border-primary-500 sm:text-sm"
+                    onChange={handleEmailChange}
+                    className={`appearance-none block w-full px-3 py-2 border rounded-lg placeholder-slate-400 focus:outline-none focus:ring-primary-500 focus:border-primary-500 text-sm ${
+                      errors.email ? 'border-red-300 focus:border-red-500 focus:ring-red-500' : 'border-slate-300'
+                    }`}
                     placeholder="Ingresa tu email"
                   />
                 </div>
+                {errors.email && (
+                  <p className="mt-1 text-xs text-red-600">{errors.email}</p>
+                )}
               </div>
 
               <div>
@@ -69,13 +280,18 @@ export default function LoginPage() {
                 <div className="mt-1 relative">
                   <input
                     id="password"
-                    name="password"
+                    name="user-password" // Cambiar name para confundir al navegador
                     type={showPassword ? 'text' : 'password'}
-                    autoComplete="current-password"
+                    autoComplete="new-password" // Truco para evitar autocompletado
+                    autoCorrect="off"
+                    autoCapitalize="off"
+                    spellCheck="false"
                     required
                     value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    className="appearance-none block w-full px-3 py-2.5 pr-10 border border-slate-300 rounded-lg placeholder-slate-400 focus:outline-none focus:ring-primary-500 focus:border-primary-500 sm:text-sm"
+                    onChange={handlePasswordChange}
+                    className={`appearance-none block w-full px-3 py-2 pr-10 border rounded-lg placeholder-slate-400 focus:outline-none focus:ring-primary-500 focus:border-primary-500 text-sm ${
+                      errors.password ? 'border-red-300 focus:border-red-500 focus:ring-red-500' : 'border-slate-300'
+                    }`}
                     placeholder="Ingresa tu contraseña"
                   />
                   <button
@@ -84,20 +300,25 @@ export default function LoginPage() {
                     onClick={() => setShowPassword(!showPassword)}
                   >
                     {showPassword ? (
-                      <svg className="h-5 w-5 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <svg className="h-4 w-4 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.878 9.878L3 3m6.878 6.878L21 21" />
                       </svg>
                     ) : (
-                      <svg className="h-5 w-5 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <svg className="h-4 w-4 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
                       </svg>
                     )}
                   </button>
                 </div>
+                {errors.password && (
+                  <p className="mt-1 text-xs text-red-600">{errors.password}</p>
+                )}
               </div>
 
               <div className="flex items-center justify-between">
+                {/* Campo "Recordarme" comentado temporalmente - no es necesario para el backend actual */}
+                {/*
                 <div className="flex items-center">
                   <input
                     id="remember-me"
@@ -111,6 +332,8 @@ export default function LoginPage() {
                     Recordarme
                   </label>
                 </div>
+                */}
+                <div></div>
 
                 <div className="text-sm">
                   <Link href="/auth/forgot-password" className="font-medium text-primary-600 hover:text-primary-500">
@@ -122,15 +345,26 @@ export default function LoginPage() {
               <div>
                 <button
                   type="submit"
-                  className="w-full flex justify-center py-2.5 px-4 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-primary-500 hover:bg-primary-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 transition-colors"
+                  disabled={isLoading}
+                  className="w-full flex justify-center items-center py-2 px-4 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-primary-500 hover:bg-primary-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
                 >
-                  Iniciar sesión
+                  {isLoading ? (
+                    <>
+                      <svg className="animate-spin -ml-1 mr-3 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                      </svg>
+                      Iniciando sesión...
+                    </>
+                  ) : (
+                    'Iniciar sesión'
+                  )}
                 </button>
               </div>
             </form>
 
             {/* Social Login Buttons */}
-            <div className="mt-6">
+            <div className="mt-4">
               <div className="relative">
                 <div className="absolute inset-0 flex items-center">
                   <div className="w-full border-t border-slate-300" />
@@ -140,7 +374,7 @@ export default function LoginPage() {
                 </div>
               </div>
 
-              <div className="mt-4 grid grid-cols-2 gap-3">
+              <div className="mt-3 grid grid-cols-2 gap-3">
                 <button
                   onClick={() => handleSocialLogin('google')}
                   className="w-full flex justify-center items-center px-3 py-2 border border-slate-300 rounded-lg shadow-sm bg-white text-sm font-medium text-slate-700 hover:bg-slate-50 transition-colors"
@@ -166,7 +400,7 @@ export default function LoginPage() {
               </div>
             </div>
 
-            <div className="mt-6">
+            <div className="mt-4">
               <div className="text-center">
                 <span className="text-sm text-slate-600">
                   ¿No tienes una cuenta?{' '}
@@ -274,6 +508,14 @@ export default function LoginPage() {
           </div>
         </div>
       </div>
+      
+      {/* Toast Notifications */}
+      <Toast
+        message={toast.message}
+        type={toast.type}
+        isVisible={toast.isVisible}
+        onClose={hideToast}
+      />
     </div>
   )
 }
