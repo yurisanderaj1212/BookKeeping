@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { Plus, Search, Filter, Download, Calendar } from 'lucide-react'
 import TransactionForm from '../../components/transactions/TransactionForm'
 import TransactionList from '../../components/transactions/TransactionList'
@@ -8,7 +8,8 @@ import Sidebar from '../../components/dashboard/Sidebar'
 import OnboardingTour from '../../components/onboarding/OnboardingTour'
 import { useOnboarding } from '../../hooks/useOnboarding'
 import { useAuth } from '../../hooks/useAuth'
-import { mockTransactions, Transaction } from '../../data/transactions-data'
+import { Transaction } from '../../data/transactions-data'
+import * as transactionService from '../../services/transactionService'
 
 export default function TransactionsPage() {
   // TODOS LOS HOOKS AL INICIO
@@ -19,22 +20,60 @@ export default function TransactionsPage() {
   const [dateRange, setDateRange] = useState('all')
   const [showForm, setShowForm] = useState(false)
   const [editingTransaction, setEditingTransaction] = useState<Transaction | null>(null)
-  const [transactions, setTransactions] = useState<Transaction[]>(mockTransactions)
+  const [transactions, setTransactions] = useState<Transaction[]>([])
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false)
+  const [loadingTransactions, setLoadingTransactions] = useState(true)
+  const [error, setError] = useState<string | null>(null)
   const {
     isOnboardingOpen,
     closeOnboarding,
     completeOnboarding
   } = useOnboarding()
 
+  // Cargar transacciones del backend
+  useEffect(() => {
+    if (isAuthenticated) {
+      loadTransactions()
+    }
+  }, [isAuthenticated])
+
+  const loadTransactions = async () => {
+    try {
+      setLoadingTransactions(true)
+      setError(null)
+      const data = await transactionService.getAll()
+      
+      // Mapear TransactionDto del backend a Transaction del frontend
+      const mappedTransactions: Transaction[] = data.map(dto => ({
+        id: dto.id.toString(),
+        type: dto.type === 0 ? 'income' : 'expense',
+        amount: dto.amount,
+        description: dto.description,
+        category: dto.categoryId.toString(),
+        date: dto.date.split('T')[0],
+        status: 'completed',
+        notes: dto.notes || ''
+      }))
+      
+      setTransactions(mappedTransactions)
+    } catch (err: any) {
+      console.error('Error loading transactions:', err)
+      setError(err.message || 'Error al cargar las transacciones')
+    } finally {
+      setLoadingTransactions(false)
+    }
+  }
+
   // RETURNS CONDICIONALES DESPUÉS DE TODOS LOS HOOKS
   // Mostrar loading mientras se verifica la autenticación
-  if (isLoading) {
+  if (isLoading || loadingTransactions) {
     return (
       <div className="min-h-screen bg-slate-50 flex items-center justify-center">
         <div className="text-center">
           <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary-500 mx-auto mb-4"></div>
-          <p className="text-slate-600">Verificando autenticación...</p>
+          <p className="text-slate-600">
+            {isLoading ? 'Verificando autenticación...' : 'Cargando transacciones...'}
+          </p>
         </div>
       </div>
     )
@@ -55,20 +94,52 @@ export default function TransactionsPage() {
     setShowForm(true)
   }
 
-  const handleSaveTransaction = (transactionData: Transaction) => {
-    if (editingTransaction) {
-      // Update existing transaction
-      setTransactions(prev => 
-        prev.map(t => t.id === editingTransaction.id ? transactionData : t)
-      )
-    } else {
-      // Add new transaction
-      setTransactions(prev => [transactionData, ...prev])
+  const handleSaveTransaction = async (transactionData: Transaction) => {
+    try {
+      if (editingTransaction) {
+        // Update existing transaction
+        const updateDto: transactionService.UpdateTransactionDto = {
+          amount: transactionData.amount,
+          description: transactionData.description,
+          categoryId: parseInt(transactionData.category),
+          date: transactionData.date,
+          notes: transactionData.notes || ''
+        }
+        
+        await transactionService.update(parseInt(editingTransaction.id), updateDto)
+      } else {
+        // Add new transaction
+        const createDto: transactionService.CreateTransactionDto = {
+          type: transactionData.type === 'income' ? 0 : 1,
+          amount: transactionData.amount,
+          description: transactionData.description,
+          categoryId: parseInt(transactionData.category),
+          accountId: 1, // TODO: Obtener del usuario o permitir seleccionar
+          date: transactionData.date,
+          notes: transactionData.notes || ''
+        }
+        
+        await transactionService.create(createDto)
+      }
+      
+      // Recargar transacciones después de guardar
+      await loadTransactions()
+      setShowForm(false)
+    } catch (err: any) {
+      console.error('Error saving transaction:', err)
+      setError(err.message || 'Error al guardar la transacción')
     }
   }
 
-  const handleDeleteTransaction = (transactionId: string) => {
-    setTransactions(prev => prev.filter(t => t.id !== transactionId))
+  const handleDeleteTransaction = async (transactionId: string) => {
+    try {
+      await transactionService.deleteTransaction(parseInt(transactionId))
+      // Recargar transacciones después de eliminar
+      await loadTransactions()
+    } catch (err: any) {
+      console.error('Error deleting transaction:', err)
+      setError(err.message || 'Error al eliminar la transacción')
+    }
   }
 
   // Filter transactions based on current filters
@@ -188,6 +259,34 @@ export default function TransactionsPage() {
 
         {/* Filters and Search */}
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6" data-tour="transactions-main">
+        
+        {/* Error Message */}
+        {error && (
+          <div className="bg-red-50 border border-red-200 rounded-lg p-4 mb-6">
+            <div className="flex items-center">
+              <div className="flex-shrink-0">
+                <svg className="h-5 w-5 text-red-400" viewBox="0 0 20 20" fill="currentColor">
+                  <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
+                </svg>
+              </div>
+              <div className="ml-3">
+                <p className="text-sm text-red-800">{error}</p>
+              </div>
+              <div className="ml-auto pl-3">
+                <button
+                  onClick={() => setError(null)}
+                  className="inline-flex text-red-400 hover:text-red-600"
+                >
+                  <span className="sr-only">Cerrar</span>
+                  <svg className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                    <path fillRule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clipRule="evenodd" />
+                  </svg>
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+        
         <div className="bg-white rounded-lg border border-gray-200 p-6 mb-6" data-tour="transaction-filters">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
             {/* Search */}

@@ -2,8 +2,8 @@
 
 import { useState, useEffect } from 'react'
 import { X } from 'lucide-react'
-import { getCategoriesByType } from '@/data/categories-data'
 import { Transaction } from '@/data/transactions-data'
+import * as categoryService from '@/services/categoryService'
 
 interface TransactionFormProps {
   isOpen: boolean
@@ -32,6 +32,71 @@ export default function TransactionForm({
   })
 
   const [errors, setErrors] = useState<Record<string, string>>({})
+  const [categories, setCategories] = useState<{
+    income: Array<{ value: string; label: string; isSystem: boolean }>
+    expense: Array<{ value: string; label: string; isSystem: boolean }>
+  }>({
+    income: [],
+    expense: []
+  })
+  const [loadingCategories, setLoadingCategories] = useState(true)
+
+  // Cargar categorías del backend
+  useEffect(() => {
+    const loadCategories = async () => {
+      try {
+        setLoadingCategories(true)
+        const allCategories = await categoryService.getAll()
+        
+        // Separar por tipo: 0 = Income, 1 = Expense
+        // Ordenar: primero las del sistema (por displayOrder), luego las personalizadas
+        const incomeCategories = allCategories
+          .filter(cat => cat.type === 0 && cat.isActive)
+          .sort((a, b) => {
+            // Primero las del sistema
+            if (a.isSystemDefault && !b.isSystemDefault) return -1
+            if (!a.isSystemDefault && b.isSystemDefault) return 1
+            // Dentro de cada grupo, ordenar por displayOrder
+            return a.displayOrder - b.displayOrder
+          })
+          .map(cat => ({
+            value: cat.id.toString(),
+            label: cat.name,
+            isSystem: cat.isSystemDefault
+          }))
+        
+        const expenseCategories = allCategories
+          .filter(cat => cat.type === 1 && cat.isActive)
+          .sort((a, b) => {
+            // Primero las del sistema
+            if (a.isSystemDefault && !b.isSystemDefault) return -1
+            if (!a.isSystemDefault && b.isSystemDefault) return 1
+            // Dentro de cada grupo, ordenar por displayOrder
+            return a.displayOrder - b.displayOrder
+          })
+          .map(cat => ({
+            value: cat.id.toString(),
+            label: cat.name,
+            isSystem: cat.isSystemDefault
+          }))
+        
+        setCategories({
+          income: incomeCategories,
+          expense: expenseCategories
+        })
+      } catch (error) {
+        console.error('Error loading categories:', error)
+        // Si falla, usar categorías vacías
+        setCategories({ income: [], expense: [] })
+      } finally {
+        setLoadingCategories(false)
+      }
+    }
+
+    if (isOpen) {
+      loadCategories()
+    }
+  }, [isOpen])
 
   // Update form data when transaction changes (for editing)
   useEffect(() => {
@@ -60,17 +125,6 @@ export default function TransactionForm({
     // Clear errors when transaction changes
     setErrors({})
   }, [transaction, isOpen])
-
-  const categories = {
-    income: getCategoriesByType('income').map(cat => ({
-      value: cat.id,
-      label: cat.name
-    })),
-    expense: getCategoriesByType('expense').map(cat => ({
-      value: cat.id,
-      label: cat.name
-    }))
-  }
 
   const validateForm = () => {
     const newErrors: Record<string, string> = {}
@@ -219,18 +273,37 @@ export default function TransactionForm({
               <select
                 value={formData.category}
                 onChange={(e) => handleInputChange('category', e.target.value)}
+                disabled={loadingCategories}
                 className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent text-sm ${
                   errors.category ? 'border-red-500' : 'border-gray-300'
-                }`}
+                } ${loadingCategories ? 'opacity-50 cursor-not-allowed' : ''}`}
               >
                 <option value="">
-                  Seleccionar
+                  {loadingCategories ? 'Cargando...' : 'Seleccionar'}
                 </option>
-                {categories[formData.type as keyof typeof categories].map((category) => (
-                  <option key={category.value} value={category.value}>
-                    {category.label}
-                  </option>
-                ))}
+                
+                {/* Categorías del sistema */}
+                {categories[formData.type as keyof typeof categories]
+                  .filter(cat => cat.isSystem)
+                  .map((category) => (
+                    <option key={category.value} value={category.value}>
+                      {category.label}
+                    </option>
+                  ))}
+                
+                {/* Separador si hay categorías personalizadas */}
+                {categories[formData.type as keyof typeof categories].some(cat => !cat.isSystem) && (
+                  <option disabled>──────────</option>
+                )}
+                
+                {/* Categorías personalizadas (futuro) */}
+                {categories[formData.type as keyof typeof categories]
+                  .filter(cat => !cat.isSystem)
+                  .map((category) => (
+                    <option key={category.value} value={category.value}>
+                      📌 {category.label}
+                    </option>
+                  ))}
               </select>
               {errors.category && (
                 <p className="text-red-500 text-xs mt-1">{errors.category}</p>
@@ -315,7 +388,8 @@ export default function TransactionForm({
             </button>
             <button
               type="submit"
-              className="px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition-colors duration-200 text-sm"
+              disabled={loadingCategories}
+              className="px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition-colors duration-200 text-sm disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {mode === 'create' ? 'Agregar Transacción' : 'Guardar Cambios'}
             </button>
