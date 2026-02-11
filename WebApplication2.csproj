@@ -24,4 +24,12 @@
     <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="8.15.0" />
   </ItemGroup>
 
+  <!-- Excluir la carpeta backend/ vieja para evitar conflictos -->
+  <ItemGroup>
+    <Compile Remove="backend\**" />
+    <Content Remove="backend\**" />
+    <EmbeddedResource Remove="backend\**" />
+    <None Remove="backend\**" />
+  </ItemGroup>
+
 </Project>

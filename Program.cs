@@ -56,6 +56,18 @@ builder.Services.AddSwaggerGen(c =>
         }
     });
 });
+
+// Configurar CORS para permitir requests desde el frontend
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowFrontend",
+        policy => policy
+            .WithOrigins("http://localhost:3000")
+            .AllowAnyMethod()
+            .AllowAnyHeader()
+            .AllowCredentials());
+});
+
 builder.Services.AddAutoMapper(typeof(TransactionProfile));
 builder.Services.AddScoped<ITransactionService, TransactionService>();
 builder.Services.AddScoped<ICategoryService, CategoryService>();
@@ -74,6 +86,9 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+
+// Habilitar CORS antes de autenticación
+app.UseCors("AllowFrontend");
 
 app.UseAuthentication();
 
