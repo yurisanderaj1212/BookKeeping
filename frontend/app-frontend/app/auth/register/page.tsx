@@ -23,30 +23,7 @@ export default function RegisterPage() {
   const { toast, showSuccess, showError, showWarning, hideToast } = useToast()
   const { isAuthenticated, isLoading: authLoading } = useAuth()
   
-  // Si ya está autenticado, redirigir al dashboard
-  useEffect(() => {
-    if (!authLoading && isAuthenticated) {
-      router.replace('/dashboard')
-    }
-  }, [authLoading, isAuthenticated, router])
-
-  // Mostrar loading mientras se verifica la autenticación
-  if (authLoading) {
-    return (
-      <div className="min-h-screen bg-slate-50 flex items-center justify-center">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary-500 mx-auto mb-4"></div>
-          <p className="text-slate-600">Verificando autenticación...</p>
-        </div>
-      </div>
-    )
-  }
-
-  // Si ya está autenticado, no mostrar nada (ya se redirigió)
-  if (isAuthenticated) {
-    return null
-  }
-  
+  // TODOS LOS HOOKS DEBEN ESTAR ANTES DE CUALQUIER RETURN CONDICIONAL
   const [formData, setFormData] = useState({
     firstName: '',
     lastName: '',
@@ -63,6 +40,29 @@ export default function RegisterPage() {
   const [passwordStrength, setPasswordStrength] = useState(0)
   const [isLoading, setIsLoading] = useState(false)
   const [errors, setErrors] = useState<Record<string, string>>({})
+
+  // useEffect DESPUÉS de todos los useState
+  useEffect(() => {
+    if (!authLoading && isAuthenticated) {
+      router.replace('/dashboard')
+    }
+  }, [authLoading, isAuthenticated, router])
+
+  // Returns condicionales DESPUÉS de todos los hooks
+  if (authLoading) {
+    return (
+      <div className="min-h-screen bg-slate-50 flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary-500 mx-auto mb-4"></div>
+          <p className="text-slate-600">Verificando autenticación...</p>
+        </div>
+      </div>
+    )
+  }
+
+  if (isAuthenticated) {
+    return null
+  }
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value, type } = e.target
