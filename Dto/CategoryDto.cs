@@ -8,5 +8,7 @@ namespace WebApplication2.Dto
         public string Name { get; set; } = null!;
         public TransactionType Type { get; set; }
         public bool IsActive { get; set; }
+        public bool IsSystemDefault { get; set; }
+        public int DisplayOrder { get; set; }
     }
 }

@@ -9,7 +9,6 @@ namespace WebApplication2.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    [Authorize] // Si usas autenticación
     public class CategoryController : ControllerBase
     {
         private readonly ICategoryService _categoryService;
@@ -21,29 +20,32 @@ namespace WebApplication2.Controllers
             _logger = logger;
         }
 
-        // GET: api/category
+        /// <summary>
+        /// Obtener todas las categorías (opcionalmente filtradas por tipo)
+        /// </summary>
+        /// <param name="type">Tipo de categoría: 0 = Ingresos, 1 = Gastos</param>
+        /// <returns>Lista de categorías</returns>
         [HttpGet]
+        [AllowAnonymous] // Las categorías son públicas y globales
         public async Task<ActionResult<IEnumerable<CategoryDto>>> GetCategories(
             [FromQuery] int? type)
         {
             try
             {
-                // Obtener userId del usuario autenticado (si usas autenticación)
-                // var userId = int.Parse(User.FindFirst("userId")?.Value);
-                // var categories = await _categoryService.GetCategoriesAsync(userId, (TransactionType?)type);
-
-                // Por ahora, sin autenticación:
                 var categories = await _categoryService.GetCategoriesAsync(null, (TransactionType?)type);
                 return Ok(categories);
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Error obteniendo categorías");
-                return StatusCode(500, "Error interno del servidor");
+                return StatusCode(500, new { message = "Error interno del servidor" });
             }
         }
 
-        // GET: api/category/default
+        /// <summary>
+        /// Obtener categorías por defecto (mismo que GetCategories para categorías globales)
+        /// </summary>
+        /// <returns>Lista de categorías por defecto</returns>
         [HttpGet("default")]
         [AllowAnonymous]
         public async Task<ActionResult<IEnumerable<CategoryDto>>> GetDefaultCategories()
@@ -56,12 +58,17 @@ namespace WebApplication2.Controllers
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Error obteniendo categorías por defecto");
-                return StatusCode(500, "Error interno del servidor");
+                return StatusCode(500, new { message = "Error interno del servidor" });
             }
         }
 
-        // GET: api/category/{id}
+        /// <summary>
+        /// Obtener una categoría específica por ID
+        /// </summary>
+        /// <param name="id">ID de la categoría</param>
+        /// <returns>Categoría encontrada</returns>
         [HttpGet("{id}")]
+        [AllowAnonymous]
         public async Task<ActionResult<CategoryDto>> GetCategory(int id)
         {
             try
@@ -69,91 +76,59 @@ namespace WebApplication2.Controllers
                 var category = await _categoryService.GetCategoryByIdAsync(id);
 
                 if (category == null)
-                    return NotFound($"Categoría con ID {id} no encontrada");
+                    return NotFound(new { message = $"Categoría con ID {id} no encontrada" });
 
                 return Ok(category);
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, $"Error obteniendo categoría con ID {id}");
-                return StatusCode(500, "Error interno del servidor");
+                return StatusCode(500, new { message = "Error interno del servidor" });
             }
         }
 
-        // POST: api/category
+        // ENDPOINTS ELIMINADOS: Las categorías son fijas y no se pueden modificar
+        // - POST /api/category (crear)
+        // - PUT /api/category/{id} (actualizar)  
+        // - DELETE /api/category/{id} (eliminar)
+
+        /// <summary>
+        /// Endpoint deshabilitado - Las categorías son fijas
+        /// </summary>
         [HttpPost]
-        public async Task<ActionResult<CategoryDto>> CreateCategory([FromBody] CreateCategoryDto dto)
+        [ApiExplorerSettings(IgnoreApi = true)] // Ocultar de Swagger
+        public IActionResult CreateCategory()
         {
-            if (!ModelState.IsValid)
-                return BadRequest(ModelState);
-
-            try
-            {
-                // Obtener userId del usuario autenticado
-                // var userId = int.Parse(User.FindFirst("userId")?.Value);
-                // var category = await _categoryService.CreateCategoryAsync(dto, userId);
-
-                // Por ahora:
-                var category = await _categoryService.CreateCategoryAsync(dto);
-
-                return CreatedAtAction(nameof(GetCategory), new { id = category.Id }, category);
-            }
-            catch (InvalidOperationException ex)
-            {
-                return Conflict(new { message = ex.Message });
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Error creando categoría");
-                return StatusCode(500, "Error interno del servidor");
-            }
+            return BadRequest(new { 
+                message = "Las categorías son fijas y predefinidas. No se pueden crear nuevas categorías.",
+                availableCategories = "Use GET /api/category para ver las categorías disponibles"
+            });
         }
 
-        // PUT: api/category/{id}
+        /// <summary>
+        /// Endpoint deshabilitado - Las categorías son fijas
+        /// </summary>
         [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateCategory(int id, [FromBody] CreateCategoryDto dto)
+        [ApiExplorerSettings(IgnoreApi = true)] // Ocultar de Swagger
+        public IActionResult UpdateCategory(int id)
         {
-            if (!ModelState.IsValid)
-                return BadRequest(ModelState);
-
-            try
-            {
-                var updatedCategory = await _categoryService.UpdateCategoryAsync(id, dto);
-                return Ok(updatedCategory);
-            }
-            catch (KeyNotFoundException ex)
-            {
-                return NotFound(new { message = ex.Message });
-            }
-            catch (InvalidOperationException ex)
-            {
-                return Conflict(new { message = ex.Message });
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, $"Error actualizando categoría con ID {id}");
-                return StatusCode(500, "Error interno del servidor");
-            }
+            return BadRequest(new { 
+                message = "Las categorías son fijas y predefinidas. No se pueden modificar.",
+                availableCategories = "Use GET /api/category para ver las categorías disponibles"
+            });
         }
 
-        // DELETE: api/category/{id}
+        /// <summary>
+        /// Endpoint deshabilitado - Las categorías son fijas
+        /// </summary>
         [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteCategory(int id)
+        [ApiExplorerSettings(IgnoreApi = true)] // Ocultar de Swagger
+        public IActionResult DeleteCategory(int id)
         {
-            try
-            {
-                var deleted = await _categoryService.DeleteCategoryAsync(id);
-
-                if (!deleted)
-                    return NotFound($"Categoría con ID {id} no encontrada");
-
-                return NoContent();
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, $"Error eliminando categoría con ID {id}");
-                return StatusCode(500, "Error interno del servidor");
-            }
+            return BadRequest(new { 
+                message = "Las categorías son fijas y predefinidas. No se pueden eliminar.",
+                availableCategories = "Use GET /api/category para ver las categorías disponibles"
+            });
         }
     }
 }

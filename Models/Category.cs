@@ -15,15 +15,21 @@ namespace WebApplication2.Models
         [Required]
         public TransactionType Type { get; set; }
 
-        // Si quieres que cada usuario tenga sus categorías:
-        public int? UserId { get; set; }
-
-        [ForeignKey(nameof(UserId))]
-        public User? User { get; set; }
-
         public bool IsActive { get; set; } = true;
 
+        /// <summary>
+        /// Indica si es una categoría predefinida del sistema (no se puede modificar)
+        /// </summary>
+        public bool IsSystemDefault { get; set; } = false;
+
+        /// <summary>
+        /// Orden de visualización dentro de su tipo
+        /// </summary>
+        public int DisplayOrder { get; set; } = 0;
+
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+
+        public DateTime? UpdatedAt { get; set; }
 
         // Navegación
         public ICollection<Transaction> Transactions { get; set; } = new List<Transaction>();

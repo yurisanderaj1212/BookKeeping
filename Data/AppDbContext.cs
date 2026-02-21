@@ -32,8 +32,9 @@ public class AppDbContext : DbContext
             entity.Property(t => t.Amount)
              .HasColumnType("decimal(18,2)");
         });
+        // Índice único para categorías globales (sin UserId)
         modelBuilder.Entity<Category>()
-           .HasIndex(c => new { c.UserId, c.Name, c.Type })
+           .HasIndex(c => new { c.Name, c.Type })
            .IsUnique();
         modelBuilder.Entity<Account>(entity =>
         {
