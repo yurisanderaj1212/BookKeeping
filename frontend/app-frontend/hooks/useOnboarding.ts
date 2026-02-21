@@ -11,66 +11,111 @@ export function useOnboarding() {
   const [isOnboardingCompleted, setIsOnboardingCompleted] = useState(true) // Default to true to avoid flash
   const [isWelcomeOpen, setIsWelcomeOpen] = useState(false)
 
+  // Función para detectar si es un usuario realmente nuevo
+  const isReallyNewUser = () => {
+    const hasAnyOnboardingData = 
+      localStorage.getItem(ONBOARDING_STORAGE_KEY) !== null ||
+      localStorage.getItem(WELCOME_SHOWN_KEY) !== null ||
+      localStorage.getItem(TOUR_PROGRESS_KEY) !== null
+
+    // Si no hay datos de onboarding, es un usuario nuevo
+    return !hasAnyOnboardingData
+  }
+
+  // Función para limpiar datos residuales
+  const cleanResidualData = () => {
+    localStorage.removeItem(ONBOARDING_STORAGE_KEY)
+    localStorage.removeItem(WELCOME_SHOWN_KEY)
+    localStorage.removeItem(TOUR_PROGRESS_KEY)
+  }
+
   useEffect(() => {
-    // Check if onboarding has been completed
-    const completed = localStorage.getItem(ONBOARDING_STORAGE_KEY)
-    const welcomeShown = localStorage.getItem(WELCOME_SHOWN_KEY)
-    const tourProgress = localStorage.getItem(TOUR_PROGRESS_KEY)
-    
-    const hasCompleted = completed === 'true'
-    const hasShownWelcome = welcomeShown === 'true'
-    const hasTourProgress = tourProgress !== null && parseInt(tourProgress) >= 0
-    
-    // IMPORTANT: Don't set completed to true if tour is in progress
-    if (hasTourProgress && !hasCompleted) {
-      setIsOnboardingCompleted(false)
-    } else {
-      setIsOnboardingCompleted(hasCompleted)
+    // Solo ejecutar en el cliente
+    if (typeof window === 'undefined') {
+      return
     }
-    
-    // If user is new (no welcome shown yet), show welcome modal on dashboard
-    if (!hasShownWelcome && window.location.pathname === '/dashboard') {
-      setTimeout(() => {
-        setIsWelcomeOpen(true)
-      }, 500)
-    }
-    // If tour is in progress (has saved progress), continue tour on ANY page
-    else if (!hasCompleted && hasTourProgress) {
-      setTimeout(() => {
-        setIsOnboardingOpen(true)
-      }, 800)
-    }
-    // If welcome was shown but onboarding not completed, and user is on dashboard without tour progress
-    else if (!hasCompleted && hasShownWelcome && window.location.pathname === '/dashboard' && !hasTourProgress) {
-      setTimeout(() => {
-        setIsOnboardingOpen(true)
-      }, 1000)
+
+    // Delay para asegurar que todo esté cargado
+    const timer = setTimeout(() => {
+      checkOnboardingStatus()
+    }, 1000)
+
+    return () => {
+      clearTimeout(timer)
     }
   }, [])
 
-  // Also listen for storage changes to detect tour progress updates
-  useEffect(() => {
-    const handleStorageChange = (e: StorageEvent) => {
-      if (e.key === TOUR_PROGRESS_KEY && e.newValue !== null) {
-        const completed = localStorage.getItem(ONBOARDING_STORAGE_KEY)
-        // Only activate if not completed and not already open
-        if (completed !== 'true' && !isOnboardingOpen) {
+  const checkOnboardingStatus = () => {
+    try {
+      const completedValue = localStorage.getItem(ONBOARDING_STORAGE_KEY)
+      const welcomeShownValue = localStorage.getItem(WELCOME_SHOWN_KEY)
+      const tourProgressValue = localStorage.getItem(TOUR_PROGRESS_KEY)
+      
+      // Convertir valores a booleanos de manera más estricta
+      const completed = completedValue === 'true'
+      const welcomeShown = welcomeShownValue === 'true'
+      const tourProgress = tourProgressValue
+
+      // Establecer el estado base
+      setIsOnboardingCompleted(completed)
+
+      // CASO ESPECIAL: Detectar usuario realmente nuevo
+      if (completedValue === null && welcomeShownValue === null && tourProgressValue === null) {
+        // Solo mostrar welcome en dashboard
+        if (window.location.pathname === '/dashboard') {
+          setIsWelcomeOpen(true)
+        }
+        return
+      }
+
+      // CASO ESPECIAL 2: Detectar datos residuales inconsistentes
+      if (!completed && !welcomeShown && !tourProgress && completedValue !== null) {
+        cleanResidualData()
+        setIsOnboardingCompleted(false)
+        // Solo mostrar welcome en dashboard
+        if (window.location.pathname === '/dashboard') {
+          setIsWelcomeOpen(true)
+        }
+        return
+      }
+
+      // CASO 1: Usuario nunca vio welcome pero tiene algún valor en localStorage
+      if (!welcomeShown && !completed) {
+        // Solo mostrar welcome en dashboard
+        if (window.location.pathname === '/dashboard') {
+          setIsWelcomeOpen(true)
+        }
+        return
+      }
+
+      // CASO 2: Usuario vio welcome pero no completó tour
+      if (welcomeShown && !completed && !tourProgress) {
+        // Solo iniciar tour en dashboard
+        if (window.location.pathname === '/dashboard') {
           setIsOnboardingOpen(true)
         }
+        return
       }
-      // If onboarding was marked as completed, close the tour
-      if (e.key === ONBOARDING_STORAGE_KEY && e.newValue === 'true') {
-        setIsOnboardingOpen(false)
-        setIsOnboardingCompleted(true)
+
+      // CASO 3: Usuario tiene progreso del tour guardado - CONTINUAR EN CUALQUIER PÁGINA
+      if (tourProgress && !completed) {
+        setIsOnboardingOpen(true)
+        return
+      }
+
+      // CASO 4: Usuario ya completó todo - no hacer nada
+
+    } catch (error) {
+      console.error('Error en checkOnboardingStatus:', error)
+      // En caso de error, mostrar onboarding por seguridad
+      setIsOnboardingCompleted(false)
+      if (window.location.pathname === '/dashboard') {
+        setIsWelcomeOpen(true)
       }
     }
-
-    window.addEventListener('storage', handleStorageChange)
-    return () => window.removeEventListener('storage', handleStorageChange)
-  }, [isOnboardingOpen])
+  }
 
   const startOnboarding = () => {
-    // Reset any existing progress and start from beginning
     localStorage.removeItem(ONBOARDING_STORAGE_KEY)
     localStorage.setItem(WELCOME_SHOWN_KEY, 'true')
     localStorage.setItem(TOUR_PROGRESS_KEY, '0')
@@ -105,12 +150,21 @@ export function useOnboarding() {
 
   const startTourFromWelcome = () => {
     localStorage.setItem(WELCOME_SHOWN_KEY, 'true')
-    localStorage.setItem(TOUR_PROGRESS_KEY, '0') // Start from step 0
+    localStorage.setItem(TOUR_PROGRESS_KEY, '0')
     setIsWelcomeOpen(false)
     setTimeout(() => {
       setIsOnboardingOpen(true)
     }, 300)
   }
+
+  // Log del estado actual cada vez que cambie
+  useEffect(() => {
+    console.log('📊 Estado actual del hook:', {
+      isOnboardingOpen,
+      isOnboardingCompleted,
+      isWelcomeOpen
+    })
+  }, [isOnboardingOpen, isOnboardingCompleted, isWelcomeOpen])
 
   return {
     isOnboardingOpen,
