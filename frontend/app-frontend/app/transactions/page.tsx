@@ -43,18 +43,22 @@ export default function TransactionsPage() {
       setError(null)
       const data = await transactionService.getAll()
       
+      console.log('📥 Transacciones del backend:', data);
+      
       // Mapear TransactionDto del backend a Transaction del frontend
       const mappedTransactions: Transaction[] = data.map(dto => ({
         id: dto.id.toString(),
         type: dto.type === 0 ? 'income' : 'expense',
         amount: dto.amount,
         description: dto.description,
-        category: dto.categoryId.toString(),
+        category: dto.categoryId.toString(), // Convertir categoryId numérico a string
         date: dto.date.split('T')[0],
         status: 'completed',
-        notes: dto.notes || ''
+        notes: dto.notes || '',
+        accountId: dto.accountId || undefined // Incluir accountId si existe
       }))
       
+      console.log('📦 Transacciones mapeadas:', mappedTransactions);
       setTransactions(mappedTransactions)
     } catch (err: any) {
       console.error('Error loading transactions:', err)
@@ -96,16 +100,20 @@ export default function TransactionsPage() {
 
   const handleSaveTransaction = async (transactionData: Transaction) => {
     try {
+      console.log('💾 Guardando transacción:', transactionData);
+      
       if (editingTransaction) {
         // Update existing transaction
         const updateDto: transactionService.UpdateTransactionDto = {
+          type: transactionData.type === 'income' ? 0 : 1,
           amount: transactionData.amount,
           description: transactionData.description,
           categoryId: parseInt(transactionData.category),
           date: transactionData.date,
-          notes: transactionData.notes || ''
+          accountId: transactionData.accountId || null // Incluir accountId (puede ser null)
         }
         
+        console.log('📤 DTO de actualización:', updateDto);
         await transactionService.update(parseInt(editingTransaction.id), updateDto)
       } else {
         // Add new transaction
@@ -114,11 +122,12 @@ export default function TransactionsPage() {
           amount: transactionData.amount,
           description: transactionData.description,
           categoryId: parseInt(transactionData.category),
-          accountId: 1, // TODO: Obtener del usuario o permitir seleccionar
+          accountId: transactionData.accountId || undefined, // Opcional
           date: transactionData.date,
           notes: transactionData.notes || ''
         }
         
+        console.log('📤 DTO de creación:', createDto);
         await transactionService.create(createDto)
       }
       

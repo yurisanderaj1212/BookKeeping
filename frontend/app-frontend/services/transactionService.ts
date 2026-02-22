@@ -20,16 +20,17 @@ export interface CreateTransactionDto {
   categoryId: number;
   description: string;
   date: string;  // Formato: YYYY-MM-DD
-  accountId: number;
+  accountId?: number;  // Opcional: cuenta asociada a la transacción
   notes?: string;
 }
 
 export interface UpdateTransactionDto {
-  amount: number;
-  categoryId: number;
-  description: string;
-  date: string;
-  notes?: string;
+  type?: 0 | 1;  // 0 = Income (Ingreso), 1 = Expense (Gasto)
+  amount?: number;
+  categoryId?: number;
+  description?: string;
+  date?: string;  // Formato: YYYY-MM-DD
+  accountId?: number | null;  // Opcional: cuenta asociada (puede ser null para desasignar)
 }
 
 export interface TransactionDto {
@@ -41,6 +42,7 @@ export interface TransactionDto {
   description: string;
   date: string;
   createdAt: string;
+  accountId?: number;  // Campo opcional para la cuenta asociada
   notes?: string;
 }
 
@@ -108,6 +110,8 @@ export async function create(transaction: CreateTransactionDto): Promise<Transac
  */
 export async function update(id: number, transaction: UpdateTransactionDto): Promise<TransactionDto> {
   try {
+    console.log('📤 Enviando actualización:', { id, transaction });
+    
     const response = await fetch(`${API_URL}/transactions/${id}`, {
       method: 'PUT',
       headers: getAuthHeaders(),
@@ -127,6 +131,7 @@ export async function update(id: number, transaction: UpdateTransactionDto): Pro
     
     if (!response.ok) {
       const errorData = await response.json().catch(() => ({}));
+      console.error('❌ Error del servidor:', errorData);
       throw new Error(errorData.message || 'Error al actualizar transacción');
     }
     

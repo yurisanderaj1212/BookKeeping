@@ -48,8 +48,8 @@ export default function WelcomeModal({ isOpen, onClose, onStartTour, userName = 
               Tu herramienta de contabilidad profesional
             </h3>
             <p className="text-gray-600 leading-relaxed">
-              Gestiona tus finanzas de manera inteligente con reportes automáticos, 
-              análisis detallados y una interfaz diseñada para pequeñas empresas.
+              Gestiona tus cuentas bancarias, registra transacciones, genera reportes automáticos 
+              y obtén análisis detallados. Todo diseñado para pequeñas empresas.
             </p>
           </div>
 
@@ -57,9 +57,9 @@ export default function WelcomeModal({ isOpen, onClose, onStartTour, userName = 
           <div className="grid grid-cols-2 gap-4 mb-6">
             <div className="text-center p-3 bg-gray-50 rounded-lg">
               <div className="w-8 h-8 bg-primary-100 rounded-lg mx-auto mb-2 flex items-center justify-center">
-                <span className="text-primary-600 text-sm font-bold">📊</span>
+                <span className="text-primary-600 text-sm font-bold">🏦</span>
               </div>
-              <p className="text-sm font-medium text-gray-700">Reportes Automáticos</p>
+              <p className="text-sm font-medium text-gray-700">Gestión de Cuentas</p>
             </div>
             <div className="text-center p-3 bg-gray-50 rounded-lg">
               <div className="w-8 h-8 bg-primary-100 rounded-lg mx-auto mb-2 flex items-center justify-center">
@@ -69,9 +69,9 @@ export default function WelcomeModal({ isOpen, onClose, onStartTour, userName = 
             </div>
             <div className="text-center p-3 bg-gray-50 rounded-lg">
               <div className="w-8 h-8 bg-primary-100 rounded-lg mx-auto mb-2 flex items-center justify-center">
-                <span className="text-primary-600 text-sm font-bold">👥</span>
+                <span className="text-primary-600 text-sm font-bold">📊</span>
               </div>
-              <p className="text-sm font-medium text-gray-700">Gestión de Empleados</p>
+              <p className="text-sm font-medium text-gray-700">Reportes Automáticos</p>
             </div>
             <div className="text-center p-3 bg-gray-50 rounded-lg">
               <div className="w-8 h-8 bg-primary-100 rounded-lg mx-auto mb-2 flex items-center justify-center">

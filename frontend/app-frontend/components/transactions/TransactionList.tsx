@@ -1,9 +1,9 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { Edit, Trash2 } from 'lucide-react'
-import { getCategoryName, getCategoryColor } from '@/data/categories-data'
 import { Transaction } from '@/data/transactions-data'
+import * as categoryService from '@/services/categoryService'
 
 interface TransactionListProps {
   transactions: Transaction[]
@@ -17,6 +17,24 @@ export default function TransactionList({
   onDelete
 }: TransactionListProps) {
   const [showDeleteConfirm, setShowDeleteConfirm] = useState<string | null>(null)
+  const [categoryMap, setCategoryMap] = useState<Record<string, { name: string; type: number }>>({})
+
+  // Cargar categorías del backend para el mapeo
+  useEffect(() => {
+    const loadCategories = async () => {
+      try {
+        const categories = await categoryService.getAll()
+        const map: Record<string, { name: string; type: number }> = {}
+        categories.forEach(cat => {
+          map[cat.id.toString()] = { name: cat.name, type: cat.type }
+        })
+        setCategoryMap(map)
+      } catch (error) {
+        console.error('Error loading categories:', error)
+      }
+    }
+    loadCategories()
+  }, [])
 
   const formatCurrency = (amount: number): string => {
     return new Intl.NumberFormat('es-ES', {
@@ -31,32 +49,21 @@ export default function TransactionList({
   }
 
   const getCategoryLabel = (categoryId: string) => {
-    return getCategoryName(categoryId)
+    return categoryMap[categoryId]?.name || 'Sin categoría'
   }
 
   const getCategoryColorClass = (categoryId: string) => {
-    // Convert hex color to Tailwind classes based on category type
-    const categoryName = getCategoryName(categoryId)
+    const categoryName = categoryMap[categoryId]?.name || ''
+    const categoryType = categoryMap[categoryId]?.type
     
-    // Default colors for different categories
-    const colorMap: Record<string, string> = {
-      'Ventas': 'bg-green-100 text-green-800',
-      'Servicios': 'bg-blue-100 text-blue-800',
-      'Consultoría': 'bg-purple-100 text-purple-800',
-      'Inversiones': 'bg-emerald-100 text-emerald-800',
-      'Otros Ingresos': 'bg-gray-100 text-gray-800',
-      'Oficina': 'bg-orange-100 text-orange-800',
-      'Marketing': 'bg-pink-100 text-pink-800',
-      'Viajes': 'bg-cyan-100 text-cyan-800',
-      'Servicios Públicos': 'bg-yellow-100 text-yellow-800',
-      'Software': 'bg-indigo-100 text-indigo-800',
-      'Equipos': 'bg-slate-100 text-slate-800',
-      'Servicios Profesionales': 'bg-violet-100 text-violet-800',
-      'Alquiler': 'bg-rose-100 text-rose-800',
-      'Otros Gastos': 'bg-gray-100 text-gray-800'
+    // Color por tipo: verde para ingresos, rojo para gastos
+    if (categoryType === 0) {
+      return 'bg-green-100 text-green-800'
+    } else if (categoryType === 1) {
+      return 'bg-red-100 text-red-800'
     }
-
-    return colorMap[categoryName] || 'bg-gray-100 text-gray-800'
+    
+    return 'bg-gray-100 text-gray-800'
   }
 
   const filteredTransactions = transactions

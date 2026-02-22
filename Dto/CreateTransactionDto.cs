@@ -20,10 +20,11 @@ namespace WebApplication2.Dto
 
         [Required]
         public DateOnly Date { get; set; }
-        [Required]
-        public int AccountId { get; set; }
+        
+        // Campo opcional para asignar cuenta
+        public int? AccountId { get; set; }
+        
         public decimal DebitAmount { get; set; }
         public decimal CreditAmount { get; set; }
-
     }
 }

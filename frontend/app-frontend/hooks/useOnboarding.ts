@@ -29,6 +29,24 @@ export function useOnboarding() {
     localStorage.removeItem(TOUR_PROGRESS_KEY)
   }
 
+  // NUEVO: Verificar estado del tour INMEDIATAMENTE en cada mount
+  useEffect(() => {
+    if (typeof window === 'undefined') {
+      return
+    }
+
+    // Si hay progreso guardado, mantener el tour abierto INMEDIATAMENTE
+    const tourProgress = localStorage.getItem(TOUR_PROGRESS_KEY)
+    const completed = localStorage.getItem(ONBOARDING_STORAGE_KEY) === 'true'
+    
+    if (tourProgress && !completed) {
+      console.log('🔄 Manteniendo tour abierto en navegación...')
+      setIsOnboardingOpen(true)
+      setIsOnboardingCompleted(false)
+      setIsWelcomeOpen(false)
+    }
+  }, []) // Ejecutar en cada mount (cada navegación)
+
   useEffect(() => {
     // Solo ejecutar en el cliente
     if (typeof window === 'undefined') {
@@ -43,7 +61,7 @@ export function useOnboarding() {
     return () => {
       clearTimeout(timer)
     }
-  }, [])
+  }, []) // Solo al montar
 
   const checkOnboardingStatus = () => {
     try {
@@ -55,6 +73,12 @@ export function useOnboarding() {
       const completed = completedValue === 'true'
       const welcomeShown = welcomeShownValue === 'true'
       const tourProgress = tourProgressValue
+
+      // IMPORTANTE: Si el tour ya está abierto, no hacer nada
+      if (isOnboardingOpen) {
+        console.log('ℹ️ Tour ya está abierto, no modificar estado')
+        return
+      }
 
       // Establecer el estado base
       setIsOnboardingCompleted(completed)
@@ -99,11 +123,13 @@ export function useOnboarding() {
 
       // CASO 3: Usuario tiene progreso del tour guardado - CONTINUAR EN CUALQUIER PÁGINA
       if (tourProgress && !completed) {
+        console.log('✅ Continuando tour en progreso...')
         setIsOnboardingOpen(true)
         return
       }
 
       // CASO 4: Usuario ya completó todo - no hacer nada
+      console.log('ℹ️ Onboarding ya completado')
 
     } catch (error) {
       console.error('Error en checkOnboardingStatus:', error)

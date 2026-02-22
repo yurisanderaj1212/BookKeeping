@@ -71,6 +71,16 @@ const reportTemplates: ReportTemplate[] = [
     icon: FileText,
     lastGenerated: '2024-01-21',
     frequency: 'monthly'
+  },
+
+  // Cierre Semanal
+  {
+    id: 'week-close',
+    name: 'Cierre Semanal',
+    description: 'Gestión y control de cierres semanales para mantener la integridad de datos',
+    icon: Calendar,
+    lastGenerated: '2024-01-22',
+    frequency: 'weekly'
   }
 ]
 
@@ -141,6 +151,9 @@ export default function ReportsPage() {
         break
       case 'employee-summary':
         router.push(`/reports/employee-summary?${params.toString()}`)
+        break
+      case 'week-close':
+        router.push(`/reports/week-close?${params.toString()}`)
         break
       default:
         alert('Reporte no disponible')
@@ -315,7 +328,7 @@ export default function ReportsPage() {
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-sm text-gray-600">Reportes Disponibles</p>
-                  <p className="text-2xl font-bold text-gray-900">{reportTemplates.length}</p>
+                  <p className="text-2xl font-bold text-gray-900">6</p>
                 </div>
                 <FileText className="w-8 h-8 text-primary-600" />
               </div>

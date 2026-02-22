@@ -11,7 +11,8 @@ import {
   Calendar,
   Settings,
   Bell,
-  Check
+  Check,
+  Wallet
 } from 'lucide-react'
 import TourTooltipWithArrow from './TourTooltipWithArrow'
 
@@ -64,15 +65,6 @@ const tourSteps: TourStep[] = [
     icon: LayoutDashboard
   },
   {
-    id: 'add-transaction-dashboard',
-    title: 'Agregar Transacción',
-    description: 'Botón principal para registrar nuevos ingresos o gastos. Disponible en todas las páginas.',
-    target: '[data-tour="add-transaction-btn"]',
-    position: 'bottom',
-    page: '/dashboard',
-    icon: Receipt
-  },
-  {
     id: 'notifications',
     title: 'Centro de Notificaciones',
     description: 'Mantente al día con alertas importantes, recordatorios y actualizaciones del sistema.',
@@ -82,9 +74,45 @@ const tourSteps: TourStep[] = [
     icon: Bell
   },
   {
+    id: 'accounts-intro',
+    title: 'Gestión de Cuentas',
+    description: 'Primero, crea tus cuentas bancarias, efectivo o tarjetas. Esto te permitirá llevar un control preciso de tus balances.',
+    target: '[data-tour="accounts-main"]',
+    position: 'top',
+    page: '/accounts',
+    icon: Wallet
+  },
+  {
+    id: 'accounts-summary',
+    title: 'Resumen de Cuentas',
+    description: 'Aquí verás el balance total, número de cuentas activas y un resumen general de tus finanzas.',
+    target: '[data-tour="accounts-summary"]',
+    position: 'bottom',
+    page: '/accounts',
+    icon: Wallet
+  },
+  {
+    id: 'add-account',
+    title: 'Crear Nueva Cuenta',
+    description: 'Haz clic aquí para agregar una cuenta bancaria, efectivo, tarjeta de crédito o cualquier otro tipo de cuenta.',
+    target: '[data-tour="add-account-btn"]',
+    position: 'bottom',
+    page: '/accounts',
+    icon: Wallet
+  },
+  {
+    id: 'account-list',
+    title: 'Lista de Cuentas',
+    description: 'Todas tus cuentas aparecerán aquí. Podrás ver el balance, tipo de cuenta y realizar acciones como editar o desactivar.',
+    target: '[data-tour="account-list"]',
+    position: 'top',
+    page: '/accounts',
+    icon: Wallet
+  },
+  {
     id: 'transactions',
     title: 'Gestión de Transacciones',
-    description: 'Aquí puedes registrar y administrar todos tus ingresos y gastos. Usa los filtros para encontrar transacciones específicas.',
+    description: 'Ahora que tienes cuentas, puedes registrar transacciones y asignarlas a cada cuenta para un control detallado.',
     target: '[data-tour="transactions-main"]',
     position: 'top',
     page: '/transactions',
@@ -102,16 +130,16 @@ const tourSteps: TourStep[] = [
   {
     id: 'add-transaction',
     title: 'Nueva Transacción',
-    description: 'Haz clic aquí para registrar nuevos ingresos o gastos de manera rápida y sencilla.',
+    description: 'Registra ingresos o gastos. Puedes asignar una cuenta (opcional) para actualizar automáticamente su balance.',
     target: '[data-tour="add-transaction-btn"]',
     position: 'bottom',
     page: '/transactions',
     icon: Receipt
   },
   {
-    id: 'transaction-actions',
-    title: 'Acciones de Transacciones',
-    description: 'Cada transacción tiene opciones para editar o eliminar. También puedes exportar todas las transacciones.',
+    id: 'transaction-with-account',
+    title: 'Transacciones con Cuentas',
+    description: 'Al crear una transacción, puedes seleccionar una cuenta. El sistema te mostrará el balance disponible y te advertirá si excedes fondos.',
     target: '[data-tour="transaction-list"]',
     position: 'top',
     page: '/transactions',
@@ -136,15 +164,6 @@ const tourSteps: TourStep[] = [
     icon: Users
   },
   {
-    id: 'employee-actions',
-    title: 'Gestión de Empleados',
-    description: 'Puedes editar información, cambiar estado (activo/inactivo) o eliminar empleados desde la lista.',
-    target: '[data-tour="employee-list"]',
-    position: 'top',
-    page: '/employees',
-    icon: Users
-  },
-  {
     id: 'reports',
     title: 'Reportes Financieros',
     description: 'Genera reportes profesionales para análisis financiero, presentaciones y cumplimiento fiscal.',
@@ -163,15 +182,6 @@ const tourSteps: TourStep[] = [
     icon: BarChart3
   },
   {
-    id: 'week-close',
-    title: 'Cierre Semanal',
-    description: 'Realiza el cierre contable semanal para consolidar transacciones y generar reportes periódicos.',
-    target: '[data-tour="week-close-main"]',
-    position: 'top',
-    page: '/week-close',
-    icon: Calendar
-  },
-  {
     id: 'settings',
     title: 'Configuración',
     description: 'Personaliza tu perfil, información de empresa, notificaciones y preferencias del sistema.',
@@ -183,7 +193,7 @@ const tourSteps: TourStep[] = [
   {
     id: 'complete',
     title: '¡Tour Completado!',
-    description: 'Ya conoces las funciones principales de Chill Numbers. ¡Comienza a gestionar tus finanzas de manera profesional!',
+    description: 'Ya conoces el flujo completo: crea cuentas, registra transacciones y genera reportes. ¡Comienza a gestionar tus finanzas!',
     target: 'body',
     position: 'bottom',
     page: '/dashboard',
@@ -257,41 +267,36 @@ export default function OnboardingTour({ isOpen, onClose, onComplete }: Onboardi
         const targetElement = document.querySelector(step.target)
         
         if (targetElement && step.target !== 'body') {
-          // Special handling for sidebar step - don't scroll, keep message visible
+          // Remove previous highlights immediately
+          document.querySelectorAll('.tour-highlight').forEach(el => {
+            el.classList.remove('tour-highlight')
+          })
+          
+          // Remove previous overlays immediately
+          document.querySelectorAll('.tour-overlay').forEach(el => {
+            el.remove()
+          })
+          
+          // Add highlight immediately
+          targetElement.classList.add('tour-highlight')
+          
+          // Create overlay for better visibility
+          const overlay = document.createElement('div')
+          overlay.className = 'tour-overlay'
+          document.body.appendChild(overlay)
+          
+          // Scroll to element after highlight is applied
           if (step.target === '[data-tour="sidebar"]') {
-            // For sidebar, ensure the page is scrolled to top so tooltip is visible
             window.scrollTo({ top: 0, behavior: 'smooth' })
           } else {
-            // For other elements, scroll to center
             targetElement.scrollIntoView({ 
               behavior: 'smooth', 
               block: 'center',
               inline: 'center'
             })
           }
-          
-          // Add highlight effect after scroll
-          setTimeout(() => {
-            // Remove previous highlights
-            document.querySelectorAll('.tour-highlight').forEach(el => {
-              el.classList.remove('tour-highlight')
-            })
-            
-            // Remove previous overlays
-            document.querySelectorAll('.tour-overlay').forEach(el => {
-              el.remove()
-            })
-            
-            targetElement.classList.add('tour-highlight')
-            
-            // Create overlay for better visibility
-            const overlay = document.createElement('div')
-            overlay.className = 'tour-overlay'
-            document.body.appendChild(overlay)
-            
-          }, 500)
         }
-      }, 1500) // Increased wait time for navigation
+      }, 800) // Reduced from 2500ms to 800ms for faster response
       
       return () => clearTimeout(timeoutId)
     }
@@ -300,7 +305,22 @@ export default function OnboardingTour({ isOpen, onClose, onComplete }: Onboardi
   // Force tour to stay visible when it should be open
   useEffect(() => {
     if (isOpen && !isVisible) {
+      console.log('🔄 Forzando visibilidad del tour...')
       setIsVisible(true)
+    }
+  }, [isOpen, isVisible])
+
+  // Keep tour visible during page reloads/re-renders
+  useEffect(() => {
+    if (isOpen) {
+      const intervalId = setInterval(() => {
+        if (!isVisible) {
+          console.log('🔄 Tour se cerró inesperadamente, reabriendo...')
+          setIsVisible(true)
+        }
+      }, 500)
+      
+      return () => clearInterval(intervalId)
     }
   }, [isOpen, isVisible])
 

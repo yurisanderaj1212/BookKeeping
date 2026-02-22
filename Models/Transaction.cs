@@ -41,8 +41,11 @@ namespace WebApplication2.Models
         public Account? CreditAccount { get; set; }
         public decimal DebitAmount { get; set; } = 0;
         public decimal CreditAmount { get; set; } = 0;
-        public Account Account { get; set; }
-        public int AccountId { get; set; }
-
+        
+        // Cuenta asociada a la transacción (opcional)
+        public int? AccountId { get; set; }
+        
+        [ForeignKey(nameof(AccountId))]
+        public Account? Account { get; set; }
     }
 }

@@ -12,5 +12,10 @@ namespace WebApplication2.Dto
 
         public string? Description { get; set; }
         public DateTime Date { get; set; }
+        
+        // Campo opcional para la cuenta asociada
+        public int? AccountId { get; set; }
+        
+        public string? Notes { get; set; }
     }
 }

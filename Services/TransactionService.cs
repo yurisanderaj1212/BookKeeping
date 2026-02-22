@@ -10,11 +10,13 @@ namespace WebApplication2.Services
     {
         private readonly AppDbContext _context;
         private readonly IMapper _mapper;
+        private readonly IAccountService _accountService;
 
-        public TransactionService(AppDbContext context, IMapper mapper)
+        public TransactionService(AppDbContext context, IMapper mapper, IAccountService accountService)
         {
             _context = context;
             _mapper = mapper;
+            _accountService = accountService;
         }
 
         public async Task<TransactionDto> CreateAsync(int userId, CreateTransactionDto dto)
@@ -30,12 +32,28 @@ namespace WebApplication2.Services
             if (category.Type != dto.Type)
                 throw new InvalidOperationException($"La categoría seleccionada es de tipo {category.Type}, pero la transacción es de tipo {dto.Type}");
 
+            // Validar que la cuenta pertenezca al usuario si se proporciona
+            if (dto.AccountId.HasValue)
+            {
+                var account = await _context.Accounts
+                    .FirstOrDefaultAsync(a => a.Id == dto.AccountId.Value && a.UserId == userId && a.IsActive);
+
+                if (account == null)
+                    throw new InvalidOperationException($"La cuenta con ID {dto.AccountId.Value} no existe o no pertenece al usuario");
+            }
+
             var transaction = _mapper.Map<Transaction>(dto);
             transaction.UserId = userId;
             transaction.CreatedAt = DateTime.UtcNow;
 
             _context.Transactions.Add(transaction);
             await _context.SaveChangesAsync();
+
+            // Actualizar balance de la cuenta si se asignó una
+            if (transaction.AccountId.HasValue)
+            {
+                await UpdateAccountBalanceAsync(transaction.AccountId.Value, transaction.Type, transaction.Amount, isAdding: true);
+            }
 
             // Cargar la categoría para incluirla en la respuesta
             await _context.Entry(transaction)
@@ -65,6 +83,11 @@ namespace WebApplication2.Services
             if (transaction == null)
                 return null;
 
+            // Guardar valores originales para revertir balance si es necesario
+            var originalAccountId = transaction.AccountId;
+            var originalAmount = transaction.Amount;
+            var originalType = transaction.Type;
+
             // Validar cambio de categoría si se proporciona
             if (dto.CategoryId.HasValue && dto.CategoryId.Value != transaction.CategoryId)
             {
@@ -75,39 +98,60 @@ namespace WebApplication2.Services
                     throw new InvalidOperationException($"La categoría con ID {dto.CategoryId.Value} no existe");
 
                 // Validar que el tipo de categoría coincida con el tipo de transacción
-                if (dto.Type != null) // Se cambió HasValue por != null
-                {
-                    // Si se cambia el tipo, validar con el nuevo tipo
-                    if (newCategory.Type != dto.Type)
-                        throw new InvalidOperationException($"La categoría seleccionada es de tipo {newCategory.Type}, pero la transacción es de tipo {dto.Type.Value}");
-                }
-                else
-                {
-                    // Si no se cambia el tipo, validar con el tipo existente
-                    if (newCategory.Type != transaction.Type)
-                        throw new InvalidOperationException($"La categoría seleccionada es de tipo {newCategory.Type}, pero la transacción es de tipo {transaction.Type}");
-                }
+                var transactionType = dto.Type ?? transaction.Type;
+                if (newCategory.Type != transactionType)
+                    throw new InvalidOperationException($"La categoría seleccionada es de tipo {newCategory.Type}, pero la transacción es de tipo {transactionType}");
 
                 transaction.CategoryId = dto.CategoryId.Value;
             }
 
             // Validar consistencia de tipo si se cambia
-            if (dto.Type != null && dto.Type.Value != transaction.Type)
+            if (dto.Type.HasValue && dto.Type.Value != transaction.Type)
             {
-                // Verificar que la categoría actual sea del nuevo tipo
-                var currentCategory = await _context.Categories
-                    .FirstOrDefaultAsync(c => c.Id == transaction.CategoryId);
+                var categoryToCheck = dto.CategoryId.HasValue 
+                    ? await _context.Categories.FirstOrDefaultAsync(c => c.Id == dto.CategoryId.Value)
+                    : transaction.Category;
 
-                if (currentCategory != null && currentCategory.Type != dto.Type.Value)
-                    throw new InvalidOperationException($"No se puede cambiar el tipo de transacción porque la categoría actual es de tipo {currentCategory.Type}");
+                if (categoryToCheck != null && categoryToCheck.Type != dto.Type.Value)
+                    throw new InvalidOperationException($"No se puede cambiar el tipo de transacción porque la categoría es de tipo {categoryToCheck.Type}");
+                
+                transaction.Type = dto.Type.Value;
+            }
+
+            // Validar nueva cuenta si se proporciona
+            if (dto.AccountId.HasValue)
+            {
+                var account = await _context.Accounts
+                    .FirstOrDefaultAsync(a => a.Id == dto.AccountId.Value && a.UserId == userId && a.IsActive);
+
+                if (account == null)
+                    throw new InvalidOperationException($"La cuenta con ID {dto.AccountId.Value} no existe o no pertenece al usuario");
+            }
+
+            // Revertir balance de la cuenta original si existía
+            if (originalAccountId.HasValue)
+            {
+                await UpdateAccountBalanceAsync(originalAccountId.Value, originalType, originalAmount, isAdding: false);
             }
 
             // Mapear solo las propiedades que no sean null
-            if (dto.Type != null) transaction.Type = dto.Type.Value;
-            if (dto.Amount != null) transaction.Amount = dto.Amount.Value;
+            if (dto.Amount.HasValue) transaction.Amount = dto.Amount.Value;
             if (dto.Description != null) transaction.Description = dto.Description;
+            if (dto.Date.HasValue) transaction.Date = dto.Date.Value.ToDateTime(TimeOnly.MinValue);
+            
+            // Manejar AccountId: puede ser null para desasignar cuenta
+            if (dto.AccountId != null)
+            {
+                transaction.AccountId = dto.AccountId;
+            }
 
             await _context.SaveChangesAsync();
+
+            // Aplicar balance a la nueva cuenta si existe
+            if (transaction.AccountId.HasValue)
+            {
+                await UpdateAccountBalanceAsync(transaction.AccountId.Value, transaction.Type, transaction.Amount, isAdding: true);
+            }
 
             // Recargar la categoría por si cambió
             await _context.Entry(transaction)
@@ -124,6 +168,12 @@ namespace WebApplication2.Services
 
             if (transaction == null)
                 return false;
+
+            // Revertir balance de la cuenta si existía
+            if (transaction.AccountId.HasValue)
+            {
+                await UpdateAccountBalanceAsync(transaction.AccountId.Value, transaction.Type, transaction.Amount, isAdding: false);
+            }
 
             _context.Transactions.Remove(transaction);
             await _context.SaveChangesAsync();
@@ -211,6 +261,34 @@ namespace WebApplication2.Services
                 TotalExpense = expense,
                 NetBalance = income - expense
             };
+        }
+
+        // Método privado para actualizar el balance de una cuenta
+        private async Task UpdateAccountBalanceAsync(int accountId, TransactionType type, decimal amount, bool isAdding)
+        {
+            var account = await _context.Accounts.FindAsync(accountId);
+            if (account == null)
+                return;
+
+            // Calcular el cambio en el balance
+            decimal balanceChange = 0;
+
+            if (isAdding)
+            {
+                // Agregar transacción: Income suma, Expense resta
+                balanceChange = type == TransactionType.Income ? amount : -amount;
+            }
+            else
+            {
+                // Revertir transacción: Income resta, Expense suma
+                balanceChange = type == TransactionType.Income ? -amount : amount;
+            }
+
+            account.CurrentBalance += balanceChange;
+            account.UpdatedAt = DateTime.UtcNow;
+
+            _context.Accounts.Update(account);
+            await _context.SaveChangesAsync();
         }
     }
 }

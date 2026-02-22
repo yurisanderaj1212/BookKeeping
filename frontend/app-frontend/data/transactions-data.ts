@@ -11,6 +11,7 @@ export interface Transaction {
   date: string
   status: 'pending' | 'completed'
   notes?: string
+  accountId?: number // NUEVO: ID de la cuenta asociada
 }
 
 // Mock transactions data - single source of truth

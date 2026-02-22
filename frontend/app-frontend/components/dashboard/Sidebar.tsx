@@ -16,7 +16,8 @@ import {
   Calendar,
   Bell,
   ChevronLeft,
-  ChevronRight
+  ChevronRight,
+  Wallet
 } from 'lucide-react'
 
 interface MenuItem {
@@ -33,6 +34,12 @@ const menuItems: MenuItem[] = [
     label: 'Resumen',
     icon: LayoutDashboard,
     href: '/dashboard'
+  },
+  {
+    id: 'accounts',
+    label: 'Cuentas',
+    icon: Wallet,
+    href: '/accounts'
   },
   {
     id: 'transactions',
@@ -57,12 +64,6 @@ const menuItems: MenuItem[] = [
     label: 'Análisis',
     icon: BarChart3,
     href: '/analytics'
-  },
-  {
-    id: 'week-close',
-    label: 'Cierre Semanal',
-    icon: Calendar,
-    href: '/week-close'
   }
 ]
 
