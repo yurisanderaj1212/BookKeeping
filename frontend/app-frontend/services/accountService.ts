@@ -177,6 +177,19 @@ class AccountService {
     return response.json()
   }
 
+  async updateAccount(accountId: number, dto: Partial<CreateAccountDto>): Promise<Account> {
+    const response = await fetch(`${API_URL}/accounts/${accountId}`, {
+      method: 'PUT',
+      headers: this.getAuthHeaders(),
+      body: JSON.stringify(dto)
+    })
+    if (!response.ok) {
+      const error = await response.text()
+      throw new Error(error || 'Error actualizando cuenta')
+    }
+    return response.json()
+  }
+
   async deactivateAccount(accountId: number): Promise<void> {
     const response = await fetch(`${API_URL}/accounts/${accountId}`, {
       method: 'DELETE',

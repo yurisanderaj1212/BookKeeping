@@ -15,8 +15,9 @@ import {
 interface AccountFormProps {
   isOpen: boolean
   onClose: () => void
-  onSave: (account: CreateAccountDto) => Promise<void>
+  onSave: (account: CreateAccountDto, accountId?: number) => Promise<void>
   account?: Account | null
+  mode?: 'create' | 'edit'
 }
 
 export default function AccountForm({ isOpen, onClose, onSave, account }: AccountFormProps) {
@@ -85,7 +86,7 @@ export default function AccountForm({ isOpen, onClose, onSave, account }: Accoun
 
     try {
       setLoading(true)
-      await onSave(formData)
+      await onSave(formData, account?.id)
       onClose()
     } catch (err: any) {
       setError(err.message || 'Error al guardar la cuenta')

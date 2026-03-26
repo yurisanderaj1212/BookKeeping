@@ -1,539 +1,225 @@
-import { formatCurrency, getTotalIncome, getTotalExpenses, getNetProfit, mockTransactions } from '@/data/transactions-data'
-import { getCategoryName } from '@/data/categories-data'
+import * as XLSX from 'xlsx'
+import {
+  getFinancialSummary, getProfitLoss, getTransactionSummary,
+  getCategoryBreakdown, getEmployeeSummary, formatCurrency, type ReportParams
+} from '@/services/reportService'
+import * as transactionService from '@/services/transactionService'
 
-// Export Analytics Data
-export const exportAnalyticsData = async (format: 'csv' | 'pdf') => {
-  const stats = {
-    totalIncome: getTotalIncome(),
-    totalExpenses: getTotalExpenses(),
-    netProfit: getNetProfit(),
-    totalTransactions: mockTransactions.length,
-    pendingCount: mockTransactions.filter(t => t.status === 'pending').length,
-    completedCount: mockTransactions.filter(t => t.status === 'completed').length
+const today = () => new Date().toLocaleDateString()
+const filename = (name: string, ext: string) => `${name}-${new Date().toISOString().split('T')[0]}.${ext}`
+
+const BRAND_COLOR = '1A9E96', HEADER_COLOR = '2D3748'
+
+function applyHeaderStyle(ws: XLSX.WorkSheet, range: string, bgColor = HEADER_COLOR) {
+  const ref = XLSX.utils.decode_range(range)
+  for (let C = ref.s.c; C <= ref.e.c; C++) {
+    const cell = XLSX.utils.encode_cell({ r: ref.s.r, c: C })
+    if (!ws[cell]) ws[cell] = { v: '', t: 's' }
+    ws[cell].s = { font: { bold: true, color: { rgb: 'FFFFFF' }, sz: 11 }, fill: { fgColor: { rgb: bgColor } }, alignment: { horizontal: 'center', vertical: 'center', wrapText: true } }
   }
+}
 
-  const profitMargin = stats.totalIncome > 0 ? ((stats.netProfit / stats.totalIncome) * 100) : 0
+function titleRow(ws: XLSX.WorkSheet, row: number, cols: number, text: string) {
+  const cell = XLSX.utils.encode_cell({ r: row, c: 0 })
+  ws[cell] = { v: text, t: 's', s: { font: { bold: true, sz: 14, color: { rgb: BRAND_COLOR } } } }
+  ws['!merges'] = ws['!merges'] || []
+  ws['!merges'].push({ s: { r: row, c: 0 }, e: { r: row, c: cols - 1 } })
+}
 
-  if (format === 'csv') {
-    const csvData = [
-      ['CHILL NUMBERS - ANÁLISIS FINANCIERO'],
-      ['Generado el:', new Date().toLocaleDateString('es-ES')],
-      [''],
-      ['RESUMEN EJECUTIVO'],
-      ['Métrica', 'Valor'],
-      ['Ingresos Totales', formatCurrency(stats.totalIncome)],
-      ['Gastos Totales', formatCurrency(stats.totalExpenses)],
-      ['Beneficio Neto', formatCurrency(stats.netProfit)],
-      ['Margen de Beneficio', `${profitMargin.toFixed(1)}%`],
-      ['Total Transacciones', stats.totalTransactions.toString()],
-      ['Transacciones Completadas', stats.completedCount.toString()],
-      ['Transacciones Pendientes', stats.pendingCount.toString()],
-      [''],
-      ['DETALLE DE TRANSACCIONES'],
-      ['Fecha', 'Tipo', 'Descripción', 'Categoría', 'Monto', 'Estado'],
-      ...mockTransactions.map(t => [
-        new Date(t.date).toLocaleDateString('es-ES'),
-        t.type === 'income' ? 'Ingreso' : 'Gasto',
-        t.description,
-        getCategoryName(t.category),
-        formatCurrency(t.amount),
-        t.status === 'completed' ? 'Completada' : 'Pendiente'
-      ]),
-      [''],
-      ['ANÁLISIS POR CATEGORÍAS'],
-      ['Categoría', 'Tipo', 'Cantidad Transacciones', 'Monto Total'],
-      ...getAnalyticsByCategory()
-    ]
-    
-    downloadCSV(csvData, `analisis-financiero-${new Date().toISOString().split('T')[0]}.csv`)
+const PDF_STYLES = `@page{margin:20mm}*{box-sizing:border-box}body{font-family:'Segoe UI',Arial,sans-serif;color:#2d3748;font-size:12px;margin:0}.page-header{display:flex;align-items:center;justify-content:space-between;border-bottom:3px solid #1a9e96;padding-bottom:16px;margin-bottom:24px}.brand{font-size:22px;font-weight:800;color:#1a9e96}.report-title{font-size:16px;font-weight:700}.section{margin-bottom:28px}.section-title{font-size:13px;font-weight:700;border-left:4px solid #1a9e96;padding-left:10px;margin-bottom:12px}table{width:100%;border-collapse:collapse;font-size:11px}thead tr{background:#2d3748;color:#fff}thead th{padding:9px 12px;text-align:left;font-weight:600}tbody tr:nth-child(even){background:#f7fafc}td{padding:8px 12px;border-bottom:1px solid #e2e8f0}.num{text-align:right}.positive{color:#276749;font-weight:600}.negative{color:#9b2c2c;font-weight:600}.neutral{color:#2b6cb0;font-weight:600}.kpi-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:24px}.kpi{background:#f7fafc;border:1px solid #e2e8f0;border-radius:8px;padding:14px}.kpi-label{font-size:10px;color:#718096;text-transform:uppercase}.kpi-value{font-size:18px;font-weight:700;margin-top:4px}.footer{margin-top:32px;padding-top:12px;border-top:1px solid #e2e8f0;font-size:10px;color:#a0aec0;text-align:center}@media print{body{-webkit-print-color-adjust:exact;print-color-adjust:exact}}`
+
+function openPDF(title: string, body: string, subtitle = '') {
+  const w = window.open('', '_blank')
+  if (!w) return
+  w.document.write(`<!DOCTYPE html><html><head><meta charset="utf-8"><title>${title} - Chill Numbers</title><style>${PDF_STYLES}</style></head><body><div class="page-header"><div><div class="brand">CHILL NUMBERS</div><div class="report-title">${title}</div>${subtitle ? `<div style="font-size:11px;color:#718096">${subtitle}</div>` : ''}</div><div style="text-align:right"><div style="font-size:11px;color:#718096">Generado el</div><div style="font-weight:600">${today()}</div></div></div>${body}<div class="footer">Reporte generado por Chill Numbers &bull; ${today()}</div></body></html>`)
+  w.document.close()
+  setTimeout(() => w.print(), 400)
+}
+
+// ─── FINANCIAL SUMMARY ───────────────────────────────────────────────────────
+export async function exportFinancialSummary(params: ReportParams, format: 'excel' | 'pdf') {
+  const data = await getFinancialSummary(params)
+  const income: number = data.totalIncome ?? 0
+  const expenses: number = data.totalExpenses ?? 0
+  const net = income - expenses
+  const margin = income > 0 ? ((net / income) * 100).toFixed(1) : '0.0'
+  const byMonth: any[] = data.byMonth ?? []
+
+  if (format === 'excel') {
+    const wb = XLSX.utils.book_new()
+    const rows: any[][] = [['CHILL NUMBERS — RESUMEN FINANCIERO'],[`Generado el: ${today()}`],[],['MÉTRICAS PRINCIPALES'],['Concepto','Valor'],['Ingresos Totales',income],['Gastos Totales',expenses],['Resultado Neto',net],['Margen (%)',parseFloat(margin)]]
+    if (byMonth.length > 0) { rows.push([],['DESGLOSE MENSUAL'],['Mes','Año','Tipo','Monto']); byMonth.forEach((m:any) => rows.push([m.month,m.year,m.type===0?'Ingreso':'Gasto',m.amount])) }
+    const ws = XLSX.utils.aoa_to_sheet(rows)
+    ws['!cols'] = [{wch:28},{wch:18},{wch:12},{wch:16}]
+    titleRow(ws,0,4,'CHILL NUMBERS — RESUMEN FINANCIERO'); applyHeaderStyle(ws,'A5:B5')
+    if (byMonth.length>0) applyHeaderStyle(ws,'A12:D12')
+    XLSX.utils.book_append_sheet(wb,ws,'Resumen Financiero'); XLSX.writeFile(wb,filename('resumen-financiero','xlsx'))
   } else {
-    // For PDF, we'll create a comprehensive HTML structure
-    generateAnalyticsPDF(stats, profitMargin)
+    const kpis = `<div class="kpi-grid"><div class="kpi"><div class="kpi-label">Ingresos Totales</div><div class="kpi-value positive">${formatCurrency(income)}</div></div><div class="kpi"><div class="kpi-label">Gastos Totales</div><div class="kpi-value negative">${formatCurrency(expenses)}</div></div><div class="kpi"><div class="kpi-label">Resultado Neto</div><div class="kpi-value ${net>=0?'positive':'negative'}">${formatCurrency(net)}</div></div></div>`
+    openPDF('Resumen Financiero', kpis)
   }
 }
 
-// Export Report Data
-export const exportReportData = async (reportType: string, format: 'csv' | 'pdf') => {
-  const timestamp = new Date().toISOString().split('T')[0]
-  
-  if (format === 'csv') {
-    let csvData: string[][] = []
-    
-    switch (reportType) {
-      case 'profit-loss-detailed':
-        csvData = generateProfitLossCSV()
-        break
-      case 'transaction-detail':
-        csvData = generateTransactionDetailCSV()
-        break
-      case 'transaction-summary':
-        csvData = generateTransactionSummaryCSV()
-        break
-      case 'category-breakdown':
-        csvData = generateCategoryBreakdownCSV()
-        break
-      case 'week-close':
-        csvData = generateWeekCloseCSV()
-        break
-      default:
-        csvData = generateFinancialSummaryCSV()
-    }
-    
-    downloadCSV(csvData, `reporte-${reportType}-${timestamp}.csv`)
+// ─── PROFIT & LOSS ───────────────────────────────────────────────────────────
+export async function exportProfitLoss(params: ReportParams, format: 'excel' | 'pdf') {
+  const data = await getProfitLoss(params)
+  const income: number = data.totalIncome ?? 0
+  const expenses: number = data.totalExpenses ?? 0
+  const net = income - expenses
+  const months: any[] = data.monthlyData ?? data.byMonth ?? []
+
+  if (format === 'excel') {
+    const wb = XLSX.utils.book_new()
+    const rows: any[][] = [['CHILL NUMBERS — PÉRDIDAS Y GANANCIAS'],[`Año: ${params.year??new Date().getFullYear()}  |  Generado: ${today()}`],[],['RESUMEN ANUAL'],['Concepto','Monto'],['Ingresos Totales',income],['Gastos Totales',expenses],['Resultado Neto',net],['Margen (%)',income>0?parseFloat(((net/income)*100).toFixed(2)):0]]
+    if (months.length>0) { rows.push([],['DESGLOSE MENSUAL'],['Mes','Ingresos','Gastos','Resultado','Margen (%)']); months.forEach((m:any)=>{ const mNet=(m.income??0)-(m.expenses??0); rows.push([m.monthName??m.month,m.income??0,m.expenses??0,mNet,(m.income??0)>0?parseFloat(((mNet/(m.income??1))*100).toFixed(2)):0]) }) }
+    const ws = XLSX.utils.aoa_to_sheet(rows)
+    ws['!cols'] = [{wch:20},{wch:16},{wch:16},{wch:16},{wch:12}]
+    titleRow(ws,0,5,'CHILL NUMBERS — PÉRDIDAS Y GANANCIAS'); applyHeaderStyle(ws,'A5:B5')
+    if (months.length>0) applyHeaderStyle(ws,'A12:E12')
+    XLSX.utils.book_append_sheet(wb,ws,'P&G'); XLSX.writeFile(wb,filename('perdidas-ganancias','xlsx'))
   } else {
-    generateReportPDF(reportType)
+    const kpis = `<div class="kpi-grid"><div class="kpi"><div class="kpi-label">Ingresos</div><div class="kpi-value positive">${formatCurrency(income)}</div></div><div class="kpi"><div class="kpi-label">Gastos</div><div class="kpi-value negative">${formatCurrency(expenses)}</div></div><div class="kpi"><div class="kpi-label">Resultado Neto</div><div class="kpi-value ${net>=0?'positive':'negative'}">${formatCurrency(net)}</div></div></div>`
+    openPDF('Pérdidas y Ganancias', kpis, `Año ${params.year??new Date().getFullYear()}`)
   }
 }
 
-// Helper function to get analytics by category
-const getAnalyticsByCategory = () => {
-  const categoryStats = new Map()
-  
-  mockTransactions.forEach(transaction => {
-    const categoryName = getCategoryName(transaction.category)
-    const key = `${categoryName}-${transaction.type}`
-    
-    if (!categoryStats.has(key)) {
-      categoryStats.set(key, {
-        category: categoryName,
-        type: transaction.type === 'income' ? 'Ingreso' : 'Gasto',
-        count: 0,
-        total: 0
-      })
-    }
-    
-    const stats = categoryStats.get(key)
-    stats.count++
-    stats.total += transaction.amount
-  })
-  
-  return Array.from(categoryStats.values()).map(stat => [
-    stat.category,
-    stat.type,
-    stat.count.toString(),
-    formatCurrency(stat.total)
-  ])
-}
+// ─── TRANSACTION SUMMARY ─────────────────────────────────────────────────────
+export async function exportTransactionSummary(params: ReportParams, format: 'excel' | 'pdf') {
+  const data = await getTransactionSummary(params)
+  const total: number = data.totalTransactions ?? 0
+  const income: number = data.totalIncome ?? 0
+  const expenses: number = data.totalExpenses ?? 0
+  const pending: number = data.pendingCount ?? 0
+  const completed: number = data.completedCount ?? (total - pending)
+  const byCategory: any[] = data.byCategory ?? []
 
-// Generate Profit Loss CSV
-const generateProfitLossCSV = () => {
-  const totalIncome = getTotalIncome()
-  const totalExpenses = getTotalExpenses()
-  const netProfit = getNetProfit()
-  const profitMargin = totalIncome > 0 ? ((netProfit / totalIncome) * 100) : 0
-
-  return [
-    ['CHILL NUMBERS - INFORME DE PÉRDIDAS Y BENEFICIOS'],
-    ['Generado el:', new Date().toLocaleDateString('es-ES')],
-    [''],
-    ['RESUMEN FINANCIERO'],
-    ['Concepto', 'Monto'],
-    ['Ingresos Totales', formatCurrency(totalIncome)],
-    ['Gastos Totales', formatCurrency(totalExpenses)],
-    ['Beneficio Neto', formatCurrency(netProfit)],
-    ['Margen de Beneficio', `${profitMargin.toFixed(1)}%`],
-    [''],
-    ['DESGLOSE MENSUAL'],
-    ['Mes', 'Ingresos', 'Gastos', 'Beneficio', 'Margen'],
-    ...generateMonthlyBreakdown()
-  ]
-}
-
-// Generate Transaction Detail CSV
-const generateTransactionDetailCSV = () => {
-  return [
-    ['CHILL NUMBERS - DETALLE DE TRANSACCIONES'],
-    ['Generado el:', new Date().toLocaleDateString('es-ES')],
-    [''],
-    ['RESUMEN'],
-    ['Total Transacciones:', mockTransactions.length.toString()],
-    ['Transacciones Completadas:', mockTransactions.filter(t => t.status === 'completed').length.toString()],
-    ['Transacciones Pendientes:', mockTransactions.filter(t => t.status === 'pending').length.toString()],
-    [''],
-    ['DETALLE COMPLETO'],
-    ['Fecha', 'Tipo', 'Descripción', 'Categoría', 'Monto', 'Estado', 'Notas'],
-    ...mockTransactions.map(t => [
-      new Date(t.date).toLocaleDateString('es-ES'),
-      t.type === 'income' ? 'Ingreso' : 'Gasto',
-      t.description,
-      getCategoryName(t.category),
-      formatCurrency(t.amount),
-      t.status === 'completed' ? 'Completada' : 'Pendiente',
-      t.notes || ''
-    ])
-  ]
-}
-
-// Generate Transaction Summary CSV
-const generateTransactionSummaryCSV = () => {
-  const incomeTransactions = mockTransactions.filter(t => t.type === 'income')
-  const expenseTransactions = mockTransactions.filter(t => t.type === 'expense')
-  
-  return [
-    ['CHILL NUMBERS - RESUMEN DE TRANSACCIONES'],
-    ['Generado el:', new Date().toLocaleDateString('es-ES')],
-    [''],
-    ['RESUMEN POR TIPO'],
-    ['Tipo', 'Cantidad', 'Monto Total', 'Promedio'],
-    ['Ingresos', incomeTransactions.length.toString(), 
-     formatCurrency(incomeTransactions.reduce((sum, t) => sum + t.amount, 0)),
-     formatCurrency(incomeTransactions.length > 0 ? incomeTransactions.reduce((sum, t) => sum + t.amount, 0) / incomeTransactions.length : 0)],
-    ['Gastos', expenseTransactions.length.toString(), 
-     formatCurrency(expenseTransactions.reduce((sum, t) => sum + t.amount, 0)),
-     formatCurrency(expenseTransactions.length > 0 ? expenseTransactions.reduce((sum, t) => sum + t.amount, 0) / expenseTransactions.length : 0)],
-    [''],
-    ['RESUMEN POR ESTADO'],
-    ['Estado', 'Cantidad', 'Porcentaje'],
-    ['Completadas', mockTransactions.filter(t => t.status === 'completed').length.toString(),
-     `${((mockTransactions.filter(t => t.status === 'completed').length / mockTransactions.length) * 100).toFixed(1)}%`],
-    ['Pendientes', mockTransactions.filter(t => t.status === 'pending').length.toString(),
-     `${((mockTransactions.filter(t => t.status === 'pending').length / mockTransactions.length) * 100).toFixed(1)}%`]
-  ]
-}
-
-// Generate Category Breakdown CSV
-const generateCategoryBreakdownCSV = () => {
-  const categoryData = getAnalyticsByCategory()
-  
-  return [
-    ['CHILL NUMBERS - ANÁLISIS POR CATEGORÍAS'],
-    ['Generado el:', new Date().toLocaleDateString('es-ES')],
-    [''],
-    ['DESGLOSE POR CATEGORÍAS'],
-    ['Categoría', 'Tipo', 'Transacciones', 'Monto Total'],
-    ...categoryData
-  ]
-}
-
-// Generate Week Close CSV
-const generateWeekCloseCSV = () => {
-  return [
-    ['CHILL NUMBERS - CIERRE SEMANAL'],
-    ['Generado el:', new Date().toLocaleDateString('es-ES')],
-    [''],
-    ['RESUMEN DE CIERRES SEMANALES'],
-    ['Semana', 'Fecha Inicio', 'Fecha Fin', 'Estado', 'Transacciones', 'Ingresos', 'Gastos', 'Beneficio'],
-    // This would be populated with actual week data in a real implementation
-    ['Semana 1', '01/01/2024', '07/01/2024', 'Cerrada', '15', formatCurrency(5000), formatCurrency(2000), formatCurrency(3000)],
-    ['Semana 2', '08/01/2024', '14/01/2024', 'Cerrada', '12', formatCurrency(4500), formatCurrency(1800), formatCurrency(2700)],
-    ['Semana 3', '15/01/2024', '21/01/2024', 'Pendiente', '8', formatCurrency(3200), formatCurrency(1500), formatCurrency(1700)],
-    ['Semana 4', '22/01/2024', '28/01/2024', 'Abierta', '10', formatCurrency(4000), formatCurrency(2200), formatCurrency(1800)],
-    [''],
-    ['RESUMEN MENSUAL'],
-    ['Total Transacciones:', '45'],
-    ['Total Ingresos:', formatCurrency(16700)],
-    ['Total Gastos:', formatCurrency(7500)],
-    ['Beneficio Neto:', formatCurrency(9200)],
-    ['Semanas Cerradas:', '2 de 4']
-  ]
-}
-
-// Generate Financial Summary CSV
-const generateFinancialSummaryCSV = () => {
-  const totalIncome = getTotalIncome()
-  const totalExpenses = getTotalExpenses()
-  const netProfit = getNetProfit()
-  
-  return [
-    ['CHILL NUMBERS - RESUMEN FINANCIERO'],
-    ['Generado el:', new Date().toLocaleDateString('es-ES')],
-    [''],
-    ['MÉTRICAS PRINCIPALES'],
-    ['Métrica', 'Valor'],
-    ['Ingresos Totales', formatCurrency(totalIncome)],
-    ['Gastos Totales', formatCurrency(totalExpenses)],
-    ['Beneficio Neto', formatCurrency(netProfit)],
-    ['Margen de Beneficio', `${totalIncome > 0 ? ((netProfit / totalIncome) * 100).toFixed(1) : 0}%`],
-    ['Total Transacciones', mockTransactions.length.toString()]
-  ]
-}
-
-// Generate monthly breakdown for profit loss
-const generateMonthlyBreakdown = () => {
-  const months = [
-    'Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio',
-    'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'
-  ]
-  
-  return months.map((month, index) => {
-    // Simulate monthly data distribution
-    const monthTransactions = mockTransactions.filter((_, i) => Math.floor(i / 2) === index)
-    const monthlyIncome = monthTransactions.filter(t => t.type === 'income').reduce((sum, t) => sum + t.amount, 0)
-    const monthlyExpenses = monthTransactions.filter(t => t.type === 'expense').reduce((sum, t) => sum + t.amount, 0)
-    const monthlyProfit = monthlyIncome - monthlyExpenses
-    const monthlyMargin = monthlyIncome > 0 ? ((monthlyProfit / monthlyIncome) * 100) : 0
-    
-    return [
-      month,
-      formatCurrency(monthlyIncome),
-      formatCurrency(monthlyExpenses),
-      formatCurrency(monthlyProfit),
-      `${monthlyMargin.toFixed(1)}%`
-    ]
-  })
-}
-
-// Download CSV function
-const downloadCSV = (data: string[][], filename: string) => {
-  const csvContent = data.map(row => 
-    row.map(cell => `"${cell.toString().replace(/"/g, '""')}"`).join(',')
-  ).join('\n')
-  
-  const blob = new Blob(['\ufeff' + csvContent], { type: 'text/csv;charset=utf-8;' })
-  const link = document.createElement('a')
-  
-  if (link.download !== undefined) {
-    const url = URL.createObjectURL(blob)
-    link.setAttribute('href', url)
-    link.setAttribute('download', filename)
-    link.style.visibility = 'hidden'
-    document.body.appendChild(link)
-    link.click()
-    document.body.removeChild(link)
+  if (format === 'excel') {
+    const wb = XLSX.utils.book_new()
+    const rows: any[][] = [['CHILL NUMBERS — RESUMEN DE TRANSACCIONES'],[`Generado el: ${today()}`],[],['RESUMEN GENERAL'],['Concepto','Valor'],['Total Transacciones',total],['Completadas',completed],['Pendientes',pending],['Total Ingresos',income],['Total Gastos',expenses]]
+    if (byCategory.length>0) { rows.push([],['POR CATEGORÍA'],['Categoría','Tipo','Transacciones','Monto Total']); byCategory.forEach((c:any)=>rows.push([c.categoryName??c.category,c.type===0?'Ingreso':'Gasto',c.count??0,c.total??c.amount??0])) }
+    const ws = XLSX.utils.aoa_to_sheet(rows)
+    ws['!cols'] = [{wch:28},{wch:16},{wch:16},{wch:16}]
+    titleRow(ws,0,4,'CHILL NUMBERS — RESUMEN DE TRANSACCIONES'); applyHeaderStyle(ws,'A5:B5')
+    XLSX.utils.book_append_sheet(wb,ws,'Resumen Transacciones'); XLSX.writeFile(wb,filename('resumen-transacciones','xlsx'))
+  } else {
+    const kpis = `<div class="kpi-grid"><div class="kpi"><div class="kpi-label">Total Transacciones</div><div class="kpi-value neutral">${total}</div></div><div class="kpi"><div class="kpi-label">Completadas</div><div class="kpi-value positive">${completed}</div></div><div class="kpi"><div class="kpi-label">Pendientes</div><div class="kpi-value negative">${pending}</div></div></div>`
+    openPDF('Resumen de Transacciones', kpis)
   }
 }
 
-// Generate Analytics PDF (simplified - would need a proper PDF library in production)
-const generateAnalyticsPDF = (stats: any, profitMargin: number) => {
-  const htmlContent = `
-    <!DOCTYPE html>
-    <html>
-    <head>
-      <meta charset="utf-8">
-      <title>Análisis Financiero - Chill Numbers</title>
-      <style>
-        body { font-family: Arial, sans-serif; margin: 40px; color: #333; }
-        .header { text-align: center; border-bottom: 2px solid #20B2AA; padding-bottom: 20px; margin-bottom: 30px; }
-        .logo { color: #20B2AA; font-size: 24px; font-weight: bold; }
-        .date { color: #666; font-size: 14px; margin-top: 10px; }
-        .section { margin-bottom: 30px; }
-        .section-title { color: #20B2AA; font-size: 18px; font-weight: bold; margin-bottom: 15px; border-bottom: 1px solid #eee; padding-bottom: 5px; }
-        table { width: 100%; border-collapse: collapse; margin-bottom: 20px; }
-        th, td { padding: 12px; text-align: left; border-bottom: 1px solid #ddd; }
-        th { background-color: #f8f9fa; font-weight: bold; }
-        .metric-value { font-weight: bold; color: #20B2AA; }
-        .positive { color: #10B981; }
-        .negative { color: #EF4444; }
-        .footer { text-align: center; margin-top: 40px; padding-top: 20px; border-top: 1px solid #eee; color: #666; font-size: 12px; }
-      </style>
-    </head>
-    <body>
-      <div class="header">
-        <div class="logo">CHILL NUMBERS</div>
-        <h1>Análisis Financiero Completo</h1>
-        <div class="date">Generado el ${new Date().toLocaleDateString('es-ES')}</div>
-      </div>
-      
-      <div class="section">
-        <div class="section-title">Resumen Ejecutivo</div>
-        <table>
-          <tr><td>Ingresos Totales</td><td class="metric-value positive">${formatCurrency(stats.totalIncome)}</td></tr>
-          <tr><td>Gastos Totales</td><td class="metric-value negative">${formatCurrency(stats.totalExpenses)}</td></tr>
-          <tr><td>Beneficio Neto</td><td class="metric-value ${stats.netProfit >= 0 ? 'positive' : 'negative'}">${formatCurrency(stats.netProfit)}</td></tr>
-          <tr><td>Margen de Beneficio</td><td class="metric-value">${profitMargin.toFixed(1)}%</td></tr>
-          <tr><td>Total Transacciones</td><td class="metric-value">${stats.totalTransactions}</td></tr>
-          <tr><td>Transacciones Completadas</td><td class="metric-value">${stats.completedCount}</td></tr>
-          <tr><td>Transacciones Pendientes</td><td class="metric-value">${stats.pendingCount}</td></tr>
-        </table>
-      </div>
-      
-      <div class="footer">
-        <p>Este reporte ha sido generado automáticamente por Chill Numbers</p>
-        <p>Para más información, visite nuestro panel de control</p>
-      </div>
-    </body>
-    </html>
-  `
-  
-  // Open in new window for printing/saving as PDF
-  const printWindow = window.open('', '_blank')
-  if (printWindow) {
-    printWindow.document.write(htmlContent)
-    printWindow.document.close()
-    printWindow.focus()
-    setTimeout(() => {
-      printWindow.print()
-    }, 250)
+// ─── CATEGORY BREAKDOWN ──────────────────────────────────────────────────────
+export async function exportCategoryBreakdown(params: ReportParams, format: 'excel' | 'pdf') {
+  const data = await getCategoryBreakdown(params)
+  const categories: any[] = Array.isArray(data) ? data : (data.categories ?? data.items ?? [])
+  const grandTotal = categories.reduce((s:number,c:any)=>s+(c.total??c.amount??0),0)
+
+  if (format === 'excel') {
+    const wb = XLSX.utils.book_new()
+    const rows: any[][] = [['CHILL NUMBERS — DESGLOSE POR CATEGORÍAS'],[`Generado el: ${today()}`],[],['Categoría','Tipo','Transacciones','Monto Total','% del Total']]
+    categories.forEach((c:any)=>{ const amt=c.total??c.amount??0; rows.push([c.categoryName??c.category??c.name,c.type===0?'Ingreso':'Gasto',c.count??0,amt,grandTotal>0?parseFloat(((amt/grandTotal)*100).toFixed(2)):0]) })
+    const ws = XLSX.utils.aoa_to_sheet(rows)
+    ws['!cols'] = [{wch:26},{wch:12},{wch:16},{wch:16},{wch:12}]
+    titleRow(ws,0,5,'CHILL NUMBERS — DESGLOSE POR CATEGORÍAS'); applyHeaderStyle(ws,'A4:E4')
+    XLSX.utils.book_append_sheet(wb,ws,'Categorías'); XLSX.writeFile(wb,filename('desglose-categorias','xlsx'))
+  } else {
+    const rows = categories.map((c:any)=>{ const amt=c.total??c.amount??0; const pct=grandTotal>0?((amt/grandTotal)*100).toFixed(1):'0.0'; return `<tr><td>${c.categoryName??c.category??c.name}</td><td>${c.type===0?'Ingreso':'Gasto'}</td><td class="num">${c.count??0}</td><td class="num ${c.type===0?'positive':'negative'}">${formatCurrency(amt)}</td><td class="num">${pct}%</td></tr>` }).join('')
+    openPDF('Desglose por Categorías',`<div class="section"><div class="section-title">Desglose por Categorías</div><table><thead><tr><th>Categoría</th><th>Tipo</th><th>Transacciones</th><th>Monto</th><th>%</th></tr></thead><tbody>${rows}</tbody></table></div>`)
   }
 }
 
-// Generate Report PDF
-const generateReportPDF = (reportType: string) => {
-  let title = ''
-  let content = ''
-  
-  switch (reportType) {
-    case 'profit-loss-detailed':
-      title = 'Informe de Pérdidas y Beneficios'
-      content = generateProfitLossPDFContent()
-      break
-    case 'transaction-detail':
-      title = 'Detalle de Transacciones'
-      content = generateTransactionDetailPDFContent()
-      break
-    default:
-      title = 'Resumen Financiero'
-      content = generateFinancialSummaryPDFContent()
-  }
-  
-  const htmlContent = `
-    <!DOCTYPE html>
-    <html>
-    <head>
-      <meta charset="utf-8">
-      <title>${title} - Chill Numbers</title>
-      <style>
-        body { font-family: Arial, sans-serif; margin: 40px; color: #333; }
-        .header { text-align: center; border-bottom: 2px solid #20B2AA; padding-bottom: 20px; margin-bottom: 30px; }
-        .logo { color: #20B2AA; font-size: 24px; font-weight: bold; }
-        .date { color: #666; font-size: 14px; margin-top: 10px; }
-        .section { margin-bottom: 30px; }
-        .section-title { color: #20B2AA; font-size: 18px; font-weight: bold; margin-bottom: 15px; }
-        table { width: 100%; border-collapse: collapse; margin-bottom: 20px; }
-        th, td { padding: 8px; text-align: left; border-bottom: 1px solid #ddd; font-size: 12px; }
-        th { background-color: #f8f9fa; font-weight: bold; }
-        .positive { color: #10B981; font-weight: bold; }
-        .negative { color: #EF4444; font-weight: bold; }
-        .footer { text-align: center; margin-top: 40px; padding-top: 20px; border-top: 1px solid #eee; color: #666; font-size: 12px; }
-      </style>
-    </head>
-    <body>
-      <div class="header">
-        <div class="logo">CHILL NUMBERS</div>
-        <h1>${title}</h1>
-        <div class="date">Generado el ${new Date().toLocaleDateString('es-ES')}</div>
-      </div>
-      ${content}
-      <div class="footer">
-        <p>Este reporte ha sido generado automáticamente por Chill Numbers</p>
-      </div>
-    </body>
-    </html>
-  `
-  
-  const printWindow = window.open('', '_blank')
-  if (printWindow) {
-    printWindow.document.write(htmlContent)
-    printWindow.document.close()
-    printWindow.focus()
-    setTimeout(() => {
-      printWindow.print()
-    }, 250)
+// ─── EMPLOYEE SUMMARY ────────────────────────────────────────────────────────
+export async function exportEmployeeSummary(format: 'excel' | 'pdf') {
+  const data = await getEmployeeSummary()
+  const active: number = data.activeEmployees ?? 0
+  const inactive: number = data.inactiveEmployees ?? 0
+  const payroll: number = data.totalAnnualPayroll ?? 0
+  const avg: number = data.averageSalary ?? (active>0?payroll/active:0)
+  const byType: any[] = data.byPayrollType ?? []
+
+  if (format === 'excel') {
+    const wb = XLSX.utils.book_new()
+    const rows: any[][] = [['CHILL NUMBERS — RESUMEN DE EMPLEADOS'],[`Generado el: ${today()}`],[],['RESUMEN GENERAL'],['Concepto','Valor'],['Empleados Activos',active],['Empleados Inactivos',inactive],['Nómina Anual Total',payroll],['Salario Promedio',avg]]
+    if (byType.length>0) { rows.push([],['POR TIPO DE NÓMINA'],['Tipo','Empleados','Salario Total']); byType.forEach((t:any)=>rows.push([t.payrollType,t.count??0,t.totalSalary??0])) }
+    const ws = XLSX.utils.aoa_to_sheet(rows)
+    ws['!cols'] = [{wch:28},{wch:18},{wch:18}]
+    titleRow(ws,0,3,'CHILL NUMBERS — RESUMEN DE EMPLEADOS'); applyHeaderStyle(ws,'A5:B5')
+    XLSX.utils.book_append_sheet(wb,ws,'Empleados'); XLSX.writeFile(wb,filename('resumen-empleados','xlsx'))
+  } else {
+    const kpis = `<div class="kpi-grid"><div class="kpi"><div class="kpi-label">Empleados Activos</div><div class="kpi-value neutral">${active}</div></div><div class="kpi"><div class="kpi-label">Nómina Anual</div><div class="kpi-value positive">${formatCurrency(payroll)}</div></div><div class="kpi"><div class="kpi-label">Salario Promedio</div><div class="kpi-value neutral">${formatCurrency(avg)}</div></div></div>`
+    openPDF('Resumen de Empleados', kpis)
   }
 }
 
-const generateProfitLossPDFContent = () => {
-  const totalIncome = getTotalIncome()
-  const totalExpenses = getTotalExpenses()
-  const netProfit = getNetProfit()
-  
-  return `
-    <div class="section">
-      <div class="section-title">Resumen Financiero</div>
-      <table>
-        <tr><td>Ingresos Totales</td><td class="positive">${formatCurrency(totalIncome)}</td></tr>
-        <tr><td>Gastos Totales</td><td class="negative">${formatCurrency(totalExpenses)}</td></tr>
-        <tr><td>Beneficio Neto</td><td class="${netProfit >= 0 ? 'positive' : 'negative'}">${formatCurrency(netProfit)}</td></tr>
-      </table>
-    </div>
-  `
+// ─── TRANSACTIONS LIST ───────────────────────────────────────────────────────
+export async function exportTransactionsList(params: transactionService.TransactionQueryParameters, format: 'excel' | 'pdf') {
+  const result = await transactionService.getFiltered({ ...params, pageSize: 5000, pageNumber: 1 })
+  const txs: any[] = result.data ?? []
+
+  if (format === 'excel') {
+    const wb = XLSX.utils.book_new()
+    const rows: any[][] = [['CHILL NUMBERS — LISTADO DE TRANSACCIONES'],[`Generado el: ${today()}`],[],['Fecha','Tipo','Descripción','Categoría','Cuenta','Monto','Estado']]
+    txs.forEach((t:any)=>rows.push([t.date?new Date(t.date).toLocaleDateString():'',t.type===1?'Ingreso':'Gasto',t.description??'',t.categoryName??t.category??'',t.accountName??t.account??'',t.amount??0,t.status===0?'Completada':'Pendiente']))
+    const ws = XLSX.utils.aoa_to_sheet(rows)
+    ws['!cols'] = [{wch:14},{wch:10},{wch:32},{wch:20},{wch:20},{wch:14},{wch:12}]
+    titleRow(ws,0,7,'CHILL NUMBERS — LISTADO DE TRANSACCIONES'); applyHeaderStyle(ws,'A4:G4')
+    XLSX.utils.book_append_sheet(wb,ws,'Transacciones'); XLSX.writeFile(wb,filename('transacciones','xlsx'))
+  } else {
+    const rows = txs.slice(0,200).map((t:any)=>`<tr><td>${t.date?new Date(t.date).toLocaleDateString():''}</td><td>${t.type===1?'Ingreso':'Gasto'}</td><td>${t.description??''}</td><td>${t.categoryName??t.category??''}</td><td>${t.accountName??t.account??''}</td><td class="num ${t.type===1?'positive':'negative'}">${formatCurrency(t.amount??0)}</td><td>${t.status===0?'Completada':'Pendiente'}</td></tr>`).join('')
+    openPDF('Listado de Transacciones',`<div class="section"><div class="section-title">Listado de Transacciones</div><table><thead><tr><th>Fecha</th><th>Tipo</th><th>Descripción</th><th>Categoría</th><th>Cuenta</th><th>Monto</th><th>Estado</th></tr></thead><tbody>${rows}</tbody></table>${txs.length>200?`<p style="color:#718096;font-size:10px;margin-top:8px">Mostrando 200 de ${txs.length} transacciones.</p>`:''}</div>`)
+  }
 }
 
-const generateTransactionDetailPDFContent = () => {
-  return `
-    <div class="section">
-      <div class="section-title">Detalle de Transacciones</div>
-      <table>
-        <thead>
-          <tr>
-            <th>Fecha</th>
-            <th>Tipo</th>
-            <th>Descripción</th>
-            <th>Categoría</th>
-            <th>Monto</th>
-            <th>Estado</th>
-          </tr>
-        </thead>
-        <tbody>
-          ${mockTransactions.slice(0, 20).map(t => `
-            <tr>
-              <td>${new Date(t.date).toLocaleDateString('es-ES')}</td>
-              <td>${t.type === 'income' ? 'Ingreso' : 'Gasto'}</td>
-              <td>${t.description}</td>
-              <td>${getCategoryName(t.category)}</td>
-              <td class="${t.type === 'income' ? 'positive' : 'negative'}">${formatCurrency(t.amount)}</td>
-              <td>${t.status === 'completed' ? 'Completada' : 'Pendiente'}</td>
-            </tr>
-          `).join('')}
-        </tbody>
-      </table>
-    </div>
-  `
+// ─── ANALYTICS ───────────────────────────────────────────────────────────────
+export async function exportAnalyticsData(format: 'excel' | 'pdf') {
+  const [financial, txSummary, employees] = await Promise.all([getFinancialSummary({}),getTransactionSummary({}),getEmployeeSummary().catch(()=>null)])
+  const income: number = financial.totalIncome ?? 0
+  const expenses: number = financial.totalExpenses ?? 0
+  const net = income - expenses
+  const total: number = txSummary.totalTransactions ?? 0
+  const pending: number = txSummary.pendingCount ?? 0
+
+  if (format === 'excel') {
+    const wb = XLSX.utils.book_new()
+    const s1: any[][] = [['CHILL NUMBERS — ANÁLISIS FINANCIERO'],[`Generado el: ${today()}`],[],['RESUMEN FINANCIERO'],['Concepto','Valor'],['Ingresos Totales',income],['Gastos Totales',expenses],['Resultado Neto',net],[],['TRANSACCIONES'],['Concepto','Valor'],['Total',total],['Pendientes',pending],['Completadas',total-pending]]
+    if (employees) s1.push([],['EMPLEADOS'],['Concepto','Valor'],['Activos',employees.activeEmployees??0],['Nómina Anual',employees.totalAnnualPayroll??0])
+    const ws1 = XLSX.utils.aoa_to_sheet(s1)
+    ws1['!cols'] = [{wch:28},{wch:18}]
+    titleRow(ws1,0,2,'CHILL NUMBERS — ANÁLISIS FINANCIERO'); applyHeaderStyle(ws1,'A5:B5'); applyHeaderStyle(ws1,'A11:B11')
+    XLSX.utils.book_append_sheet(wb,ws1,'Análisis'); XLSX.writeFile(wb,filename('analisis-financiero','xlsx'))
+  } else {
+    const kpis = `<div class="kpi-grid"><div class="kpi"><div class="kpi-label">Ingresos</div><div class="kpi-value positive">${formatCurrency(income)}</div></div><div class="kpi"><div class="kpi-label">Gastos</div><div class="kpi-value negative">${formatCurrency(expenses)}</div></div><div class="kpi"><div class="kpi-label">Resultado Neto</div><div class="kpi-value ${net>=0?'positive':'negative'}">${formatCurrency(net)}</div></div></div><div class="kpi-grid"><div class="kpi"><div class="kpi-label">Total Transacciones</div><div class="kpi-value neutral">${total}</div></div><div class="kpi"><div class="kpi-label">Pendientes</div><div class="kpi-value negative">${pending}</div></div>${employees?`<div class="kpi"><div class="kpi-label">Empleados Activos</div><div class="kpi-value neutral">${employees.activeEmployees??0}</div></div>`:'<div></div>'}</div>`
+    openPDF('Análisis Financiero', kpis)
+  }
 }
 
-const generateFinancialSummaryPDFContent = () => {
-  const totalIncome = getTotalIncome()
-  const totalExpenses = getTotalExpenses()
-  const netProfit = getNetProfit()
-  
-  return `
-    <div class="section">
-      <div class="section-title">Resumen Financiero</div>
-      <table>
-        <tr><td>Ingresos Totales</td><td class="positive">${formatCurrency(totalIncome)}</td></tr>
-        <tr><td>Gastos Totales</td><td class="negative">${formatCurrency(totalExpenses)}</td></tr>
-        <tr><td>Beneficio Neto</td><td class="${netProfit >= 0 ? 'positive' : 'negative'}">${formatCurrency(netProfit)}</td></tr>
-        <tr><td>Total Transacciones</td><td>${mockTransactions.length}</td></tr>
-      </table>
-    </div>
-  `
-}
+// ─── Modal de selección de formato ───────────────────────────────────────────
+export const showExportModal = (onExport: (format: 'excel' | 'pdf') => void) => {
+  const locale = document.documentElement.lang?.startsWith('en') ? 'en' : 'es'
+  const s = locale === 'en'
+    ? { title: 'Export report', subtitle: 'Select export format', cancel: 'Cancel' }
+    : { title: 'Exportar reporte', subtitle: 'Selecciona el formato de exportación', cancel: 'Cancelar' }
 
-// Export format selection modal
-export const showExportModal = (onExport: (format: 'csv' | 'pdf') => void) => {
   const modal = document.createElement('div')
-  modal.className = 'fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50'
-  modal.innerHTML = `
-    <div class="bg-white rounded-lg p-6 max-w-md w-full mx-4">
-      <h3 class="text-lg font-semibold text-gray-900 mb-4">Seleccionar Formato de Exportación</h3>
-      <p class="text-sm text-gray-600 mb-6">¿En qué formato deseas exportar los datos?</p>
-      <div class="flex space-x-3">
-        <button id="export-csv" class="flex-1 bg-green-600 text-white py-2 px-4 rounded-lg hover:bg-green-700 transition-colors duration-200">
-          CSV (Excel)
-        </button>
-        <button id="export-pdf" class="flex-1 bg-red-600 text-white py-2 px-4 rounded-lg hover:bg-red-700 transition-colors duration-200">
-          PDF
-        </button>
-        <button id="export-cancel" class="flex-1 bg-gray-300 text-gray-700 py-2 px-4 rounded-lg hover:bg-gray-400 transition-colors duration-200">
-          Cancelar
-        </button>
-      </div>
-    </div>
-  `
-  
+  modal.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,.5);display:flex;align-items:center;justify-content:center;z-index:9999'
+  modal.innerHTML = `<div style="background:#fff;border-radius:12px;padding:28px;max-width:380px;width:90%;box-shadow:0 20px 60px rgba(0,0,0,.2)"><h3 style="margin:0 0 6px;font-size:17px;font-weight:700;color:#2d3748">${s.title}</h3><p style="margin:0 0 20px;font-size:13px;color:#718096">${s.subtitle}</p><div style="display:flex;gap:10px"><button id="exp-excel" style="flex:1;background:#1a7f4b;color:#fff;border:none;border-radius:8px;padding:11px;font-size:13px;font-weight:600;cursor:pointer">📊 Excel (.xlsx)</button><button id="exp-pdf" style="flex:1;background:#c53030;color:#fff;border:none;border-radius:8px;padding:11px;font-size:13px;font-weight:600;cursor:pointer">📄 PDF</button></div><button id="exp-cancel" style="width:100%;margin-top:10px;background:#edf2f7;color:#4a5568;border:none;border-radius:8px;padding:9px;font-size:13px;cursor:pointer">${s.cancel}</button></div>`
   document.body.appendChild(modal)
-  
-  const csvBtn = modal.querySelector('#export-csv')
-  const pdfBtn = modal.querySelector('#export-pdf')
-  const cancelBtn = modal.querySelector('#export-cancel')
-  
-  csvBtn?.addEventListener('click', () => {
-    onExport('csv')
-    document.body.removeChild(modal)
-  })
-  
-  pdfBtn?.addEventListener('click', () => {
-    onExport('pdf')
-    document.body.removeChild(modal)
-  })
-  
-  cancelBtn?.addEventListener('click', () => {
-    document.body.removeChild(modal)
-  })
-  
-  modal.addEventListener('click', (e) => {
-    if (e.target === modal) {
-      document.body.removeChild(modal)
-    }
-  })
+  const close = () => document.body.removeChild(modal)
+  modal.querySelector('#exp-excel')?.addEventListener('click', () => { close(); onExport('excel') })
+  modal.querySelector('#exp-pdf')?.addEventListener('click', () => { close(); onExport('pdf') })
+  modal.querySelector('#exp-cancel')?.addEventListener('click', close)
+  modal.addEventListener('click', (e) => { if (e.target === modal) close() })
+}
+
+// ─── Compatibilidad con llamadas antiguas ────────────────────────────────────
+export const exportReportData = async (reportType: string, format: 'excel' | 'pdf' | 'csv') => {
+  const fmt = format === 'csv' ? 'excel' : format
+  const year = new Date().getFullYear()
+  switch (reportType) {
+    case 'financial-summary': return exportFinancialSummary({ period: 'month' }, fmt)
+    case 'profit-loss-detailed': return exportProfitLoss({ year }, fmt)
+    case 'transaction-summary': return exportTransactionSummary({ period: 'month' }, fmt)
+    case 'category-breakdown': return exportCategoryBreakdown({ period: 'month' }, fmt)
+    case 'employee-summary': return exportEmployeeSummary(fmt)
+    default: return exportFinancialSummary({ period: 'month' }, fmt)
+  }
 }

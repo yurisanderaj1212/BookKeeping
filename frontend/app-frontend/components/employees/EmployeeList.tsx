@@ -2,12 +2,14 @@
 
 import { useState } from 'react'
 import { Edit, Trash2, Eye, Mail, Phone, Calendar, DollarSign } from 'lucide-react'
-import { Employee, formatSalary } from '@/data/employees-data'
+import { Employee, PayrollTypeLabels, EmployeeStatus, PayrollType } from '@/services/employeeService'
+
+const formatSalary = (amount: number) => new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(amount)
 
 interface EmployeeListProps {
   employees: Employee[]
   onEdit: (employee: Employee) => void
-  onDelete: (employeeId: string) => void
+  onDelete: (employeeId: number) => void
 }
 
 export default function EmployeeList({ employees, onEdit, onDelete }: EmployeeListProps) {
@@ -31,33 +33,27 @@ export default function EmployeeList({ employees, onEdit, onDelete }: EmployeeLi
     }
   }
 
-  const getStatusBadge = (status: string) => {
-    const statusConfig = {
-      active: { bg: 'bg-green-100', text: 'text-green-800', label: 'Activo' },
-      inactive: { bg: 'bg-yellow-100', text: 'text-yellow-800', label: 'Inactivo' }
-    }
-    
-    const config = statusConfig[status as keyof typeof statusConfig] || statusConfig.active
-    
+  const getStatusBadge = (status: EmployeeStatus) => {
+    const isActive = status === EmployeeStatus.Active
     return (
-      <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${config.bg} ${config.text}`}>
-        {config.label}
+      <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${isActive ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800'}`}>
+        {isActive ? 'Activo' : 'Inactivo'}
       </span>
     )
   }
 
   const getPayrollDisplay = (employee: Employee) => {
-    if (employee.payrollType === 'hourly') {
+    if (employee.payrollType === PayrollType.Hourly) {
       return `${formatSalary(employee.hourlyRate || 0)}/hora`
-    } else if (employee.payrollType === 'annual' || employee.payrollType === 'contract' || employee.payrollType === 'provider') {
+    } else if (employee.payrollType === PayrollType.Annual || employee.payrollType === PayrollType.Contract || employee.payrollType === PayrollType.Provider) {
       return formatSalary(employee.salary)
-    } else if (employee.payrollType === 'weekly') {
+    } else if (employee.payrollType === PayrollType.Weekly) {
       return `${formatSalary(employee.salary)}/semana`
-    } else if (employee.payrollType === 'biweekly') {
+    } else if (employee.payrollType === PayrollType.Biweekly) {
       return `${formatSalary(employee.salary)}/quincena`
-    } else if (employee.payrollType === 'monthly') {
+    } else if (employee.payrollType === PayrollType.Monthly) {
       return `${formatSalary(employee.salary)}/mes`
-    } else if (employee.payrollType === 'quarterly') {
+    } else if (employee.payrollType === PayrollType.Quarterly) {
       return `${formatSalary(employee.salary)}/trimestre`
     }
     return 'No especificado'
@@ -125,14 +121,7 @@ export default function EmployeeList({ employees, onEdit, onDelete }: EmployeeLi
                   <td className="px-6 py-4">
                     <div className="text-sm text-gray-900">{employee.position}</div>
                     <div className="text-sm text-gray-500 capitalize">
-                      {employee.payrollType === 'hourly' ? 'Por Horas' : 
-                       employee.payrollType === 'annual' ? 'Anual' :
-                       employee.payrollType === 'monthly' ? 'Mensual' :
-                       employee.payrollType === 'weekly' ? 'Semanal' :
-                       employee.payrollType === 'biweekly' ? 'Quincenal' :
-                       employee.payrollType === 'quarterly' ? 'Trimestral' :
-                       employee.payrollType === 'contract' ? 'Contratista' :
-                       employee.payrollType === 'provider' ? 'Proveedor' : 'Otro'}
+                      {PayrollTypeLabels[employee.payrollType] ?? 'Otro'}
                     </div>
                   </td>
                   <td className="px-6 py-4">

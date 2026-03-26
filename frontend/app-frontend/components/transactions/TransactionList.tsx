@@ -9,6 +9,7 @@ interface TransactionListProps {
   transactions: Transaction[]
   onEdit: (transaction: Transaction) => void
   onDelete: (transactionId: string) => void
+  onReviewed?: () => void
 }
 
 export default function TransactionList({

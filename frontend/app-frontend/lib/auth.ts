@@ -100,3 +100,10 @@ export function isAuthRoute(pathname: string): boolean {
   
   return authRoutes.some(route => pathname.startsWith(route))
 }
+
+/**
+ * Guarda los datos del usuario en localStorage
+ */
+export function saveUser(user: User): void {
+  localStorage.setItem('user', JSON.stringify(user))
+}

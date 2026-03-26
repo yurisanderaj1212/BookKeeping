@@ -10,6 +10,7 @@ export function useOnboarding() {
   const [isOnboardingOpen, setIsOnboardingOpen] = useState(false)
   const [isOnboardingCompleted, setIsOnboardingCompleted] = useState(true) // Default to true to avoid flash
   const [isWelcomeOpen, setIsWelcomeOpen] = useState(false)
+  const [currentStep, setCurrentStep] = useState(0)
 
   // Función para detectar si es un usuario realmente nuevo
   const isReallyNewUser = () => {
@@ -196,6 +197,8 @@ export function useOnboarding() {
     isOnboardingOpen,
     isOnboardingCompleted,
     isWelcomeOpen,
+    currentStep,
+    setStep: setCurrentStep,
     startOnboarding,
     closeOnboarding,
     completeOnboarding,

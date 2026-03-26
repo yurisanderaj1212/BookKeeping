@@ -91,3 +91,28 @@ export default function Toast({ message, type, isVisible, onClose, duration = 50
     </div>
   )
 }
+
+// ─── Multi-toast container ───────────────────────────────────────────────────
+
+import type { Toast as ToastItem } from '@/hooks/useToast'
+
+interface ToastContainerProps {
+  toasts: ToastItem[]
+  onDismiss: (id: string) => void
+}
+
+export function ToastContainer({ toasts, onDismiss }: ToastContainerProps) {
+  return (
+    <div className="fixed top-4 right-4 z-50 flex flex-col gap-2">
+      {toasts.map(t => (
+        <Toast
+          key={t.id}
+          message={t.message}
+          type={t.type}
+          isVisible={true}
+          onClose={() => onDismiss(t.id)}
+        />
+      ))}
+    </div>
+  )
+}

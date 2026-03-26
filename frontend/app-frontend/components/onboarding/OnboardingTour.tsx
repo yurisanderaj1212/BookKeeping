@@ -205,6 +205,8 @@ interface OnboardingTourProps {
   isOpen: boolean
   onClose: () => void
   onComplete: () => void
+  currentStep?: number
+  setStep?: (step: number) => void
 }
 
 // Storage key for tour progress
