@@ -9,6 +9,9 @@ import { useTranslations } from 'next-intl'
 
 export default function ConnectedBanks() {
   const t = useTranslations('accounts.connectedBanks')
+
+  // Si no hay Plaid configurado, no renderizar nada
+  if (!process.env.NEXT_PUBLIC_PLAID_CLIENT_ID) return null
   const [items, setItems]     = useState<PlaidItemInfo[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError]     = useState<string | null>(null)

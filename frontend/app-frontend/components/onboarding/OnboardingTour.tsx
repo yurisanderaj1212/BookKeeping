@@ -83,12 +83,30 @@ export default function OnboardingTour({ isOpen, onClose, onComplete, currentSte
 
   const goTo = useCallback((next: number) => {
     setFading(true)
+    // Guardar progreso en localStorage para sobrevivir navegaciones
+    localStorage.setItem('cn-onboarding-step', String(next))
     setTimeout(() => { setLocalStep(next); setStep?.(next); setFading(false) }, 160)
   }, [setStep])
 
-  const handleNext = useCallback(() => { isLast ? onComplete() : goTo(step + 1) }, [isLast, step, goTo, onComplete])
+  // Al montar, restaurar paso guardado
+  useEffect(() => {
+    if (!isOpen) return
+    const saved = localStorage.getItem('cn-onboarding-step')
+    if (saved !== null) {
+      const n = parseInt(saved)
+      if (!isNaN(n) && n > 0 && n < STEPS.length) {
+        setLocalStep(n)
+        setStep?.(n)
+      }
+    }
+  }, [isOpen])
+
+  const handleNext = useCallback(() => {
+    if (isLast) { localStorage.removeItem('cn-onboarding-step'); onComplete() }
+    else goTo(step + 1)
+  }, [isLast, step, goTo, onComplete])
   const handlePrev = useCallback(() => { if (!isFirst) goTo(step - 1) }, [isFirst, step, goTo])
-  const handleSkip = useCallback(() => { onComplete(); onClose() }, [onComplete, onClose])
+  const handleSkip = useCallback(() => { localStorage.removeItem('cn-onboarding-step'); onComplete(); onClose() }, [onComplete, onClose])
 
   if (!isOpen || !data) return null
 
