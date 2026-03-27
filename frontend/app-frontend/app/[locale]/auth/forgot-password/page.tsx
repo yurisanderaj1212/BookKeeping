@@ -4,8 +4,7 @@ import { useState } from 'react'
 import Link from 'next/link'
 import { ArrowLeft, Mail, CheckCircle, AlertCircle } from 'lucide-react'
 import { useTranslations } from 'next-intl'
-import { apiClient } from '@/lib/apiClient'
-import { translateApiError, getErrorCode } from '@/lib/apiErrorMap'
+import { getSupabase } from '@/lib/supabaseClient'
 import AppLogo from '@/components/ui/AppLogo'
 
 type Step = 'request' | 'sent' | 'reset' | 'done'
@@ -36,10 +35,9 @@ export default function ForgotPasswordPage() {
 
     setIsLoading(true)
     try {
-      await apiClient('/auth/forgot-password', {
-        method: 'POST',
-        body: JSON.stringify({ email: email.toLowerCase().trim() }),
-        skipAuth: true,
+      const supabase = getSupabase()
+      await supabase.auth.resetPasswordForEmail(email.toLowerCase().trim(), {
+        redirectTo: `${window.location.origin}/auth/reset-password`
       })
     } catch {
       // Always advance — don't reveal if email exists
@@ -69,15 +67,12 @@ export default function ForgotPasswordPage() {
 
     setIsLoading(true)
     try {
-      await apiClient('/auth/reset-password', {
-        method: 'POST',
-        body: JSON.stringify({ email: email.toLowerCase().trim(), token: token.trim(), newPassword: password }),
-        skipAuth: true,
-      })
+      const supabase = getSupabase()
+      const { error: err } = await supabase.auth.updateUser({ password })
+      if (err) throw err
       setStep('done')
     } catch (err: unknown) {
-      const code = getErrorCode(err)
-      setError(translateApiError(code, tErr))
+      setError(err instanceof Error ? err.message : 'Error al restablecer contraseña')
     } finally {
       setIsLoading(false)
     }

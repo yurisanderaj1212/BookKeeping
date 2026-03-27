@@ -7,8 +7,6 @@ import { useTranslations } from 'next-intl'
 import Toast, { ToastContainer } from '@/components/ui/Toast'
 import { useToast } from '@/hooks/useToast'
 import { useAuth } from '@/hooks/useAuth'
-import { apiClient } from '@/lib/apiClient'
-import { translateApiError, getErrorCode } from '@/lib/apiErrorMap'
 import AppLogo from '@/components/ui/AppLogo'
 
 // Lista de empleos comunes en Estados Unidos
@@ -227,31 +225,16 @@ export default function RegisterPage() {
     }
 
     try {
-      await apiClient('/auth/register', {
-        method: 'POST',
-        body: JSON.stringify(registrationData),
-        skipAuth: true,
-      })
-
-      // Registro exitoso — redirigir al login
+      const { signUp } = await import('@/services/authService')
+      await signUp(formData.email, formData.password, formData.firstName, formData.lastName)
       router.push('/auth/login?registered=1')
 
     } catch (error: unknown) {
-      const code = getErrorCode(error)
-
-      if (code === 'EMAIL_INVALID' || (error instanceof Error && error.message.toLowerCase().includes('email ya está registrado'))) {
+      const msg = error instanceof Error ? error.message.toLowerCase() : ''
+      if (msg.includes('already') || msg.includes('registrado') || msg.includes('email')) {
         setErrors({ email: t('errors.emailInUse') })
-      } else if (code === 'PASSWORD_MISMATCH') {
-        setErrors({ confirmPassword: t('errors.passwordsMismatch') })
-      } else if (code === 'PASSWORD_WEAK') {
-        setErrors({ password: tErr('passwordWeak') })
-      } else if (error instanceof Error && (
-        error.message.toLowerCase().includes('conexión') ||
-        error.message.toLowerCase().includes('tardó')
-      )) {
-        showError(t('errors.connectionError'))
       } else {
-        showError(translateApiError(code, tErr, t('errors.registerFailed')))
+        showError(error instanceof Error ? error.message : t('errors.registerFailed'))
       }
     } finally {
       setIsLoading(false)
