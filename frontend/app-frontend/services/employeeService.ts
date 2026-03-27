@@ -45,15 +45,28 @@ export interface CreateEmployeeDto {
 
 export type UpdateEmployeeDto = Partial<CreateEmployeeDto>
 
+// i18n keys for payroll types — use t(`employees.form.payrollTypes.${type}`) in components
+export const PayrollTypeI18nKey: Record<PayrollType, string> = {
+  [PayrollType.Hourly]:    '1',
+  [PayrollType.Weekly]:    '2',
+  [PayrollType.Biweekly]:  '3',
+  [PayrollType.Monthly]:   '4',
+  [PayrollType.Quarterly]: '5',
+  [PayrollType.Annual]:    '6',
+  [PayrollType.Contract]:  '7',
+  [PayrollType.Provider]:  '8',
+}
+
+// Kept for backwards compatibility — prefer i18n in components
 export const PayrollTypeLabels: Record<PayrollType, string> = {
-  [PayrollType.Hourly]: 'Por Hora', [PayrollType.Weekly]: 'Semanal',
-  [PayrollType.Biweekly]: 'Quincenal', [PayrollType.Monthly]: 'Mensual',
-  [PayrollType.Quarterly]: 'Trimestral', [PayrollType.Annual]: 'Anual',
-  [PayrollType.Contract]: 'Contrato', [PayrollType.Provider]: 'Proveedor'
+  [PayrollType.Hourly]: 'Hourly', [PayrollType.Weekly]: 'Weekly',
+  [PayrollType.Biweekly]: 'Biweekly', [PayrollType.Monthly]: 'Monthly',
+  [PayrollType.Quarterly]: 'Quarterly', [PayrollType.Annual]: 'Annual',
+  [PayrollType.Contract]: 'Contract', [PayrollType.Provider]: 'Provider',
 }
 
 export const EmployeeStatusLabels: Record<EmployeeStatus, string> = {
-  [EmployeeStatus.Active]: 'Activo', [EmployeeStatus.Inactive]: 'Inactivo'
+  [EmployeeStatus.Active]: 'Active', [EmployeeStatus.Inactive]: 'Inactive',
 }
 
 // Mapea snake_case de Supabase a camelCase para compatibilidad con componentes

@@ -202,6 +202,22 @@
       "empty": "No transactions yet",
       "emptyDesc": "Add your first transaction to get started"
     },
+    "categoryBreakdown": {
+      "title": "Income by Category",
+      "subtitle": "Distribution of income sources",
+      "viewAll": "View All",
+      "amount": "Amount:",
+      "percentage": "Percentage:",
+      "loading": "Loading chart...",
+      "empty": "No categories yet",
+      "emptyDesc": "Add transactions to see the category breakdown",
+      "tabIncome": "Income",
+      "tabExpense": "Expenses",
+      "titleIncome": "Income by Category",
+      "titleExpense": "Expenses by Category",
+      "subtitleIncome": "Distribution of income sources",
+      "subtitleExpense": "Distribution of expense categories"
+    },
     "rptCategoryBreakdown": {
       "title": "Income by Category",
       "subtitle": "Distribution of income sources",
@@ -224,7 +240,10 @@
       "payroll": "Payroll",
       "avgPerEmployee": "Average per employee",
       "uniquePositions": "Unique positions:",
-      "payrollTypes": "Payroll types:"
+      "payrollTypes": "Payroll types:",
+      "weekly": "weekly",
+      "monthly": "monthly",
+      "annual": "annual"
     }
   },
   "transactions": {

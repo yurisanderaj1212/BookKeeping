@@ -20,12 +20,7 @@ import { useAuth } from '@/hooks/useAuth'
 import { useSubscription } from '@/hooks/useSubscription'
 import TrialBanner from '@/components/subscription/TrialBanner'
 import * as dashboardService from '@/services/dashboardService'
-import {
-  mockWeeklyData,
-  mockMonthlyData,
-  dashboardTransactions,
-  mockCategoryData
-} from '@/data/dashboard-data'
+import { mockWeeklyData, mockMonthlyData } from '@/data/dashboard-data'
 
 /** Construye el label del período en el idioma del usuario */
 function buildPeriodLabel(
@@ -407,6 +402,7 @@ export default function DashboardPage() {
 
         {/* Bottom Row - Same height cards */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+          {/* Recent Transactions */}
           <div className="h-[600px] min-w-0">
             {loadingTransactions ? (
               <div className="bg-white rounded-lg border border-gray-200 p-6 animate-pulse h-full">
@@ -424,22 +420,21 @@ export default function DashboardPage() {
                   ))}
                 </div>
               </div>
-            ) : recentTransactions.length > 0 ? (
-              <RecentTransactions transactions={recentTransactions.map(tx => ({
-                id: tx.id.toString(),
-                type: tx.type === 1 ? 'income' : 'expense',
-                amount: tx.amount,
-                description: tx.description,
-                category: tx.categoryId?.toString() ?? '',
-                categoryName: tx.categoryName ?? null,
-                date: tx.date.split('T')[0],
-                status: tx.status === 0 ? 'pending' : 'completed',
-                categoryIcon: '📊'
-              }))} />
             ) : (
-              <RecentTransactions transactions={dashboardTransactions} />
+              <RecentTransactions
+                transactions={recentTransactions.map(tx => ({
+                  id: tx.id,
+                  type: tx.type === 1 ? 'income' as const : 'expense' as const,
+                  amount: tx.amount,
+                  description: tx.description,
+                  categoryName: tx.categoryName ?? null,
+                  date: typeof tx.date === 'string' ? tx.date.split('T')[0] : tx.date,
+                }))}
+              />
             )}
           </div>
+
+          {/* Category Breakdown */}
           <div className="h-[600px] min-w-0">
             {loadingCategories ? (
               <div className="bg-white rounded-lg border border-gray-200 p-6 animate-pulse h-full">
@@ -457,25 +452,16 @@ export default function DashboardPage() {
                   ))}
                 </div>
               </div>
-            ) : categoryBreakdown.length > 0 ? (
-              <CategoryBreakdown categories={categoryBreakdown.map((cat) => {
-                const incomeColors = ['#10b981', '#059669', '#047857', '#065f46', '#34d399', '#6ee7b7']
-                const expenseColors = ['#ef4444', '#dc2626', '#f97316', '#f59e0b', '#8b5cf6', '#ec4899']
-                // Income = 1, Expense = 2
-                const color = cat.type === 1
-                  ? incomeColors[0]
-                  : expenseColors[0]
-                return {
+            ) : (
+              <CategoryBreakdown
+                categories={categoryBreakdown.map(cat => ({
                   name: cat.categoryName,
                   amount: cat.amount,
                   percentage: cat.percentage,
-                  color,
-                  icon: '📊',
-                  type: cat.type
-                }
-              })} />
-            ) : (
-              <CategoryBreakdown categories={mockCategoryData} />
+                  color: '',   // component assigns colors by index
+                  type: cat.type,
+                }))}
+              />
             )}
           </div>
         </div>

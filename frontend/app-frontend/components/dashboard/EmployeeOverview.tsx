@@ -1,94 +1,122 @@
 'use client'
 
+import { useState, useEffect } from 'react'
 import { Users, DollarSign, TrendingUp } from 'lucide-react'
-import { getActiveEmployees, getTotalPayroll, formatSalary } from '@/data/employees-data'
+import { useTranslations, useLocale } from 'next-intl'
+import { getSupabase } from '@/lib/supabaseClient'
 
 interface EmployeeOverviewProps {
   period: 'week' | 'month' | 'year'
 }
 
+interface Stats {
+  activeCount: number
+  totalAnnualPayroll: number
+  uniquePositions: number
+  uniquePayrollTypes: number
+}
+
 export default function EmployeeOverview({ period }: EmployeeOverviewProps) {
-  const activeEmployees = getActiveEmployees()
-  const totalPayroll = getTotalPayroll()
-  const avgSalary = activeEmployees.length > 0 ? totalPayroll / activeEmployees.length : 0
+  const t = useTranslations('dashboard.employeeOverview')
+  const locale = useLocale()
+  const [stats, setStats] = useState<Stats | null>(null)
+  const [loading, setLoading] = useState(true)
 
-  const getPeriodMultiplier = () => {
-    switch (period) {
-      case 'week':
-        return 1/52
-      case 'month':
-        return 1/12
-      case 'year':
-        return 1
-      default:
-        return 1
+  useEffect(() => {
+    let cancelled = false
+    async function load() {
+      try {
+        const supabase = getSupabase()
+        const { data } = await supabase
+          .from('employees')
+          .select('salary, payroll_type, position, status')
+
+        if (cancelled) return
+        const active = (data ?? []).filter(e => e.status === 1)
+        const totalAnnualPayroll = active.reduce((s, e) => s + (e.salary ?? 0), 0)
+        const uniquePositions = new Set(active.map(e => e.position)).size
+        const uniquePayrollTypes = new Set(active.map(e => e.payroll_type)).size
+
+        setStats({ activeCount: active.length, totalAnnualPayroll, uniquePositions, uniquePayrollTypes })
+      } catch {
+        setStats({ activeCount: 0, totalAnnualPayroll: 0, uniquePositions: 0, uniquePayrollTypes: 0 })
+      } finally {
+        if (!cancelled) setLoading(false)
+      }
     }
-  }
+    load()
+    return () => { cancelled = true }
+  }, [])
 
-  const getPeriodLabel = () => {
-    switch (period) {
-      case 'week':
-        return 'semanal'
-      case 'month':
-        return 'mensual'
-      case 'year':
-        return 'anual'
-      default:
-        return 'del período'
-    }
-  }
+  const formatCurrency = (amount: number) =>
+    new Intl.NumberFormat(locale === 'en' ? 'en-US' : 'es-ES', {
+      style: 'currency', currency: 'USD', maximumFractionDigits: 0,
+    }).format(amount)
 
-  const periodMultiplier = getPeriodMultiplier()
-  const periodPayroll = totalPayroll * periodMultiplier
-  const periodAvgSalary = avgSalary * periodMultiplier
+  // Scale annual payroll to the selected period
+  const periodPayroll = stats
+    ? period === 'week'  ? stats.totalAnnualPayroll / 52
+    : period === 'month' ? stats.totalAnnualPayroll / 12
+    : stats.totalAnnualPayroll
+    : 0
+
+  const avgPerEmployee = stats && stats.activeCount > 0
+    ? periodPayroll / stats.activeCount
+    : 0
+
+  const periodLabel = period === 'week'
+    ? t('weekly') : period === 'month' ? t('monthly') : t('annual')
+
+  const cards = [
+    { bg: 'bg-blue-50',   iconBg: 'bg-blue-100',   iconColor: 'text-blue-600',   textColor: 'text-blue-600',   Icon: Users,      value: stats?.activeCount ?? 0,  label: t('activeEmployees'), isCurrency: false },
+    { bg: 'bg-green-50',  iconBg: 'bg-green-100',  iconColor: 'text-green-600',  textColor: 'text-green-600',  Icon: DollarSign, value: periodPayroll,            label: `${t('payroll')} ${periodLabel}`, isCurrency: true },
+    { bg: 'bg-yellow-50', iconBg: 'bg-yellow-100', iconColor: 'text-yellow-600', textColor: 'text-yellow-600', Icon: TrendingUp, value: avgPerEmployee,           label: t('avgPerEmployee'), isCurrency: true },
+  ]
 
   return (
     <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
       <div className="flex items-center justify-between mb-4">
-        <h3 className="text-lg font-semibold text-gray-900">Resumen de Personal</h3>
+        <h3 className="text-lg font-semibold text-gray-900">{t('title')}</h3>
         <Users className="w-5 h-5 text-primary-600" />
       </div>
-      
+
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <div className="text-center p-4 bg-blue-50 rounded-lg">
-          <div className="flex items-center justify-center w-10 h-10 bg-blue-100 rounded-full mx-auto mb-2">
-            <Users className="w-5 h-5 text-blue-600" />
-          </div>
-          <p className="text-2xl font-bold text-blue-600">{activeEmployees.length}</p>
-          <p className="text-sm text-gray-600">Empleados Activos</p>
-        </div>
-
-        <div className="text-center p-4 bg-green-50 rounded-lg">
-          <div className="flex items-center justify-center w-10 h-10 bg-green-100 rounded-full mx-auto mb-2">
-            <DollarSign className="w-5 h-5 text-green-600" />
-          </div>
-          <p className="text-2xl font-bold text-green-600">{formatSalary(periodPayroll)}</p>
-          <p className="text-sm text-gray-600 capitalize">Nómina {getPeriodLabel()}</p>
-        </div>
-
-        <div className="text-center p-4 bg-yellow-50 rounded-lg">
-          <div className="flex items-center justify-center w-10 h-10 bg-yellow-100 rounded-full mx-auto mb-2">
-            <TrendingUp className="w-5 h-5 text-yellow-600" />
-          </div>
-          <p className="text-2xl font-bold text-yellow-600">{formatSalary(periodAvgSalary)}</p>
-          <p className="text-sm text-gray-600">Promedio por empleado</p>
-        </div>
+        {cards.map((card, i) => {
+          const Icon = card.Icon
+          return (
+            <div key={i} className={`text-center p-4 ${card.bg} rounded-lg`}>
+              <div className={`flex items-center justify-center w-10 h-10 ${card.iconBg} rounded-full mx-auto mb-2`}>
+                <Icon className={`w-5 h-5 ${card.iconColor}`} />
+              </div>
+              {loading ? (
+                <div className="h-8 w-20 bg-gray-200 rounded animate-pulse mx-auto mb-1" />
+              ) : (
+                <p className={`text-2xl font-bold ${card.textColor}`}>
+                  {card.isCurrency ? formatCurrency(card.value as number) : card.value}
+                </p>
+              )}
+              <p className="text-sm text-gray-600">{card.label}</p>
+            </div>
+          )
+        })}
       </div>
 
-      {/* Quick Employee Stats */}
+      {/* Quick stats */}
       <div className="mt-4 pt-4 border-t border-gray-200">
         <div className="grid grid-cols-2 gap-4 text-sm">
           <div>
-            <span className="text-gray-500">Posiciones únicas:</span>
-            <span className="ml-2 font-medium text-gray-900">
-              {[...new Set(activeEmployees.map(emp => emp.position))].length}
-            </span>
+            <span className="text-gray-500">{t('uniquePositions')}</span>
+            {loading
+              ? <span className="ml-2 inline-block w-6 h-4 bg-gray-200 rounded animate-pulse" />
+              : <span className="ml-2 font-medium text-gray-900">{stats?.uniquePositions ?? 0}</span>
+            }
           </div>
           <div>
-            <span className="text-gray-500">Tipos de nómina:</span>
-            <span className="ml-2 font-medium text-gray-900">
-              {[...new Set(activeEmployees.map(emp => emp.payrollType))].length}
-            </span>
+            <span className="text-gray-500">{t('payrollTypes')}</span>
+            {loading
+              ? <span className="ml-2 inline-block w-6 h-4 bg-gray-200 rounded animate-pulse" />
+              : <span className="ml-2 font-medium text-gray-900">{stats?.uniquePayrollTypes ?? 0}</span>
+            }
           </div>
         </div>
       </div>

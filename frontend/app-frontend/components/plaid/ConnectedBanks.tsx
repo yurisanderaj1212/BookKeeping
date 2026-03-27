@@ -3,7 +3,6 @@
 import { useState, useEffect, useCallback } from 'react'
 import { Building2, RefreshCw, Trash2, AlertCircle, CheckCircle } from 'lucide-react'
 import { getPlaidItems, syncItem, removeItem, type PlaidItemInfo } from '@/lib/plaidService'
-import { waitForAuth } from '@/lib/apiClient'
 import PlaidLinkButton from './PlaidLinkButton'
 import { useTranslations } from 'next-intl'
 
@@ -35,7 +34,7 @@ export default function ConnectedBanks() {
     }
   }, [t])
 
-  useEffect(() => { waitForAuth().then(() => load()) }, [load])
+  useEffect(() => { load() }, [load])
 
   async function handleSync(id: number) {
     setSyncing(id)

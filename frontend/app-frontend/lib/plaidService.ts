@@ -1,4 +1,10 @@
-import { apiClient } from './apiClient'
+/**
+ * plaidService — Plaid integration stubs.
+ *
+ * Plaid requires a server-side backend to exchange tokens securely.
+ * These functions will be wired to a Supabase Edge Function when ready.
+ * Until then, ConnectedBanks is hidden via NEXT_PUBLIC_PLAID_CLIENT_ID check.
+ */
 
 export interface PlaidItemInfo {
   id:              number
@@ -7,46 +13,10 @@ export interface PlaidItemInfo {
   createdAt:       string
 }
 
-export interface LinkTokenResponse {
-  linkToken: string
-}
-
-/** Obtiene el link_token para inicializar Plaid Link */
-export async function createLinkToken(): Promise<LinkTokenResponse> {
-  return apiClient<LinkTokenResponse>('/plaid/link-token', { method: 'POST' })
-}
-
-/** Intercambia el public_token por un access_token en el backend */
-export async function exchangeToken(
-  publicToken: string,
-  institutionId:   string | null,
-  institutionName: string | null
-): Promise<{ message: string }> {
-  return apiClient('/plaid/exchange-token', {
-    method: 'POST',
-    body: JSON.stringify({ publicToken, institutionId, institutionName }),
-  })
-}
-
-/** Lista las conexiones bancarias del usuario */
-export async function getPlaidItems(): Promise<PlaidItemInfo[]> {
-  return apiClient<PlaidItemInfo[]>('/plaid/items')
-}
-
-/** Sincroniza transacciones de un Item */
-export async function syncItem(itemId: number): Promise<{ added: number; modified: number; removed: number }> {
-  return apiClient(`/plaid/sync/${itemId}`, { method: 'POST' })
-}
-
-/** Desconecta una cuenta bancaria */
-export async function removeItem(itemId: number): Promise<void> {
-  return apiClient(`/plaid/items/${itemId}`, { method: 'DELETE' })
-}
-
 export interface PendingTransaction {
   id:              number
   amount:          number
-  type:            number   // 1 = ingreso, 2 = gasto (TransactionType enum)
+  type:            number
   description:     string | null
   merchantName:    string | null
   date:            string
@@ -73,18 +43,40 @@ export interface PendingReviewResponse {
   hasMore:    boolean
 }
 
-/** Transacciones de Plaid pendientes de clasificar (paginado) */
-export async function getPendingReview(page = 1, pageSize = 25): Promise<PendingReviewResponse> {
-  return apiClient<PendingReviewResponse>(`/plaid/pending-review?page=${page}&pageSize=${pageSize}`)
+const NOT_CONFIGURED = 'Plaid requires a Supabase Edge Function. Set NEXT_PUBLIC_PLAID_CLIENT_ID when ready.'
+
+export async function createLinkToken(): Promise<{ linkToken: string }> {
+  throw new Error(NOT_CONFIGURED)
 }
 
-/** El usuario clasifica una transacción como del negocio o personal */
-export async function reviewTransaction(
-  transactionId: number,
-  body: ReviewRequest
+export async function exchangeToken(
+  _publicToken: string,
+  _institutionId: string | null,
+  _institutionName: string | null
 ): Promise<{ message: string }> {
-  return apiClient(`/plaid/review/${transactionId}`, {
-    method: 'PATCH',
-    body: JSON.stringify(body),
-  })
+  throw new Error(NOT_CONFIGURED)
+}
+
+export async function getPlaidItems(): Promise<PlaidItemInfo[]> {
+  // Return empty array so ConnectedBanks renders the empty state gracefully
+  return []
+}
+
+export async function syncItem(_itemId: number): Promise<{ added: number; modified: number; removed: number }> {
+  throw new Error(NOT_CONFIGURED)
+}
+
+export async function removeItem(_itemId: number): Promise<void> {
+  throw new Error(NOT_CONFIGURED)
+}
+
+export async function getPendingReview(_page = 1, _pageSize = 25): Promise<PendingReviewResponse> {
+  return { data: [], page: 1, pageSize: 25, totalCount: 0, totalPages: 0, hasMore: false }
+}
+
+export async function reviewTransaction(
+  _transactionId: number,
+  _body: ReviewRequest
+): Promise<{ message: string }> {
+  throw new Error(NOT_CONFIGURED)
 }

@@ -202,6 +202,22 @@
       "empty": "No hay transacciones aún",
       "emptyDesc": "Agrega tu primera transacción para comenzar"
     },
+    "categoryBreakdown": {
+      "title": "Ingresos por Categoría",
+      "subtitle": "Distribución de fuentes de ingresos",
+      "viewAll": "Ver Todas",
+      "amount": "Monto:",
+      "percentage": "Porcentaje:",
+      "loading": "Cargando gráfico...",
+      "empty": "No hay categorías aún",
+      "emptyDesc": "Agrega transacciones para ver el desglose por categorías",
+      "tabIncome": "Ingresos",
+      "tabExpense": "Gastos",
+      "titleIncome": "Ingresos por Categoría",
+      "titleExpense": "Gastos por Categoría",
+      "subtitleIncome": "Distribución de fuentes de ingresos",
+      "subtitleExpense": "Distribución de categorías de gastos"
+    },
     "rptCategoryBreakdown": {
       "title": "Ingresos por Categoría",
       "subtitle": "Distribución de fuentes de ingresos",
@@ -224,7 +240,10 @@
       "payroll": "Nómina",
       "avgPerEmployee": "Promedio por empleado",
       "uniquePositions": "Posiciones únicas:",
-      "payrollTypes": "Tipos de nómina:"
+      "payrollTypes": "Tipos de nómina:",
+      "weekly": "semanal",
+      "monthly": "mensual",
+      "annual": "anual"
     }
   },
   "transactions": {

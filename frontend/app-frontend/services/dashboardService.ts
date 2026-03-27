@@ -124,7 +124,7 @@ export async function getWeeklyChartData(): Promise<ChartDataPoint[]> {
       if (r.type === 1) income += r.amount
       else expenses += r.amount
     }
-    results.push({ label: d.toLocaleDateString('es', { weekday: 'short' }), income, expenses, startDate: dateStr, endDate: dateStr })
+    results.push({ label: d.toLocaleDateString(undefined, { weekday: 'short' }), income, expenses, startDate: dateStr, endDate: dateStr })
   }
   return results
 }
@@ -147,7 +147,7 @@ export async function getMonthlyChartData(): Promise<ChartDataPoint[]> {
       if (r.type === 1) income += r.amount
       else expenses += r.amount
     }
-    results.push({ label: d.toLocaleDateString('es', { month: 'short' }), income, expenses, startDate: start, endDate: end })
+    results.push({ label: d.toLocaleDateString(undefined, { month: 'short' }), income, expenses, startDate: start, endDate: end })
   }
   return results
 }
@@ -211,8 +211,8 @@ export async function getRecentTransactions(limit = 10): Promise<any[]> {
   }))
 }
 
-export const formatCurrency = (amount: number) =>
-  new Intl.NumberFormat('es-ES', { style: 'currency', currency: 'USD' }).format(amount)
+export const formatCurrency = (amount: number, locale?: string) =>
+  new Intl.NumberFormat(locale ?? 'en-US', { style: 'currency', currency: 'USD' }).format(amount)
 
 export const formatPercentage = (pct: number) =>
   `${pct >= 0 ? '+' : ''}${pct.toFixed(1)}%`
