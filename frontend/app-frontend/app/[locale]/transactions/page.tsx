@@ -202,7 +202,7 @@ export default function TransactionsPage() {
           description: transactionData.description,
           categoryId: parseInt(transactionData.category),
           date: transactionData.date,
-          accountId: transactionData.accountId || null // Incluir accountId (puede ser null)
+          accountId: transactionData.accountId || undefined // Incluir accountId (puede ser undefined)
         }
         
         await transactionService.update(parseInt(editingTransaction.id), updateDto)

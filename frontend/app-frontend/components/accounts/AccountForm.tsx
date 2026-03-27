@@ -64,7 +64,7 @@ export default function AccountForm({ isOpen, onClose, onSave, account }: Accoun
     setAvailableSubTypes(subTypes)
     
     // Si el subtipo actual no está en la lista, seleccionar el primero
-    if (subTypes.length > 0 && !subTypes.includes(formData.subType)) {
+    if (subTypes.length > 0 && (!formData.subType || !subTypes.includes(formData.subType as AccountSubType))) {
       setFormData(prev => ({ ...prev, subType: subTypes[0] }))
     }
   }, [formData.type])
@@ -79,7 +79,7 @@ export default function AccountForm({ isOpen, onClose, onSave, account }: Accoun
       return
     }
 
-    if (formData.initialBalance < 0) {
+    if ((formData.initialBalance ?? 0) < 0) {
       setError('El balance inicial no puede ser negativo')
       return
     }

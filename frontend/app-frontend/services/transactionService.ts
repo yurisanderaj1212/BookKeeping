@@ -1,53 +1,46 @@
-import { apiClient } from '@/lib/apiClient'
-
-const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5088/api'
-
-const getAuthHeaders = () => ({
-  'Content-Type': 'application/json',
-  'Authorization': `Bearer ${typeof window !== 'undefined' ? localStorage.getItem('token') : ''}`
-})
-
-// ─── DTOs ────────────────────────────────────────────────────────────────────
+import { getSupabase } from '@/lib/supabaseClient'
 
 export interface CreateTransactionDto {
-  type: 1 | 2        // 1=Income, 2=Expense
+  type: 1 | 2
   amount: number
-  categoryId: number
+  category_id?: number
+  categoryId?: number   // alias
   description: string
   date: string
-  accountId?: number
+  account_id?: number
+  accountId?: number    // alias
   notes?: string
 }
 
-export interface UpdateTransactionDto {
-  type?: 1 | 2
-  amount?: number
-  categoryId?: number
-  description?: string
-  date?: string
-  accountId?: number | null
-  notes?: string
-}
+export interface UpdateTransactionDto extends Partial<CreateTransactionDto> {}
 
 export interface TransactionDto {
   id: number
-  type: 1 | 2        // 1=Income, 2=Expense
+  user_id: string
+  type: 1 | 2
   amount: number
-  categoryId: number
-  categoryName?: string
+  category_id: number
+  category_name?: string
   description: string
   date: string
-  createdAt: string
+  account_id?: number
+  account_name?: string
+  notes?: string
+  status: number
+  is_from_plaid: boolean
+  is_business_transaction?: boolean | null
+  merchant_name?: string | null
+  created_at: string
+  // camelCase aliases
+  categoryId: number
+  categoryName?: string
   accountId?: number
   accountName?: string
-  notes?: string
-  status?: number
-  isFromPlaid?: boolean
+  createdAt: string
+  isFromPlaid: boolean
   isBusinessTransaction?: boolean | null
   merchantName?: string | null
 }
-
-// ─── Paginación ──────────────────────────────────────────────────────────────
 
 export interface PaginationMetadata {
   currentPage: number
@@ -62,8 +55,6 @@ export interface PagedResult<T> {
   data: T[]
   pagination: PaginationMetadata
 }
-
-// ─── Query params ─────────────────────────────────────────────────────────────
 
 export interface TransactionQueryParameters {
   pageNumber?: number
@@ -80,66 +71,98 @@ export interface TransactionQueryParameters {
   endDate?: string
 }
 
-// ─── CRUD ────────────────────────────────────────────────────────────────────
-
-export async function getAll(): Promise<TransactionDto[]> {
-  const response = await fetch(`${API_URL}/transactions`, { headers: getAuthHeaders() })
-  if (!response.ok) throw new Error('Error al obtener transacciones')
-  return response.json()
+function mapTx(r: any): TransactionDto {
+  return {
+    ...r,
+    categoryId: r.category_id, categoryName: r.categories?.name ?? r.category_name,
+    accountId: r.account_id, accountName: r.accounts?.name ?? r.account_name,
+    createdAt: r.created_at, isFromPlaid: r.is_from_plaid,
+    isBusinessTransaction: r.is_business_transaction, merchantName: r.merchant_name,
+    category_name: r.categories?.name ?? r.category_name,
+    account_name: r.accounts?.name ?? r.account_name,
+  }
 }
 
 export async function getFiltered(params: TransactionQueryParameters): Promise<PagedResult<TransactionDto>> {
-  const query = new URLSearchParams()
-  Object.entries(params).forEach(([k, v]) => {
-    if (v !== undefined && v !== null) query.set(k, String(v))
-  })
-  const response = await fetch(`${API_URL}/transactions/filtered?${query}`, { headers: getAuthHeaders() })
-  if (response.status === 401) {
-    if (typeof window !== 'undefined') window.location.href = '/auth/login'
-    throw new Error('Sesión expirada')
-  }
-  if (!response.ok) throw new Error('Error al obtener transacciones')
-  const raw = await response.json()
-  // El backend puede devolver { data, pagination } o un array directo
-  if (Array.isArray(raw)) {
-    return {
-      data: raw,
-      pagination: { currentPage: 1, pageSize: raw.length, totalRecords: raw.length, totalPages: 1, hasNextPage: false, hasPreviousPage: false }
+  const supabase = getSupabase()
+  const page = params.pageNumber ?? 1
+  const size = params.pageSize ?? 20
+  const from = (page - 1) * size
+  const to = from + size - 1
+
+  let query = supabase
+    .from('transactions')
+    .select('*, categories(name), accounts(name)', { count: 'exact' })
+
+  if (params.type) query = query.eq('type', params.type)
+  if (params.startDate) query = query.gte('date', params.startDate)
+  if (params.endDate) query = query.lte('date', params.endDate)
+  if (params.searchText) query = query.ilike('description', `%${params.searchText}%`)
+  if (params.categoryId) query = query.eq('category_id', params.categoryId)
+  if (params.accountId) query = query.eq('account_id', params.accountId)
+
+  const sortCol = params.sortBy === 'date' ? 'date' : 'created_at'
+  query = query.order(sortCol, { ascending: params.sortDirection === 'asc' })
+  query = query.range(from, to)
+
+  const { data, error, count } = await query
+  if (error) throw new Error(error.message)
+
+  const total = count ?? 0
+  const totalPages = Math.ceil(total / size)
+
+  const mapped: TransactionDto[] = (data ?? []).map(mapTx)
+
+  return {
+    data: mapped,
+    pagination: {
+      currentPage: page, pageSize: size, totalRecords: total,
+      totalPages, hasNextPage: page < totalPages, hasPreviousPage: page > 1
     }
   }
-  return raw
 }
 
-export async function create(transaction: CreateTransactionDto): Promise<TransactionDto> {
-  const response = await fetch(`${API_URL}/transactions`, {
-    method: 'POST',
-    headers: getAuthHeaders(),
-    body: JSON.stringify(transaction)
-  })
-  if (!response.ok) {
-    const err = await response.json().catch(() => ({}))
-    throw new Error(err.message || 'Error al crear transacción')
-  }
-  return response.json()
+export async function getAll(): Promise<TransactionDto[]> {
+  const result = await getFiltered({ pageSize: 5000 })
+  return result.data
 }
 
-export async function update(id: number, transaction: UpdateTransactionDto): Promise<TransactionDto> {
-  const response = await fetch(`${API_URL}/transactions/${id}`, {
-    method: 'PUT',
-    headers: getAuthHeaders(),
-    body: JSON.stringify(transaction)
-  })
-  if (!response.ok) {
-    const err = await response.json().catch(() => ({}))
-    throw new Error(err.message || 'Error al actualizar transacción')
+export async function create(dto: CreateTransactionDto): Promise<TransactionDto> {
+  const supabase = getSupabase()
+  const payload = {
+    type: dto.type, amount: dto.amount, description: dto.description, date: dto.date, notes: dto.notes,
+    category_id: dto.category_id ?? dto.categoryId,
+    account_id: dto.account_id ?? dto.accountId ?? null,
   }
-  return response.json()
+  const { data, error } = await supabase
+    .from('transactions').insert(payload)
+    .select('*, categories(name), accounts(name)').single()
+  if (error) throw new Error(error.message)
+  return mapTx({ ...data, categories: { name: data.categories?.name }, accounts: { name: data.accounts?.name } })
+}
+
+export async function update(id: number, dto: UpdateTransactionDto): Promise<TransactionDto> {
+  const supabase = getSupabase()
+  const patch: any = { updated_at: new Date().toISOString() }
+  if (dto.type !== undefined) patch.type = dto.type
+  if (dto.amount !== undefined) patch.amount = dto.amount
+  if (dto.description !== undefined) patch.description = dto.description
+  if (dto.date !== undefined) patch.date = dto.date
+  if (dto.notes !== undefined) patch.notes = dto.notes
+  const catId = dto.category_id ?? dto.categoryId
+  if (catId !== undefined) patch.category_id = catId
+  const accId = dto.account_id ?? dto.accountId
+  if (accId !== undefined) patch.account_id = accId ?? null
+
+  const { data, error } = await supabase
+    .from('transactions').update(patch).eq('id', id)
+    .select('*, categories(name), accounts(name)').single()
+  if (error) throw new Error(error.message)
+  return mapTx({ ...data, categories: { name: data.categories?.name }, accounts: { name: data.accounts?.name } })
 }
 
 export async function deleteTransaction(id: number): Promise<void> {
-  const response = await fetch(`${API_URL}/transactions/${id}`, {
-    method: 'DELETE',
-    headers: getAuthHeaders()
-  })
-  if (!response.ok) throw new Error('Error al eliminar transacción')
+  const supabase = getSupabase()
+  const { error } = await supabase.from('transactions').delete().eq('id', id)
+  if (error) throw new Error(error.message)
 }

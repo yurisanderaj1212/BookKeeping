@@ -1,4 +1,4 @@
-import { apiClient } from '@/lib/apiClient'
+import { getSupabase } from '@/lib/supabaseClient'
 
 export interface Notification {
   id: number
@@ -21,56 +21,56 @@ export interface NotificationStats {
   byPriority: Record<string, number>
 }
 
+function mapNotif(r: any): Notification {
+  return { ...r, isRead: r.is_read, createdAt: r.created_at, actionUrl: r.action_url, actionLabel: r.action_label }
+}
+
 export async function getNotifications(): Promise<Notification[]> {
-  try {
-    const data = await apiClient<any[]>('/notifications')
-    return data.map(n => ({
-      id: n.id,
-      type: n.type ?? 'system',
-      priority: n.priority ?? 'medium',
-      title: n.title ?? '',
-      message: n.message ?? '',
-      isRead: n.isRead ?? n.read ?? false,
-      createdAt: n.createdAt ?? n.timestamp ?? new Date().toISOString(),
-      actionUrl: n.actionUrl,
-      actionLabel: n.actionLabel,
-      metadata: n.metadata,
-    }))
-  } catch {
-    return []
-  }
+  const supabase = getSupabase()
+  const { data, error } = await supabase
+    .from('notifications').select('*').order('created_at', { ascending: false }).limit(100)
+  if (error) return []
+  return (data ?? []).map(mapNotif)
 }
 
 export async function getStats(): Promise<NotificationStats> {
-  try {
-    return await apiClient<NotificationStats>('/notifications/stats')
-  } catch {
-    return { total: 0, unread: 0, read: 0, byType: {}, byPriority: {} }
+  const notifs = await getNotifications()
+  const byType: Record<string, number> = {}
+  const byPriority: Record<string, number> = {}
+  notifs.forEach(n => {
+    byType[n.type] = (byType[n.type] ?? 0) + 1
+    byPriority[n.priority] = (byPriority[n.priority] ?? 0) + 1
+  })
+  return {
+    total: notifs.length,
+    unread: notifs.filter(n => !n.isRead).length,
+    read: notifs.filter(n => n.isRead).length,
+    byType, byPriority
   }
 }
 
 export async function markAsRead(id: number): Promise<void> {
-  await apiClient(`/notifications/${id}/read`, { method: 'PUT' })
+  const supabase = getSupabase()
+  await supabase.from('notifications').update({ is_read: true }).eq('id', id)
 }
 
 export async function markAllAsRead(): Promise<void> {
-  await apiClient('/notifications/read-all', { method: 'PUT' })
+  const supabase = getSupabase()
+  await supabase.from('notifications').update({ is_read: true }).eq('is_read', false)
 }
 
 export async function deleteNotification(id: number): Promise<void> {
-  await apiClient(`/notifications/${id}`, { method: 'DELETE' })
+  const supabase = getSupabase()
+  await supabase.from('notifications').delete().eq('id', id)
 }
 
 export async function deleteAllRead(): Promise<void> {
-  await apiClient('/notifications/read', { method: 'DELETE' })
+  const supabase = getSupabase()
+  await supabase.from('notifications').delete().eq('is_read', true)
 }
 
 export function formatTimestamp(iso: string, locale: string): string {
-  try {
-    return new Date(iso).toLocaleString(locale === 'es' ? 'es' : 'en')
-  } catch {
-    return iso
-  }
+  try { return new Date(iso).toLocaleString(locale === 'es' ? 'es' : 'en') } catch { return iso }
 }
 
 export function getNotificationColor(priority: Notification['priority']): string {
@@ -82,15 +82,10 @@ export function getNotificationColor(priority: Notification['priority']): string
   }
 }
 
-export function translateNotification(
-  n: Notification,
-  t: (key: string, params?: Record<string, string>) => string
-): { title: string; message: string } {
+export function translateNotification(n: Notification, t: (key: string, params?: Record<string, string>) => string): { title: string; message: string } {
   try {
     const title = t(`${n.type}.title`, n.metadata as Record<string, string> ?? {})
     const message = t(`${n.type}.message`, n.metadata as Record<string, string> ?? {})
     return { title: title || n.title, message: message || n.message }
-  } catch {
-    return { title: n.title, message: n.message }
-  }
+  } catch { return { title: n.title, message: n.message } }
 }

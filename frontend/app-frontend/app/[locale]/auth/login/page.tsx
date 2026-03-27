@@ -7,9 +7,6 @@ import { useTranslations } from 'next-intl'
 import Toast, { ToastContainer } from '@/components/ui/Toast'
 import { useToast } from '@/hooks/useToast'
 import { useAuth } from '@/hooks/useAuth'
-import { apiClient, saveTokens } from '@/lib/apiClient'
-import { saveUser } from '@/lib/auth'
-import { translateApiError, getErrorCode } from '@/lib/apiErrorMap'
 import AppLogo from '@/components/ui/AppLogo'
 
 // Componente interno que usa useSearchParams — debe estar dentro de <Suspense>
@@ -109,41 +106,20 @@ function LoginForm() {
     }
     
     try {
-      const result = await apiClient<{
-        token: string
-        refreshToken: string
-        expiresAt: string
-        user: { id: string; email: string; firstName: string; lastName: string }
-      }>('/auth/login', {
-        method: 'POST',
-        body: JSON.stringify({ email, password }),
-        skipAuth: true
-      })
-
-      // Guardar tokens y datos del usuario — saveTokens también sincroniza la cookie
-      saveTokens(result.token, result.refreshToken)
-      saveUser(result.user)
+      const { getSupabase } = await import('@/lib/supabaseClient')
+      const supabase = getSupabase()
+      const { error: authError } = await supabase.auth.signInWithPassword({ email, password })
+      if (authError) throw authError
 
       const redirect = searchParams.get('redirect')
       router.push(redirect && redirect.startsWith('/') ? redirect : '/dashboard')
 
     } catch (error: unknown) {
-      const code = getErrorCode(error)
-
-      if (code === 'ACCOUNT_LOCKED' || code === 'ACCOUNT_LOCKED_TOO_MANY') {
-        setLockedMessage(translateApiError(code, tErr))
-      } else if (code === 'INVALID_CREDENTIALS') {
-        setErrors({
-          email: t('errors.invalidCredentials'),
-          password: t('errors.invalidCredentials')
-        })
-      } else if (error instanceof Error && (
-        error.message.toLowerCase().includes('tardó') ||
-        error.message.toLowerCase().includes('network')
-      )) {
-        showError(tc('connectionError'))
+      const msg = error instanceof Error ? error.message : ''
+      if (msg.toLowerCase().includes('invalid') || msg.toLowerCase().includes('credentials')) {
+        setErrors({ email: t('errors.invalidCredentials'), password: t('errors.invalidCredentials') })
       } else {
-        showError(translateApiError(code, tErr, tc('error')))
+        showError(msg || tc('error'))
       }
     } finally {
       setIsLoading(false)
