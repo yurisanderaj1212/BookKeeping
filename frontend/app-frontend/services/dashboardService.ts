@@ -1,4 +1,4 @@
-import { apiClient, buildQuery } from '@/lib/apiClient'
+import { getSupabase } from '@/lib/supabaseClient'
 
 export interface DashboardSummary {
   totalIncome: number
@@ -36,19 +36,120 @@ export interface DashboardQueryParams {
   period?: 'week' | 'month' | 'year' | 'custom'
   startDate?: string
   endDate?: string
-  [key: string]: string | number | boolean | null | undefined
 }
 
+// ─── Helpers de fechas ────────────────────────────────────────────────────────
+
+function getPeriodDates(period: string = 'week'): { start: string; end: string; prevStart: string; prevEnd: string } {
+  const now = new Date()
+  let start: Date, end: Date, prevStart: Date, prevEnd: Date
+
+  if (period === 'week') {
+    const day = now.getDay()
+    start = new Date(now); start.setDate(now.getDate() - day); start.setHours(0,0,0,0)
+    end = new Date(start); end.setDate(start.getDate() + 6)
+    prevStart = new Date(start); prevStart.setDate(start.getDate() - 7)
+    prevEnd = new Date(start); prevEnd.setDate(start.getDate() - 1)
+  } else if (period === 'month') {
+    start = new Date(now.getFullYear(), now.getMonth(), 1)
+    end = new Date(now.getFullYear(), now.getMonth() + 1, 0)
+    prevStart = new Date(now.getFullYear(), now.getMonth() - 1, 1)
+    prevEnd = new Date(now.getFullYear(), now.getMonth(), 0)
+  } else {
+    start = new Date(now.getFullYear(), 0, 1)
+    end = new Date(now.getFullYear(), 11, 31)
+    prevStart = new Date(now.getFullYear() - 1, 0, 1)
+    prevEnd = new Date(now.getFullYear() - 1, 11, 31)
+  }
+
+  const fmt = (d: Date) => d.toISOString().split('T')[0]
+  return { start: fmt(start), end: fmt(end), prevStart: fmt(prevStart), prevEnd: fmt(prevEnd) }
+}
+
+async function sumByType(startDate: string, endDate: string): Promise<{ income: number; expenses: number; pending: number }> {
+  const supabase = getSupabase()
+  const { data } = await supabase
+    .from('transactions')
+    .select('type, amount, status')
+    .gte('date', startDate)
+    .lte('date', endDate)
+
+  let income = 0, expenses = 0, pending = 0
+  for (const r of data ?? []) {
+    if (r.type === 1) income += r.amount
+    else expenses += r.amount
+    if (r.status === 1) pending++
+  }
+  return { income, expenses, pending }
+}
+
+// ─── Exports ──────────────────────────────────────────────────────────────────
+
 export async function getSummary(params: DashboardQueryParams = {}): Promise<DashboardSummary> {
-  return apiClient(`/dashboard/summary${buildQuery(params)}`)
+  const { start, end, prevStart, prevEnd } = getPeriodDates(params.period ?? 'week')
+  const [curr, prev] = await Promise.all([sumByType(start, end), sumByType(prevStart, prevEnd)])
+
+  const pct = (a: number, b: number) => b === 0 ? 0 : parseFloat(((a - b) / b * 100).toFixed(1))
+
+  return {
+    totalIncome: curr.income,
+    totalExpenses: curr.expenses,
+    netProfit: curr.income - curr.expenses,
+    pendingCount: curr.pending,
+    incomeChange: pct(curr.income, prev.income),
+    expensesChange: pct(curr.expenses, prev.expenses),
+    profitChange: pct(curr.income - curr.expenses, prev.income - prev.expenses),
+    pendingChange: pct(curr.pending, prev.pending),
+    periodLabel: params.period ?? 'week',
+    periodStart: start,
+    periodEnd: end,
+    periodType: params.period ?? 'week',
+  }
 }
 
 export async function getWeeklyChartData(): Promise<ChartDataPoint[]> {
-  return apiClient('/dashboard/weekly-chart')
+  const supabase = getSupabase()
+  const now = new Date()
+  const results: ChartDataPoint[] = []
+
+  for (let i = 6; i >= 0; i--) {
+    const d = new Date(now)
+    d.setDate(now.getDate() - i)
+    const dateStr = d.toISOString().split('T')[0]
+    const { data } = await supabase
+      .from('transactions').select('type, amount').eq('date', dateStr)
+
+    let income = 0, expenses = 0
+    for (const r of data ?? []) {
+      if (r.type === 1) income += r.amount
+      else expenses += r.amount
+    }
+    results.push({ label: d.toLocaleDateString('es', { weekday: 'short' }), income, expenses, startDate: dateStr, endDate: dateStr })
+  }
+  return results
 }
 
 export async function getMonthlyChartData(): Promise<ChartDataPoint[]> {
-  return apiClient('/dashboard/monthly-chart')
+  const supabase = getSupabase()
+  const now = new Date()
+  const results: ChartDataPoint[] = []
+
+  for (let i = 5; i >= 0; i--) {
+    const d = new Date(now.getFullYear(), now.getMonth() - i, 1)
+    const start = d.toISOString().split('T')[0]
+    const end = new Date(d.getFullYear(), d.getMonth() + 1, 0).toISOString().split('T')[0]
+
+    const { data } = await supabase
+      .from('transactions').select('type, amount').gte('date', start).lte('date', end)
+
+    let income = 0, expenses = 0
+    for (const r of data ?? []) {
+      if (r.type === 1) income += r.amount
+      else expenses += r.amount
+    }
+    results.push({ label: d.toLocaleDateString('es', { month: 'short' }), income, expenses, startDate: start, endDate: end })
+  }
+  return results
 }
 
 export async function getCategoryBreakdown(
@@ -56,11 +157,58 @@ export async function getCategoryBreakdown(
   limit = 10,
   transactionType?: number
 ): Promise<CategoryBreakdown[]> {
-  return apiClient(`/dashboard/category-breakdown${buildQuery({ ...params, limit, transactionType })}`)
+  const supabase = getSupabase()
+  const { start, end } = getPeriodDates(params.period ?? 'year')
+
+  let query = supabase
+    .from('transactions')
+    .select('type, amount, category_id, categories(name)')
+    .gte('date', start).lte('date', end)
+
+  if (transactionType) query = query.eq('type', transactionType)
+
+  const { data } = await query
+  if (!data?.length) return []
+
+  const map = new Map<number, { name: string; type: number; amount: number; count: number }>()
+  let total = 0
+
+  for (const r of data) {
+    const id = r.category_id
+    const name = (r.categories as any)?.name ?? 'Sin categoría'
+    const existing = map.get(id) ?? { name, type: r.type, amount: 0, count: 0 }
+    existing.amount += r.amount
+    existing.count++
+    map.set(id, existing)
+    total += r.amount
+  }
+
+  return Array.from(map.entries())
+    .map(([id, v]) => ({
+      categoryId: id,
+      categoryName: v.name,
+      type: v.type,
+      amount: v.amount,
+      percentage: total > 0 ? parseFloat(((v.amount / total) * 100).toFixed(1)) : 0,
+      transactionCount: v.count,
+    }))
+    .sort((a, b) => b.amount - a.amount)
+    .slice(0, limit)
 }
 
 export async function getRecentTransactions(limit = 10): Promise<any[]> {
-  return apiClient(`/dashboard/recent-transactions${buildQuery({ limit })}`)
+  const supabase = getSupabase()
+  const { data } = await supabase
+    .from('transactions')
+    .select('*, categories(name)')
+    .order('date', { ascending: false })
+    .limit(limit)
+
+  return (data ?? []).map(r => ({
+    ...r,
+    categoryId: r.category_id,
+    categoryName: (r.categories as any)?.name,
+  }))
 }
 
 export const formatCurrency = (amount: number) =>
