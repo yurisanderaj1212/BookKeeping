@@ -13,6 +13,7 @@ import EmployeeOverview from '@/components/dashboard/EmployeeOverview'
 import NotificationButton from '@/components/notifications/NotificationButton'
 import OnboardingTour from '@/components/onboarding/OnboardingTour'
 import HelpButton from '@/components/onboarding/HelpButton'
+import WelcomeModal from '@/components/onboarding/WelcomeModal'
 import { useOnboarding } from '@/hooks/useOnboarding'
 import { useTranslations, useLocale } from 'next-intl'
 import { useAuth } from '@/hooks/useAuth'
@@ -90,11 +91,14 @@ export default function DashboardPage() {
   const {
     isOnboardingOpen,
     isOnboardingCompleted,
+    isWelcomeOpen,
     currentStep: onboardingStep,
     setStep: setOnboardingStep,
     closeOnboarding,
     completeOnboarding,
     resetOnboarding,
+    closeWelcome,
+    startTourFromWelcome,
   } = useOnboarding()
 
   // Cargar resumen del dashboard cuando cambia el período
@@ -482,6 +486,14 @@ export default function DashboardPage() {
         </div>
         </div>
       </div>
+
+      {/* Welcome Modal — solo para usuarios nuevos */}
+      <WelcomeModal
+        isOpen={isWelcomeOpen}
+        onClose={closeWelcome}
+        onStartTour={startTourFromWelcome}
+        userName={user?.firstName}
+      />
 
       {/* Onboarding Tour */}
       <OnboardingTour

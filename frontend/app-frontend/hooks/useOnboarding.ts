@@ -87,7 +87,7 @@ export function useOnboarding() {
       // CASO ESPECIAL: Detectar usuario realmente nuevo
       if (completedValue === null && welcomeShownValue === null && tourProgressValue === null) {
         // Solo mostrar welcome en dashboard
-        if (window.location.pathname === '/dashboard') {
+        if (window.location.pathname.includes('/dashboard')) {
           setIsWelcomeOpen(true)
         }
         return
@@ -98,7 +98,7 @@ export function useOnboarding() {
         cleanResidualData()
         setIsOnboardingCompleted(false)
         // Solo mostrar welcome en dashboard
-        if (window.location.pathname === '/dashboard') {
+        if (window.location.pathname.includes('/dashboard')) {
           setIsWelcomeOpen(true)
         }
         return
@@ -107,7 +107,7 @@ export function useOnboarding() {
       // CASO 1: Usuario nunca vio welcome pero tiene algún valor en localStorage
       if (!welcomeShown && !completed) {
         // Solo mostrar welcome en dashboard
-        if (window.location.pathname === '/dashboard') {
+        if (window.location.pathname.includes('/dashboard')) {
           setIsWelcomeOpen(true)
         }
         return
@@ -116,7 +116,7 @@ export function useOnboarding() {
       // CASO 2: Usuario vio welcome pero no completó tour
       if (welcomeShown && !completed && !tourProgress) {
         // Solo iniciar tour en dashboard
-        if (window.location.pathname === '/dashboard') {
+        if (window.location.pathname.includes('/dashboard')) {
           setIsOnboardingOpen(true)
         }
         return
@@ -136,7 +136,7 @@ export function useOnboarding() {
       console.error('Error en checkOnboardingStatus:', error)
       // En caso de error, mostrar onboarding por seguridad
       setIsOnboardingCompleted(false)
-      if (window.location.pathname === '/dashboard') {
+      if (window.location.pathname.includes('/dashboard')) {
         setIsWelcomeOpen(true)
       }
     }
