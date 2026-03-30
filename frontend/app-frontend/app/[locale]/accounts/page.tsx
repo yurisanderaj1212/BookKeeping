@@ -8,7 +8,7 @@ import AccountList from '@/components/accounts/AccountList'
 import OnboardingTour from '@/components/onboarding/OnboardingTour'
 import Toast, { ToastContainer } from '@/components/ui/Toast'
 import { useAuth } from '@/hooks/useAuth'
-import { useTranslations } from 'next-intl'
+import { useTranslations, useLocale } from 'next-intl'
 import { useOnboarding } from '@/hooks/useOnboarding'
 import { useToast } from '@/hooks/useToast'
 import accountService, { Account } from '@/services/accountService'
@@ -19,6 +19,7 @@ export default function AccountsPage() {
   const { isLoading, isAuthenticated, logout } = useAuth()
   const t = useTranslations('accounts')
   const tCommon = useTranslations('common')
+  const locale = useLocale()
   const {
     isOnboardingOpen,
     currentStep: onboardingStep,
@@ -197,7 +198,7 @@ export default function AccountsPage() {
                 <div className="min-w-0">
                   <p className="text-sm text-gray-500 mb-1">{t('totalBalance')}</p>
                   <p className="text-2xl font-bold text-gray-900 break-all">
-                    ${totalBalance.toLocaleString('es-ES', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                    ${totalBalance.toLocaleString(locale === 'en' ? 'en-US' : 'es-ES', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                   </p>
                 </div>
                 <div className="w-12 h-12 shrink-0 bg-green-100 rounded-lg flex items-center justify-center">

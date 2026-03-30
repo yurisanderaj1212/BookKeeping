@@ -187,14 +187,17 @@
       "subtitle": "Income vs Expenses by Week",
       "income": "Income",
       "expenses": "Expenses",
-      "profit": "Profit"
+      "profit": "Profit",
+      "loss": "Loss",
+      "weekLabel": "Week {n}"
     },
     "monthlyChart": {
       "title": "Monthly Trends",
       "subtitle": "Performance over the last 6 months",
       "income": "Income",
       "expenses": "Expenses",
-      "profit": "Profit"
+      "profit": "Profit",
+      "loss": "Loss"
     },
     "recentTransactions": {
       "title": "Recent Transactions",
@@ -264,6 +267,8 @@
     "status": "Status",
     "pending": "Pending",
     "completed": "Completed",
+    "deleteConfirmTitle": "This action cannot be undone",
+    "deleteConfirmMsg": "Are you sure you want to delete this transaction?",
     "isBusinessQuestion": "Is this a business transaction?",
     "markBusiness": "Yes",
     "markPersonal": "No",
@@ -284,6 +289,7 @@
     "perPage50": "50 per page",
     "perPage100": "100 per page",
     "transactionsLabel": "transactions",
+    "notes": "Notes",
     "export": {
       "title": "Export Transactions",
       "format": "Format",

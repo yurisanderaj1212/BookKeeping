@@ -187,14 +187,17 @@
       "subtitle": "Ingresos vs Gastos por Semana",
       "income": "Ingresos",
       "expenses": "Gastos",
-      "profit": "Ganancia"
+      "profit": "Ganancia",
+      "loss": "Pérdida",
+      "weekLabel": "Semana {n}"
     },
     "monthlyChart": {
       "title": "Tendencias Mensuales",
       "subtitle": "Rendimiento en los últimos 6 meses",
       "income": "Ingresos",
       "expenses": "Gastos",
-      "profit": "Ganancia"
+      "profit": "Ganancia",
+      "loss": "Pérdida"
     },
     "recentTransactions": {
       "title": "Transacciones Recientes",
@@ -264,6 +267,8 @@
     "status": "Estado",
     "pending": "Pendiente",
     "completed": "Completada",
+    "deleteConfirmTitle": "Esta acción no se puede deshacer",
+    "deleteConfirmMsg": "¿Estás seguro de que quieres eliminar esta transacción?",
     "isBusinessQuestion": "¿Es transacción de negocio?",
     "markBusiness": "Sí",
     "markPersonal": "No",
@@ -284,6 +289,7 @@
     "perPage50": "50 por página",
     "perPage100": "100 por página",
     "transactionsLabel": "transacciones",
+    "notes": "Notas",
     "export": {
       "title": "Exportar Transacciones",
       "format": "Formato",

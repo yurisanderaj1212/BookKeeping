@@ -97,14 +97,17 @@ class EmployeeService {
 
   async createEmployee(dto: CreateEmployeeDto): Promise<Employee> {
     const supabase = getSupabase()
+    const { data: { user } } = await supabase.auth.getUser()
+    if (!user) throw new Error('No hay sesión activa.')
     const { data, error } = await supabase
       .from('employees')
       .insert({
-        first_name: dto.firstName, last_name: dto.lastName, email: dto.email,
-        phone: dto.phone, position: dto.position, salary: dto.salary,
+        user_id:      user.id,
+        first_name:   dto.firstName, last_name: dto.lastName, email: dto.email,
+        phone:        dto.phone, position: dto.position, salary: dto.salary,
         payroll_type: dto.payrollType, hourly_rate: dto.hourlyRate,
-        hire_date: dto.hireDate, status: dto.status ?? EmployeeStatus.Active,
-        notes: dto.notes, avatar: dto.avatar,
+        hire_date:    dto.hireDate, status: dto.status ?? EmployeeStatus.Active,
+        notes:        dto.notes, avatar: dto.avatar,
       })
       .select().single()
     if (error) throw new Error(error.message)

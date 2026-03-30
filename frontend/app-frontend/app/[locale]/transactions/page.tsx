@@ -10,6 +10,7 @@ import OnboardingTour from '@/components/onboarding/OnboardingTour'
 import { useOnboarding } from '@/hooks/useOnboarding'
 import { useAuth } from '@/hooks/useAuth'
 import { useTranslations } from 'next-intl'
+import { translateCategoryName } from '@/lib/categoryTranslator'
 import { Transaction } from '@/data/transactions-data'
 import * as transactionService from '@/services/transactionService'
 import * as categoryService from '@/services/categoryService'
@@ -22,6 +23,7 @@ export default function TransactionsPage() {
   const { isLoading, isAuthenticated, logout } = useAuth()
   const t = useTranslations('transactions')
   const tCommon = useTranslations('common')
+  const tCategories = useTranslations('categories')
   const [searchTerm, setSearchTerm] = useState('')
   const [selectedCategory, setSelectedCategory] = useState('all')
   const [selectedType, setSelectedType] = useState('all')
@@ -371,14 +373,14 @@ export default function TransactionsPage() {
                   .filter(cat => cat.type === 0) // Ingresos (BD: 0=Income)
                   .map(cat => (
                     <option key={cat.id} value={cat.id.toString()}>
-                      {cat.name}
+                      {translateCategoryName(cat.name, tCategories)}
                     </option>
                   ))}
                 {categories
                   .filter(cat => cat.type === 1) // Gastos (BD: 1=Expense)
                   .map(cat => (
                     <option key={cat.id} value={cat.id.toString()}>
-                      {cat.name}
+                      {translateCategoryName(cat.name, tCategories)}
                     </option>
                   ))}
               </select>
