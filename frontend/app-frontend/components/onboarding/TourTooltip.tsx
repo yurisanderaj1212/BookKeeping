@@ -76,7 +76,7 @@ export default function TourTooltip({ target, position, title, description, isVi
         }`} />
         
         <div className="flex items-start space-x-2">
-          <ArrowIcon className="w-4 h-4 text-primary-600 mt-0.5 flex-shrink-0" />
+          <ArrowIcon className="w-4 h-4 text-primary-600 mt-0.5 shrink-0" />
           <div>
             <h4 className="font-medium text-gray-900 text-sm mb-1">{title}</h4>
             <p className="text-xs text-gray-600 leading-relaxed">{description}</p>

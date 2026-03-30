@@ -100,7 +100,7 @@ export default function EmployeeList({ employees, onEdit, onDelete }: EmployeeLi
                 <tr key={employee.id} className="hover:bg-gray-50 transition-colors duration-200">
                   <td className="px-6 py-4">
                     <div className="flex items-center">
-                      <div className="flex-shrink-0 h-10 w-10">
+                      <div className="shrink-0 h-10 w-10">
                         <div className="h-10 w-10 rounded-full bg-primary-100 flex items-center justify-center">
                           <span className="text-sm font-medium text-primary-600">
                             {employee.firstName.charAt(0)}{employee.lastName.charAt(0)}

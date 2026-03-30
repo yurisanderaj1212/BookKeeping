@@ -1,9 +1,9 @@
 'use client'
 
-import { useState, useEffect, useCallback } from 'react'
+import { useState, useEffect, useCallback, useRef } from 'react'
 import {
   Building2, CheckCircle, XCircle, AlertCircle,
-  ChevronRight, Loader2, Tag, FileText, Landmark
+  ChevronRight, Loader2, Tag, FileText, Landmark, X, Trash2
 } from 'lucide-react'
 import { useTranslations } from 'next-intl'
 import {
@@ -16,27 +16,32 @@ import accountService, { type Account } from '@/services/accountService'
 // ─── Config Modal ─────────────────────────────────────────────────────────────
 
 interface ConfigModalProps {
-  tx:         PendingTransaction
+  tx:        PendingTransaction
   categories: CategoryDto[]
-  accounts:   Account[]
-  onConfirm:  (categoryId: number, description: string, accountId: number | null) => void
-  onCancel:   () => void
-  saving:     boolean
+  accounts:  Account[]
+  onConfirm: (categoryId: number, description: string, accountId: number | null) => void
+  onCancel:  () => void
+  saving:    boolean
 }
 
 function ConfigModal({ tx, categories, accounts, onConfirm, onCancel, saving }: ConfigModalProps) {
   const t = useTranslations('plaid.reviewQueue')
-  // tx.type: TransactionType enum (Income=1, Expense=2)
-  // c.type: raw DB value (0=Income, 1=Expense)
-  const isExpense = tx.type === 2
+  const isExpense    = tx.type === 2
   const relevantCats = categories.filter(c => c.type === (isExpense ? 1 : 0))
 
   const [categoryId,  setCategoryId]  = useState<number>(tx.categoryId)
   const [description, setDescription] = useState<string>(tx.description ?? tx.merchantName ?? '')
-  const [accountId,   setAccountId]   = useState<number | null>(tx.accountId ?? null)
+  const [accountId,   setAccountId]   = useState<string>(tx.accountId ? String(tx.accountId) : '')
+
+  useEffect(() => {
+    if (accounts.length > 0 && tx.accountId) {
+      const exists = accounts.some(a => a.id === tx.accountId)
+      setAccountId(exists ? String(tx.accountId) : '')
+    }
+  }, [accounts, tx.accountId])
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
+    <div className="fixed inset-0 z-60 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
       <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md">
         <div className="px-6 pt-6 pb-4 border-b border-gray-100">
           <div className="flex items-center gap-3 mb-1">
@@ -48,7 +53,6 @@ function ConfigModal({ tx, categories, accounts, onConfirm, onCancel, saving }: 
           <p className="text-xs text-gray-500 ml-12">{t('configSubtitle')}</p>
         </div>
 
-        {/* Transaction summary */}
         <div className="mx-6 mt-4 mb-4 bg-gray-50 rounded-xl px-4 py-3 flex items-center justify-between">
           <div>
             <p className="text-sm font-medium text-gray-900 truncate max-w-[220px]">
@@ -99,13 +103,13 @@ function ConfigModal({ tx, categories, accounts, onConfirm, onCancel, saving }: 
               <span className="text-gray-400 font-normal">{t('configAccountOptional')}</span>
             </label>
             <select
-              value={accountId ?? ''}
-              onChange={e => setAccountId(e.target.value ? Number(e.target.value) : null)}
+              value={accountId}
+              onChange={e => setAccountId(e.target.value)}
               className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
             >
               <option value="">{t('configNoAccount')}</option>
               {accounts.map(a => (
-                <option key={a.id} value={a.id}>{a.name}</option>
+                <option key={a.id} value={String(a.id)}>{a.name}</option>
               ))}
             </select>
           </div>
@@ -120,7 +124,7 @@ function ConfigModal({ tx, categories, accounts, onConfirm, onCancel, saving }: 
             {t('configCancel')}
           </button>
           <button
-            onClick={() => onConfirm(categoryId, description, accountId)}
+            onClick={() => onConfirm(categoryId, description, accountId ? Number(accountId) : null)}
             disabled={saving}
             className="inline-flex items-center gap-2 px-5 py-2 text-sm font-semibold text-white bg-blue-600 hover:bg-blue-500 rounded-lg transition-colors disabled:opacity-60"
           >
@@ -135,22 +139,88 @@ function ConfigModal({ tx, categories, accounts, onConfirm, onCancel, saving }: 
   )
 }
 
-// ─── Transaction Card ─────────────────────────────────────────────────────────
+// ─── Discard Confirm Modal ────────────────────────────────────────────────────
 
-interface TxCardProps {
+interface DiscardModalProps {
+  tx:       PendingTransaction
+  onConfirm: () => void
+  onCancel:  () => void
+  saving:    boolean
+}
+
+function DiscardModal({ tx, onConfirm, onCancel, saving }: DiscardModalProps) {
+  const t = useTranslations('plaid.reviewQueue')
+  const isExpense = tx.type === 2
+  return (
+    <div className="fixed inset-0 z-70 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
+      <div className="bg-white rounded-2xl shadow-2xl w-full max-w-sm">
+        <div className="px-6 pt-6 pb-4 border-b border-gray-100">
+          <div className="flex items-center gap-3 mb-1">
+            <div className="w-9 h-9 bg-red-50 rounded-xl flex items-center justify-center">
+              <Trash2 className="w-5 h-5 text-red-500" />
+            </div>
+            <h2 className="text-base font-semibold text-gray-900">{t('discardTitle')}</h2>
+          </div>
+          <p className="text-xs text-gray-500 ml-12">{t('discardSubtitle')}</p>
+        </div>
+
+        {/* Transaction summary */}
+        <div className="mx-6 mt-4 mb-4 bg-gray-50 rounded-xl px-4 py-3 flex items-center justify-between">
+          <div>
+            <p className="text-sm font-medium text-gray-900 truncate max-w-[180px]">
+              {tx.merchantName ?? tx.description ?? 'Transaction'}
+            </p>
+            <p className="text-xs text-gray-400 mt-0.5">
+              {new Date(tx.date).toLocaleDateString(undefined, { day: 'numeric', month: 'short', year: 'numeric' })}
+            </p>
+          </div>
+          <span className={`text-base font-bold ${isExpense ? 'text-red-600' : 'text-green-600'}`}>
+            {isExpense ? '-' : '+'}${tx.amount.toFixed(2)}
+          </span>
+        </div>
+
+        <p className="px-6 pb-4 text-sm text-gray-600">{t('discardBody')}</p>
+
+        <div className="px-6 py-4 border-t border-gray-100 flex gap-3 justify-end">
+          <button
+            onClick={onCancel}
+            disabled={saving}
+            className="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors disabled:opacity-50"
+          >
+            {t('discardCancel')}
+          </button>
+          <button
+            onClick={onConfirm}
+            disabled={saving}
+            className="inline-flex items-center gap-2 px-5 py-2 text-sm font-semibold text-white bg-red-600 hover:bg-red-500 rounded-lg transition-colors disabled:opacity-60"
+          >
+            {saving
+              ? <><Loader2 className="w-4 h-4 animate-spin" /> {t('discardConfirming')}</>
+              : <><Trash2 className="w-4 h-4" /> {t('discardConfirm')}</>
+            }
+          </button>
+        </div>
+      </div>
+    </div>
+  )
+}
+
+// ─── Transaction Row (inside drawer) ─────────────────────────────────────────
+
+interface TxRowProps {
   tx:       PendingTransaction
   onYes:    (tx: PendingTransaction) => void
   onNo:     (tx: PendingTransaction) => void
   disabled: boolean
 }
 
-function TxCard({ tx, onYes, onNo, disabled }: TxCardProps) {
+function TxRow({ tx, onYes, onNo, disabled }: TxRowProps) {
   const t = useTranslations('plaid.reviewQueue')
   const isExpense = tx.type === 2
   return (
-    <div className="flex items-center gap-4 p-4 border border-gray-200 rounded-xl hover:border-gray-300 transition-colors bg-white">
-      <div className="w-10 h-10 bg-blue-50 rounded-xl flex items-center justify-center shrink-0">
-        <Building2 className="w-5 h-5 text-blue-500" />
+    <div className="flex items-center gap-3 px-4 py-3 border-b border-gray-100 last:border-0 hover:bg-gray-50 transition-colors">
+      <div className="w-8 h-8 bg-blue-50 rounded-lg flex items-center justify-center shrink-0">
+        <Building2 className="w-4 h-4 text-blue-500" />
       </div>
       <div className="flex-1 min-w-0">
         <p className="text-sm font-medium text-gray-900 truncate">
@@ -158,19 +228,18 @@ function TxCard({ tx, onYes, onNo, disabled }: TxCardProps) {
         </p>
         <p className="text-xs text-gray-400 mt-0.5">
           {new Date(tx.date).toLocaleDateString(undefined, { day: 'numeric', month: 'short' })}
-          {tx.institutionName && <> · <span>{tx.institutionName}</span></>}
-          {' · '}<span className="text-gray-500">{tx.category}</span>
+          {tx.institutionName && <> · {tx.institutionName}</>}
         </p>
       </div>
       <span className={`text-sm font-bold shrink-0 ${isExpense ? 'text-red-600' : 'text-green-600'}`}>
         {isExpense ? '-' : '+'}${tx.amount.toFixed(2)}
       </span>
-      <div className="flex items-center gap-2 shrink-0">
+      <div className="flex items-center gap-1.5 shrink-0">
         <button
           onClick={() => onNo(tx)}
           disabled={disabled}
           title={t('btnNoTitle')}
-          className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-gray-600 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors disabled:opacity-40"
+          className="inline-flex items-center gap-1 px-2.5 py-1.5 text-xs font-semibold text-gray-600 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors disabled:opacity-40"
         >
           <XCircle className="w-3.5 h-3.5" /> {t('btnNo')}
         </button>
@@ -178,7 +247,7 @@ function TxCard({ tx, onYes, onNo, disabled }: TxCardProps) {
           onClick={() => onYes(tx)}
           disabled={disabled}
           title={t('btnYesTitle')}
-          className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-white bg-blue-600 hover:bg-blue-500 rounded-lg transition-colors disabled:opacity-40"
+          className="inline-flex items-center gap-1 px-2.5 py-1.5 text-xs font-semibold text-white bg-blue-600 hover:bg-blue-500 rounded-lg transition-colors disabled:opacity-40"
         >
           <ChevronRight className="w-3.5 h-3.5" /> {t('btnYes')}
         </button>
@@ -191,10 +260,12 @@ function TxCard({ tx, onYes, onNo, disabled }: TxCardProps) {
 
 interface Props {
   onCountChange?: (count: number) => void
+  onTransactionConfirmed?: () => void
 }
 
-export default function PlaidReviewQueue({ onCountChange }: Props) {
+export default function PlaidReviewQueue({ onCountChange, onTransactionConfirmed }: Props) {
   const t = useTranslations('plaid.reviewQueue')
+  const [drawerOpen,  setDrawerOpen]  = useState(false)
   const [pending,     setPending]     = useState<PendingTransaction[]>([])
   const [categories,  setCategories]  = useState<CategoryDto[]>([])
   const [accounts,    setAccounts]    = useState<Account[]>([])
@@ -206,6 +277,8 @@ export default function PlaidReviewQueue({ onCountChange }: Props) {
   const [totalCount,  setTotalCount]  = useState(0)
   const [hasMore,     setHasMore]     = useState(false)
   const [configTx,    setConfigTx]    = useState<PendingTransaction | null>(null)
+  const [discardTx,   setDiscardTx]   = useState<PendingTransaction | null>(null)
+  const drawerRef = useRef<HTMLDivElement>(null)
 
   const load = useCallback(async () => {
     setLoading(true)
@@ -231,6 +304,13 @@ export default function PlaidReviewQueue({ onCountChange }: Props) {
 
   useEffect(() => { load() }, [load])
 
+  // Cerrar drawer con Escape
+  useEffect(() => {
+    const handler = (e: KeyboardEvent) => { if (e.key === 'Escape') setDrawerOpen(false) }
+    document.addEventListener('keydown', handler)
+    return () => document.removeEventListener('keydown', handler)
+  }, [])
+
   async function loadMore() {
     setLoadingMore(true)
     try {
@@ -247,14 +327,21 @@ export default function PlaidReviewQueue({ onCountChange }: Props) {
   }
 
   async function handleNo(tx: PendingTransaction) {
+    setDiscardTx(tx)
+  }
+
+  async function handleDiscardConfirm() {
+    if (!discardTx) return
     setSaving(true)
     try {
-      await reviewTransaction(tx.id, { isBusiness: false })
-      const next = pending.filter(t => t.id !== tx.id)
+      await reviewTransaction(discardTx.id, { isBusiness: false })
+      const next = pending.filter(p => p.id !== discardTx.id)
       setPending(next)
       const newTotal = totalCount - 1
       setTotalCount(newTotal)
       onCountChange?.(newTotal)
+      setDiscardTx(null)
+      if (newTotal === 0) setDrawerOpen(false)
     } catch (e: unknown) {
       setError(e instanceof Error ? e.message : t('saveError'))
     } finally {
@@ -270,18 +357,15 @@ export default function PlaidReviewQueue({ onCountChange }: Props) {
     if (!configTx) return
     setSaving(true)
     try {
-      await reviewTransaction(configTx.id, {
-        isBusiness: true,
-        categoryId,
-        description,
-        accountId: accountId ?? undefined,
-      })
-      const next = pending.filter(t => t.id !== configTx.id)
+      await reviewTransaction(configTx.id, { isBusiness: true, categoryId, description, accountId: accountId ?? undefined })
+      const next = pending.filter(p => p.id !== configTx.id)
       setPending(next)
       const newTotal = totalCount - 1
       setTotalCount(newTotal)
       onCountChange?.(newTotal)
       setConfigTx(null)
+      if (newTotal === 0) setDrawerOpen(false)
+      onTransactionConfirmed?.()
     } catch (e: unknown) {
       setError(e instanceof Error ? e.message : t('saveError'))
     } finally {
@@ -289,61 +373,132 @@ export default function PlaidReviewQueue({ onCountChange }: Props) {
     }
   }
 
-  if (loading) {
-    return (
-      <div className="bg-white rounded-xl border border-gray-200 p-6">
-        <div className="space-y-3">
-          {[1, 2, 3].map(i => <div key={i} className="h-16 bg-gray-100 rounded-xl animate-pulse" />)}
-        </div>
-      </div>
-    )
-  }
-
-  if (pending.length === 0 && totalCount === 0) return null
+  // No mostrar nada mientras carga (evita flash) ni cuando no hay pendientes
+  if (loading && totalCount === 0) return null
+  if (!loading && totalCount === 0) return null
 
   return (
     <>
-      <div className="bg-white rounded-xl border border-amber-200 p-6">
-        <div className="flex items-start gap-3 mb-5">
-          <div className="w-9 h-9 bg-amber-50 rounded-xl flex items-center justify-center shrink-0 mt-0.5">
-            <AlertCircle className="w-5 h-5 text-amber-500" />
-          </div>
-          <div>
-            <h3 className="text-base font-semibold text-gray-900">
-              {t('title')}
-              <span className="ml-2 inline-flex items-center justify-center w-5 h-5 text-xs font-bold bg-amber-100 text-amber-700 rounded-full">
-                {totalCount}
-              </span>
-            </h3>
-            <p className="text-xs text-gray-500 mt-0.5">{t('subtitle')}</p>
-          </div>
+      {/* ── Banner compacto ── */}
+      <div className="flex items-center gap-3 px-4 py-2.5 mb-4 bg-amber-50 border border-amber-200 rounded-xl">
+        <div className="w-7 h-7 bg-amber-100 rounded-lg flex items-center justify-center shrink-0">
+          <Building2 className="w-4 h-4 text-amber-600" />
         </div>
-
-        {error && (
-          <div className="mb-4 flex items-center gap-2 text-sm text-red-600 bg-red-50 border border-red-200 px-4 py-3 rounded-lg">
-            <AlertCircle className="w-4 h-4 shrink-0" />{error}
-          </div>
-        )}
-
-        <div className="space-y-2">
-          {pending.map(tx => (
-            <TxCard key={tx.id} tx={tx} onYes={handleYes} onNo={handleNo} disabled={saving} />
-          ))}
+        <div className="flex-1 min-w-0">
+          {loading ? (
+            <div className="h-4 w-48 bg-amber-200 rounded animate-pulse" />
+          ) : (
+            <p className="text-sm text-amber-800">
+              <span className="font-semibold">{totalCount}</span>
+              {' '}{t('bannerText')}
+            </p>
+          )}
         </div>
-
-        {hasMore && (
-          <div className="mt-4 text-center">
-            <button
-              onClick={loadMore}
-              disabled={loadingMore}
-              className="text-sm text-indigo-600 hover:text-indigo-700 font-medium disabled:opacity-50 disabled:cursor-not-allowed"
-            >
-              {loadingMore ? t('loading') : t('loadMore', { remaining: String(totalCount - pending.length) })}
-            </button>
-          </div>
-        )}
+        <button
+          onClick={() => setDrawerOpen(true)}
+          disabled={loading}
+          className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-amber-700 bg-amber-100 hover:bg-amber-200 rounded-lg transition-colors disabled:opacity-50 shrink-0"
+        >
+          {t('bannerBtn')} <ChevronRight className="w-3.5 h-3.5" />
+        </button>
       </div>
 
+      {/* ── Drawer overlay ── */}
+      {drawerOpen && (
+        <>
+          {/* Backdrop */}
+          <div
+            className="fixed inset-0 z-40 bg-black/30 backdrop-blur-sm"
+            onClick={() => setDrawerOpen(false)}
+          />
+
+          {/* Drawer panel */}
+          <div
+            ref={drawerRef}
+            className="fixed right-0 top-0 bottom-0 z-50 w-full max-w-md bg-white shadow-2xl flex flex-col"
+            style={{ animation: 'slideInRight 0.2s ease-out' }}
+          >
+            {/* Header */}
+            <div className="flex items-center justify-between px-5 py-4 border-b border-gray-200 shrink-0">
+              <div className="flex items-center gap-3">
+                <div className="w-8 h-8 bg-amber-50 rounded-lg flex items-center justify-center">
+                  <AlertCircle className="w-4 h-4 text-amber-500" />
+                </div>
+                <div>
+                  <h2 className="text-sm font-semibold text-gray-900">{t('drawerTitle')}</h2>
+                  <p className="text-xs text-gray-500">{t('drawerSubtitle')}</p>
+                </div>
+              </div>
+              <div className="flex items-center gap-2">
+                <span className="inline-flex items-center justify-center min-w-[22px] h-[22px] px-1.5 text-xs font-bold bg-amber-100 text-amber-700 rounded-full">
+                  {totalCount}
+                </span>
+                <button
+                  onClick={() => setDrawerOpen(false)}
+                  className="p-1.5 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-lg transition-colors"
+                >
+                  <X className="w-4 h-4" />
+                </button>
+              </div>
+            </div>
+
+            {/* Error */}
+            {error && (
+              <div className="mx-4 mt-3 flex items-center gap-2 text-xs text-red-600 bg-red-50 border border-red-200 px-3 py-2 rounded-lg shrink-0">
+                <AlertCircle className="w-3.5 h-3.5 shrink-0" />{error}
+              </div>
+            )}
+
+            {/* List */}
+            <div className="flex-1 overflow-y-auto">
+              {loading ? (
+                <div className="p-4 space-y-2">
+                  {[1,2,3,4].map(i => <div key={i} className="h-14 bg-gray-100 rounded-lg animate-pulse" />)}
+                </div>
+              ) : pending.length === 0 ? (
+                <div className="flex flex-col items-center justify-center h-full text-gray-400 p-8">
+                  <CheckCircle className="w-12 h-12 mb-3 text-green-400" />
+                  <p className="text-sm font-medium text-gray-600">{t('drawerEmpty')}</p>
+                </div>
+              ) : (
+                <div>
+                  {pending.map(tx => (
+                    <TxRow key={tx.id} tx={tx} onYes={handleYes} onNo={handleNo} disabled={saving} />
+                  ))}
+                  {hasMore && (
+                    <div className="p-4 text-center">
+                      <button
+                        onClick={loadMore}
+                        disabled={loadingMore}
+                        className="text-sm text-indigo-600 hover:text-indigo-700 font-medium disabled:opacity-50"
+                      >
+                        {loadingMore
+                          ? <><Loader2 className="w-3.5 h-3.5 animate-spin inline mr-1" />{t('loading')}</>
+                          : t('loadMore', { remaining: String(totalCount - pending.length) })
+                        }
+                      </button>
+                    </div>
+                  )}
+                </div>
+              )}
+            </div>
+
+            {/* Footer */}
+            <div className="px-5 py-3 border-t border-gray-100 bg-gray-50 shrink-0">
+              <p className="text-xs text-gray-400 text-center">{t('drawerFooter')}</p>
+            </div>
+          </div>
+
+          <style>{`
+            @keyframes slideInRight {
+              from { transform: translateX(100%); }
+              to   { transform: translateX(0); }
+            }
+          `}</style>
+        </>
+      )}
+
+      {/* Config Modal */}
       {configTx && (
         <ConfigModal
           tx={configTx}
@@ -351,6 +506,16 @@ export default function PlaidReviewQueue({ onCountChange }: Props) {
           accounts={accounts}
           onConfirm={handleConfirm}
           onCancel={() => setConfigTx(null)}
+          saving={saving}
+        />
+      )}
+
+      {/* Discard Modal */}
+      {discardTx && (
+        <DiscardModal
+          tx={discardTx}
+          onConfirm={handleDiscardConfirm}
+          onCancel={() => setDiscardTx(null)}
           saving={saving}
         />
       )}

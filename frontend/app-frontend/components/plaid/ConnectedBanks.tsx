@@ -6,10 +6,9 @@ import { getPlaidItems, syncItem, removeItem, type PlaidItemInfo } from '@/lib/p
 import PlaidLinkButton from './PlaidLinkButton'
 import { useTranslations } from 'next-intl'
 
-export default function ConnectedBanks() {
+export default function ConnectedBanks({ refreshKey }: { refreshKey?: number }) {
   const t = useTranslations('accounts.connectedBanks')
 
-  // Si no hay Plaid configurado, no renderizar nada
   if (!process.env.NEXT_PUBLIC_PLAID_CLIENT_ID) return null
   const [items, setItems]     = useState<PlaidItemInfo[]>([])
   const [loading, setLoading] = useState(true)
@@ -34,7 +33,7 @@ export default function ConnectedBanks() {
     }
   }, [t])
 
-  useEffect(() => { load() }, [load])
+  useEffect(() => { load() }, [load, refreshKey])
 
   async function handleSync(id: number) {
     setSyncing(id)

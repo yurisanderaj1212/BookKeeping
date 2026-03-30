@@ -309,7 +309,7 @@ export default function NotificationsPage() {
               <div className="p-8 space-y-4">
                 {[1, 2, 3, 4].map(i => (
                   <div key={i} className="animate-pulse flex space-x-4">
-                    <div className="w-10 h-10 bg-gray-200 rounded-full flex-shrink-0" />
+                    <div className="w-10 h-10 bg-gray-200 rounded-full shrink-0" />
                     <div className="flex-1 space-y-2">
                       <div className="h-4 bg-gray-200 rounded w-1/2" />
                       <div className="h-3 bg-gray-200 rounded w-3/4" />
@@ -361,7 +361,7 @@ export default function NotificationsPage() {
                             )}
                             className="mt-1 h-4 w-4 text-primary-600 focus:ring-primary-500 border-gray-300 rounded"
                           />
-                          <div className={`p-3 rounded-full ${colorClasses} flex-shrink-0`}>
+                          <div className={`p-3 rounded-full ${colorClasses} shrink-0`}>
                             <Icon className="w-5 h-5" />
                           </div>
                           <div className="flex-1 min-w-0">
@@ -389,7 +389,7 @@ export default function NotificationsPage() {
                                   )}
                                 </div>
                               </div>
-                              <div className="flex items-center space-x-1 ml-4 flex-shrink-0">
+                              <div className="flex items-center space-x-1 ml-4 shrink-0">
                                 {!n.isRead && (
                                   <button onClick={() => handleMarkAsRead(n.id)}
                                     className="p-2 hover:bg-gray-200 rounded-full transition-colors" title={t('markRead')}>

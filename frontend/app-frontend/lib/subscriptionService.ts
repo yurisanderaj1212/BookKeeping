@@ -21,6 +21,36 @@ const PLAN_MAP: Record<number, SubscriptionPlan> = {
   0: 'Free', 1: 'Monthly', 2: 'Annual',
 }
 
+// URL de la Edge Function — se construye automáticamente desde la URL de Supabase
+function getEdgeFunctionUrl(): string {
+  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!
+  return `${supabaseUrl}/functions/v1/stripe-checkout`
+}
+
+// Llama a la Edge Function con el JWT del usuario actual
+async function callEdgeFunction(action: string, payload?: Record<string, unknown>) {
+  const supabase = getSupabase()
+  const { data: { session } } = await supabase.auth.getSession()
+  if (!session) throw new Error('No hay sesión activa.')
+
+  const supabaseUrl  = process.env.NEXT_PUBLIC_SUPABASE_URL!
+  const supabaseAnon = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+
+  const res = await fetch(getEdgeFunctionUrl(), {
+    method: 'POST',
+    headers: {
+      'Content-Type':  'application/json',
+      'Authorization': `Bearer ${session.access_token}`,
+      'apikey':        supabaseAnon,
+    },
+    body: JSON.stringify({ action, ...payload }),
+  })
+
+  const data = await res.json()
+  if (!res.ok) throw new Error(data.error ?? `Error ${res.status}`)
+  return data
+}
+
 export async function getSubscriptionStatus(): Promise<SubscriptionInfo> {
   const supabase = getSupabase()
   const { data: { user } } = await supabase.auth.getUser()
@@ -33,7 +63,6 @@ export async function getSubscriptionStatus(): Promise<SubscriptionInfo> {
     .single()
 
   if (error || !data) {
-    // No subscription row yet — return default trial
     return {
       status: 'Trial', plan: 'Free', hasActiveAccess: true,
       trialDaysRemaining: 30, trialEndsAt: null,
@@ -66,12 +95,10 @@ export async function getSubscriptionStatus(): Promise<SubscriptionInfo> {
   }
 }
 
-// Stripe Checkout — requires a backend/Edge Function
-// These are stubs that will be wired to Stripe when the Edge Function is ready
-export async function createCheckoutSession(_plan: 'monthly' | 'annual'): Promise<{ url: string; sessionId: string }> {
-  throw new Error('Stripe checkout requires a backend Edge Function. Configure NEXT_PUBLIC_STRIPE_FUNCTION_URL.')
+export async function createCheckoutSession(plan: 'monthly' | 'annual'): Promise<{ url: string; sessionId: string }> {
+  return callEdgeFunction('createCheckoutSession', { plan })
 }
 
 export async function createPortalSession(): Promise<{ url: string }> {
-  throw new Error('Stripe portal requires a backend Edge Function. Configure NEXT_PUBLIC_STRIPE_FUNCTION_URL.')
+  return callEdgeFunction('createPortalSession')
 }

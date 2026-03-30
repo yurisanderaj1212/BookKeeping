@@ -97,12 +97,12 @@ export default function Features() {
               style={{ transform: `translateX(-${currentIndex * 100}%)` }}
             >
               {Array.from({ length: Math.ceil(features.length / 3) }).map((_, slideIndex) => (
-                <div key={slideIndex} className="w-full flex-shrink-0">
+                <div key={slideIndex} className="w-full shrink-0">
                   <dl className="grid grid-cols-1 gap-x-8 gap-y-16 lg:grid-cols-3">
                     {features.slice(slideIndex * 3, slideIndex * 3 + 3).map((feature) => (
                       <div key={feature.name} className="flex flex-col items-center text-center">
                         <dt className="flex flex-col items-center gap-y-4 text-base font-semibold leading-7 text-navy-800">
-                          <div className="h-16 w-16 flex items-center justify-center rounded-xl bg-gradient-to-br from-primary-500 to-primary-600 text-white shadow-lg">
+                          <div className="h-16 w-16 flex items-center justify-center rounded-xl bg-linear-to-br from-primary-500 to-primary-600 text-white shadow-lg">
                             {feature.icon}
                           </div>
                           {feature.name}

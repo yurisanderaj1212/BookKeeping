@@ -59,7 +59,7 @@ export default function SubscribeSuccessPage() {
   }, [confirmed, count, router])
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 text-white flex items-center justify-center px-4">
+    <div className="min-h-screen bg-linear-to-br from-slate-900 via-slate-800 to-slate-900 text-white flex items-center justify-center px-4">
       <div className="text-center max-w-md">
         <div className="inline-flex items-center justify-center w-20 h-20 bg-green-500/20 rounded-full mb-6">
           {checking

@@ -70,13 +70,13 @@ export default function Toast({ message, type, isVisible, onClose, duration = 50
     <div className="fixed top-4 right-4 z-50 animate-in slide-in-from-top-2 duration-300">
       <div className={`max-w-sm w-full border rounded-lg shadow-lg p-4 ${getToastStyles()}`}>
         <div className="flex items-start">
-          <div className="flex-shrink-0">
+          <div className="shrink-0">
             {getIcon()}
           </div>
           <div className="ml-3 w-0 flex-1">
             <p className="text-sm font-medium">{message}</p>
           </div>
-          <div className="ml-4 flex-shrink-0 flex">
+          <div className="ml-4 shrink-0 flex">
             <button
               onClick={onClose}
               className="inline-flex text-gray-400 hover:text-gray-600 focus:outline-none"

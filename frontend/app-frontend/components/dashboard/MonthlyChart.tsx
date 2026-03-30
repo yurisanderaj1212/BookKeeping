@@ -1,6 +1,5 @@
 'use client'
 
-import { useState, useEffect } from 'react'
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts'
 import { MonthlyData } from '../../data/dashboard-data'
 import { MoreHorizontal } from 'lucide-react'
@@ -11,22 +10,26 @@ interface MonthlyChartProps {
 
 const CustomTooltip = ({ active, payload, label }: any) => {
   const formatCurrency = (amount: number): string => {
-    return new Intl.NumberFormat('es-ES', {
-      style: 'currency',
-      currency: 'EUR'
-    }).format(amount)
+    return new Intl.NumberFormat('es-ES', { style: 'currency', currency: 'EUR' }).format(amount)
   }
 
   if (active && payload && payload.length) {
     return (
       <div className="bg-white p-3 border border-gray-200 rounded-lg shadow-lg">
         <p className="font-medium text-gray-900 mb-2">{label}</p>
-        {payload.map((entry: any, index: number) => (
-          <p key={index} className="text-sm" style={{ color: entry.color }}>
-            {entry.dataKey === 'income' ? 'Ingresos' : 
-             entry.dataKey === 'expenses' ? 'Gastos' : 'Ganancia'}: {formatCurrency(entry.value)}
-          </p>
-        ))}
+        {payload.map((entry: any, index: number) => {
+          const value = entry.dataKey === 'profit'
+            ? entry.payload.profitReal
+            : entry.value
+          const label2 = entry.dataKey === 'income' ? 'Ingresos'
+            : entry.dataKey === 'expenses' ? 'Gastos'
+            : value >= 0 ? 'Ganancia' : 'Pérdida'
+          return (
+            <p key={index} className="text-sm" style={{ color: entry.color }}>
+              {label2}: {formatCurrency(value)}
+            </p>
+          )
+        })}
       </div>
     )
   }
@@ -34,39 +37,16 @@ const CustomTooltip = ({ active, payload, label }: any) => {
 }
 
 export default function MonthlyChart({ data }: MonthlyChartProps) {
-  const [dimensions, setDimensions] = useState({ width: 0, height: 320 })
-
-  useEffect(() => {
-    const updateDimensions = () => {
-      const container = document.getElementById('monthly-chart-container')
-      if (container) {
-        setDimensions({
-          width: container.offsetWidth,
-          height: 320
-        })
-      }
+  const chartData = data.map((month) => {
+    const profit = month.income - month.expenses
+    return {
+      name: month.month,
+      income:     month.income,
+      expenses:   month.expenses,
+      profit:     profit > 0 ? profit : 0,
+      profitReal: profit,
     }
-
-    // Actualizar dimensiones inmediatamente y después de un pequeño delay
-    updateDimensions()
-    const timer = setTimeout(updateDimensions, 100)
-
-    // Actualizar en resize
-    window.addEventListener('resize', updateDimensions)
-
-    return () => {
-      clearTimeout(timer)
-      window.removeEventListener('resize', updateDimensions)
-    }
-  }, [])
-
-  // Transform data for Recharts
-  const chartData = data.map((month) => ({
-    name: month.month,
-    income: month.income,
-    expenses: month.expenses,
-    profit: month.income - month.expenses
-  }))
+  })
 
   return (
     <div className="bg-white rounded-xl border border-gray-200 p-6 hover:shadow-lg transition-shadow duration-300">
@@ -81,17 +61,12 @@ export default function MonthlyChart({ data }: MonthlyChartProps) {
       </div>
 
       <div id="monthly-chart-container" className="w-full" style={{ height: 320 }}>
-        {dimensions.width > 0 && (
-          <ResponsiveContainer width={dimensions.width} height={dimensions.height}>
+        <ResponsiveContainer width="100%" height={320}>
             <BarChart
               data={chartData}
-              margin={{
-                top: 20,
-                right: 30,
-                left: 20,
-                bottom: 5,
-              }}
-              barCategoryGap="10%"
+              margin={{ top: 20, right: 30, left: 20, bottom: 5 }}
+              barCategoryGap="20%"
+              barGap={4}
             >
               <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
               <XAxis 
@@ -118,25 +93,10 @@ export default function MonthlyChart({ data }: MonthlyChartProps) {
                 radius={[4, 4, 0, 0]}
                 animationDuration={1500}
               />
-              <Bar 
-                dataKey="expenses" 
-                name="Gastos"
-                fill="#FF8C42" 
-                radius={[4, 4, 0, 0]}
-                animationDuration={1500}
-                animationBegin={300}
-              />
-              <Bar 
-                dataKey="profit" 
-                name="Ganancia"
-                fill="#6366F1" 
-                radius={[4, 4, 0, 0]}
-                animationDuration={1500}
-                animationBegin={600}
-              />
+              <Bar dataKey="expenses" name="Gastos"   fill="#FF6B6B" radius={[4, 4, 0, 0]} animationDuration={1500} animationBegin={300} />
+              <Bar dataKey="profit"   name="Ganancia" fill="#4ECDC4" radius={[4, 4, 0, 0]} animationDuration={1500} animationBegin={600} />
             </BarChart>
           </ResponsiveContainer>
-        )}
       </div>
     </div>
   )

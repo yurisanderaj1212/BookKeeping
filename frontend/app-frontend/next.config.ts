@@ -13,12 +13,12 @@ const securityHeaders = [
     key: 'Content-Security-Policy',
     value: [
       "default-src 'self'",
-      "script-src 'self' 'unsafe-eval' 'unsafe-inline'",   // unsafe-eval/inline requerido por Next.js dev
+      "script-src 'self' 'unsafe-eval' 'unsafe-inline' https://cdn.plaid.com",   // unsafe-eval/inline requerido por Next.js dev
       "style-src 'self' 'unsafe-inline'",
       "img-src 'self' data: blob: https:",
       "font-src 'self' data:",
-      "connect-src 'self' https://*.supabase.co wss://*.supabase.co https://api.stripe.com",
-      "frame-src 'self' https://js.stripe.com https://hooks.stripe.com",
+      "connect-src 'self' https://*.supabase.co wss://*.supabase.co https://api.stripe.com https://checkout.stripe.com https://*.plaid.com",
+      "frame-src 'self' https://js.stripe.com https://hooks.stripe.com https://cdn.plaid.com",
     ].join('; '),
   },
 ]

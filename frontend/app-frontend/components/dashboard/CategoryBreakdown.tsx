@@ -163,10 +163,10 @@ export default function CategoryBreakdown({ categories }: CategoryBreakdownProps
             {displayed.slice(0, 5).map((cat, i) => (
               <div key={i} className="flex items-center justify-between p-2 hover:bg-gray-50 rounded-lg">
                 <div className="flex items-center gap-2 min-w-0">
-                  <div className="w-3 h-3 rounded-full flex-shrink-0" style={{ backgroundColor: cat.color }} />
+                  <div className="w-3 h-3 rounded-full shrink-0" style={{ backgroundColor: cat.color }} />
                   <span className="text-sm text-gray-800 truncate">{cat.name}</span>
                 </div>
-                <div className="text-right flex-shrink-0 ml-3">
+                <div className="text-right shrink-0 ml-3">
                   <p className="text-sm font-semibold text-gray-900">{formatCurrency(cat.amount)}</p>
                   <p className="text-xs text-gray-400">{cat.percentage}%</p>
                 </div>

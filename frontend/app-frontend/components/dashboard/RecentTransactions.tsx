@@ -88,7 +88,7 @@ export default function RecentTransactions({ transactions }: RecentTransactionsP
                 style={{ animationDelay: `${index * 60}ms`, animation: 'slideInUp 0.4s ease-out forwards' }}
               >
                 <div className="flex items-center space-x-3">
-                  <div className={`w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 ${
+                  <div className={`w-8 h-8 rounded-full flex items-center justify-center shrink-0 ${
                     tx.type === 'income' ? 'bg-green-100' : 'bg-red-100'
                   }`}>
                     {tx.type === 'income'
@@ -107,7 +107,7 @@ export default function RecentTransactions({ transactions }: RecentTransactionsP
                     </div>
                   </div>
                 </div>
-                <div className="text-right flex-shrink-0 ml-3">
+                <div className="text-right shrink-0 ml-3">
                   <p className={`text-sm font-semibold ${tx.type === 'income' ? 'text-green-600' : 'text-red-600'}`}>
                     {tx.type === 'income' ? '+' : '-'}{formatCurrency(tx.amount)}
                   </p>

@@ -218,9 +218,9 @@ export default function TourTooltipWithArrow({
       <div style={arrowStyle} />
       
       {/* Header */}
-      <div className="flex items-center justify-between p-4 border-b border-gray-200 bg-gradient-to-r from-primary-50 to-primary-100">
+      <div className="flex items-center justify-between p-4 border-b border-gray-200 bg-linear-to-r from-primary-50 to-primary-100">
         <div className="flex items-center space-x-3">
-          <div className="w-8 h-8 bg-primary-500 rounded-lg flex items-center justify-center flex-shrink-0">
+          <div className="w-8 h-8 bg-primary-500 rounded-lg flex items-center justify-center shrink-0">
             <span className="text-white text-sm font-bold">{currentStep + 1}</span>
           </div>
           <div className="min-w-0">
@@ -230,7 +230,7 @@ export default function TourTooltipWithArrow({
         </div>
         <button
           onClick={onSkip}
-          className="text-gray-400 hover:text-gray-600 transition-colors flex-shrink-0 ml-2"
+          className="text-gray-400 hover:text-gray-600 transition-colors shrink-0 ml-2"
         >
           <X className="w-4 h-4" />
         </button>

@@ -7,11 +7,12 @@ import { createLinkToken, exchangeToken } from '@/lib/plaidService'
 import { useTranslations } from 'next-intl'
 
 interface Props {
-  onSuccess: () => void
-  onError?:  (msg: string) => void
+  onSuccess:    () => void
+  onError?:     (msg: string) => void
+  'data-tour'?: string
 }
 
-export default function PlaidLinkButton({ onSuccess, onError }: Props) {
+export default function PlaidLinkButton({ onSuccess, onError, 'data-tour': dataTour }: Props) {
   const t = useTranslations('accounts.connectedBanks')
   const [linkToken, setLinkToken]   = useState<string | null>(null)
   const [preparing, setPreparing]   = useState(false)
@@ -71,6 +72,7 @@ export default function PlaidLinkButton({ onSuccess, onError }: Props) {
   return (
     <button
       onClick={handleClick}
+      data-tour={dataTour}
       disabled={isLoading || !!linkToken}
       className="inline-flex items-center gap-2 bg-blue-600 hover:bg-blue-500 disabled:opacity-60 disabled:cursor-not-allowed text-white px-5 py-2.5 rounded-xl text-sm font-semibold transition-colors"
     >

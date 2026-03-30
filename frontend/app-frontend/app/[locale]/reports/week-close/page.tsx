@@ -399,7 +399,7 @@ function WeekCloseContent() {
           {/* Info */}
           <div className="mt-8 bg-blue-50 rounded-lg p-6">
             <div className="flex items-start space-x-3">
-              <AlertCircle className="w-5 h-5 text-blue-600 mt-0.5 flex-shrink-0" />
+              <AlertCircle className="w-5 h-5 text-blue-600 mt-0.5 shrink-0" />
               <div>
                 <h4 className="text-sm font-medium text-blue-900 mb-2">{t('infoTitle')}</h4>
                 <p className="text-sm text-blue-800 mb-2">{t('infoBody')}</p>

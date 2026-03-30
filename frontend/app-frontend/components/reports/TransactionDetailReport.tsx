@@ -59,9 +59,9 @@ export default function TransactionDetailReport({ period, year, month }: Transac
       <td className="px-3 py-3">
         <div className="flex items-center space-x-1">
           {transaction.type === 'income' ? (
-            <ArrowUpRight className="w-3 h-3 text-green-600 flex-shrink-0" />
+            <ArrowUpRight className="w-3 h-3 text-green-600 shrink-0" />
           ) : (
-            <ArrowDownRight className="w-3 h-3 text-red-600 flex-shrink-0" />
+            <ArrowDownRight className="w-3 h-3 text-red-600 shrink-0" />
           )}
           <span className={`text-xs px-1.5 py-0.5 rounded-full font-medium truncate ${
             transaction.type === 'income' 
@@ -85,9 +85,9 @@ export default function TransactionDetailReport({ period, year, month }: Transac
       <td className="px-3 py-3">
         <div className="flex items-center space-x-1">
           {transaction.status === 'completed' ? (
-            <CheckCircle className="w-3 h-3 text-green-600 flex-shrink-0" />
+            <CheckCircle className="w-3 h-3 text-green-600 shrink-0" />
           ) : (
-            <Clock className="w-3 h-3 text-yellow-600 flex-shrink-0" />
+            <Clock className="w-3 h-3 text-yellow-600 shrink-0" />
           )}
           <span className={`text-xs px-1.5 py-0.5 rounded-full font-medium truncate ${
             transaction.status === 'completed' 

@@ -73,6 +73,8 @@ async function sumByType(startDate: string, endDate: string): Promise<{ income: 
     .select('type, amount, status')
     .gte('date', startDate)
     .lte('date', endDate)
+    .not('status', 'eq', 1) // excluir pendientes de Plaid sin revisar
+    .or('is_from_plaid.eq.false,is_business_transaction.eq.true')
 
   let income = 0, expenses = 0, pending = 0
   for (const r of data ?? []) {
@@ -118,6 +120,7 @@ export async function getWeeklyChartData(): Promise<ChartDataPoint[]> {
     const dateStr = d.toISOString().split('T')[0]
     const { data } = await supabase
       .from('transactions').select('type, amount').eq('date', dateStr)
+      .or('is_from_plaid.eq.false,is_business_transaction.eq.true')
 
     let income = 0, expenses = 0
     for (const r of data ?? []) {
@@ -141,6 +144,7 @@ export async function getMonthlyChartData(): Promise<ChartDataPoint[]> {
 
     const { data } = await supabase
       .from('transactions').select('type, amount').gte('date', start).lte('date', end)
+      .or('is_from_plaid.eq.false,is_business_transaction.eq.true')
 
     let income = 0, expenses = 0
     for (const r of data ?? []) {
@@ -164,6 +168,7 @@ export async function getCategoryBreakdown(
     .from('transactions')
     .select('type, amount, category_id, categories(name)')
     .gte('date', start).lte('date', end)
+    .or('is_from_plaid.eq.false,is_business_transaction.eq.true')
 
   if (transactionType) query = query.eq('type', transactionType)
 

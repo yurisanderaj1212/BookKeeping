@@ -54,6 +54,7 @@ export async function getFinancialSummary(params: ReportParams = {}): Promise<an
     .select('type, amount, category_id, categories(name)')
     .gte('date', start)
     .lte('date', end)
+    .or('is_from_plaid.eq.false,is_business_transaction.eq.true')
 
   if (error) throw new Error(error.message)
   const rows = data ?? []

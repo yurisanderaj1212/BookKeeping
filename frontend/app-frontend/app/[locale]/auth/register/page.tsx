@@ -250,7 +250,7 @@ export default function RegisterPage() {
     <div className="min-h-screen bg-slate-50 flex">
       {/* Left Column - Branding (Inverted) */}
       <div className="hidden lg:block relative w-0 flex-1">
-        <div className="absolute inset-0 bg-gradient-to-br from-primary-500 via-primary-600 to-primary-700 flex flex-col justify-center items-center p-12">
+        <div className="absolute inset-0 bg-linear-to-br from-primary-500 via-primary-600 to-primary-700 flex flex-col justify-center items-center p-12">
           <div className="max-w-md text-center text-white">
             {/* Badge */}
             <div className="inline-flex items-center px-3 py-1.5 bg-white/20 rounded-full text-xs font-medium mb-4">
@@ -270,7 +270,7 @@ export default function RegisterPage() {
             {/* Features List */}
             <div className="space-y-3 mb-6">
               <div className="flex items-start text-left">
-                <div className="flex-shrink-0 w-7 h-7 bg-white/20 rounded-lg flex items-center justify-center mr-3">
+                <div className="shrink-0 w-7 h-7 bg-white/20 rounded-lg flex items-center justify-center mr-3">
                   <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
                   </svg>
@@ -282,7 +282,7 @@ export default function RegisterPage() {
               </div>
 
               <div className="flex items-start text-left">
-                <div className="flex-shrink-0 w-7 h-7 bg-white/20 rounded-lg flex items-center justify-center mr-3">
+                <div className="shrink-0 w-7 h-7 bg-white/20 rounded-lg flex items-center justify-center mr-3">
                   <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m5.99-3a9 9 0 11-18 0 9 9 0 0118 0z" />
                   </svg>
@@ -294,7 +294,7 @@ export default function RegisterPage() {
               </div>
 
               <div className="flex items-start text-left">
-                <div className="flex-shrink-0 w-7 h-7 bg-white/20 rounded-lg flex items-center justify-center mr-3">
+                <div className="shrink-0 w-7 h-7 bg-white/20 rounded-lg flex items-center justify-center mr-3">
                   <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M18.364 5.636l-3.536 3.536m0 5.656l3.536 3.536M9.172 9.172L5.636 5.636m3.536 9.192L5.636 18.364M12 2.25a9.75 9.75 0 109.75 9.75A9.75 9.75 0 0012 2.25z" />
                   </svg>
@@ -306,7 +306,7 @@ export default function RegisterPage() {
               </div>
 
               <div className="flex items-start text-left">
-                <div className="flex-shrink-0 w-7 h-7 bg-white/20 rounded-lg flex items-center justify-center mr-3">
+                <div className="shrink-0 w-7 h-7 bg-white/20 rounded-lg flex items-center justify-center mr-3">
                   <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
                   </svg>

@@ -83,12 +83,12 @@ export default function Pricing() {
               key={plan.name}
               className={`${
                 plan.popular
-                  ? 'relative bg-gradient-to-br from-primary-400 via-primary-500 to-cyan-500 text-white shadow-strong ring-2 ring-primary-400 lg:z-10 scale-105'
+                  ? 'relative bg-linear-to-br from-primary-400 via-primary-500 to-cyan-500 text-white shadow-strong ring-2 ring-primary-400 lg:z-10 scale-105'
                   : 'bg-white/60 shadow-soft'
               } rounded-3xl p-8 lg:mx-0 lg:flex lg:max-w-none lg:flex-col lg:justify-center lg:py-16`}
             >
               {plan.popular && (
-                <div className="absolute -top-5 left-0 right-0 mx-auto w-32 rounded-full bg-gradient-to-r from-yellow-400 to-orange-500 px-3 py-2 text-sm font-medium text-white text-center shadow-lg">
+                <div className="absolute -top-5 left-0 right-0 mx-auto w-32 rounded-full bg-linear-to-r from-yellow-400 to-orange-500 px-3 py-2 text-sm font-medium text-white text-center shadow-lg">
                   Popular
                 </div>
               )}
@@ -152,7 +152,7 @@ export default function Pricing() {
                     plan.popular
                       ? 'bg-white text-primary-600 shadow-sm hover:bg-blue-50 focus-visible:outline-white'
                       : 'bg-primary-50 text-primary-600 hover:bg-primary-100 focus-visible:outline-primary-600'
-                  } mt-8 block w-full rounded-lg px-3 py-2 text-center text-sm font-semibold focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 transition-all duration-200`}
+                  } mt-8 block w-full rounded-lg px-3 py-2 text-center text-sm font-semibold focus-visible:outline-2 focus-visible:outline-offset-2 transition-all duration-200`}
                 >
                   {plan.cta}
                 </Link>

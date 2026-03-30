@@ -7,9 +7,7 @@ import Sidebar from '@/components/dashboard/Sidebar'
 import StatsCards from '@/components/dashboard/StatsCards'
 import WeeklyChart from '@/components/dashboard/WeeklyChart'
 import MonthlyChart from '@/components/dashboard/MonthlyChart'
-import RecentTransactions from '@/components/dashboard/RecentTransactions'
 import CategoryBreakdown from '@/components/dashboard/CategoryBreakdown'
-import EmployeeOverview from '@/components/dashboard/EmployeeOverview'
 import NotificationButton from '@/components/notifications/NotificationButton'
 import OnboardingTour from '@/components/onboarding/OnboardingTour'
 import HelpButton from '@/components/onboarding/HelpButton'
@@ -68,13 +66,11 @@ export default function DashboardPage() {
   const [weeklyChartData, setWeeklyChartData] = useState<dashboardService.ChartDataPoint[]>([])
   const [monthlyChartData, setMonthlyChartData] = useState<dashboardService.ChartDataPoint[]>([])
   const [categoryBreakdown, setCategoryBreakdown] = useState<dashboardService.CategoryBreakdown[]>([])
-  const [recentTransactions, setRecentTransactions] = useState<any[]>([])
   
   // Estados de loading
   const [loadingSummary, setLoadingSummary] = useState(true)
   const [loadingCharts, setLoadingCharts] = useState(true)
   const [loadingCategories, setLoadingCategories] = useState(true)
-  const [loadingTransactions, setLoadingTransactions] = useState(true)
   
   // Estado de error
   const [error, setError] = useState<string | null>(null)
@@ -117,13 +113,6 @@ export default function DashboardPage() {
     }
   }, [isAuthenticated, selectedPeriod])
 
-  // Cargar transacciones recientes una sola vez
-  useEffect(() => {
-    if (isAuthenticated) {
-      loadRecentTransactions()
-    }
-  }, [isAuthenticated])
-
   // Función para cargar el resumen del dashboard
   const loadDashboardSummary = async () => {
     try {
@@ -154,7 +143,6 @@ export default function DashboardPage() {
       setMonthlyChartData(monthly)
     } catch (err: any) {
       console.error('Error loading chart data:', err)
-      // No mostramos error aquí, usamos datos mock como fallback
     } finally {
       setLoadingCharts(false)
     }
@@ -165,7 +153,6 @@ export default function DashboardPage() {
     try {
       setLoadingCategories(true)
 
-      // Income = 1, Expense = 2 (según enum TransactionType del backend)
       const [incomeBreakdown, expenseBreakdown] = await Promise.all([
         dashboardService.getCategoryBreakdown({ period: 'year' }, 10, 1),
         dashboardService.getCategoryBreakdown({ period: 'year' }, 10, 2),
@@ -176,21 +163,6 @@ export default function DashboardPage() {
       console.error('Error loading category breakdown:', err)
     } finally {
       setLoadingCategories(false)
-    }
-  }
-
-  // Función para cargar transacciones recientes
-  const loadRecentTransactions = async () => {
-    try {
-      setLoadingTransactions(true)
-      
-      const transactions = await dashboardService.getRecentTransactions(10)
-      setRecentTransactions(transactions)
-    } catch (err: any) {
-      console.error('Error loading recent transactions:', err)
-      // No mostramos error aquí, usamos datos mock como fallback
-    } finally {
-      setLoadingTransactions(false)
     }
   }
   
@@ -285,7 +257,7 @@ export default function DashboardPage() {
                   }}
                 >
                   <div className="flex items-center space-x-2">
-                    <div className="w-8 h-8 bg-primary-100 rounded-md flex items-center justify-center group-hover:bg-primary-200 transition-colors duration-200 flex-shrink-0">
+                    <div className="w-8 h-8 bg-primary-100 rounded-md flex items-center justify-center group-hover:bg-primary-200 transition-colors duration-200 shrink-0">
                       <Icon className="w-4 h-4 text-primary-600" />
                     </div>
                     <div className="text-left flex-1 min-w-0">
@@ -303,7 +275,7 @@ export default function DashboardPage() {
         {error && (
           <div className="bg-red-50 border border-red-200 rounded-lg p-4 mb-6">
             <div className="flex items-center">
-              <div className="flex-shrink-0">
+              <div className="shrink-0">
                 <svg className="h-5 w-5 text-red-400" viewBox="0 0 20 20" fill="currentColor">
                   <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
                 </svg>
@@ -400,44 +372,10 @@ export default function DashboardPage() {
           </div>
         </div>
 
-        {/* Bottom Row - Same height cards */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
-          {/* Recent Transactions */}
-          <div className="h-[600px] min-w-0">
-            {loadingTransactions ? (
-              <div className="bg-white rounded-lg border border-gray-200 p-6 animate-pulse h-full">
-                <div className="w-48 h-6 bg-gray-200 rounded mb-4"></div>
-                <div className="space-y-4">
-                  {[1, 2, 3, 4, 5].map((i) => (
-                    <div key={i} className="flex items-center space-x-4">
-                      <div className="w-10 h-10 bg-gray-200 rounded-full"></div>
-                      <div className="flex-1">
-                        <div className="w-3/4 h-4 bg-gray-200 rounded mb-2"></div>
-                        <div className="w-1/2 h-3 bg-gray-200 rounded"></div>
-                      </div>
-                      <div className="w-20 h-4 bg-gray-200 rounded"></div>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            ) : (
-              <RecentTransactions
-                transactions={recentTransactions.map(tx => ({
-                  id: tx.id,
-                  type: tx.type === 1 ? 'income' as const : 'expense' as const,
-                  amount: tx.amount,
-                  description: tx.description,
-                  categoryName: tx.categoryName ?? null,
-                  date: typeof tx.date === 'string' ? tx.date.split('T')[0] : tx.date,
-                }))}
-              />
-            )}
-          </div>
-
-          {/* Category Breakdown */}
-          <div className="h-[600px] min-w-0">
+        {/* Category Breakdown — full width */}
+        <div className="mb-6 min-w-0">
             {loadingCategories ? (
-              <div className="bg-white rounded-lg border border-gray-200 p-6 animate-pulse h-full">
+              <div className="bg-white rounded-lg border border-gray-200 p-6 animate-pulse h-[400px]">
                 <div className="w-48 h-6 bg-gray-200 rounded mb-4"></div>
                 <div className="w-full h-64 bg-gray-200 rounded mb-4"></div>
                 <div className="space-y-3">
@@ -458,18 +396,12 @@ export default function DashboardPage() {
                   name: cat.categoryName,
                   amount: cat.amount,
                   percentage: cat.percentage,
-                  color: '',   // component assigns colors by index
+                  color: '',
                   type: cat.type,
                 }))}
               />
             )}
           </div>
-        </div>
-
-        {/* Employee Overview */}
-        <div className="mb-6">
-          <EmployeeOverview period={selectedPeriod} />
-        </div>
         </div>
       </div>
 

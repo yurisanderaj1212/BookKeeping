@@ -1,6 +1,5 @@
 'use client'
 
-import { useState, useEffect } from 'react'
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts'
 import { WeeklyData } from '../../data/dashboard-data'
 import { MoreHorizontal } from 'lucide-react'
@@ -11,22 +10,27 @@ interface WeeklyChartProps {
 
 const CustomTooltip = ({ active, payload, label }: any) => {
   const formatCurrency = (amount: number): string => {
-    return new Intl.NumberFormat('es-ES', {
-      style: 'currency',
-      currency: 'EUR'
-    }).format(amount)
+    return new Intl.NumberFormat('es-ES', { style: 'currency', currency: 'EUR' }).format(amount)
   }
 
   if (active && payload && payload.length) {
     return (
       <div className="bg-white p-3 border border-gray-200 rounded-lg shadow-lg">
         <p className="font-medium text-gray-900 mb-2">{label}</p>
-        {payload.map((entry: any, index: number) => (
-          <p key={index} className="text-sm" style={{ color: entry.color }}>
-            {entry.dataKey === 'income' ? 'Ingresos' : 
-             entry.dataKey === 'expenses' ? 'Gastos' : 'Ganancia'}: {formatCurrency(entry.value)}
-          </p>
-        ))}
+        {payload.map((entry: any, index: number) => {
+          // Para ganancia, mostrar el valor real (puede ser negativo = pérdida)
+          const value = entry.dataKey === 'profit'
+            ? entry.payload.profitReal
+            : entry.value
+          const label2 = entry.dataKey === 'income' ? 'Ingresos'
+            : entry.dataKey === 'expenses' ? 'Gastos'
+            : value >= 0 ? 'Ganancia' : 'Pérdida'
+          return (
+            <p key={index} className="text-sm" style={{ color: entry.color }}>
+              {label2}: {formatCurrency(value)}
+            </p>
+          )
+        })}
       </div>
     )
   }
@@ -34,40 +38,18 @@ const CustomTooltip = ({ active, payload, label }: any) => {
 }
 
 export default function WeeklyChart({ data }: WeeklyChartProps) {
-  const [dimensions, setDimensions] = useState({ width: 0, height: 320 })
-  const containerRef = useState<HTMLDivElement | null>(null)
-
-  useEffect(() => {
-    const updateDimensions = () => {
-      const container = document.getElementById('weekly-chart-container')
-      if (container) {
-        setDimensions({
-          width: container.offsetWidth,
-          height: 320
-        })
-      }
-    }
-
-    // Actualizar dimensiones inmediatamente y después de un pequeño delay
-    updateDimensions()
-    const timer = setTimeout(updateDimensions, 100)
-
-    // Actualizar en resize
-    window.addEventListener('resize', updateDimensions)
-
-    return () => {
-      clearTimeout(timer)
-      window.removeEventListener('resize', updateDimensions)
-    }
-  }, [])
 
   // Transform data for Recharts - show last 5 weeks (full month)
-  const chartData = data.slice(-5).map((week, index) => ({
-    name: `Semana ${index + 1}`,
-    income: week.income,
-    expenses: week.expenses,
-    profit: week.income - week.expenses
-  }))
+  const chartData = data.slice(-5).map((week, index) => {
+    const profit = week.income - week.expenses
+    return {
+      name: `Semana ${index + 1}`,
+      income:   week.income,
+      expenses: week.expenses,
+      profit:   profit > 0 ? profit : 0,  // solo mostrar barra si hay ganancia real
+      profitReal: profit,                  // valor real para el tooltip
+    }
+  })
 
   return (
     <div className="bg-white rounded-xl border border-gray-200 p-6 hover:shadow-lg transition-shadow duration-300">
@@ -82,8 +64,7 @@ export default function WeeklyChart({ data }: WeeklyChartProps) {
       </div>
 
       <div id="weekly-chart-container" className="w-full" style={{ height: 320 }}>
-        {dimensions.width > 0 && (
-          <ResponsiveContainer width={dimensions.width} height={dimensions.height}>
+        <ResponsiveContainer width="100%" height={320}>
             <BarChart
               data={chartData}
               margin={{
@@ -92,7 +73,8 @@ export default function WeeklyChart({ data }: WeeklyChartProps) {
                 left: 20,
                 bottom: 5,
               }}
-              barCategoryGap="10%"
+              barCategoryGap="20%"
+              barGap={4}
             >
               <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
               <XAxis 
@@ -138,7 +120,6 @@ export default function WeeklyChart({ data }: WeeklyChartProps) {
               />
             </BarChart>
           </ResponsiveContainer>
-        )}
       </div>
     </div>
   )

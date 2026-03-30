@@ -68,7 +68,7 @@ function LanguageSwitcherInner({ variant = 'compact', className = '' }: Language
   // compact variant — used inside Sidebar
   return (
     <div className={`flex items-center gap-1 ${className}`}>
-      <Globe className="w-3.5 h-3.5 text-gray-400 flex-shrink-0" />
+      <Globe className="w-3.5 h-3.5 text-gray-400 shrink-0" />
       {LOCALES.map((l, i) => (
         <span key={l.code} className="flex items-center">
           {i > 0 && <span className="text-gray-300 text-xs">|</span>}

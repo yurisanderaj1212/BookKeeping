@@ -1,126 +1,82 @@
 'use client'
 
-import { useState, useEffect, useRef } from 'react'
+import { useState, useRef, useCallback } from 'react'
 import { useRouter } from 'next/navigation'
-import { 
-  Bell, 
-  X, 
-  Check, 
-  CheckCheck, 
-  Trash2,
-  Receipt,
-  FileText,
-  Users,
-  Settings,
-  Clock,
-  AlertTriangle,
-  Filter,
-  MoreVertical
+import { useLocale } from 'next-intl'
+import {
+  Bell, X, Check, CheckCheck, Trash2,
+  Receipt, FileText, Users, Settings, Clock, AlertTriangle,
 } from 'lucide-react'
-import { 
-  mockNotifications,
-  getUnreadNotifications,
-  getNotificationStats,
-  markAsRead,
-  markAllAsRead,
-  deleteNotification,
-  formatTimestamp,
-  getNotificationIcon,
-  getNotificationColor,
-  type Notification
-} from '@/data/notifications-data'
+import {
+  markAsRead, markAllAsRead, deleteNotification,
+  getNotificationColor, formatTimestamp,
+  type Notification,
+} from '@/services/notificationService'
 
-interface NotificationCenterProps {
-  isOpen: boolean
-  onClose: () => void
+interface Props {
+  isOpen:        boolean
+  onClose:       () => void
+  notifications: Notification[]
+  onRefresh:     () => void
 }
 
-export default function NotificationCenter({ isOpen, onClose }: NotificationCenterProps) {
-  const router = useRouter()
-  const [notifications, setNotifications] = useState<Notification[]>(mockNotifications)
-  const [filter, setFilter] = useState<'all' | 'unread' | 'read'>('all')
-  const [typeFilter, setTypeFilter] = useState<string>('all')
-  const dropdownRef = useRef<HTMLDivElement>(null)
+function getIcon(type: Notification['type']) {
+  switch (type) {
+    case 'transaction': return Receipt
+    case 'report':      return FileText
+    case 'employee':    return Users
+    case 'system':      return Settings
+    case 'reminder':    return Clock
+    case 'alert':       return AlertTriangle
+    default:            return Bell
+  }
+}
 
-  useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
-        onClose()
-      }
-    }
+export default function NotificationCenter({ isOpen, onClose, notifications, onRefresh }: Props) {
+  const router  = useRouter()
+  const locale  = useLocale()
+  const ref     = useRef<HTMLDivElement>(null)
+  const [filter, setFilter]     = useState<'all' | 'unread' | 'read'>('all')
+  const [typeFilter, setTypeFilter] = useState('all')
 
-    if (isOpen) {
-      document.addEventListener('mousedown', handleClickOutside)
-    }
+  const unread = notifications.filter(n => !n.isRead).length
+  const total  = notifications.length
 
-    return () => {
-      document.removeEventListener('mousedown', handleClickOutside)
-    }
-  }, [isOpen, onClose])
-
-  const stats = getNotificationStats()
-
-  const filteredNotifications = notifications.filter(notification => {
-    if (filter === 'unread' && notification.read) return false
-    if (filter === 'read' && !notification.read) return false
-    if (typeFilter !== 'all' && notification.type !== typeFilter) return false
+  const filtered = notifications.filter(n => {
+    if (filter === 'unread' && n.isRead)  return false
+    if (filter === 'read'   && !n.isRead) return false
+    if (typeFilter !== 'all' && n.type !== typeFilter) return false
     return true
-  }).sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime())
+  })
 
-  const handleNotificationClick = (notification: Notification) => {
-    if (!notification.read) {
-      markAsRead(notification.id)
-      setNotifications([...mockNotifications])
-    }
-    
-    if (notification.actionUrl) {
-      router.push(notification.actionUrl)
-      onClose()
-    }
-  }
+  const handleClick = useCallback(async (n: Notification) => {
+    if (!n.isRead) { await markAsRead(n.id); onRefresh() }
+    if (n.actionUrl) { router.push(`/${locale}${n.actionUrl}`); onClose() }
+  }, [locale, router, onClose, onRefresh])
 
-  const handleMarkAsRead = (e: React.MouseEvent, notificationId: string) => {
+  const handleMarkRead = useCallback(async (e: React.MouseEvent, id: number) => {
     e.stopPropagation()
-    markAsRead(notificationId)
-    setNotifications([...mockNotifications])
-  }
+    await markAsRead(id)
+    onRefresh()
+  }, [onRefresh])
 
-  const handleDelete = (e: React.MouseEvent, notificationId: string) => {
+  const handleDelete = useCallback(async (e: React.MouseEvent, id: number) => {
     e.stopPropagation()
-    deleteNotification(notificationId)
-    setNotifications([...mockNotifications])
-  }
+    await deleteNotification(id)
+    onRefresh()
+  }, [onRefresh])
 
-  const handleMarkAllAsRead = () => {
-    markAllAsRead()
-    setNotifications([...mockNotifications])
-  }
-
-  const getIcon = (type: Notification['type']) => {
-    switch (type) {
-      case 'transaction':
-        return Receipt
-      case 'report':
-        return FileText
-      case 'employee':
-        return Users
-      case 'system':
-        return Settings
-      case 'reminder':
-        return Clock
-      case 'alert':
-        return AlertTriangle
-      default:
-        return Bell
-    }
-  }
+  const handleMarkAll = useCallback(async () => {
+    await markAllAsRead()
+    onRefresh()
+  }, [onRefresh])
 
   if (!isOpen) return null
 
   return (
     <div className="fixed inset-0 z-50 overflow-hidden pointer-events-none">
-      <div 
-        ref={dropdownRef}
+      <div
+        ref={ref}
         className="absolute right-4 top-20 w-96 max-h-[80vh] bg-white rounded-lg shadow-xl border border-gray-200 flex flex-col pointer-events-auto"
       >
         {/* Header */}
@@ -128,125 +84,85 @@ export default function NotificationCenter({ isOpen, onClose }: NotificationCent
           <div className="flex items-center space-x-2">
             <Bell className="w-5 h-5 text-primary-600" />
             <h3 className="font-semibold text-gray-900">Notificaciones</h3>
-            {stats.unread > 0 && (
-              <span className="bg-red-500 text-white text-xs px-2 py-1 rounded-full">
-                {stats.unread}
-              </span>
+            {unread > 0 && (
+              <span className="bg-red-500 text-white text-xs px-2 py-1 rounded-full">{unread}</span>
             )}
           </div>
-          <button
-            onClick={onClose}
-            className="p-1 hover:bg-gray-100 rounded-full transition-colors"
-          >
+          <button onClick={onClose} className="p-1 hover:bg-gray-100 rounded-full transition-colors">
             <X className="w-4 h-4 text-gray-500" />
           </button>
         </div>
 
         {/* Filters */}
-        <div className="p-4 border-b border-gray-200 space-y-3">
-          <div className="flex items-center space-x-2">
-            <Filter className="w-4 h-4 text-gray-500" />
+        <div className="p-3 border-b border-gray-200 space-y-2">
+          <div className="flex items-center gap-2">
             <select
               value={filter}
-              onChange={(e) => setFilter(e.target.value as 'all' | 'unread' | 'read')}
-              className="text-sm border border-gray-300 rounded px-2 py-1 focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+              onChange={e => setFilter(e.target.value as any)}
+              className="text-sm border border-gray-300 rounded px-2 py-1 focus:ring-2 focus:ring-primary-500"
             >
-              <option value="all">Todas ({stats.total})</option>
-              <option value="unread">No leídas ({stats.unread})</option>
-              <option value="read">Leídas ({stats.read})</option>
+              <option value="all">Todas ({total})</option>
+              <option value="unread">No leídas ({unread})</option>
+              <option value="read">Leídas ({total - unread})</option>
             </select>
-            
             <select
               value={typeFilter}
-              onChange={(e) => setTypeFilter(e.target.value)}
-              className="text-sm border border-gray-300 rounded px-2 py-1 focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+              onChange={e => setTypeFilter(e.target.value)}
+              className="text-sm border border-gray-300 rounded px-2 py-1 focus:ring-2 focus:ring-primary-500"
             >
               <option value="all">Todos los tipos</option>
-              <option value="transaction">Transacciones ({stats.byType.transaction})</option>
-              <option value="report">Reportes ({stats.byType.report})</option>
-              <option value="employee">Empleados ({stats.byType.employee})</option>
-              <option value="alert">Alertas ({stats.byType.alert})</option>
-              <option value="reminder">Recordatorios ({stats.byType.reminder})</option>
-              <option value="system">Sistema ({stats.byType.system})</option>
+              <option value="transaction">Transacciones</option>
+              <option value="report">Reportes</option>
+              <option value="employee">Empleados</option>
+              <option value="alert">Alertas</option>
+              <option value="reminder">Recordatorios</option>
+              <option value="system">Sistema</option>
             </select>
           </div>
-          
-          {stats.unread > 0 && (
-            <button
-              onClick={handleMarkAllAsRead}
-              className="text-sm text-primary-600 hover:text-primary-700 flex items-center space-x-1"
-            >
-              <CheckCheck className="w-4 h-4" />
-              <span>Marcar todas como leídas</span>
+          {unread > 0 && (
+            <button onClick={handleMarkAll} className="text-sm text-primary-600 hover:text-primary-700 flex items-center gap-1">
+              <CheckCheck className="w-4 h-4" /> Marcar todas como leídas
             </button>
           )}
         </div>
 
-        {/* Notifications List */}
+        {/* List */}
         <div className="flex-1 overflow-y-auto">
-          {filteredNotifications.length === 0 ? (
+          {filtered.length === 0 ? (
             <div className="p-8 text-center text-gray-500">
               <Bell className="w-12 h-12 mx-auto mb-3 text-gray-300" />
               <p className="text-sm">No hay notificaciones</p>
-              <p className="text-xs text-gray-400 mt-1">
-                {filter === 'unread' ? 'Todas las notificaciones están leídas' : 'No tienes notificaciones'}
-              </p>
             </div>
           ) : (
             <div className="divide-y divide-gray-100">
-              {filteredNotifications.map((notification) => {
-                const Icon = getIcon(notification.type)
-                const colorClasses = getNotificationColor(notification.priority)
-                
+              {filtered.map(n => {
+                const Icon = getIcon(n.type)
                 return (
                   <div
-                    key={notification.id}
-                    onClick={() => handleNotificationClick(notification)}
-                    className={`p-4 hover:bg-gray-50 cursor-pointer transition-colors ${
-                      !notification.read ? 'bg-blue-50 border-l-4 border-l-primary-500' : ''
-                    }`}
+                    key={n.id}
+                    onClick={() => handleClick(n)}
+                    className={`p-4 hover:bg-gray-50 cursor-pointer transition-colors ${!n.isRead ? 'bg-blue-50 border-l-4 border-l-primary-500' : ''}`}
                   >
-                    <div className="flex items-start space-x-3">
-                      <div className={`p-2 rounded-full ${colorClasses} flex-shrink-0`}>
+                    <div className="flex items-start gap-3">
+                      <div className={`p-2 rounded-full shrink-0 ${getNotificationColor(n.priority)}`}>
                         <Icon className="w-4 h-4" />
                       </div>
-                      
                       <div className="flex-1 min-w-0">
-                        <div className="flex items-start justify-between">
-                          <div className="flex-1">
-                            <h4 className={`text-sm font-medium ${!notification.read ? 'text-gray-900' : 'text-gray-700'}`}>
-                              {notification.title}
-                            </h4>
-                            <p className="text-sm text-gray-600 mt-1 line-clamp-2">
-                              {notification.message}
+                        <div className="flex items-start justify-between gap-2">
+                          <div className="flex-1 min-w-0">
+                            <p className={`text-sm font-medium truncate ${!n.isRead ? 'text-gray-900' : 'text-gray-700'}`}>
+                              {n.title}
                             </p>
-                            <div className="flex items-center justify-between mt-2">
-                              <span className="text-xs text-gray-500">
-                                {formatTimestamp(notification.timestamp)}
-                              </span>
-                              {notification.actionLabel && (
-                                <span className="text-xs text-primary-600 font-medium">
-                                  {notification.actionLabel}
-                                </span>
-                              )}
-                            </div>
+                            <p className="text-xs text-gray-500 mt-0.5 line-clamp-2">{n.message}</p>
+                            <p className="text-xs text-gray-400 mt-1">{formatTimestamp(n.createdAt, locale)}</p>
                           </div>
-                          
-                          <div className="flex items-center space-x-1 ml-2">
-                            {!notification.read && (
-                              <button
-                                onClick={(e) => handleMarkAsRead(e, notification.id)}
-                                className="p-1 hover:bg-gray-200 rounded-full transition-colors"
-                                title="Marcar como leída"
-                              >
+                          <div className="flex items-center gap-1 shrink-0">
+                            {!n.isRead && (
+                              <button onClick={e => handleMarkRead(e, n.id)} className="p-1 hover:bg-gray-200 rounded-full" title="Marcar como leída">
                                 <Check className="w-3 h-3 text-gray-500" />
                               </button>
                             )}
-                            <button
-                              onClick={(e) => handleDelete(e, notification.id)}
-                              className="p-1 hover:bg-gray-200 rounded-full transition-colors"
-                              title="Eliminar notificación"
-                            >
+                            <button onClick={e => handleDelete(e, n.id)} className="p-1 hover:bg-gray-200 rounded-full" title="Eliminar">
                               <Trash2 className="w-3 h-3 text-gray-500" />
                             </button>
                           </div>
@@ -261,19 +177,14 @@ export default function NotificationCenter({ isOpen, onClose }: NotificationCent
         </div>
 
         {/* Footer */}
-        {filteredNotifications.length > 0 && (
-          <div className="p-3 border-t border-gray-200 bg-gray-50">
-            <button
-              onClick={() => {
-                router.push('/notifications')
-                onClose()
-              }}
-              className="w-full text-sm text-primary-600 hover:text-primary-700 font-medium"
-            >
-              Ver todas las notificaciones
-            </button>
-          </div>
-        )}
+        <div className="p-3 border-t border-gray-200 bg-gray-50">
+          <button
+            onClick={() => { router.push(`/${locale}/notifications`); onClose() }}
+            className="w-full text-sm text-primary-600 hover:text-primary-700 font-medium"
+          >
+            Ver todas las notificaciones →
+          </button>
+        </div>
       </div>
     </div>
   )

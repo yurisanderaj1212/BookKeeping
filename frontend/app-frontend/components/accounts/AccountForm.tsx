@@ -102,7 +102,7 @@ export default function AccountForm({ isOpen, onClose, onSave, account }: Accoun
   if (!isOpen) return null
 
   return (
-    <div className="fixed inset-0 z-[9999] overflow-y-auto flex items-center justify-center p-4" aria-labelledby="modal-title" role="dialog" aria-modal="true">
+    <div className="fixed inset-0 z-9999 overflow-y-auto flex items-center justify-center p-4" aria-labelledby="modal-title" role="dialog" aria-modal="true">
       {/* Modal - ventana emergente sin overlay oscuro */}
       <div className="relative bg-white rounded-lg shadow-2xl w-full max-w-2xl max-h-[90vh] overflow-y-auto">
         {/* Header */}

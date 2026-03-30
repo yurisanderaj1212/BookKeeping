@@ -133,7 +133,7 @@ function ToastItem({ notification, onRemove, Icon, styles, iconStyles }: ToastIt
       `}
     >
       <div className="flex items-start space-x-3">
-        <Icon className={`w-5 h-5 mt-0.5 flex-shrink-0 ${iconStyles}`} />
+        <Icon className={`w-5 h-5 mt-0.5 shrink-0 ${iconStyles}`} />
         
         <div className="flex-1 min-w-0">
           <h4 className="text-sm font-medium mb-1">
@@ -155,7 +155,7 @@ function ToastItem({ notification, onRemove, Icon, styles, iconStyles }: ToastIt
         
         <button
           onClick={handleRemove}
-          className="flex-shrink-0 p-1 hover:bg-black hover:bg-opacity-10 rounded-full transition-colors"
+          className="shrink-0 p-1 hover:bg-black hover:bg-opacity-10 rounded-full transition-colors"
         >
           <X className="w-4 h-4" />
         </button>

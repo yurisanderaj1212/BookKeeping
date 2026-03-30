@@ -9,7 +9,7 @@ import OnboardingTour from '@/components/onboarding/OnboardingTour'
 import Toast, { ToastContainer } from '@/components/ui/Toast'
 import { useOnboarding } from '@/hooks/useOnboarding'
 import { useAuth } from '@/hooks/useAuth'
-import { useTranslations } from 'next-intl'
+import { useTranslations, useLocale } from 'next-intl'
 import { useToast } from '@/hooks/useToast'
 import employeeService, { Employee, EmployeeStatus, PaginationMetadata } from '@/services/employeeService'
 
@@ -18,6 +18,7 @@ export default function EmployeesPage() {
   const { toasts, dismiss, success, error: toastError } = useToast()
   const t = useTranslations('employees')
   const tCommon = useTranslations('common')
+  const locale = useLocale()
   const [employees, setEmployees] = useState<Employee[]>([])
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
@@ -141,7 +142,7 @@ export default function EmployeesPage() {
   const activeEmployees = employees.filter(emp => emp.status === EmployeeStatus.Active)
 
   const formatSalary = (amount: number): string =>
-    new Intl.NumberFormat('es-ES', { style: 'currency', currency: 'USD' }).format(amount)
+    new Intl.NumberFormat(locale === 'en' ? 'en-US' : 'es-ES', { style: 'currency', currency: 'USD' }).format(amount)
 
   return (
     <div className="flex min-h-screen bg-gray-50">
@@ -182,7 +183,7 @@ export default function EmployeesPage() {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
             <div className="bg-white rounded-lg p-6 shadow-sm border border-gray-200">
               <div className="flex items-center">
-                <div className="p-2 bg-blue-100 rounded-lg flex-shrink-0"><Users className="w-6 h-6 text-blue-600" /></div>
+                <div className="p-2 bg-blue-100 rounded-lg shrink-0"><Users className="w-6 h-6 text-blue-600" /></div>
                 <div className="ml-4 min-w-0">
                   <p className="text-sm font-medium text-gray-500">{t('totalEmployees')}</p>
                   <p className="text-2xl font-bold text-gray-900">{employees.length}</p>
@@ -191,7 +192,7 @@ export default function EmployeesPage() {
             </div>
             <div className="bg-white rounded-lg p-6 shadow-sm border border-gray-200">
               <div className="flex items-center">
-                <div className="p-2 bg-green-100 rounded-lg flex-shrink-0"><UserCheck className="w-6 h-6 text-green-600" /></div>
+                <div className="p-2 bg-green-100 rounded-lg shrink-0"><UserCheck className="w-6 h-6 text-green-600" /></div>
                 <div className="ml-4 min-w-0">
                   <p className="text-sm font-medium text-gray-500">{t('activeEmployees')}</p>
                   <p className="text-2xl font-bold text-gray-900">{activeEmployees.length}</p>
@@ -200,7 +201,7 @@ export default function EmployeesPage() {
             </div>
             <div className="bg-white rounded-lg p-6 shadow-sm border border-gray-200">
               <div className="flex items-center">
-                <div className="p-2 bg-yellow-100 rounded-lg flex-shrink-0"><DollarSign className="w-6 h-6 text-yellow-600" /></div>
+                <div className="p-2 bg-yellow-100 rounded-lg shrink-0"><DollarSign className="w-6 h-6 text-yellow-600" /></div>
                 <div className="ml-4 min-w-0">
                   <p className="text-sm font-medium text-gray-500">{t('annualPayroll')}</p>
                   <p className="text-lg font-bold text-gray-900 truncate">{formatSalary(totalPayroll)}</p>
@@ -254,7 +255,7 @@ export default function EmployeesPage() {
               <div className="bg-white rounded-lg border border-gray-200 overflow-hidden">
                 {[1,2,3,4,5].map(i => (
                   <div key={i} className="px-6 py-4 border-b border-gray-100 flex items-center space-x-4 animate-pulse">
-                    <div className="w-10 h-10 bg-gray-200 rounded-full flex-shrink-0" />
+                    <div className="w-10 h-10 bg-gray-200 rounded-full shrink-0" />
                     <div className="flex-1 space-y-2">
                       <div className="h-4 bg-gray-200 rounded w-1/3" />
                       <div className="h-3 bg-gray-200 rounded w-1/2" />

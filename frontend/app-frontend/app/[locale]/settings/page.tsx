@@ -635,7 +635,7 @@ export default function SettingsPage() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
           <div className="flex flex-col lg:flex-row gap-6">
             {/* Tabs Navigation */}
-            <div className="lg:w-56 flex-shrink-0">
+            <div className="lg:w-56 shrink-0">
               <nav className="space-y-1">
                 {tabs.map(tab => {
                   const Icon = tab.icon

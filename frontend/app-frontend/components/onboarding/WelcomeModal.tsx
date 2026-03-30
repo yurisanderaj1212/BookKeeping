@@ -22,7 +22,7 @@ export default function WelcomeModal({ isOpen, onClose, onStartTour, userName = 
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
       <div className="bg-white rounded-2xl shadow-2xl max-w-lg w-full mx-4 overflow-hidden border border-gray-200">
         {/* Header with gradient */}
-        <div className="bg-gradient-to-r from-primary-500 to-primary-600 px-8 py-6 text-white relative">
+        <div className="bg-linear-to-r from-primary-500 to-primary-600 px-8 py-6 text-white relative">
           <button
             onClick={onClose}
             className="absolute top-4 right-4 text-white/80 hover:text-white transition-colors"

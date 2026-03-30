@@ -38,9 +38,9 @@ export default function TopTransactions({ period }: TopTransactionsProps) {
       <td className="px-4 py-3">
         <div className="flex items-center space-x-2">
           {transaction.type === 'income' ? (
-            <ArrowUpRight className="w-4 h-4 text-green-600 flex-shrink-0" />
+            <ArrowUpRight className="w-4 h-4 text-green-600 shrink-0" />
           ) : (
-            <ArrowDownRight className="w-4 h-4 text-red-600 flex-shrink-0" />
+            <ArrowDownRight className="w-4 h-4 text-red-600 shrink-0" />
           )}
           <div className="min-w-0 flex-1">
             <p className="text-sm font-medium text-gray-900 truncate">

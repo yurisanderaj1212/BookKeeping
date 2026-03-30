@@ -16,7 +16,7 @@ export default function Hero() {
   }, [])
 
   return (
-    <div className="relative bg-gradient-to-br from-blue-900 via-blue-800 to-indigo-800 min-h-screen">
+    <div className="relative bg-linear-to-br from-blue-900 via-blue-800 to-indigo-800 min-h-screen">
       {/* Fixed Navigation */}
       <nav className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
         isScrolled 
@@ -114,7 +114,7 @@ export default function Hero() {
           <div className="mt-10 flex items-center justify-center gap-x-6">
             <Link
               href="/auth/register"
-              className="bg-primary-500 px-8 py-3 text-lg font-semibold text-white shadow-sm hover:bg-primary-600 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-500 rounded-lg transition-all duration-200 hover:shadow-medium"
+              className="bg-primary-500 px-8 py-3 text-lg font-semibold text-white shadow-sm hover:bg-primary-600 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-500 rounded-lg transition-all duration-200 hover:shadow-medium"
             >
               Prueba Gratuita
             </Link>

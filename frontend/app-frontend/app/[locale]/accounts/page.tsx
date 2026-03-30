@@ -13,6 +13,7 @@ import { useOnboarding } from '@/hooks/useOnboarding'
 import { useToast } from '@/hooks/useToast'
 import accountService, { Account } from '@/services/accountService'
 import ConnectedBanks from '@/components/plaid/ConnectedBanks'
+import PlaidLinkButton from '@/components/plaid/PlaidLinkButton'
 
 export default function AccountsPage() {
   const { isLoading, isAuthenticated, logout } = useAuth()
@@ -33,6 +34,7 @@ export default function AccountsPage() {
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [confirmDeleteId, setConfirmDeleteId] = useState<number | null>(null)
+  const [plaidRefreshKey, setPlaidRefreshKey] = useState(0)
   const { toasts, success, error: toastError, dismiss } = useToast()
 
   useEffect(() => {
@@ -145,14 +147,16 @@ export default function AccountsPage() {
                   {t('subtitle')}
                 </p>
               </div>
-              <button
-                onClick={handleCreateAccount}
+              <PlaidLinkButton
                 data-tour="add-account-btn"
-                className="bg-primary-600 text-white px-4 py-2 rounded-lg hover:bg-primary-700 transition-colors duration-200 flex items-center space-x-2"
-              >
-                <Plus className="w-4 h-4" />
-                <span>{t('new')}</span>
-              </button>
+                onSuccess={async () => {
+                  await new Promise(r => setTimeout(r, 1500))
+                  await loadAccounts()
+                  setPlaidRefreshKey(k => k + 1)
+                  success(t('connectedBanks.toastConnected'))
+                }}
+                onError={msg => toastError(msg)}
+              />
             </div>
           </div>
         </div>
@@ -163,7 +167,7 @@ export default function AccountsPage() {
           {error && (
             <div className="bg-red-50 border border-red-200 rounded-lg p-4 mb-6">
               <div className="flex items-center">
-                <div className="flex-shrink-0">
+                <div className="shrink-0">
                   <svg className="h-5 w-5 text-red-400" viewBox="0 0 20 20" fill="currentColor">
                     <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
                   </svg>
@@ -232,7 +236,7 @@ export default function AccountsPage() {
             <div className="bg-white rounded-lg border border-gray-200 overflow-hidden" data-tour="account-list">
               {[1,2,3].map(i => (
                 <div key={i} className="p-6 border-b border-gray-100 flex items-center space-x-4 animate-pulse">
-                  <div className="w-12 h-12 bg-gray-200 rounded-lg flex-shrink-0" />
+                  <div className="w-12 h-12 bg-gray-200 rounded-lg shrink-0" />
                   <div className="flex-1 space-y-2">
                     <div className="h-4 bg-gray-200 rounded w-1/3" />
                     <div className="h-3 bg-gray-200 rounded w-1/4" />
@@ -250,13 +254,15 @@ export default function AccountsPage() {
               <p className="text-gray-600 mb-6">
                 {t('noAccountsDesc')}
               </p>
-              <button
-                onClick={handleCreateAccount}
-                className="bg-primary-600 text-white px-6 py-3 rounded-lg hover:bg-primary-700 transition-colors duration-200 inline-flex items-center space-x-2"
-              >
-                <Plus className="w-5 h-5" />
-                <span>{t('createFirst')}</span>
-              </button>
+              <PlaidLinkButton
+                onSuccess={async () => {
+                  await new Promise(r => setTimeout(r, 1500))
+                  await loadAccounts()
+                  setPlaidRefreshKey(k => k + 1)
+                  success(t('connectedBanks.toastConnected'))
+                }}
+                onError={msg => toastError(msg)}
+              />
             </div>
           ) : (
             <div data-tour="account-list">
@@ -270,7 +276,7 @@ export default function AccountsPage() {
 
           {/* Cuentas bancarias conectadas via Plaid */}
           <div className="mt-6">
-            <ConnectedBanks />
+            <ConnectedBanks refreshKey={plaidRefreshKey} />
           </div>
         </div>
       </div>

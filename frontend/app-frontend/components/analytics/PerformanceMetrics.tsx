@@ -269,7 +269,7 @@ export default function PerformanceMetrics({ period }: PerformanceMetricsProps) 
           
           <div className="space-y-4">
             {/* Overall Score */}
-            <div className="bg-gradient-to-r from-blue-50 to-purple-50 rounded-lg p-4">
+            <div className="bg-linear-to-r from-blue-50 to-purple-50 rounded-lg p-4">
               <div className="flex items-center justify-between mb-2">
                 <span className="text-sm font-medium text-gray-700">Puntuación General</span>
                 <div className="flex items-center space-x-1">
@@ -281,7 +281,7 @@ export default function PerformanceMetrics({ period }: PerformanceMetricsProps) 
               </div>
               <div className="w-full bg-white rounded-full h-2">
                 <div 
-                  className="bg-gradient-to-r from-blue-500 to-purple-500 h-2 rounded-full transition-all duration-500"
+                  className="bg-linear-to-r from-blue-500 to-purple-500 h-2 rounded-full transition-all duration-500"
                   style={{ 
                     width: `${Math.min(((performanceData.reduce((sum, m) => sum + (m.value / m.target), 0) / performanceData.length) * 100), 100)}%` 
                   }}
@@ -295,7 +295,7 @@ export default function PerformanceMetrics({ period }: PerformanceMetricsProps) 
               
               <div className="space-y-2">
                 <div className="flex items-center space-x-3 p-3 bg-green-50 rounded-lg">
-                  <CheckCircle className="w-4 h-4 text-green-600 flex-shrink-0" />
+                  <CheckCircle className="w-4 h-4 text-green-600 shrink-0" />
                   <div>
                     <p className="text-sm font-medium text-green-800">Beneficio Positivo</p>
                     <p className="text-xs text-green-600">
@@ -305,7 +305,7 @@ export default function PerformanceMetrics({ period }: PerformanceMetricsProps) 
                 </div>
 
                 <div className="flex items-center space-x-3 p-3 bg-blue-50 rounded-lg">
-                  <Clock className="w-4 h-4 text-blue-600 flex-shrink-0" />
+                  <Clock className="w-4 h-4 text-blue-600 shrink-0" />
                   <div>
                     <p className="text-sm font-medium text-blue-800">Transacciones Activas</p>
                     <p className="text-xs text-blue-600">
@@ -316,7 +316,7 @@ export default function PerformanceMetrics({ period }: PerformanceMetricsProps) 
 
                 {pendingTransactions > 0 && (
                   <div className="flex items-center space-x-3 p-3 bg-yellow-50 rounded-lg">
-                    <AlertCircle className="w-4 h-4 text-yellow-600 flex-shrink-0" />
+                    <AlertCircle className="w-4 h-4 text-yellow-600 shrink-0" />
                     <div>
                       <p className="text-sm font-medium text-yellow-800">Transacciones Pendientes</p>
                       <p className="text-xs text-yellow-600">

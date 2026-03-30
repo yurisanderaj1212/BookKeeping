@@ -93,6 +93,8 @@ export async function getFiltered(params: TransactionQueryParameters): Promise<P
   let query = supabase
     .from('transactions')
     .select('*, categories(name), accounts(name)', { count: 'exact' })
+    // Excluir transacciones de Plaid que aún no han sido revisadas
+    .or('is_from_plaid.eq.false,is_business_transaction.eq.true')
 
   if (params.type) query = query.eq('type', params.type)
   if (params.startDate) query = query.gte('date', params.startDate)
@@ -129,10 +131,21 @@ export async function getAll(): Promise<TransactionDto[]> {
 
 export async function create(dto: CreateTransactionDto): Promise<TransactionDto> {
   const supabase = getSupabase()
+  const { data: { user } } = await supabase.auth.getUser()
+  if (!user) throw new Error('No hay sesión activa.')
+
   const payload = {
-    type: dto.type, amount: dto.amount, description: dto.description, date: dto.date, notes: dto.notes,
+    user_id:     user.id,
+    type:        dto.type,
+    amount:      dto.amount,
+    description: dto.description,
+    date:        dto.date,
+    notes:       dto.notes,
     category_id: dto.category_id ?? dto.categoryId,
-    account_id: dto.account_id ?? dto.accountId ?? null,
+    account_id:  dto.account_id ?? dto.accountId ?? null,
+    is_from_plaid:           false,
+    is_business_transaction: true,
+    status:                  0,
   }
   const { data, error } = await supabase
     .from('transactions').insert(payload)

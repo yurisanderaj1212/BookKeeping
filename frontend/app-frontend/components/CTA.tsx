@@ -14,7 +14,7 @@ export default function CTA() {
           <div className="mt-10 flex items-center justify-center gap-x-6">
             <Link
               href="/auth/register"
-              className="bg-white px-8 py-3 text-lg font-semibold text-primary-600 shadow-sm hover:bg-primary-50 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white rounded-lg transition-all duration-200 hover:shadow-medium"
+              className="bg-white px-8 py-3 text-lg font-semibold text-primary-600 shadow-sm hover:bg-primary-50 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white rounded-lg transition-all duration-200 hover:shadow-medium"
             >
               Comienza Tu Prueba Gratuita Hoy
             </Link>
@@ -23,7 +23,7 @@ export default function CTA() {
       </div>
       
       {/* Footer */}
-      <footer className="bg-gradient-to-br from-blue-900 via-blue-800 to-indigo-800">
+      <footer className="bg-linear-to-br from-blue-900 via-blue-800 to-indigo-800">
         <div className="mx-auto max-w-7xl px-6 py-12 lg:px-8">
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-2">

@@ -149,10 +149,10 @@ export default function OnboardingTour({
       {spot && overlayPanels ? (
         <>
           {overlayPanels.map((s, i) => (
-            <div key={i} className="fixed z-[9998] pointer-events-none"
+            <div key={i} className="fixed z-9998 pointer-events-none"
               style={{ ...s, background: 'rgba(0,0,0,0.55)' }} />
           ))}
-          <div className="fixed z-[9998] pointer-events-none rounded-xl" style={{
+          <div className="fixed z-9998 pointer-events-none rounded-xl" style={{
             top: spot.top - PAD, left: spot.left - PAD,
             width: spot.width + PAD * 2, height: spot.height + PAD * 2,
             outline: '2px solid rgba(99,102,241,0.85)',
@@ -160,22 +160,22 @@ export default function OnboardingTour({
           }} />
         </>
       ) : (
-        <div className="fixed inset-0 z-[9998] pointer-events-none"
+        <div className="fixed inset-0 z-9998 pointer-events-none"
           style={{ background: 'rgba(0,0,0,0.45)' }} />
       )}
 
       {/* Tour panel */}
-      <div className="fixed bottom-6 right-6 z-[9999] w-80 bg-white rounded-2xl shadow-2xl border border-gray-100 overflow-hidden">
+      <div className="fixed bottom-6 right-6 z-9999 w-80 bg-white rounded-2xl shadow-2xl border border-gray-100 overflow-hidden">
         {/* Progress bar */}
         <div className="h-1 bg-gray-100">
-          <div className="h-1 bg-gradient-to-r from-indigo-500 to-blue-500 transition-all duration-300"
+          <div className="h-1 bg-linear-to-r from-indigo-500 to-blue-500 transition-all duration-300"
             style={{ width: `${progress}%` }} />
         </div>
 
         {/* Header */}
         <div className="flex items-center justify-between px-4 pt-4 pb-2">
           <div className="flex items-center gap-2.5">
-            <div className={`w-8 h-8 rounded-lg bg-gray-50 flex items-center justify-center flex-shrink-0 ${meta.iconColor}`}>
+            <div className={`w-8 h-8 rounded-lg bg-gray-50 flex items-center justify-center shrink-0 ${meta.iconColor}`}>
               <Icon className="w-4 h-4" />
             </div>
             <span className="text-xs font-medium text-gray-400 tabular-nums">
