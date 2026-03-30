@@ -2,8 +2,9 @@
 
 import { useState, useEffect } from 'react'
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, LineChart, Line } from 'recharts'
-import { Calendar, TrendingUp, TrendingDown, ArrowUpRight, ArrowDownRight } from 'lucide-react'
-import { formatCurrency, getTotalIncomeFiltered, getTotalExpensesFiltered } from '@/data/transactions-data'
+import { Calendar, TrendingUp, ArrowUpRight, ArrowDownRight } from 'lucide-react'
+import { useTranslations, useLocale } from 'next-intl'
+import { getSupabase } from '@/lib/supabaseClient'
 
 interface YearComparisonProps {
   period: string
@@ -12,58 +13,44 @@ interface YearComparisonProps {
 }
 
 export default function YearComparison({ year }: YearComparisonProps) {
-  const [dimensions, setDimensions] = useState({ width: 0, height: 320 })
+  const t      = useTranslations('analytics.components')
+  const locale = useLocale()
   const [chartType, setChartType] = useState<'bar' | 'line'>('bar')
-  
+  const [yearData, setYearData]   = useState<any[]>([])
+  const [loading, setLoading]     = useState(true)
+
+  const formatCurrency = (amount: number) =>
+    new Intl.NumberFormat(locale === 'en' ? 'en-US' : 'es-ES', { style: 'currency', currency: 'USD' }).format(amount)
+
   useEffect(() => {
-    const updateDimensions = () => {
-      const container = document.getElementById('year-comparison-chart-container')
-      if (container) {
-        setDimensions({
-          width: container.offsetWidth,
-          height: 320
-        })
-      }
+    let cancelled = false
+    async function load() {
+      setLoading(true)
+      try {
+        const supabase = getSupabase()
+        const currentYear = parseInt(year)
+        const years = [currentYear - 2, currentYear - 1, currentYear]
+
+        const results = await Promise.all(years.map(async y => {
+          const { data } = await supabase
+            .from('transactions')
+            .select('type, amount')
+            .gte('date', `${y}-01-01`).lte('date', `${y}-12-31`)
+            .or('is_from_plaid.eq.false,is_business_transaction.eq.true')
+          const rows = data ?? []
+          const ingresos  = rows.filter(r => r.type === 1).reduce((s, r) => s + r.amount, 0)
+          const gastos    = rows.filter(r => r.type === 2).reduce((s, r) => s + r.amount, 0)
+          const beneficio = ingresos - gastos
+          return { year: String(y), ingresos, gastos, beneficio, margen: ingresos > 0 ? (beneficio / ingresos) * 100 : 0 }
+        }))
+
+        if (!cancelled) setYearData(results)
+      } catch { /* silencioso */ }
+      finally { if (!cancelled) setLoading(false) }
     }
-
-    // Actualizar dimensiones inmediatamente y después de un pequeño delay
-    updateDimensions()
-    const timer = setTimeout(updateDimensions, 100)
-
-    // Actualizar en resize
-    window.addEventListener('resize', updateDimensions)
-
-    return () => {
-      clearTimeout(timer)
-      window.removeEventListener('resize', updateDimensions)
-    }
-  }, [])
-
-  // Generate comparison data for multiple years
-  const generateYearComparisonData = () => {
-    const currentYear = parseInt(year)
-    const years = [currentYear - 2, currentYear - 1, currentYear]
-    
-    return years.map(yearNum => {
-      const yearStart = `${yearNum}-01-01`
-      const yearEnd = `${yearNum}-12-31`
-      
-      const yearlyIncome = getTotalIncomeFiltered(yearStart, yearEnd)
-      const yearlyExpenses = getTotalExpensesFiltered(yearStart, yearEnd)
-      const yearlyProfit = yearlyIncome - yearlyExpenses
-      const profitMargin = yearlyIncome > 0 ? (yearlyProfit / yearlyIncome) * 100 : 0
-      
-      return {
-        year: yearNum.toString(),
-        ingresos: yearlyIncome,
-        gastos: yearlyExpenses,
-        beneficio: yearlyProfit,
-        margen: profitMargin
-      }
-    })
-  }
-
-  const yearComparisonData = generateYearComparisonData()
+    load()
+    return () => { cancelled = true }
+  }, [year])
   
   // Calculate year-over-year growth
   const calculateGrowth = (current: number, previous: number) => {
@@ -71,8 +58,9 @@ export default function YearComparison({ year }: YearComparisonProps) {
     return ((current - previous) / previous) * 100
   }
 
-  const currentYearData = yearComparisonData.find(d => d.year === year)
-  const previousYearData = yearComparisonData.find(d => d.year === (parseInt(year) - 1).toString())
+  const yearComparisonData = yearData
+  const currentYearData  = yearData.find(d => d.year === year)
+  const previousYearData = yearData.find(d => d.year === String(parseInt(year) - 1))
   
   const incomeGrowth = currentYearData && previousYearData ? 
     calculateGrowth(currentYearData.ingresos, previousYearData.ingresos) : 0
@@ -82,18 +70,18 @@ export default function YearComparison({ year }: YearComparisonProps) {
     calculateGrowth(currentYearData.beneficio, previousYearData.beneficio) : 0
 
   // Find best and worst performing years
-  const bestYear = yearComparisonData.reduce((best, current) => 
-    current.beneficio > best.beneficio ? current : best
-  )
-  const worstYear = yearComparisonData.reduce((worst, current) => 
-    current.beneficio < worst.beneficio ? current : worst
-  )
+  const bestYear  = yearComparisonData.length > 0
+    ? yearComparisonData.reduce((best, cur) => cur.beneficio > best.beneficio ? cur : best, yearComparisonData[0])
+    : null
+  const worstYear = yearComparisonData.length > 0
+    ? yearComparisonData.reduce((worst, cur) => cur.beneficio < worst.beneficio ? cur : worst, yearComparisonData[0])
+    : null
 
   const CustomTooltip = ({ active, payload, label }: any) => {
     if (active && payload && payload.length) {
       return (
         <div className="bg-white p-3 border border-gray-200 rounded-lg shadow-lg">
-          <p className="font-medium text-gray-900 mb-2">Año {label}</p>
+          <p className="font-medium text-gray-900 mb-2">{t('yearLabel', { year: label })}</p>
           {payload.map((entry: any, index: number) => (
             <p key={index} className="text-sm" style={{ color: entry.color }}>
               {entry.dataKey === 'ingresos' ? 'Ingresos' : 
@@ -149,7 +137,7 @@ export default function YearComparison({ year }: YearComparisonProps) {
             </span>
           </div>
           <div className="flex items-center justify-between pt-2 border-t border-gray-100">
-            <span className="text-xs text-gray-500">Crecimiento</span>
+            <span className="text-xs text-gray-500">{t('growth')}</span>
             <span className={`text-sm font-medium ${colorClass}`}>
               {isPositive ? '+' : ''}{growth.toFixed(1)}%
             </span>
@@ -163,9 +151,9 @@ export default function YearComparison({ year }: YearComparisonProps) {
     <div className="bg-white rounded-lg border border-gray-200 p-6 mb-8">
       <div className="flex items-center justify-between mb-6">
         <div>
-          <h3 className="text-lg font-semibold text-gray-900">Comparación entre Años</h3>
+          <h3 className="text-lg font-semibold text-gray-900">{t('yearComparison')}</h3>
           <p className="text-sm text-gray-500 mt-1">
-            Análisis comparativo de rendimiento anual
+            {t('annualPerformanceAnalysis')}
           </p>
         </div>
         <div className="flex items-center space-x-3">
@@ -226,82 +214,43 @@ export default function YearComparison({ year }: YearComparisonProps) {
       )}
 
       {/* Year Comparison Chart */}
-      <div id="year-comparison-chart-container" className="w-full mb-6" style={{ height: 320 }}>
-        {dimensions.width > 0 ? (
-          <ResponsiveContainer width={dimensions.width} height={dimensions.height}>
+      <div className="w-full mb-6" style={{ height: 320 }}>
+        {loading ? (
+          <div className="w-full h-full flex items-center justify-center bg-gray-50 rounded-lg">
+            <div className="text-gray-400">{t('loading')}</div>
+          </div>
+        ) : (
+          <ResponsiveContainer width="100%" height={320}>
             {chartType === 'bar' ? (
               <BarChart data={yearComparisonData} margin={{ top: 20, right: 30, left: 20, bottom: 5 }}>
                 <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
-                <XAxis 
-                  dataKey="year" 
-                  axisLine={false}
-                  tickLine={false}
-                  tick={{ fontSize: 12, fill: '#6b7280' }}
-                />
-                <YAxis 
-                  axisLine={false}
-                  tickLine={false}
-                  tick={{ fontSize: 12, fill: '#6b7280' }}
-                  tickFormatter={(value) => `€${(value / 1000).toFixed(0)}k`}
-                />
+                <XAxis dataKey="year" axisLine={false} tickLine={false} tick={{ fontSize: 12, fill: '#6b7280' }} />
+                <YAxis axisLine={false} tickLine={false} tick={{ fontSize: 12, fill: '#6b7280' }}
+                  tickFormatter={(value) => `$${(value / 1000).toFixed(0)}k`} />
                 <Tooltip content={<CustomTooltip />} />
-                <Bar dataKey="ingresos" fill="#10b981" radius={[4, 4, 0, 0]} name="Ingresos" />
-                <Bar dataKey="gastos" fill="#ef4444" radius={[4, 4, 0, 0]} name="Gastos" />
-                <Bar dataKey="beneficio" fill="#3b82f6" radius={[4, 4, 0, 0]} name="Beneficio" />
+                <Bar dataKey="ingresos"  fill="#10b981" radius={[4,4,0,0]} name={t('income')} />
+                <Bar dataKey="gastos"    fill="#ef4444" radius={[4,4,0,0]} name={t('expenses')} />
+                <Bar dataKey="beneficio" fill="#3b82f6" radius={[4,4,0,0]} name={t('profit')} />
               </BarChart>
             ) : (
               <LineChart data={yearComparisonData} margin={{ top: 20, right: 30, left: 20, bottom: 5 }}>
                 <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
-                <XAxis 
-                  dataKey="year" 
-                  axisLine={false}
-                  tickLine={false}
-                  tick={{ fontSize: 12, fill: '#6b7280' }}
-                />
-                <YAxis 
-                  axisLine={false}
-                  tickLine={false}
-                  tick={{ fontSize: 12, fill: '#6b7280' }}
-                  tickFormatter={(value) => `€${(value / 1000).toFixed(0)}k`}
-                />
+                <XAxis dataKey="year" axisLine={false} tickLine={false} tick={{ fontSize: 12, fill: '#6b7280' }} />
+                <YAxis axisLine={false} tickLine={false} tick={{ fontSize: 12, fill: '#6b7280' }}
+                  tickFormatter={(value) => `$${(value / 1000).toFixed(0)}k`} />
                 <Tooltip content={<CustomTooltip />} />
-                <Line 
-                  type="monotone" 
-                  dataKey="ingresos" 
-                  stroke="#10b981" 
-                  strokeWidth={3}
-                  dot={{ fill: '#10b981', strokeWidth: 2, r: 5 }}
-                  name="Ingresos"
-                />
-                <Line 
-                  type="monotone" 
-                  dataKey="gastos" 
-                  stroke="#ef4444" 
-                  strokeWidth={3}
-                  dot={{ fill: '#ef4444', strokeWidth: 2, r: 5 }}
-                  name="Gastos"
-                />
-                <Line 
-                  type="monotone" 
-                  dataKey="beneficio" 
-                  stroke="#3b82f6" 
-                  strokeWidth={3}
-                  dot={{ fill: '#3b82f6', strokeWidth: 2, r: 5 }}
-                  name="Beneficio"
-                />
+                <Line type="monotone" dataKey="ingresos"  stroke="#10b981" strokeWidth={3} dot={{ fill: '#10b981', r: 5 }} name={t('income')} />
+                <Line type="monotone" dataKey="gastos"    stroke="#ef4444" strokeWidth={3} dot={{ fill: '#ef4444', r: 5 }} name={t('expenses')} />
+                <Line type="monotone" dataKey="beneficio" stroke="#3b82f6" strokeWidth={3} dot={{ fill: '#3b82f6', r: 5 }} name={t('profit')} />
               </LineChart>
             )}
           </ResponsiveContainer>
-        ) : (
-          <div className="w-full h-full flex items-center justify-center bg-gray-50 rounded-lg">
-            <div className="text-gray-400">Cargando gráfico...</div>
-          </div>
         )}
       </div>
 
       {/* Year Comparison Table */}
       <div>
-        <h4 className="text-md font-semibold text-gray-900 mb-4">Resumen por Año</h4>
+        <h4 className="text-md font-semibold text-gray-900 mb-4">{t('yearSummary')}</h4>
         <div className="overflow-hidden">
           <table className="w-full table-fixed">
             <thead className="bg-gray-50">
@@ -334,7 +283,7 @@ export default function YearComparison({ year }: YearComparisonProps) {
                       <span className="font-medium text-gray-900">{yearData.year}</span>
                       {yearData.year === year && (
                         <span className="bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded-full">
-                          Actual
+                          {t('current')}
                         </span>
                       )}
                     </div>
@@ -355,8 +304,8 @@ export default function YearComparison({ year }: YearComparisonProps) {
                   </td>
                   <td className="px-4 py-3 text-center">
                     <div className={`w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold mx-auto ${
-                      yearData.year === bestYear.year ? 'bg-green-100 text-green-800' :
-                      yearData.year === worstYear.year ? 'bg-red-100 text-red-800' :
+                      yearData.year === bestYear?.year ? 'bg-green-100 text-green-800' :
+                      yearData.year === worstYear?.year ? 'bg-red-100 text-red-800' :
                       'bg-gray-100 text-gray-600'
                     }`}>
                       {index + 1}
@@ -374,25 +323,25 @@ export default function YearComparison({ year }: YearComparisonProps) {
         <div className="bg-green-50 rounded-lg p-4">
           <div className="flex items-center space-x-2 mb-2">
             <TrendingUp className="w-4 h-4 text-green-600" />
-            <span className="text-sm font-medium text-green-800">Mejor Año</span>
+            <span className="text-sm font-medium text-green-800">{t('bestYearLabel')}</span>
           </div>
-          <p className="text-lg font-bold text-green-700">{bestYear.year}</p>
+          <p className="text-lg font-bold text-green-700">{bestYear?.year ?? '—'}</p>
           <p className="text-xs text-green-600">
-            Beneficio: {formatCurrency(bestYear.beneficio)}
+            Beneficio: {formatCurrency(bestYear?.beneficio ?? 0)}
           </p>
         </div>
 
         <div className="bg-blue-50 rounded-lg p-4">
           <div className="flex items-center space-x-2 mb-2">
             <Calendar className="w-4 h-4 text-blue-600" />
-            <span className="text-sm font-medium text-blue-800">Crecimiento Promedio</span>
+            <span className="text-sm font-medium text-blue-800">{t('avgGrowthLabel')}</span>
           </div>
           <p className="text-lg font-bold text-blue-700">
             {yearComparisonData.length > 1 ? 
               (((yearComparisonData[yearComparisonData.length - 1].beneficio / yearComparisonData[0].beneficio) ** (1 / (yearComparisonData.length - 1)) - 1) * 100).toFixed(1) 
               : 0}%
           </p>
-          <p className="text-xs text-blue-600">Anual compuesto</p>
+          <p className="text-xs text-blue-600">{t('annualCompound')}</p>
         </div>
       </div>
     </div>

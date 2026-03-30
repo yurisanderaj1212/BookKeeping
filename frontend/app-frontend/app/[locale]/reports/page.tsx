@@ -8,7 +8,6 @@ import {
   FileText, 
   TrendingUp,
   BarChart3,
-  PieChart,
   FileBarChart,
   Clock
 } from 'lucide-react'
@@ -28,10 +27,7 @@ interface ReportTemplate {
 
 const reportTemplates: ReportTemplate[] = [
   { id: 'profit-loss',         nameKey: 'financialSummary',    descKey: 'financialSummaryDesc',    icon: TrendingUp,  frequency: 'monthly' },
-  { id: 'profit-loss-detailed',nameKey: 'profitLoss',          descKey: 'profitLossDesc',          icon: BarChart3,   frequency: 'monthly' },
   { id: 'transaction-summary', nameKey: 'transactionSummary',  descKey: 'transactionSummaryDesc',  icon: FileBarChart,frequency: 'weekly'  },
-  { id: 'category-breakdown',  nameKey: 'categoryBreakdown',   descKey: 'categoryBreakdownDesc',   icon: PieChart,    frequency: 'monthly' },
-  { id: 'employee-summary',    nameKey: 'employeeSummary',     descKey: 'employeeSummaryDesc',     icon: FileText,    frequency: 'monthly' },
   { id: 'week-close',          nameKey: 'weekClose',           descKey: 'weekCloseDesc',           icon: Calendar,    frequency: 'weekly'  },
 ]
 
@@ -237,7 +233,7 @@ export default function ReportsPage() {
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-sm text-gray-600">{t('availableReports')}</p>
-                  <p className="text-2xl font-bold text-gray-900">6</p>
+                  <p className="text-2xl font-bold text-gray-900">3</p>
                 </div>
                 <FileText className="w-8 h-8 text-primary-600" />
               </div>

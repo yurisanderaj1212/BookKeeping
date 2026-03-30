@@ -6,11 +6,10 @@ import Sidebar from '@/components/dashboard/Sidebar'
 import AccountForm from '@/components/accounts/AccountForm'
 import AccountList from '@/components/accounts/AccountList'
 import OnboardingTour from '@/components/onboarding/OnboardingTour'
-import Toast, { ToastContainer } from '@/components/ui/Toast'
 import { useAuth } from '@/hooks/useAuth'
 import { useTranslations, useLocale } from 'next-intl'
 import { useOnboarding } from '@/hooks/useOnboarding'
-import { useToast } from '@/hooks/useToast'
+import { useNotifications } from '@/hooks/useNotifications'
 import accountService, { Account } from '@/services/accountService'
 import ConnectedBanks from '@/components/plaid/ConnectedBanks'
 import PlaidLinkButton from '@/components/plaid/PlaidLinkButton'
@@ -36,7 +35,7 @@ export default function AccountsPage() {
   const [error, setError] = useState<string | null>(null)
   const [confirmDeleteId, setConfirmDeleteId] = useState<number | null>(null)
   const [plaidRefreshKey, setPlaidRefreshKey] = useState(0)
-  const { toasts, success, error: toastError, dismiss } = useToast()
+  const { showSuccess, showError } = useNotifications()
 
   useEffect(() => {
     if (isAuthenticated) {
@@ -106,9 +105,9 @@ export default function AccountsPage() {
     try {
       await accountService.deactivateAccount(confirmDeleteId)
       await loadAccounts()
-      success(t('deactivateSuccess'))
+      showSuccess(tCommon('success'), t('deactivateSuccess'))
     } catch (err: any) {
-      toastError(err.message || t('deactivateError'))
+      showError(tCommon('error'), err.message || t('deactivateError'))
     } finally {
       setConfirmDeleteId(null)
     }
@@ -154,9 +153,9 @@ export default function AccountsPage() {
                   await new Promise(r => setTimeout(r, 1500))
                   await loadAccounts()
                   setPlaidRefreshKey(k => k + 1)
-                  success(t('connectedBanks.toastConnected'))
+                  showSuccess(tCommon('success'), t('connectedBanks.toastConnected'))
                 }}
-                onError={msg => toastError(msg)}
+                onError={msg => showError(tCommon('error'), msg)}
               />
             </div>
           </div>
@@ -260,9 +259,9 @@ export default function AccountsPage() {
                   await new Promise(r => setTimeout(r, 1500))
                   await loadAccounts()
                   setPlaidRefreshKey(k => k + 1)
-                  success(t('connectedBanks.toastConnected'))
+                  showSuccess(tCommon('success'), t('connectedBanks.toastConnected'))
                 }}
-                onError={msg => toastError(msg)}
+                onError={msg => showError(tCommon('error'), msg)}
               />
             </div>
           ) : (
@@ -328,8 +327,6 @@ export default function AccountsPage() {
         currentStep={onboardingStep}
         setStep={setOnboardingStep}
       />
-
-      <ToastContainer toasts={toasts} onDismiss={dismiss} />
     </div>
   )
 }

@@ -5,6 +5,7 @@ import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContaine
 import { DollarSign, CreditCard, TrendingUp, BarChart3 } from 'lucide-react'
 import { getSupabase } from '@/lib/supabaseClient'
 import { formatCurrency } from '@/services/reportService'
+import { useTranslations } from 'next-intl'
 
 interface ReportsOverviewProps {
   period: string
@@ -47,6 +48,7 @@ function getPeriodDates(period: string, year: string, month: string): { start: s
 }
 
 export default function ReportsOverview({ period, year, month }: ReportsOverviewProps) {
+  const t = useTranslations('analytics.components')
   const [periodData, setPeriodData] = useState<PeriodData>({ totalIncome: 0, totalExpenses: 0, netProfit: 0, profitMargin: 0 })
   const [chartData, setChartData] = useState<ChartPoint[]>([])
   const [loading, setLoading] = useState(true)
@@ -189,14 +191,14 @@ export default function ReportsOverview({ period, year, month }: ReportsOverview
       {/* Chart */}
       <div className="bg-white rounded-lg border border-gray-200 p-6">
         <div className="mb-6">
-          <h3 className="text-lg font-semibold text-gray-900">Ingresos vs Gastos</h3>
+          <h3 className="text-lg font-semibold text-gray-900">{t('incomeVsExpenses')}</h3>
           <p className="text-sm text-gray-500 mt-1">
-            Comparación {period === 'week' ? 'diaria' : period === 'month' ? 'semanal' : 'mensual'}
+            {period === 'week' ? t('comparisonDaily') : period === 'month' ? t('comparisonWeekly') : t('comparisonMonthly')}
           </p>
         </div>
         {loading ? (
           <div className="h-80 bg-gray-50 rounded-lg flex items-center justify-center">
-            <div className="text-gray-400 text-sm">Cargando datos...</div>
+            <div className="text-gray-400 text-sm">{t('loadingData')}</div>
           </div>
         ) : (
           <ResponsiveContainer width="100%" height={320}>

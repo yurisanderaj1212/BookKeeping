@@ -2,308 +2,196 @@
 
 import { useState, useEffect } from 'react'
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell } from 'recharts'
-import { Users, DollarSign, TrendingUp, Clock } from 'lucide-react'
-import { 
-  mockEmployees, 
-  getActiveEmployees, 
-  getTotalPayroll, 
-  formatSalary,
-  getEmployeesByPayrollType 
-} from '@/data/employees-data'
+import { Users, DollarSign, TrendingUp } from 'lucide-react'
+import { useTranslations, useLocale } from 'next-intl'
+import { employeeService, PayrollType, EmployeeStatus, type Employee } from '@/services/employeeService'
 
 interface EmployeeAnalysisProps {
   period: 'week' | 'month' | 'year'
 }
 
+const COLORS = ['#20B2AA', '#17A2B8', '#28A745', '#FFC107', '#DC3545', '#6F42C1', '#FF6B6B', '#4ECDC4']
+
 export default function EmployeeAnalysis({ period }: EmployeeAnalysisProps) {
-  const [pieChartDimensions, setPieChartDimensions] = useState({ width: 0, height: 256 })
-  const [barChartDimensions, setBarChartDimensions] = useState({ width: 0, height: 256 })
+  const t      = useTranslations('analytics.components')
+  const tEmp   = useTranslations('employees')
+  const locale = useLocale()
+  const [employees, setEmployees] = useState<Employee[]>([])
+  const [loading, setLoading]     = useState(true)
 
   useEffect(() => {
-    const updateDimensions = () => {
-      const pieContainer = document.getElementById('payroll-pie-chart-container')
-      const barContainer = document.getElementById('position-bar-chart-container')
-      
-      if (pieContainer) {
-        setPieChartDimensions({
-          width: pieContainer.offsetWidth,
-          height: 256
-        })
-      }
-      
-      if (barContainer) {
-        setBarChartDimensions({
-          width: barContainer.offsetWidth,
-          height: 256
-        })
-      }
-    }
-
-    // Actualizar dimensiones inmediatamente y después de un pequeño delay
-    updateDimensions()
-    const timer = setTimeout(updateDimensions, 100)
-
-    // Actualizar en resize
-    window.addEventListener('resize', updateDimensions)
-
-    return () => {
-      clearTimeout(timer)
-      window.removeEventListener('resize', updateDimensions)
-    }
+    employeeService.getAllEmployees()
+      .then(setEmployees)
+      .catch(() => setEmployees([]))
+      .finally(() => setLoading(false))
   }, [])
 
-  const activeEmployees = getActiveEmployees()
-  const totalPayroll = getTotalPayroll()
+  const formatSalary = (amount: number) =>
+    new Intl.NumberFormat(locale === 'en' ? 'en-US' : 'es-ES', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 }).format(amount)
 
-  // Calculate payroll distribution
-  const payrollTypes = [
-    'hourly', 'weekly', 'biweekly', 'monthly', 'quarterly', 'annual', 'contract', 'provider'
-  ] as const
+  const active   = employees.filter(e => e.status === EmployeeStatus.Active)
+  const inactive = employees.filter(e => e.status === EmployeeStatus.Inactive)
 
-  const payrollDistribution = payrollTypes.map(type => {
-    const employees = getEmployeesByPayrollType(type).filter(emp => emp.status === 'active')
+  const getAnnualCost = (emp: Employee): number => {
+    switch (emp.payrollType) {
+      case PayrollType.Hourly:    return (emp.hourlyRate || 0) * 40 * 52
+      case PayrollType.Weekly:    return emp.salary * 52
+      case PayrollType.Biweekly:  return emp.salary * 26
+      case PayrollType.Monthly:   return emp.salary * 12
+      case PayrollType.Quarterly: return emp.salary * 4
+      default:                    return emp.salary
+    }
+  }
+
+  const totalAnnualPayroll = active.reduce((s, e) => s + getAnnualCost(e), 0)
+
+  const periodMultiplier = period === 'week' ? 1/52 : period === 'month' ? 1/12 : 1
+  const periodPayroll    = totalAnnualPayroll * periodMultiplier
+  const avgPerEmployee   = active.length > 0 ? periodPayroll / active.length : 0
+
+  const getPeriodLabel = () => {
+    if (period === 'week')  return tEmp('payPeriod.weekly')
+    if (period === 'month') return tEmp('payPeriod.monthly')
+    return t('annual')
+  }
+
+  // Payroll type distribution
+  const payrollDist = ([1,2,3,4,5,6,7,8] as PayrollType[]).map(type => {
+    const count = active.filter(e => e.payrollType === type).length
     return {
-      type: type === 'hourly' ? 'Por Horas' :
-            type === 'weekly' ? 'Semanal' :
-            type === 'biweekly' ? 'Quincenal' :
-            type === 'monthly' ? 'Mensual' :
-            type === 'quarterly' ? 'Trimestral' :
-            type === 'annual' ? 'Anual' :
-            type === 'contract' ? 'Contratista' : 'Proveedor',
-      count: employees.length,
-      percentage: activeEmployees.length > 0 ? (employees.length / activeEmployees.length) * 100 : 0
+      type:       tEmp(`payrollTypes.${type}` as any),
+      count,
+      percentage: active.length > 0 ? (count / active.length) * 100 : 0,
     }
-  }).filter(item => item.count > 0)
+  }).filter(d => d.count > 0)
 
-  // Calculate cost by position
-  const positionCosts = activeEmployees.reduce((acc, emp) => {
-    const existing = acc.find(item => item.position === emp.position)
-    let annualCost = 0
-    
-    if (emp.payrollType === 'hourly') {
-      annualCost = (emp.hourlyRate || 0) * 40 * 52
-    } else if (emp.payrollType === 'weekly') {
-      annualCost = emp.salary * 52
-    } else if (emp.payrollType === 'biweekly') {
-      annualCost = emp.salary * 26
-    } else if (emp.payrollType === 'monthly') {
-      annualCost = emp.salary * 12
-    } else if (emp.payrollType === 'quarterly') {
-      annualCost = emp.salary * 4
-    } else {
-      annualCost = emp.salary
-    }
-
-    if (existing) {
-      existing.cost += annualCost
-      existing.count += 1
-    } else {
-      acc.push({
-        position: emp.position,
-        cost: annualCost,
-        count: 1
-      })
-    }
+  // Cost by position
+  const positionCosts = active.reduce((acc, emp) => {
+    const cost = getAnnualCost(emp)
+    const existing = acc.find(x => x.position === emp.position)
+    if (existing) { existing.cost += cost; existing.count++ }
+    else acc.push({ position: emp.position, cost, count: 1 })
     return acc
   }, [] as { position: string; cost: number; count: number }[])
 
-  const colors = ['#20B2AA', '#17A2B8', '#28A745', '#FFC107', '#DC3545', '#6F42C1']
-
-  const getPeriodMultiplier = () => {
-    switch (period) {
-      case 'week':
-        return 1/52
-      case 'month':
-        return 1/12
-      case 'year':
-        return 1
-      default:
-        return 1
-    }
+  if (loading) {
+    return (
+      <div className="space-y-6">
+        {[1,2,3].map(i => <div key={i} className="h-32 bg-gray-100 rounded-lg animate-pulse" />)}
+      </div>
+    )
   }
-
-  const getPeriodLabel = () => {
-    switch (period) {
-      case 'week':
-        return 'semanal'
-      case 'month':
-        return 'mensual'
-      case 'year':
-        return 'anual'
-      default:
-        return 'del período'
-    }
-  }
-
-  const periodMultiplier = getPeriodMultiplier()
-  const periodPayroll = totalPayroll * periodMultiplier
 
   return (
     <div className="space-y-6">
-      {/* Employee Overview Cards */}
+      {/* Overview Cards */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         <div className="bg-white rounded-lg p-6 shadow-sm border border-gray-200">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm font-medium text-gray-500">Empleados Activos</p>
-              <p className="text-2xl font-bold text-gray-900">{activeEmployees.length}</p>
-              <p className="text-xs text-gray-500 mt-1">
-                {mockEmployees.length - activeEmployees.length} inactivos
-              </p>
+              <p className="text-sm font-medium text-gray-500">{t('activeEmployees')}</p>
+              <p className="text-2xl font-bold text-gray-900">{active.length}</p>
+              <p className="text-xs text-gray-500 mt-1">{inactive.length} {tEmp('statusInactive').toLowerCase()}</p>
             </div>
-            <div className="p-3 bg-blue-100 rounded-lg">
-              <Users className="w-6 h-6 text-blue-600" />
-            </div>
+            <div className="p-3 bg-blue-100 rounded-lg"><Users className="w-6 h-6 text-blue-600" /></div>
           </div>
         </div>
 
         <div className="bg-white rounded-lg p-6 shadow-sm border border-gray-200">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm font-medium text-gray-500">Costo de Nómina</p>
+              <p className="text-sm font-medium text-gray-500">{t('payrollCost')}</p>
               <p className="text-2xl font-bold text-gray-900">{formatSalary(periodPayroll)}</p>
-              <p className="text-xs text-gray-500 mt-1 capitalize">
-                Costo {getPeriodLabel()}
-              </p>
+              <p className="text-xs text-gray-500 mt-1 capitalize">{getPeriodLabel()}</p>
             </div>
-            <div className="p-3 bg-green-100 rounded-lg">
-              <DollarSign className="w-6 h-6 text-green-600" />
-            </div>
+            <div className="p-3 bg-green-100 rounded-lg"><DollarSign className="w-6 h-6 text-green-600" /></div>
           </div>
         </div>
 
         <div className="bg-white rounded-lg p-6 shadow-sm border border-gray-200">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm font-medium text-gray-500">Costo Promedio</p>
-              <p className="text-2xl font-bold text-gray-900">
-                {formatSalary(activeEmployees.length > 0 ? periodPayroll / activeEmployees.length : 0)}
-              </p>
-              <p className="text-xs text-gray-500 mt-1">
-                Por empleado
-              </p>
+              <p className="text-sm font-medium text-gray-500">{t('avgCost')}</p>
+              <p className="text-2xl font-bold text-gray-900">{formatSalary(avgPerEmployee)}</p>
+              <p className="text-xs text-gray-500 mt-1">{t('perEmployee')}</p>
             </div>
-            <div className="p-3 bg-yellow-100 rounded-lg">
-              <TrendingUp className="w-6 h-6 text-yellow-600" />
-            </div>
+            <div className="p-3 bg-yellow-100 rounded-lg"><TrendingUp className="w-6 h-6 text-yellow-600" /></div>
           </div>
         </div>
       </div>
 
       {/* Charts */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        {/* Payroll Type Distribution */}
+        {/* Payroll type pie */}
         <div className="bg-white rounded-lg p-6 shadow-sm border border-gray-200">
-          <h3 className="text-lg font-semibold text-gray-900 mb-4">
-            Distribución por Tipo de Nómina
-          </h3>
-          <div id="payroll-pie-chart-container" className="w-full" style={{ height: 256 }}>
-            {pieChartDimensions.width > 0 ? (
-              <ResponsiveContainer width={pieChartDimensions.width} height={pieChartDimensions.height}>
-                <PieChart>
-                  <Pie
-                    data={payrollDistribution}
-                    cx="50%"
-                    cy="50%"
-                    labelLine={false}
-                    label={({ name, percentage }: any) => `${name} (${percentage.toFixed(0)}%)`}
-                    outerRadius={80}
-                    fill="#8884d8"
-                    dataKey="count"
-                  >
-                    {payrollDistribution.map((entry, index) => (
-                      <Cell key={`cell-${index}`} fill={colors[index % colors.length]} />
-                    ))}
-                  </Pie>
-                  <Tooltip />
-                </PieChart>
-              </ResponsiveContainer>
-            ) : (
-              <div className="w-full h-full flex items-center justify-center bg-gray-50 rounded-lg">
-                <div className="text-gray-400">Cargando gráfico...</div>
-              </div>
-            )}
-          </div>
+          <h3 className="text-lg font-semibold text-gray-900 mb-4">{t('payrollDistribution')}</h3>
+          {payrollDist.length === 0 ? (
+            <p className="text-sm text-gray-400 text-center py-8">{t('noData')}</p>
+          ) : (
+            <ResponsiveContainer width="100%" height={256}>
+              <PieChart>
+                <Pie data={payrollDist} cx="50%" cy="50%" outerRadius={80} dataKey="count"
+                  label={({ type, percentage }: any) => `${type} (${percentage.toFixed(0)}%)`} labelLine={false}>
+                  {payrollDist.map((_, i) => <Cell key={i} fill={COLORS[i % COLORS.length]} />)}
+                </Pie>
+                <Tooltip formatter={(v: any) => [v, t('employees')]} />
+              </PieChart>
+            </ResponsiveContainer>
+          )}
         </div>
 
-        {/* Cost by Position */}
+        {/* Cost by position bar */}
         <div className="bg-white rounded-lg p-6 shadow-sm border border-gray-200">
-          <h3 className="text-lg font-semibold text-gray-900 mb-4">
-            Costo por Posición
-          </h3>
-          <div id="position-bar-chart-container" className="w-full" style={{ height: 256 }}>
-            {barChartDimensions.width > 0 ? (
-              <ResponsiveContainer width={barChartDimensions.width} height={barChartDimensions.height}>
-                <BarChart data={positionCosts} layout="horizontal">
-                  <CartesianGrid strokeDasharray="3 3" />
-                  <XAxis type="number" tickFormatter={(value) => formatSalary(value * periodMultiplier)} />
-                  <YAxis dataKey="position" type="category" width={100} fontSize={12} />
-                  <Tooltip 
-                    formatter={(value: number | undefined) => [formatSalary((value || 0) * periodMultiplier), `Costo ${getPeriodLabel()}`]}
-                  />
-                  <Bar dataKey="cost" fill="#20B2AA" />
-                </BarChart>
-              </ResponsiveContainer>
-            ) : (
-              <div className="w-full h-full flex items-center justify-center bg-gray-50 rounded-lg">
-                <div className="text-gray-400">Cargando gráfico...</div>
-              </div>
-            )}
-          </div>
+          <h3 className="text-lg font-semibold text-gray-900 mb-4">{t('costByPosition')}</h3>
+          {positionCosts.length === 0 ? (
+            <p className="text-sm text-gray-400 text-center py-8">{t('noData')}</p>
+          ) : (
+            <ResponsiveContainer width="100%" height={256}>
+              <BarChart data={positionCosts} layout="horizontal">
+                <CartesianGrid strokeDasharray="3 3" />
+                <XAxis type="number" tickFormatter={v => formatSalary(v * periodMultiplier)} tick={{ fontSize: 11 }} />
+                <YAxis dataKey="position" type="category" width={100} tick={{ fontSize: 11 }} />
+                <Tooltip formatter={(v: any) => [formatSalary(v * periodMultiplier), getPeriodLabel()]} />
+                <Bar dataKey="cost" fill="#20B2AA" />
+              </BarChart>
+            </ResponsiveContainer>
+          )}
         </div>
       </div>
 
-      {/* Employee Summary Table */}
+      {/* Summary table */}
       <div className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
         <div className="px-6 py-4 border-b border-gray-200">
-          <h3 className="text-lg font-semibold text-gray-900">
-            Resumen de Empleados por Posición
-          </h3>
+          <h3 className="text-lg font-semibold text-gray-900">{t('employeeSummaryByPosition')}</h3>
         </div>
-        <div className="overflow-x-auto">
-          <table className="min-w-full divide-y divide-gray-200">
-            <thead className="bg-gray-50">
-              <tr>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Posición
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Empleados
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Costo Anual
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Costo Promedio
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  % del Total
-                </th>
-              </tr>
-            </thead>
-            <tbody className="bg-white divide-y divide-gray-200">
-              {positionCosts.map((item, index) => (
-                <tr key={index} className="hover:bg-gray-50">
-                  <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                    {item.position}
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                    {item.count}
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                    {formatSalary(item.cost)}
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                    {formatSalary(item.cost / item.count)}
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                    {((item.cost / totalPayroll) * 100).toFixed(1)}%
-                  </td>
+        {positionCosts.length === 0 ? (
+          <p className="text-sm text-gray-400 text-center py-8">{t('noData')}</p>
+        ) : (
+          <div className="overflow-x-auto">
+            <table className="min-w-full divide-y divide-gray-200">
+              <thead className="bg-gray-50">
+                <tr>
+                  {[t('position'), t('employees'), t('annualCost'), t('avgCost'), t('pctTotal')].map(h => (
+                    <th key={h} className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{h}</th>
+                  ))}
                 </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+              </thead>
+              <tbody className="bg-white divide-y divide-gray-200">
+                {positionCosts.map((item, i) => (
+                  <tr key={i} className="hover:bg-gray-50">
+                    <td className="px-6 py-4 text-sm font-medium text-gray-900">{item.position}</td>
+                    <td className="px-6 py-4 text-sm text-gray-500">{item.count}</td>
+                    <td className="px-6 py-4 text-sm text-gray-500">{formatSalary(item.cost)}</td>
+                    <td className="px-6 py-4 text-sm text-gray-500">{formatSalary(item.cost / item.count)}</td>
+                    <td className="px-6 py-4 text-sm text-gray-500">
+                      {totalAnnualPayroll > 0 ? ((item.cost / totalAnnualPayroll) * 100).toFixed(1) : '0'}%
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
       </div>
     </div>
   )

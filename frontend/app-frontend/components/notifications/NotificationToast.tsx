@@ -1,165 +1,194 @@
 'use client'
 
-import { useState, useEffect } from 'react'
-import { X, Check, AlertTriangle, Info, CheckCircle } from 'lucide-react'
+import { useState, useEffect, useRef } from 'react'
+import { X, CheckCircle, AlertTriangle, Info, AlertCircle, ArrowRight } from 'lucide-react'
+import { useRouter } from 'next/navigation'
+import type { Toast } from '@/lib/notificationContext'
 
-export interface ToastNotification {
-  id: string
-  type: 'success' | 'error' | 'warning' | 'info'
-  title: string
-  message: string
-  duration?: number
-  action?: {
-    label: string
-    onClick: () => void
-  }
+export type ToastNotification = Toast & { id: string }
+
+// ─── Config per type ──────────────────────────────────────────────────────────
+
+const CONFIGS = {
+  success: {
+    icon:    CheckCircle,
+    accent:  '#22c55e',
+    iconBg:  '#f0fdf4',
+    iconFg:  '#16a34a',
+    label:   'Éxito',
+  },
+  error: {
+    icon:    AlertCircle,
+    accent:  '#ef4444',
+    iconBg:  '#fef2f2',
+    iconFg:  '#dc2626',
+    label:   'Error',
+  },
+  warning: {
+    icon:    AlertTriangle,
+    accent:  '#f59e0b',
+    iconBg:  '#fffbeb',
+    iconFg:  '#d97706',
+    label:   'Aviso',
+  },
+  info: {
+    icon:    Info,
+    accent:  '#3b82f6',
+    iconBg:  '#eff6ff',
+    iconFg:  '#2563eb',
+    label:   'Info',
+  },
 }
 
-interface NotificationToastProps {
-  notifications: ToastNotification[]
-  onRemove: (id: string) => void
-}
+// ─── Single Toast ─────────────────────────────────────────────────────────────
 
-export default function NotificationToast({ notifications, onRemove }: NotificationToastProps) {
-  const getIcon = (type: ToastNotification['type']) => {
-    switch (type) {
-      case 'success':
-        return CheckCircle
-      case 'error':
-        return AlertTriangle
-      case 'warning':
-        return AlertTriangle
-      case 'info':
-        return Info
-      default:
-        return Info
-    }
+function ToastItem({ toast, onRemove }: { toast: Toast; onRemove: (id: string) => void }) {
+  const [phase, setPhase] = useState<'enter' | 'idle' | 'exit'>('enter')
+  const router  = useRouter()
+  const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
+  const cfg     = CONFIGS[toast.type]
+  const Icon    = cfg.icon
+  const dur     = toast.duration ?? 5000
+
+  useEffect(() => {
+    // Enter animation
+    const t1 = setTimeout(() => setPhase('idle'), 20)
+    // Auto-dismiss
+    timerRef.current = setTimeout(() => dismiss(), dur)
+    return () => { clearTimeout(t1); if (timerRef.current) clearTimeout(timerRef.current) }
+  }, [])
+
+  const dismiss = () => {
+    setPhase('exit')
+    setTimeout(() => onRemove(toast.id), 320)
   }
 
-  const getStyles = (type: ToastNotification['type']) => {
-    switch (type) {
-      case 'success':
-        return 'bg-green-50 border-green-200 text-green-800'
-      case 'error':
-        return 'bg-red-50 border-red-200 text-red-800'
-      case 'warning':
-        return 'bg-yellow-50 border-yellow-200 text-yellow-800'
-      case 'info':
-        return 'bg-blue-50 border-blue-200 text-blue-800'
-      default:
-        return 'bg-gray-50 border-gray-200 text-gray-800'
-    }
+  const handleAction = () => {
+    if (toast.actionUrl) router.push(toast.actionUrl)
+    dismiss()
   }
 
-  const getIconStyles = (type: ToastNotification['type']) => {
-    switch (type) {
-      case 'success':
-        return 'text-green-600'
-      case 'error':
-        return 'text-red-600'
-      case 'warning':
-        return 'text-yellow-600'
-      case 'info':
-        return 'text-blue-600'
-      default:
-        return 'text-gray-600'
-    }
-  }
+  const translateX = phase === 'idle' ? '0' : '110%'
+  const opacity    = phase === 'idle' ? '1' : '0'
 
   return (
-    <div className="fixed top-4 right-4 z-50 space-y-2">
-      {notifications.map((notification) => {
-        const Icon = getIcon(notification.type)
-        const styles = getStyles(notification.type)
-        const iconStyles = getIconStyles(notification.type)
+    <div
+      style={{
+        width: '340px',
+        background: '#ffffff',
+        borderRadius: '12px',
+        boxShadow: '0 4px 24px rgba(0,0,0,0.12), 0 1px 4px rgba(0,0,0,0.06)',
+        overflow: 'hidden',
+        transform: `translateX(${translateX})`,
+        opacity,
+        transition: 'transform 0.32s cubic-bezier(0.34,1.56,0.64,1), opacity 0.28s ease',
+        position: 'relative',
+        borderLeft: `4px solid ${cfg.accent}`,
+      }}
+    >
+      {/* Progress bar */}
+      <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, height: '2px', background: '#f1f5f9' }}>
+        <div
+          style={{
+            height: '100%',
+            background: cfg.accent,
+            opacity: 0.5,
+            animation: `toast-shrink ${dur}ms linear forwards`,
+          }}
+        />
+      </div>
 
-        return (
-          <ToastItem
-            key={notification.id}
-            notification={notification}
-            onRemove={onRemove}
-            Icon={Icon}
-            styles={styles}
-            iconStyles={iconStyles}
-          />
-        )
-      })}
+      <div style={{ display: 'flex', alignItems: 'flex-start', gap: '12px', padding: '14px 14px 16px 14px' }}>
+        {/* Icon */}
+        <div style={{
+          width: '36px', height: '36px', borderRadius: '8px',
+          background: cfg.iconBg, display: 'flex', alignItems: 'center',
+          justifyContent: 'center', flexShrink: 0,
+        }}>
+          <Icon style={{ width: '18px', height: '18px', color: cfg.iconFg }} />
+        </div>
+
+        {/* Content */}
+        <div style={{ flex: 1, minWidth: 0 }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '2px' }}>
+            <span style={{ fontSize: '9px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.5px', color: cfg.iconFg }}>
+              {cfg.label}
+            </span>
+          </div>
+          <p style={{ fontSize: '13px', fontWeight: 600, color: '#111827', lineHeight: '1.3', margin: 0 }}>
+            {toast.title}
+          </p>
+          <p style={{ fontSize: '12px', color: '#6b7280', marginTop: '3px', lineHeight: '1.4', margin: '3px 0 0' }}>
+            {toast.message}
+          </p>
+          {toast.actionLabel && (
+            <button
+              onClick={handleAction}
+              style={{
+                marginTop: '8px', display: 'inline-flex', alignItems: 'center', gap: '4px',
+                fontSize: '12px', fontWeight: 600, color: cfg.iconFg,
+                background: 'none', border: 'none', cursor: 'pointer', padding: 0,
+              }}
+            >
+              {toast.actionLabel}
+              <ArrowRight style={{ width: '12px', height: '12px' }} />
+            </button>
+          )}
+        </div>
+
+        {/* Close */}
+        <button
+          onClick={dismiss}
+          style={{
+            flexShrink: 0, width: '24px', height: '24px', borderRadius: '6px',
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+            background: 'none', border: 'none', cursor: 'pointer', color: '#9ca3af',
+            transition: 'background 0.15s, color 0.15s',
+          }}
+          onMouseEnter={e => { (e.currentTarget as HTMLElement).style.background = '#f3f4f6'; (e.currentTarget as HTMLElement).style.color = '#374151' }}
+          onMouseLeave={e => { (e.currentTarget as HTMLElement).style.background = 'none'; (e.currentTarget as HTMLElement).style.color = '#9ca3af' }}
+        >
+          <X style={{ width: '14px', height: '14px' }} />
+        </button>
+      </div>
+
+      <style>{`
+        @keyframes toast-shrink {
+          from { width: 100%; }
+          to   { width: 0%; }
+        }
+      `}</style>
     </div>
   )
 }
 
-interface ToastItemProps {
-  notification: ToastNotification
+// ─── Container ────────────────────────────────────────────────────────────────
+
+interface NotificationToastProps {
+  toasts:   Toast[]
   onRemove: (id: string) => void
-  Icon: React.ComponentType<{ className?: string }>
-  styles: string
-  iconStyles: string
 }
 
-function ToastItem({ notification, onRemove, Icon, styles, iconStyles }: ToastItemProps) {
-  const [isVisible, setIsVisible] = useState(false)
-  const [isRemoving, setIsRemoving] = useState(false)
-
-  useEffect(() => {
-    // Animate in
-    const timer = setTimeout(() => setIsVisible(true), 100)
-    
-    // Auto remove after duration
-    const duration = notification.duration || 5000
-    const removeTimer = setTimeout(() => {
-      handleRemove()
-    }, duration)
-
-    return () => {
-      clearTimeout(timer)
-      clearTimeout(removeTimer)
-    }
-  }, [notification.duration])
-
-  const handleRemove = () => {
-    setIsRemoving(true)
-    setTimeout(() => {
-      onRemove(notification.id)
-    }, 300)
-  }
-
+export default function NotificationToast({ toasts, onRemove }: NotificationToastProps) {
+  if (!toasts.length) return null
   return (
     <div
-      className={`
-        max-w-sm w-full border rounded-lg shadow-lg p-4 transition-all duration-300 transform
-        ${styles}
-        ${isVisible && !isRemoving ? 'translate-x-0 opacity-100' : 'translate-x-full opacity-0'}
-        ${isRemoving ? 'scale-95' : 'scale-100'}
-      `}
+      style={{
+        position: 'fixed',
+        bottom: '24px',
+        right: '24px',
+        zIndex: 99999,
+        display: 'flex',
+        flexDirection: 'column-reverse',
+        gap: '10px',
+        pointerEvents: 'none',
+      }}
     >
-      <div className="flex items-start space-x-3">
-        <Icon className={`w-5 h-5 mt-0.5 shrink-0 ${iconStyles}`} />
-        
-        <div className="flex-1 min-w-0">
-          <h4 className="text-sm font-medium mb-1">
-            {notification.title}
-          </h4>
-          <p className="text-sm opacity-90">
-            {notification.message}
-          </p>
-          
-          {notification.action && (
-            <button
-              onClick={notification.action.onClick}
-              className="mt-2 text-sm font-medium underline hover:no-underline"
-            >
-              {notification.action.label}
-            </button>
-          )}
+      {toasts.map(t => (
+        <div key={t.id} style={{ pointerEvents: 'auto' }}>
+          <ToastItem toast={t} onRemove={onRemove} />
         </div>
-        
-        <button
-          onClick={handleRemove}
-          className="shrink-0 p-1 hover:bg-black hover:bg-opacity-10 rounded-full transition-colors"
-        >
-          <X className="w-4 h-4" />
-        </button>
-      </div>
+      ))}
     </div>
   )
 }

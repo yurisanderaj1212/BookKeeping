@@ -69,6 +69,29 @@ export async function deleteAllRead(): Promise<void> {
   await supabase.from('notifications').delete().eq('is_read', true)
 }
 
+export async function createNotification(params: {
+  type:     Notification['type']
+  priority: Notification['priority']
+  title:    string
+  message:  string
+  actionUrl?:   string
+  actionLabel?: string
+}): Promise<void> {
+  const supabase = getSupabase()
+  const { data: { user } } = await supabase.auth.getUser()
+  if (!user) return
+  await supabase.from('notifications').insert({
+    user_id:      user.id,
+    type:         params.type,
+    priority:     params.priority,
+    title:        params.title,
+    message:      params.message,
+    action_url:   params.actionUrl ?? null,
+    action_label: params.actionLabel ?? null,
+    is_read:      false,
+  })
+}
+
 export function formatTimestamp(iso: string, locale: string): string {
   try { return new Date(iso).toLocaleString(locale === 'es' ? 'es' : 'en') } catch { return iso }
 }
@@ -82,10 +105,7 @@ export function getNotificationColor(priority: Notification['priority']): string
   }
 }
 
-export function translateNotification(n: Notification, t: (key: string, params?: Record<string, string>) => string): { title: string; message: string } {
-  try {
-    const title = t(`${n.type}.title`, n.metadata as Record<string, string> ?? {})
-    const message = t(`${n.type}.message`, n.metadata as Record<string, string> ?? {})
-    return { title: title || n.title, message: message || n.message }
-  } catch { return { title: n.title, message: n.message } }
+export function translateNotification(n: Notification, _t?: (key: string, params?: Record<string, string>) => string): { title: string; message: string } {
+  // Titles and messages come directly from the DB — no translation needed
+  return { title: n.title, message: n.message }
 }

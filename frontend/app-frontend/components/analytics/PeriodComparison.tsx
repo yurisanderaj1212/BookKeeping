@@ -3,161 +3,137 @@
 import { useState, useEffect } from 'react'
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts'
 import { Calendar, ArrowUpRight, ArrowDownRight } from 'lucide-react'
-import { formatCurrency } from '../../data/transactions-data'
+import { useTranslations, useLocale } from 'next-intl'
+import { getSupabase } from '@/lib/supabaseClient'
 
 interface PeriodComparisonProps {
   period: string
-  year: string
-  month: string
+  year:   string
+  month:  string
 }
 
-// Mock comparison data
-const mockComparisonData = [
-  {
-    period: 'Período Actual',
-    ingresos: 22300,
-    gastos: 10200,
-    beneficio: 12100
-  },
-  {
-    period: 'Período Anterior',
-    ingresos: 19800,
-    gastos: 9500,
-    beneficio: 10300
-  }
-]
+interface PeriodData {
+  ingresos:      number
+  gastos:        number
+  beneficio:     number
+  transacciones: number
+}
 
-const mockDetailedComparison = {
-  ingresos: {
-    actual: 22300,
-    anterior: 19800,
-    cambio: 12.6,
-    tendencia: 'up' as const
-  },
-  gastos: {
-    actual: 10200,
-    anterior: 9500,
-    cambio: 7.4,
-    tendencia: 'up' as const
-  },
-  beneficio: {
-    actual: 12100,
-    anterior: 10300,
-    cambio: 17.5,
-    tendencia: 'up' as const
-  },
-  transacciones: {
-    actual: 45,
-    anterior: 38,
-    cambio: 18.4,
-    tendencia: 'up' as const
+async function fetchPeriodData(start: string, end: string): Promise<PeriodData> {
+  const supabase = getSupabase()
+  const { data } = await supabase
+    .from('transactions')
+    .select('type, amount, status')
+    .gte('date', start).lte('date', end)
+    .or('is_from_plaid.eq.false,is_business_transaction.eq.true')
+  const rows = data ?? []
+  return {
+    ingresos:      rows.filter(r => r.type === 1).reduce((s, r) => s + r.amount, 0),
+    gastos:        rows.filter(r => r.type === 2).reduce((s, r) => s + r.amount, 0),
+    beneficio:     rows.filter(r => r.type === 1).reduce((s, r) => s + r.amount, 0) - rows.filter(r => r.type === 2).reduce((s, r) => s + r.amount, 0),
+    transacciones: rows.length,
   }
 }
 
-export default function PeriodComparison({ period }: PeriodComparisonProps) {
-  const [dimensions, setDimensions] = useState({ width: 0, height: 320 })
-  
+function shiftPeriod(period: string, year: string, month: string): { start: string; end: string } {
+  const y = parseInt(year), m = parseInt(month)
+  if (period === 'month') {
+    const prev = m === 1 ? { y: y - 1, m: 12 } : { y, m: m - 1 }
+    return { start: `${prev.y}-${String(prev.m).padStart(2,'0')}-01`, end: new Date(prev.y, prev.m, 0).toISOString().split('T')[0] }
+  }
+  if (period === 'year') {
+    return { start: `${y-1}-01-01`, end: `${y-1}-12-31` }
+  }
+  // week — previous week
+  const now = new Date()
+  const day = now.getDay()
+  const thisStart = new Date(now); thisStart.setDate(now.getDate() - day - 7)
+  const thisEnd   = new Date(thisStart); thisEnd.setDate(thisStart.getDate() + 6)
+  return { start: thisStart.toISOString().split('T')[0], end: thisEnd.toISOString().split('T')[0] }
+}
+
+function getCurrentPeriod(period: string, year: string, month: string): { start: string; end: string } {
+  const y = parseInt(year), m = parseInt(month)
+  if (period === 'month') {
+    return { start: `${y}-${String(m).padStart(2,'0')}-01`, end: new Date(y, m, 0).toISOString().split('T')[0] }
+  }
+  if (period === 'year') return { start: `${y}-01-01`, end: `${y}-12-31` }
+  const now = new Date(); const day = now.getDay()
+  const start = new Date(now); start.setDate(now.getDate() - day)
+  const end   = new Date(start); end.setDate(start.getDate() + 6)
+  return { start: start.toISOString().split('T')[0], end: end.toISOString().split('T')[0] }
+}
+
+export default function PeriodComparison({ period, year, month }: PeriodComparisonProps) {
+  const t      = useTranslations('analytics.components')
+  const locale = useLocale()
+  const [current,  setCurrent]  = useState<PeriodData | null>(null)
+  const [previous, setPrevious] = useState<PeriodData | null>(null)
+  const [loading,  setLoading]  = useState(true)
+
+  const formatCurrency = (amount: number) =>
+    new Intl.NumberFormat(locale === 'en' ? 'en-US' : 'es-ES', { style: 'currency', currency: 'USD' }).format(amount)
+
   useEffect(() => {
-    const updateDimensions = () => {
-      const container = document.getElementById('period-comparison-chart-container')
-      if (container) {
-        setDimensions({
-          width: container.offsetWidth,
-          height: 320
-        })
-      }
+    let cancelled = false
+    async function load() {
+      setLoading(true)
+      try {
+        const curr = getCurrentPeriod(period, year, month)
+        const prev = shiftPeriod(period, year, month)
+        const [c, p] = await Promise.all([fetchPeriodData(curr.start, curr.end), fetchPeriodData(prev.start, prev.end)])
+        if (!cancelled) { setCurrent(c); setPrevious(p) }
+      } catch { /* silencioso */ }
+      finally { if (!cancelled) setLoading(false) }
     }
-
-    // Actualizar dimensiones inmediatamente y después de un pequeño delay
-    updateDimensions()
-    const timer = setTimeout(updateDimensions, 100)
-
-    // Actualizar en resize
-    window.addEventListener('resize', updateDimensions)
-
-    return () => {
-      clearTimeout(timer)
-      window.removeEventListener('resize', updateDimensions)
-    }
-  }, [])
+    load()
+    return () => { cancelled = true }
+  }, [period, year, month])
 
   const getPeriodLabel = () => {
-    switch (period) {
-      case 'month':
-        return 'mes'
-      case 'quarter':
-        return 'trimestre'
-      case 'year':
-        return 'año'
-      default:
-        return 'período'
-    }
+    if (period === 'month')   return t('periodMonth')
+    if (period === 'year')    return t('periodYear')
+    return t('periodDefault')
   }
 
-  const CustomTooltip = ({ active, payload, label }: any) => {
-    if (active && payload && payload.length) {
-      return (
-        <div className="bg-white p-3 border border-gray-200 rounded-lg shadow-lg">
-          <p className="font-medium text-gray-900 mb-2">{label}</p>
-          {payload.map((entry: any, index: number) => (
-            <p key={index} className="text-sm" style={{ color: entry.color }}>
-              {entry.dataKey === 'ingresos' ? 'Ingresos' : 
-               entry.dataKey === 'gastos' ? 'Gastos' : 'Beneficio'}: {formatCurrency(entry.value)}
-            </p>
-          ))}
-        </div>
-      )
-    }
-    return null
-  }
+  const calcChange = (curr: number, prev: number) =>
+    prev === 0 ? (curr > 0 ? 100 : 0) : ((curr - prev) / prev) * 100
 
-  const ComparisonCard = ({ 
-    title, 
-    actual, 
-    anterior, 
-    cambio, 
-    tendencia, 
-    isPercentage = false 
-  }: {
-    title: string
-    actual: number
-    anterior: number
-    cambio: number
-    tendencia: 'up' | 'down'
-    isPercentage?: boolean
-  }) => {
-    const isPositive = tendencia === 'up'
+  const chartData = current && previous ? [
+    { period: t('currentLabel'),  ingresos: current.ingresos,  gastos: current.gastos,  beneficio: current.beneficio },
+    { period: t('previousLabel'), ingresos: previous.ingresos, gastos: previous.gastos, beneficio: previous.beneficio },
+  ] : []
+
+  const metrics = current && previous ? [
+    { title: t('income'),           actual: current.ingresos,      anterior: previous.ingresos,      cambio: calcChange(current.ingresos, previous.ingresos) },
+    { title: t('expenses'),         actual: current.gastos,        anterior: previous.gastos,        cambio: calcChange(current.gastos, previous.gastos) },
+    { title: t('profit'),           actual: current.beneficio,     anterior: previous.beneficio,     cambio: calcChange(current.beneficio, previous.beneficio) },
+    { title: t('transactionsLabel'),actual: current.transacciones, anterior: previous.transacciones, cambio: calcChange(current.transacciones, previous.transacciones), isCount: true },
+  ] : []
+
+  const ComparisonCard = ({ title, actual, anterior, cambio, isCount = false }: any) => {
+    const isPositive = cambio >= 0
     const Icon = isPositive ? ArrowUpRight : ArrowDownRight
     const colorClass = isPositive ? 'text-green-600' : 'text-red-600'
-    const bgClass = isPositive ? 'bg-green-100' : 'bg-red-100'
-
+    const bgClass    = isPositive ? 'bg-green-100'   : 'bg-red-100'
     return (
       <div className="bg-white rounded-lg border border-gray-200 p-6">
         <div className="flex items-center justify-between mb-4">
           <h4 className="text-sm font-medium text-gray-600">{title}</h4>
-          <div className={`${bgClass} p-1 rounded-full`}>
-            <Icon className={`w-4 h-4 ${colorClass}`} />
-          </div>
+          <div className={`${bgClass} p-1 rounded-full`}><Icon className={`w-4 h-4 ${colorClass}`} /></div>
         </div>
-        
         <div className="space-y-2">
           <div className="flex items-center justify-between">
-            <span className="text-xs text-gray-500">Actual</span>
-            <span className="text-lg font-bold text-gray-900">
-              {isPercentage ? actual.toString() : formatCurrency(actual)}
-            </span>
+            <span className="text-xs text-gray-500">{t('currentLabel')}</span>
+            <span className="text-lg font-bold text-gray-900">{isCount ? actual : formatCurrency(actual)}</span>
           </div>
           <div className="flex items-center justify-between">
-            <span className="text-xs text-gray-500">Anterior</span>
-            <span className="text-sm text-gray-600">
-              {isPercentage ? anterior.toString() : formatCurrency(anterior)}
-            </span>
+            <span className="text-xs text-gray-500">{t('previousLabel')}</span>
+            <span className="text-sm text-gray-600">{isCount ? anterior : formatCurrency(anterior)}</span>
           </div>
           <div className="flex items-center justify-between pt-2 border-t border-gray-100">
-            <span className="text-xs text-gray-500">Cambio</span>
-            <span className={`text-sm font-medium ${colorClass}`}>
-              {isPositive ? '+' : ''}{cambio.toFixed(1)}%
-            </span>
+            <span className="text-xs text-gray-500">{t('changeLabel')}</span>
+            <span className={`text-sm font-medium ${colorClass}`}>{isPositive ? '+' : ''}{cambio.toFixed(1)}%</span>
           </div>
         </div>
       </div>
@@ -168,79 +144,43 @@ export default function PeriodComparison({ period }: PeriodComparisonProps) {
     <div className="bg-white rounded-lg border border-gray-200 p-6 mb-8">
       <div className="flex items-center justify-between mb-6">
         <div>
-          <h3 className="text-lg font-semibold text-gray-900">Comparación de Períodos</h3>
-          <p className="text-sm text-gray-500 mt-1">
-            Comparación con el {getPeriodLabel()} anterior
-          </p>
+          <h3 className="text-lg font-semibold text-gray-900">{t('periodComparison')}</h3>
+          <p className="text-sm text-gray-500 mt-1">{t('comparisonWithPrev', { period: getPeriodLabel() })}</p>
         </div>
-        <div className="flex items-center space-x-2 text-sm text-gray-500">
+        <div className="flex items-center gap-2 text-sm text-gray-500">
           <Calendar className="w-4 h-4" />
-          <span>Actualizado hace 2 horas</span>
         </div>
       </div>
 
-      {/* Comparison Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-        <ComparisonCard
-          title="Ingresos"
-          actual={mockDetailedComparison.ingresos.actual}
-          anterior={mockDetailedComparison.ingresos.anterior}
-          cambio={mockDetailedComparison.ingresos.cambio}
-          tendencia={mockDetailedComparison.ingresos.tendencia}
-        />
-        <ComparisonCard
-          title="Gastos"
-          actual={mockDetailedComparison.gastos.actual}
-          anterior={mockDetailedComparison.gastos.anterior}
-          cambio={mockDetailedComparison.gastos.cambio}
-          tendencia={mockDetailedComparison.gastos.tendencia}
-        />
-        <ComparisonCard
-          title="Beneficio"
-          actual={mockDetailedComparison.beneficio.actual}
-          anterior={mockDetailedComparison.beneficio.anterior}
-          cambio={mockDetailedComparison.beneficio.cambio}
-          tendencia={mockDetailedComparison.beneficio.tendencia}
-        />
-        <ComparisonCard
-          title="Transacciones"
-          actual={mockDetailedComparison.transacciones.actual}
-          anterior={mockDetailedComparison.transacciones.anterior}
-          cambio={mockDetailedComparison.transacciones.cambio}
-          tendencia={mockDetailedComparison.transacciones.tendencia}
-          isPercentage={true}
-        />
-      </div>
+      {loading ? (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+          {[1,2,3,4].map(i => <div key={i} className="h-32 bg-gray-100 rounded-lg animate-pulse" />)}
+        </div>
+      ) : (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+          {metrics.map((m, i) => <ComparisonCard key={i} {...m} />)}
+        </div>
+      )}
 
-      {/* Comparison Chart */}
-      <div id="period-comparison-chart-container" className="w-full" style={{ height: 320 }}>
-        <h4 className="text-md font-medium text-gray-900 mb-4">Comparación Visual</h4>
-        {dimensions.width > 0 ? (
-          <ResponsiveContainer width={dimensions.width} height={dimensions.height}>
-            <BarChart data={mockComparisonData} margin={{ top: 20, right: 30, left: 20, bottom: 5 }}>
+      <div className="w-full">
+        <h4 className="text-md font-medium text-gray-900 mb-4">{t('visualComparison')}</h4>
+        {loading ? (
+          <div className="h-64 bg-gray-50 rounded-lg flex items-center justify-center">
+            <div className="text-gray-400">{t('loading')}</div>
+          </div>
+        ) : (
+          <ResponsiveContainer width="100%" height={280}>
+            <BarChart data={chartData} margin={{ top: 10, right: 20, left: 10, bottom: 5 }}>
               <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
-              <XAxis 
-                dataKey="period" 
-                axisLine={false}
-                tickLine={false}
-                tick={{ fontSize: 12, fill: '#6b7280' }}
-              />
-              <YAxis 
-                axisLine={false}
-                tickLine={false}
-                tick={{ fontSize: 12, fill: '#6b7280' }}
-                tickFormatter={(value) => `€${(value / 1000).toFixed(0)}k`}
-              />
-              <Tooltip content={<CustomTooltip />} />
-              <Bar dataKey="ingresos" fill="#10b981" radius={[4, 4, 0, 0]} />
-              <Bar dataKey="gastos" fill="#ef4444" radius={[4, 4, 0, 0]} />
-              <Bar dataKey="beneficio" fill="#3b82f6" radius={[4, 4, 0, 0]} />
+              <XAxis dataKey="period" axisLine={false} tickLine={false} tick={{ fontSize: 12, fill: '#6b7280' }} />
+              <YAxis axisLine={false} tickLine={false} tick={{ fontSize: 12, fill: '#6b7280' }}
+                tickFormatter={v => `$${(v/1000).toFixed(0)}k`} />
+              <Tooltip formatter={(v: any) => formatCurrency(v)} />
+              <Bar dataKey="ingresos"  fill="#10b981" radius={[4,4,0,0]} name={t('income')} />
+              <Bar dataKey="gastos"    fill="#ef4444" radius={[4,4,0,0]} name={t('expenses')} />
+              <Bar dataKey="beneficio" fill="#3b82f6" radius={[4,4,0,0]} name={t('profit')} />
             </BarChart>
           </ResponsiveContainer>
-        ) : (
-          <div className="w-full h-full flex items-center justify-center bg-gray-50 rounded-lg">
-            <div className="text-gray-400">Cargando gráfico...</div>
-          </div>
         )}
       </div>
     </div>

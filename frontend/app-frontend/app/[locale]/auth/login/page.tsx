@@ -4,16 +4,15 @@ import { useState, useEffect, Suspense } from 'react'
 import Link from 'next/link'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { useTranslations } from 'next-intl'
-import Toast, { ToastContainer } from '@/components/ui/Toast'
-import { useToast } from '@/hooks/useToast'
 import { useAuth } from '@/hooks/useAuth'
+import { useNotifications } from '@/hooks/useNotifications'
 import AppLogo from '@/components/ui/AppLogo'
 
 // Componente interno que usa useSearchParams — debe estar dentro de <Suspense>
 function LoginForm() {
   const router = useRouter()
   const searchParams = useSearchParams()
-  const { toasts, error: showError, dismiss } = useToast()
+  const { showError } = useNotifications()
   const { isAuthenticated, isLoading: authLoading } = useAuth()
   const t = useTranslations('auth.login')
   const tc = useTranslations('common')
@@ -435,9 +434,6 @@ function LoginForm() {
           </div>
         </div>
       </div>
-      
-      {/* Toast Notifications */}
-      <ToastContainer toasts={toasts} onDismiss={dismiss} />
     </div>
   )
 }

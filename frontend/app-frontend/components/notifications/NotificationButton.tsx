@@ -1,33 +1,23 @@
 'use client'
 
-import { useState, useEffect, useCallback } from 'react'
+import { useState } from 'react'
 import { Bell } from 'lucide-react'
-import { getNotifications, type Notification } from '@/services/notificationService'
+import { useNotificationContext } from '@/lib/notificationContext'
 import NotificationCenter from './NotificationCenter'
 
 export default function NotificationButton() {
-  const [isOpen, setIsOpen]           = useState(false)
-  const [notifications, setNotifications] = useState<Notification[]>([])
+  const [isOpen, setIsOpen] = useState(false)
+  const { unreadCount, refreshUnread } = useNotificationContext()
 
-  const load = useCallback(async () => {
-    try {
-      const data = await getNotifications()
-      setNotifications(data)
-    } catch { /* silencioso */ }
-  }, [])
-
-  useEffect(() => {
-    load()
-    const interval = setInterval(load, 60_000)
-    return () => clearInterval(interval)
-  }, [load])
-
-  const unreadCount = notifications.filter(n => !n.isRead).length
+  const handleOpen = () => {
+    setIsOpen(o => !o)
+    if (!isOpen) refreshUnread()
+  }
 
   return (
     <>
       <button
-        onClick={() => { setIsOpen(o => !o); if (!isOpen) load() }}
+        onClick={handleOpen}
         className="relative p-2 text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-full transition-colors duration-200"
         title="Notificaciones"
         data-tour="notification-btn"
@@ -43,8 +33,7 @@ export default function NotificationButton() {
       <NotificationCenter
         isOpen={isOpen}
         onClose={() => setIsOpen(false)}
-        notifications={notifications}
-        onRefresh={load}
+        onRefresh={refreshUnread}
       />
     </>
   )

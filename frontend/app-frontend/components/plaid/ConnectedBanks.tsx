@@ -1,13 +1,16 @@
 'use client'
 
 import { useState, useEffect, useCallback } from 'react'
-import { Building2, RefreshCw, Trash2, AlertCircle, CheckCircle } from 'lucide-react'
+import { Building2, RefreshCw, Trash2, AlertCircle } from 'lucide-react'
 import { getPlaidItems, syncItem, removeItem, type PlaidItemInfo } from '@/lib/plaidService'
 import PlaidLinkButton from './PlaidLinkButton'
 import { useTranslations } from 'next-intl'
+import { useNotifications } from '@/hooks/useNotifications'
 
 export default function ConnectedBanks({ refreshKey }: { refreshKey?: number }) {
   const t = useTranslations('accounts.connectedBanks')
+  const tCommon = useTranslations('common')
+  const { showSuccess, showError } = useNotifications()
 
   if (!process.env.NEXT_PUBLIC_PLAID_CLIENT_ID) return null
   const [items, setItems]     = useState<PlaidItemInfo[]>([])
@@ -15,12 +18,6 @@ export default function ConnectedBanks({ refreshKey }: { refreshKey?: number }) 
   const [error, setError]     = useState<string | null>(null)
   const [syncing, setSyncing] = useState<number | null>(null)
   const [removing, setRemoving] = useState<number | null>(null)
-  const [toast, setToast]     = useState<{ msg: string; ok: boolean } | null>(null)
-
-  const showToast = (msg: string, ok = true) => {
-    setToast({ msg, ok })
-    setTimeout(() => setToast(null), 4000)
-  }
 
   const load = useCallback(async () => {
     setLoading(true)
@@ -39,9 +36,9 @@ export default function ConnectedBanks({ refreshKey }: { refreshKey?: number }) 
     setSyncing(id)
     try {
       const r = await syncItem(id)
-      showToast(t('toastSynced', { added: r.added, modified: r.modified }))
+      showSuccess(tCommon('success'), t('toastSynced', { added: r.added, modified: r.modified }))
     } catch (e: unknown) {
-      showToast(e instanceof Error ? e.message : t('toastSyncError'), false)
+      showError(tCommon('error'), e instanceof Error ? e.message : t('toastSyncError'))
     } finally {
       setSyncing(null)
     }
@@ -53,9 +50,9 @@ export default function ConnectedBanks({ refreshKey }: { refreshKey?: number }) 
     try {
       await removeItem(id)
       setItems(prev => prev.filter(i => i.id !== id))
-      showToast(t('toastDisconnected'))
+      showSuccess(tCommon('success'), t('toastDisconnected'))
     } catch (e: unknown) {
-      showToast(e instanceof Error ? e.message : t('toastRemoveError'), false)
+      showError(tCommon('error'), e instanceof Error ? e.message : t('toastRemoveError'))
     } finally {
       setRemoving(null)
     }
@@ -69,22 +66,10 @@ export default function ConnectedBanks({ refreshKey }: { refreshKey?: number }) 
           <p className="text-xs text-gray-500 mt-0.5">{t('subtitle')}</p>
         </div>
         <PlaidLinkButton
-          onSuccess={() => { load(); showToast(t('toastConnected')) }}
-          onError={msg => showToast(msg, false)}
+          onSuccess={() => { load(); showSuccess(tCommon('success'), t('toastConnected')) }}
+          onError={msg => showError(tCommon('error'), msg)}
         />
       </div>
-
-      {/* Toast */}
-      {toast && (
-        <div className={`mb-4 flex items-center gap-2 text-sm px-4 py-3 rounded-lg ${
-          toast.ok ? 'bg-green-50 text-green-700 border border-green-200' : 'bg-red-50 text-red-700 border border-red-200'
-        }`}>
-          {toast.ok
-            ? <CheckCircle className="w-4 h-4 shrink-0" />
-            : <AlertCircle className="w-4 h-4 shrink-0" />}
-          {toast.msg}
-        </div>
-      )}
 
       {error && (
         <div className="mb-4 flex items-center gap-2 text-sm text-red-600 bg-red-50 border border-red-200 px-4 py-3 rounded-lg">

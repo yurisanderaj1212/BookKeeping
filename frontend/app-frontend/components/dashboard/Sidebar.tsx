@@ -43,6 +43,7 @@ const settingsItems: MenuItem[] = [
 ]
 
 import { useTranslations } from 'next-intl'
+import { useNotificationContext } from '@/lib/notificationContext'
 
 interface SidebarProps {
   onLogout: () => void
@@ -53,6 +54,7 @@ export default function Sidebar({ onLogout, onToggle }: SidebarProps) {
   const pathname = usePathname()
   const t = useTranslations()
   const [isCollapsed, setIsCollapsed] = useState(false)
+  const { unreadCount } = useNotificationContext()
 
   const toggleSidebar = () => {
     const newCollapsedState = !isCollapsed
@@ -151,6 +153,7 @@ export default function Sidebar({ onLogout, onToggle }: SidebarProps) {
             {settingsItems.map((item) => {
               const isActive = pathname === item.href
               const Icon = item.icon
+              const badge = item.id === 'notifications' ? unreadCount : (item.badge ?? 0)
               return (
                 <li key={item.id}>
                   <Link
@@ -163,13 +166,20 @@ export default function Sidebar({ onLogout, onToggle }: SidebarProps) {
                     title={isCollapsed ? t(item.label) : undefined}
                     data-tour={item.id === 'settings' ? 'settings-link' : undefined}
                   >
-                    <Icon className={`w-5 h-5 shrink-0 ${isActive ? 'text-primary-600' : 'text-gray-400 group-hover:text-gray-600'}`} />
+                    <div className="relative">
+                      <Icon className={`w-5 h-5 shrink-0 ${isActive ? 'text-primary-600' : 'text-gray-400 group-hover:text-gray-600'}`} />
+                      {badge > 0 && (
+                        <span className="absolute -top-1.5 -right-1.5 bg-red-500 text-white text-[9px] font-bold rounded-full min-w-[14px] h-[14px] flex items-center justify-center px-0.5">
+                          {badge > 99 ? '99+' : badge}
+                        </span>
+                      )}
+                    </div>
                     {!isCollapsed && (
                       <>
                         <span className="font-medium text-sm">{t(item.label)}</span>
-                        {item.badge && (
+                        {badge > 0 && (
                           <span className="ml-auto bg-red-500 text-white text-xs rounded-full px-2 py-0.5 min-w-[18px] text-center">
-                            {item.badge}
+                            {badge > 99 ? '99+' : badge}
                           </span>
                         )}
                       </>

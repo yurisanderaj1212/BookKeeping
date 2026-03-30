@@ -10,6 +10,7 @@ import OnboardingTour from '@/components/onboarding/OnboardingTour'
 import { useOnboarding } from '@/hooks/useOnboarding'
 import { useAuth } from '@/hooks/useAuth'
 import { useTranslations } from 'next-intl'
+import { useNotifications } from '@/hooks/useNotifications'
 import { translateCategoryName } from '@/lib/categoryTranslator'
 import { Transaction } from '@/data/transactions-data'
 import * as transactionService from '@/services/transactionService'
@@ -24,6 +25,7 @@ export default function TransactionsPage() {
   const t = useTranslations('transactions')
   const tCommon = useTranslations('common')
   const tCategories = useTranslations('categories')
+  const { showError, showSuccess } = useNotifications()
   const [searchTerm, setSearchTerm] = useState('')
   const [selectedCategory, setSelectedCategory] = useState('all')
   const [selectedType, setSelectedType] = useState('all')
@@ -229,7 +231,7 @@ export default function TransactionsPage() {
       await loadTransactions()
       setShowForm(false)
     } catch (err: any) {
-      setError(err.message || 'Error al guardar la transacción')
+      showError(tCommon('error'), err.message || 'Error al guardar la transacción')
     }
   }
 
@@ -238,7 +240,7 @@ export default function TransactionsPage() {
       await transactionService.deleteTransaction(parseInt(transactionId))
       await loadTransactions()
     } catch (err: any) {
-      setError(err.message || 'Error al eliminar la transacción')
+      showError(tCommon('error'), err.message || 'Error al eliminar la transacción')
     }
   }
 

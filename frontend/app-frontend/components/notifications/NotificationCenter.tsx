@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useRef, useCallback } from 'react'
+import { useState, useRef, useCallback, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { useLocale } from 'next-intl'
 import {
@@ -9,15 +9,14 @@ import {
 } from 'lucide-react'
 import {
   markAsRead, markAllAsRead, deleteNotification,
-  getNotificationColor, formatTimestamp,
+  getNotificationColor, formatTimestamp, getNotifications,
   type Notification,
 } from '@/services/notificationService'
 
 interface Props {
-  isOpen:        boolean
-  onClose:       () => void
-  notifications: Notification[]
-  onRefresh:     () => void
+  isOpen:    boolean
+  onClose:   () => void
+  onRefresh: () => void
 }
 
 function getIcon(type: Notification['type']) {
@@ -32,12 +31,19 @@ function getIcon(type: Notification['type']) {
   }
 }
 
-export default function NotificationCenter({ isOpen, onClose, notifications, onRefresh }: Props) {
+export default function NotificationCenter({ isOpen, onClose, onRefresh }: Props) {
   const router  = useRouter()
   const locale  = useLocale()
   const ref     = useRef<HTMLDivElement>(null)
   const [filter, setFilter]     = useState<'all' | 'unread' | 'read'>('all')
   const [typeFilter, setTypeFilter] = useState('all')
+  const [notifications, setNotifications] = useState<Notification[]>([])
+
+  useEffect(() => {
+    if (isOpen) {
+      getNotifications().then(setNotifications).catch(() => {})
+    }
+  }, [isOpen])
 
   const unread = notifications.filter(n => !n.isRead).length
   const total  = notifications.length

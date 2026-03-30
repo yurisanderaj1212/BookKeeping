@@ -6,16 +6,15 @@ import Sidebar from '@/components/dashboard/Sidebar'
 import EmployeeList from '@/components/employees/EmployeeList'
 import EmployeeForm from '@/components/employees/EmployeeForm'
 import OnboardingTour from '@/components/onboarding/OnboardingTour'
-import Toast, { ToastContainer } from '@/components/ui/Toast'
 import { useOnboarding } from '@/hooks/useOnboarding'
 import { useAuth } from '@/hooks/useAuth'
 import { useTranslations, useLocale } from 'next-intl'
-import { useToast } from '@/hooks/useToast'
+import { useNotifications } from '@/hooks/useNotifications'
 import employeeService, { Employee, EmployeeStatus, PaginationMetadata } from '@/services/employeeService'
 
 export default function EmployeesPage() {
   const { isLoading, isAuthenticated, logout } = useAuth()
-  const { toasts, dismiss, success, error: toastError } = useToast()
+  const { showSuccess, showError } = useNotifications()
   const t = useTranslations('employees')
   const tCommon = useTranslations('common')
   const locale = useLocale()
@@ -93,11 +92,11 @@ export default function EmployeesPage() {
       await loadEmployees(1)
       setCurrentPage(1)
       await loadTotalPayroll()
-      success('Empleado creado exitosamente')
+      showSuccess(tCommon('success'), t('form.create') + ' ✓')
     } catch (err: any) {
-      toastError(err.message || 'Error al crear el empleado')
+      showError(tCommon('error'), err.message || 'Error al crear el empleado')
     }
-  }, [loadEmployees, loadTotalPayroll, success, toastError])
+  }, [loadEmployees, loadTotalPayroll, showSuccess, showError, t, tCommon])
 
   const handleEditEmployee = useCallback((employee: Employee) => {
     setEditingEmployee(employee)
@@ -112,11 +111,11 @@ export default function EmployeesPage() {
       setIsFormOpen(false)
       await loadEmployees()
       await loadTotalPayroll()
-      success('Empleado actualizado exitosamente')
+      showSuccess(tCommon('success'), t('form.saveChanges') + ' ✓')
     } catch (err: any) {
-      toastError(err.message || 'Error al actualizar el empleado')
+      showError(tCommon('error'), err.message || 'Error al actualizar el empleado')
     }
-  }, [editingEmployee, loadEmployees, loadTotalPayroll, success, toastError])
+  }, [editingEmployee, loadEmployees, loadTotalPayroll, showSuccess, showError, t, tCommon])
 
   const handleDeleteEmployee = useCallback(async (employeeId: number) => {
     try {
@@ -125,11 +124,11 @@ export default function EmployeesPage() {
       employeeService.getTotalPayroll()
         .then(total => setTotalPayroll(total))
         .catch(() => {})
-      success('Empleado desactivado exitosamente')
+      showSuccess(tCommon('success'), t('deleteEmployee') + ' ✓')
     } catch (err: any) {
-      toastError(err.message || 'Error al desactivar el empleado')
+      showError(tCommon('error'), err.message || 'Error al desactivar el empleado')
     }
-  }, [loadEmployees, success, toastError])
+  }, [loadEmployees, showSuccess, showError, t, tCommon])
 
   const handleCloseForm = useCallback(() => {
     setIsFormOpen(false)
@@ -331,8 +330,6 @@ export default function EmployeesPage() {
         currentStep={onboardingStep}
         setStep={setOnboardingStep}
       />
-
-      <ToastContainer toasts={toasts} onDismiss={dismiss} />
     </div>
   )
 }

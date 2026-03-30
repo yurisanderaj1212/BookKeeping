@@ -2,6 +2,8 @@ import { NextIntlClientProvider, hasLocale } from 'next-intl'
 import { setRequestLocale, getMessages } from 'next-intl/server'
 import { notFound } from 'next/navigation'
 import { routing } from '@/i18n/routing'
+import { NotificationProvider } from '@/lib/notificationContext'
+import GlobalToastContainer from '@/components/notifications/GlobalToastContainer'
 
 // Genera los parámetros estáticos para los locales soportados
 export function generateStaticParams() {
@@ -30,7 +32,10 @@ export default async function LocaleLayout({
 
   return (
     <NextIntlClientProvider locale={locale} messages={messages}>
-      {children}
+      <NotificationProvider>
+        {children}
+        <GlobalToastContainer />
+      </NotificationProvider>
     </NextIntlClientProvider>
   )
 }

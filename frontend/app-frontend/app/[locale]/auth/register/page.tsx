@@ -4,9 +4,8 @@ import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { useTranslations } from 'next-intl'
-import Toast, { ToastContainer } from '@/components/ui/Toast'
-import { useToast } from '@/hooks/useToast'
 import { useAuth } from '@/hooks/useAuth'
+import { useNotifications } from '@/hooks/useNotifications'
 import AppLogo from '@/components/ui/AppLogo'
 
 // Lista de empleos comunes en Estados Unidos
@@ -24,7 +23,7 @@ export default function RegisterPage() {
   const router = useRouter()
   const t = useTranslations('auth.register')
   const tErr = useTranslations('apiErrors')
-  const { toasts, error: showError, dismiss } = useToast()
+  const { showError } = useNotifications()
   const { isAuthenticated } = useAuth()
 
   // TODOS LOS HOOKS DEBEN ESTAR ANTES DE CUALQUIER RETURN CONDICIONAL
@@ -711,9 +710,6 @@ export default function RegisterPage() {
           </div>
         </div>
       </div>
-      
-      {/* Toast Notifications */}
-      <ToastContainer toasts={toasts} onDismiss={dismiss} />
     </div>
   )
 }

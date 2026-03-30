@@ -14,7 +14,7 @@ import WeeklyClosureAnalysis from '@/components/analytics/WeeklyClosureAnalysis'
 import YearComparison from '@/components/analytics/YearComparison'
 import EmployeeAnalysis from '@/components/analytics/EmployeeAnalysis'
 import { getTransactionSummary } from '@/services/reportService'
-import { exportAnalyticsData, showExportModal } from '@/services/exportService'
+import { exportAnalyticsReport, showExportModal } from '@/services/exportService'
 
 export default function ReportsPage() {
   const router = useRouter()
@@ -59,7 +59,7 @@ export default function ReportsPage() {
 
   const handleExportReport = () => {
     showExportModal((format) => {
-      exportAnalyticsData(format)
+      exportAnalyticsReport({ period: selectedPeriod, year: selectedYear, month: selectedMonth }, format)
     })
   }
 
