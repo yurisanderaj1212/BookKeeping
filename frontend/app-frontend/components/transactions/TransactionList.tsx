@@ -71,47 +71,48 @@ export default function TransactionList({ transactions, onEdit, onDelete }: Tran
       {/* ── Mobile card list (hidden on md+) ── */}
       <div className="md:hidden divide-y divide-gray-100">
         {transactions.map(tx => (
-          <div key={tx.id} className="px-4 py-3 hover:bg-gray-50 transition-colors">
-            <div className="flex items-start gap-3">
-              {/* Type icon */}
-              <div className={`w-9 h-9 rounded-full flex items-center justify-center shrink-0 mt-0.5 ${
+          <div key={tx.id} className="px-3 py-3 hover:bg-gray-50 transition-colors">
+            <div className="flex items-center gap-2.5">
+              {/* Type icon — compact */}
+              <div className={`w-8 h-8 rounded-full flex items-center justify-center shrink-0 ${
                 tx.type === 'income' ? 'bg-green-100' : 'bg-red-100'
               }`}>
                 {tx.type === 'income'
-                  ? <TrendingUp className="w-4 h-4 text-green-600" />
-                  : <TrendingDown className="w-4 h-4 text-red-600" />}
+                  ? <TrendingUp className="w-3.5 h-3.5 text-green-600" />
+                  : <TrendingDown className="w-3.5 h-3.5 text-red-600" />}
               </div>
 
-              {/* Main info */}
+              {/* Content */}
               <div className="flex-1 min-w-0">
-                <div className="flex items-start justify-between gap-2">
+                {/* Row 1: description + amount */}
+                <div className="flex items-center justify-between gap-1">
                   <p className="text-sm font-semibold text-gray-900 truncate leading-tight">{tx.description}</p>
                   <p className={`text-sm font-bold shrink-0 ${tx.type === 'income' ? 'text-green-600' : 'text-red-600'}`}>
                     {tx.type === 'income' ? '+' : '-'}{formatCurrency(tx.amount)}
                   </p>
                 </div>
-                <div className="flex items-center gap-2 mt-1 flex-wrap">
-                  <span className="text-xs text-gray-400">{formatDate(tx.date)}</span>
-                  <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium ${getCategoryColorClass(tx.category)}`}>
+                {/* Row 2: date + category + status — all inline */}
+                <div className="flex items-center gap-1.5 mt-1 flex-wrap">
+                  <span className="text-xs text-gray-400 shrink-0">{formatDate(tx.date)}</span>
+                  <span className={`inline-flex items-center px-1.5 py-0.5 rounded-full text-xs font-medium shrink-0 ${getCategoryColorClass(tx.category)}`}>
                     {getCategoryLabel(tx.category)}
                   </span>
-                  <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium ${
+                  <span className={`inline-flex items-center px-1.5 py-0.5 rounded-full text-xs font-medium shrink-0 ${
                     tx.status === 'completed' ? 'bg-blue-50 text-blue-600' : 'bg-yellow-50 text-yellow-700'
                   }`}>
                     {tx.status === 'completed' ? t('completed') : t('pending')}
                   </span>
                 </div>
-                {tx.notes && <p className="text-xs text-gray-400 mt-1 truncate">{tx.notes}</p>}
               </div>
 
-              {/* Actions */}
-              <div className="flex items-center gap-1 shrink-0 mt-0.5">
+              {/* Actions — icon only, compact */}
+              <div className="flex items-center gap-0.5 shrink-0">
                 <button onClick={() => onEdit(tx)}
-                  className="p-1.5 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors">
+                  className="p-1.5 text-gray-300 hover:text-blue-500 hover:bg-blue-50 rounded-lg transition-colors">
                   <Edit className="w-3.5 h-3.5" />
                 </button>
                 <button onClick={() => setShowDeleteConfirm(tx.id)}
-                  className="p-1.5 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors">
+                  className="p-1.5 text-gray-300 hover:text-red-500 hover:bg-red-50 rounded-lg transition-colors">
                   <Trash2 className="w-3.5 h-3.5" />
                 </button>
               </div>

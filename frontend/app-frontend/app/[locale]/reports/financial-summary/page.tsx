@@ -54,18 +54,15 @@ function FinancialSummaryContent() {
         {/* Header */}
         <div className="bg-white border-b border-gray-200 sticky top-0 z-10">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="flex items-center justify-between h-20">
-              <div className="flex items-center space-x-4">
+            <div className="flex items-center justify-between min-h-16 py-3 gap-3">
+              <div className="flex items-center gap-2 min-w-0">
                 <MobileMenuButton />
-                <button
-                  onClick={handleBack}
-                  className="p-2 hover:bg-gray-100 rounded-lg transition-colors duration-200"
-                >
+                <button onClick={handleBack} className="p-1.5 hover:bg-gray-100 rounded-lg transition-colors shrink-0">
                   <ArrowLeft className="w-5 h-5 text-gray-600" />
                 </button>
-                <div>
-                  <h1 className="text-2xl font-bold text-gray-900">{tReport('financialSummary')}</h1>
-                  <p className="text-sm text-gray-500 mt-1">{tReport('financialSummaryDesc')}</p>
+                <div className="min-w-0">
+                  <h1 className="text-base sm:text-xl font-bold text-gray-900 truncate">{tReport('financialSummary')}</h1>
+                  <p className="text-xs text-gray-500 hidden sm:block">{tReport('financialSummaryDesc')}</p>
                 </div>
               </div>
               <div className="flex items-center space-x-3">

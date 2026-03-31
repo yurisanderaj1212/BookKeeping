@@ -137,23 +137,23 @@ function WeekCloseContent() {
         {/* Header */}
         <div className="bg-white border-b border-gray-200 sticky top-0 z-10">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="flex items-center justify-between h-20">
-              <div className="flex items-center space-x-4">
+            <div className="flex items-center justify-between min-h-16 py-3 gap-3">
+              <div className="flex items-center gap-2 min-w-0">
                 <MobileMenuButton />
-                <button onClick={() => router.push('/reports')} className="p-2 hover:bg-gray-100 rounded-lg transition-colors">
+                <button onClick={() => router.push('/reports')} className="p-1.5 hover:bg-gray-100 rounded-lg transition-colors shrink-0">
                   <ArrowLeft className="w-5 h-5 text-gray-600" />
                 </button>
-                <div>
-                  <h1 className="text-2xl font-bold text-gray-900">{t('pageTitle')}</h1>
-                  <p className="text-sm text-gray-500 mt-1">{t('pageSubtitle')}</p>
+                <div className="min-w-0">
+                  <h1 className="text-base sm:text-xl font-bold text-gray-900 truncate">{t('pageTitle')}</h1>
+                  <p className="text-xs text-gray-500 hidden sm:block">{t('pageSubtitle')}</p>
                 </div>
               </div>
               <button
                 onClick={() => showExportModal((fmt) => exportWeekClose(selectedYear, selectedMonth, fmt))}
-                className="bg-white border border-gray-300 text-gray-700 px-4 py-2 rounded-lg hover:bg-gray-50 transition-colors flex items-center space-x-2"
+                className="bg-white border border-gray-300 text-gray-700 px-3 py-2 rounded-lg hover:bg-gray-50 transition-colors flex items-center gap-1.5 shrink-0 text-sm"
               >
                 <Download className="w-4 h-4" />
-                {tCommon("export")}
+                <span className="hidden sm:inline">{tCommon("export")}</span>
               </button>
             </div>
           </div>
@@ -161,26 +161,24 @@ function WeekCloseContent() {
 
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
           {/* Filtros */}
-          <div className="bg-white rounded-lg border border-gray-200 p-6 mb-6">
-            <div className="flex flex-col sm:flex-row gap-4">
-              <div className="flex items-center space-x-2">
-                <Calendar className="w-4 h-4 text-gray-400" />
-                <select
-                  value={selectedYear}
-                  onChange={(e) => setSelectedYear(parseInt(e.target.value))}
-                  className="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
-                >
-                  {yearOptions.map(y => <option key={y} value={y}>{y}</option>)}
-                </select>
-              </div>
+          <div className="bg-white rounded-lg border border-gray-200 p-3 sm:p-4 mb-4 sm:mb-6">
+            <div className="flex items-center gap-2 flex-wrap">
+              <Calendar className="w-4 h-4 text-gray-400 shrink-0" />
+              <select
+                value={selectedYear}
+                onChange={(e) => setSelectedYear(parseInt(e.target.value))}
+                className="px-2 py-1.5 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+              >
+                {yearOptions.map(y => <option key={y} value={y}>{y}</option>)}
+              </select>
               <select
                 value={selectedMonth}
                 onChange={(e) => setSelectedMonth(parseInt(e.target.value))}
-                className="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+                className="flex-1 min-w-[120px] px-2 py-1.5 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
               >
-              {Array.from({ length: 12 }, (_, i) => (
-                <option key={i + 1} value={i + 1}>{tMonths(String(i + 1) as any)}</option>
-              ))}
+                {Array.from({ length: 12 }, (_, i) => (
+                  <option key={i + 1} value={i + 1}>{tMonths(String(i + 1) as any)}</option>
+                ))}
               </select>
             </div>
           </div>
@@ -192,44 +190,44 @@ function WeekCloseContent() {
 
           {/* Tarjetas resumen */}
           {summary && (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 lg:gap-6 mb-8">
-              <div className="bg-white rounded-lg border border-gray-200 p-4 lg:p-6">
-                <div className="flex items-center space-x-3">
-                  <div className="bg-green-100 p-2 rounded-lg"><TrendingUp className="w-5 h-5 text-green-600" /></div>
-                  <div>
-                    <p className="text-sm text-gray-600">{t('summaryIncome')}</p>
-                    <p className="text-xl font-bold text-green-700">{formatCurrency(summary.totalIncome)}</p>
+            <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 lg:gap-6 mb-6 sm:mb-8">
+              <div className="bg-white rounded-lg border border-gray-200 p-3 sm:p-4 lg:p-6">
+                <div className="flex items-center gap-2 sm:gap-3">
+                  <div className="bg-green-100 p-1.5 sm:p-2 rounded-lg shrink-0"><TrendingUp className="w-4 h-4 sm:w-5 sm:h-5 text-green-600" /></div>
+                  <div className="min-w-0">
+                    <p className="text-xs text-gray-600 truncate">{t('summaryIncome')}</p>
+                    <p className="text-sm sm:text-xl font-bold text-green-700 truncate">{formatCurrency(summary.totalIncome)}</p>
                   </div>
                 </div>
               </div>
-              <div className="bg-white rounded-lg border border-gray-200 p-4 lg:p-6">
-                <div className="flex items-center space-x-3">
-                  <div className="bg-red-100 p-2 rounded-lg"><TrendingDown className="w-5 h-5 text-red-600" /></div>
-                  <div>
-                    <p className="text-sm text-gray-600">{t('summaryExpenses')}</p>
-                    <p className="text-xl font-bold text-red-700">{formatCurrency(summary.totalExpenses)}</p>
+              <div className="bg-white rounded-lg border border-gray-200 p-3 sm:p-4 lg:p-6">
+                <div className="flex items-center gap-2 sm:gap-3">
+                  <div className="bg-red-100 p-1.5 sm:p-2 rounded-lg shrink-0"><TrendingDown className="w-4 h-4 sm:w-5 sm:h-5 text-red-600" /></div>
+                  <div className="min-w-0">
+                    <p className="text-xs text-gray-600 truncate">{t('summaryExpenses')}</p>
+                    <p className="text-sm sm:text-xl font-bold text-red-700 truncate">{formatCurrency(summary.totalExpenses)}</p>
                   </div>
                 </div>
               </div>
-              <div className="bg-white rounded-lg border border-gray-200 p-4 lg:p-6">
-                <div className="flex items-center space-x-3">
-                  <div className={`${summary.netProfit >= 0 ? 'bg-blue-100' : 'bg-orange-100'} p-2 rounded-lg`}>
-                    <DollarSign className={`w-5 h-5 ${summary.netProfit >= 0 ? 'text-blue-600' : 'text-orange-600'}`} />
+              <div className="bg-white rounded-lg border border-gray-200 p-3 sm:p-4 lg:p-6">
+                <div className="flex items-center gap-2 sm:gap-3">
+                  <div className={`${summary.netProfit >= 0 ? 'bg-blue-100' : 'bg-orange-100'} p-1.5 sm:p-2 rounded-lg shrink-0`}>
+                    <DollarSign className={`w-4 h-4 sm:w-5 sm:h-5 ${summary.netProfit >= 0 ? 'text-blue-600' : 'text-orange-600'}`} />
                   </div>
-                  <div>
-                    <p className="text-sm text-gray-600">{t('summaryProfit')}</p>
-                    <p className={`text-xl font-bold ${summary.netProfit >= 0 ? 'text-blue-700' : 'text-orange-700'}`}>
+                  <div className="min-w-0">
+                    <p className="text-xs text-gray-600 truncate">{t('summaryProfit')}</p>
+                    <p className={`text-sm sm:text-xl font-bold truncate ${summary.netProfit >= 0 ? 'text-blue-700' : 'text-orange-700'}`}>
                       {formatCurrency(summary.netProfit)}
                     </p>
                   </div>
                 </div>
               </div>
-              <div className="bg-white rounded-lg border border-gray-200 p-4 lg:p-6">
-                <div className="flex items-center space-x-3">
-                  <div className="bg-purple-100 p-2 rounded-lg"><CheckCircle className="w-5 h-5 text-purple-600" /></div>
-                  <div>
-                    <p className="text-sm text-gray-600">{t('summaryClosures')}</p>
-                    <p className="text-lg font-bold text-purple-700">
+              <div className="bg-white rounded-lg border border-gray-200 p-3 sm:p-4 lg:p-6">
+                <div className="flex items-center gap-2 sm:gap-3">
+                  <div className="bg-purple-100 p-1.5 sm:p-2 rounded-lg shrink-0"><CheckCircle className="w-4 h-4 sm:w-5 sm:h-5 text-purple-600" /></div>
+                  <div className="min-w-0">
+                    <p className="text-xs text-gray-600 truncate">{t('summaryClosures')}</p>
+                    <p className="text-sm sm:text-lg font-bold text-purple-700 truncate">
                       {t('summaryClosed', { closed: summary.closedWeeks, total: summary.totalWeeks })}
                     </p>
                     {summary.pendingWeeks > 0 && (

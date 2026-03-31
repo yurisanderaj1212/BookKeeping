@@ -77,54 +77,54 @@ export default function FinancialSummaryReport({ period, year, month }: Financia
       </div>
 
       {/* KPI Cards */}
-      <div className="p-6 border-b border-gray-200">
-        <h3 className="text-lg font-semibold text-gray-900 mb-4">{t('executiveSummary')}</h3>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-          <div className="bg-green-50 p-4 rounded-lg">
-            <div className="flex items-center justify-between mb-2">
-              <DollarSign className="w-5 h-5 text-green-600" />
-              <TrendingUp className="w-4 h-4 text-green-600" />
+      <div className="p-4 sm:p-6 border-b border-gray-200">
+        <h3 className="text-base sm:text-lg font-semibold text-gray-900 mb-3">{t('executiveSummary')}</h3>
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
+          <div className="bg-green-50 p-3 sm:p-4 rounded-lg">
+            <div className="flex items-center justify-between mb-1.5">
+              <DollarSign className="w-4 h-4 text-green-600" />
+              <TrendingUp className="w-3.5 h-3.5 text-green-600" />
             </div>
-            <p className="text-sm text-green-600 font-medium">{t('totalIncome')}</p>
-            <p className="text-2xl font-bold text-green-700">{formatCurrency(totalIncome)}</p>
-            <p className="text-xs text-green-600 mt-1">{incomeCount} {t('transactions')}</p>
+            <p className="text-xs text-green-600 font-medium">{t('totalIncome')}</p>
+            <p className="text-lg sm:text-2xl font-bold text-green-700">{formatCurrency(totalIncome)}</p>
+            <p className="text-xs text-green-600 mt-0.5">{incomeCount} {t('transactions')}</p>
           </div>
 
-          <div className="bg-red-50 p-4 rounded-lg">
-            <div className="flex items-center justify-between mb-2">
-              <DollarSign className="w-5 h-5 text-red-600" />
-              <TrendingDown className="w-4 h-4 text-red-600" />
+          <div className="bg-red-50 p-3 sm:p-4 rounded-lg">
+            <div className="flex items-center justify-between mb-1.5">
+              <DollarSign className="w-4 h-4 text-red-600" />
+              <TrendingDown className="w-3.5 h-3.5 text-red-600" />
             </div>
-            <p className="text-sm text-red-600 font-medium">{t('totalExpenses')}</p>
-            <p className="text-2xl font-bold text-red-700">{formatCurrency(totalExpenses)}</p>
-            <p className="text-xs text-red-600 mt-1">{expenseCount} {t('transactions')}</p>
+            <p className="text-xs text-red-600 font-medium">{t('totalExpenses')}</p>
+            <p className="text-lg sm:text-2xl font-bold text-red-700">{formatCurrency(totalExpenses)}</p>
+            <p className="text-xs text-red-600 mt-0.5">{expenseCount} {t('transactions')}</p>
           </div>
 
-          <div className={`${netProfit >= 0 ? 'bg-blue-50' : 'bg-orange-50'} p-4 rounded-lg`}>
-            <div className="flex items-center justify-between mb-2">
-              <DollarSign className={`w-5 h-5 ${netProfit >= 0 ? 'text-blue-600' : 'text-orange-600'}`} />
+          <div className={`${netProfit >= 0 ? 'bg-blue-50' : 'bg-orange-50'} p-3 sm:p-4 rounded-lg`}>
+            <div className="flex items-center justify-between mb-1.5">
+              <DollarSign className={`w-4 h-4 ${netProfit >= 0 ? 'text-blue-600' : 'text-orange-600'}`} />
               {netProfit >= 0
-                ? <TrendingUp className="w-4 h-4 text-blue-600" />
-                : <TrendingDown className="w-4 h-4 text-orange-600" />}
+                ? <TrendingUp className="w-3.5 h-3.5 text-blue-600" />
+                : <TrendingDown className="w-3.5 h-3.5 text-orange-600" />}
             </div>
-            <p className={`text-sm font-medium ${netProfit >= 0 ? 'text-blue-600' : 'text-orange-600'}`}>
+            <p className={`text-xs font-medium ${netProfit >= 0 ? 'text-blue-600' : 'text-orange-600'}`}>
               {netProfit >= 0 ? t('netProfit') : t('netLoss')}
             </p>
-            <p className={`text-2xl font-bold ${netProfit >= 0 ? 'text-blue-700' : 'text-orange-700'}`}>
+            <p className={`text-lg sm:text-2xl font-bold ${netProfit >= 0 ? 'text-blue-700' : 'text-orange-700'}`}>
               {formatCurrency(Math.abs(netProfit))}
             </p>
-            <p className={`text-xs mt-1 ${netProfit >= 0 ? 'text-blue-600' : 'text-orange-600'}`}>
+            <p className={`text-xs mt-0.5 ${netProfit >= 0 ? 'text-blue-600' : 'text-orange-600'}`}>
               {t('margin')}: {profitMargin.toFixed(1)}%
             </p>
           </div>
 
-          <div className="bg-gray-50 p-4 rounded-lg">
-            <div className="flex items-center justify-between mb-2">
-              <Calendar className="w-5 h-5 text-gray-600" />
+          <div className="bg-gray-50 p-3 sm:p-4 rounded-lg">
+            <div className="flex items-center justify-between mb-1.5">
+              <Calendar className="w-4 h-4 text-gray-600" />
             </div>
-            <p className="text-sm text-gray-600 font-medium">{t('totalTransactions')}</p>
-            <p className="text-2xl font-bold text-gray-700">{transactionCount}</p>
-            <p className="text-xs text-gray-600 mt-1">{t('inPeriod')}</p>
+            <p className="text-xs text-gray-600 font-medium">{t('totalTransactions')}</p>
+            <p className="text-lg sm:text-2xl font-bold text-gray-700">{transactionCount}</p>
+            <p className="text-xs text-gray-600 mt-0.5">{t('inPeriod')}</p>
           </div>
         </div>
       </div>
