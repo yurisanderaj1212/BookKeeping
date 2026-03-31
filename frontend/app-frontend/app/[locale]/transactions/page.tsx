@@ -340,10 +340,10 @@ export default function TransactionsPage() {
           </div>
         )}
         
-        <div className="bg-white rounded-lg border border-gray-200 p-6 mb-6" data-tour="transaction-filters">
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3">
-            {/* Search */}
-            <div className="relative">
+        <div className="bg-white rounded-lg border border-gray-200 p-3 sm:p-6 mb-4 sm:mb-6" data-tour="transaction-filters">
+          <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-5 gap-2 sm:gap-3">
+            {/* Search — full width on mobile */}
+            <div className="relative col-span-2 lg:col-span-1">
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
               <input
                 type="text"

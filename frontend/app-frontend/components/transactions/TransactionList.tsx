@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { Edit, Trash2 } from 'lucide-react'
+import { Edit, Trash2, TrendingUp, TrendingDown } from 'lucide-react'
 import { Transaction } from '@/data/transactions-data'
 import * as categoryService from '@/services/categoryService'
 import { useTranslations, useLocale } from 'next-intl'
@@ -15,10 +15,10 @@ interface TransactionListProps {
 }
 
 export default function TransactionList({ transactions, onEdit, onDelete }: TransactionListProps) {
-  const t      = useTranslations('transactions')
-  const tCommon = useTranslations('common')
+  const t           = useTranslations('transactions')
+  const tCommon     = useTranslations('common')
   const tCategories = useTranslations('categories')
-  const locale = useLocale()
+  const locale      = useLocale()
   const [showDeleteConfirm, setShowDeleteConfirm] = useState<string | null>(null)
   const [categoryMap, setCategoryMap] = useState<Record<string, { name: string; type: number }>>({})
 
@@ -38,9 +38,16 @@ export default function TransactionList({ transactions, onEdit, onDelete }: Tran
 
   const getCategoryColorClass = (id: string) => {
     const type = categoryMap[id]?.type
-    if (type === 0) return 'bg-green-100 text-green-800'
-    if (type === 1) return 'bg-red-100 text-red-800'
-    return 'bg-gray-100 text-gray-800'
+    if (type === 0) return 'bg-green-100 text-green-700'
+    if (type === 1) return 'bg-red-100 text-red-700'
+    return 'bg-gray-100 text-gray-600'
+  }
+
+  const formatDate = (dateStr: string) => {
+    try {
+      const d = new Date(dateStr + 'T00:00:00')
+      return d.toLocaleDateString(locale === 'en' ? 'en-US' : 'es-ES', { day: '2-digit', month: 'short' })
+    } catch { return dateStr }
   }
 
   if (transactions.length === 0) {
@@ -50,7 +57,7 @@ export default function TransactionList({ transactions, onEdit, onDelete }: Tran
           <Edit className="w-8 h-8 text-gray-400" />
         </div>
         <h3 className="text-lg font-medium text-gray-900 mb-2">{t('noTransactions')}</h3>
-        <p className="text-gray-500">{t('loadError')}</p>
+        <p className="text-gray-500 text-sm">{t('loadError')}</p>
       </div>
     )
   }
@@ -60,27 +67,81 @@ export default function TransactionList({ transactions, onEdit, onDelete }: Tran
 
   return (
     <div className="bg-white rounded-lg border border-gray-200 overflow-hidden">
-      <div className="overflow-x-auto">
+
+      {/* ── Mobile card list (hidden on md+) ── */}
+      <div className="md:hidden divide-y divide-gray-100">
+        {transactions.map(tx => (
+          <div key={tx.id} className="px-4 py-3 hover:bg-gray-50 transition-colors">
+            <div className="flex items-start gap-3">
+              {/* Type icon */}
+              <div className={`w-9 h-9 rounded-full flex items-center justify-center shrink-0 mt-0.5 ${
+                tx.type === 'income' ? 'bg-green-100' : 'bg-red-100'
+              }`}>
+                {tx.type === 'income'
+                  ? <TrendingUp className="w-4 h-4 text-green-600" />
+                  : <TrendingDown className="w-4 h-4 text-red-600" />}
+              </div>
+
+              {/* Main info */}
+              <div className="flex-1 min-w-0">
+                <div className="flex items-start justify-between gap-2">
+                  <p className="text-sm font-semibold text-gray-900 truncate leading-tight">{tx.description}</p>
+                  <p className={`text-sm font-bold shrink-0 ${tx.type === 'income' ? 'text-green-600' : 'text-red-600'}`}>
+                    {tx.type === 'income' ? '+' : '-'}{formatCurrency(tx.amount)}
+                  </p>
+                </div>
+                <div className="flex items-center gap-2 mt-1 flex-wrap">
+                  <span className="text-xs text-gray-400">{formatDate(tx.date)}</span>
+                  <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium ${getCategoryColorClass(tx.category)}`}>
+                    {getCategoryLabel(tx.category)}
+                  </span>
+                  <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium ${
+                    tx.status === 'completed' ? 'bg-blue-50 text-blue-600' : 'bg-yellow-50 text-yellow-700'
+                  }`}>
+                    {tx.status === 'completed' ? t('completed') : t('pending')}
+                  </span>
+                </div>
+                {tx.notes && <p className="text-xs text-gray-400 mt-1 truncate">{tx.notes}</p>}
+              </div>
+
+              {/* Actions */}
+              <div className="flex items-center gap-1 shrink-0 mt-0.5">
+                <button onClick={() => onEdit(tx)}
+                  className="p-1.5 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors">
+                  <Edit className="w-3.5 h-3.5" />
+                </button>
+                <button onClick={() => setShowDeleteConfirm(tx.id)}
+                  className="p-1.5 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors">
+                  <Trash2 className="w-3.5 h-3.5" />
+                </button>
+              </div>
+            </div>
+          </div>
+        ))}
+      </div>
+
+      {/* ── Desktop table (hidden on mobile) ── */}
+      <div className="hidden md:block overflow-x-auto">
         <table className="w-full table-fixed divide-y divide-gray-200">
           <thead className="bg-gray-50">
             <tr>
-              <th className="px-4 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider" style={{ width: '14%' }}>{t('date')}</th>
-              <th className="px-4 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider" style={{ width: '30%' }}>{t('description')}</th>
-              <th className="px-4 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider" style={{ width: '16%' }}>{t('category')}</th>
-              <th className="px-4 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider" style={{ width: '14%' }}>{t('amount')}</th>
-              <th className="px-4 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider" style={{ width: '14%' }}>{t('status')}</th>
-              <th className="px-4 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider" style={{ width: '12%' }}>{tCommon('actions')}</th>
+              <th className="px-4 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider w-[14%]">{t('date')}</th>
+              <th className="px-4 py-3 text-left   text-xs font-medium text-gray-500 uppercase tracking-wider w-[30%]">{t('description')}</th>
+              <th className="px-4 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider w-[16%]">{t('category')}</th>
+              <th className="px-4 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider w-[14%]">{t('amount')}</th>
+              <th className="px-4 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider w-[14%]">{t('status')}</th>
+              <th className="px-4 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider w-[12%]">{tCommon('actions')}</th>
             </tr>
           </thead>
           <tbody className="bg-white divide-y divide-gray-200">
             {transactions.map(tx => (
-              <tr key={tx.id} className="hover:bg-gray-50 transition-colors duration-200">
+              <tr key={tx.id} className="hover:bg-gray-50 transition-colors">
                 <td className="px-4 py-4 text-center">
                   <p className="text-sm font-medium text-gray-900">{tx.date}</p>
                 </td>
                 <td className="px-4 py-4">
                   <p className="text-sm font-medium text-gray-900 truncate" title={tx.description}>{tx.description}</p>
-                  {tx.notes && <p className="text-xs text-gray-500 mt-1 truncate" title={tx.notes}>{tx.notes}</p>}
+                  {tx.notes && <p className="text-xs text-gray-500 mt-1 truncate">{tx.notes}</p>}
                 </td>
                 <td className="px-4 py-4 text-center">
                   <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getCategoryColorClass(tx.category)}`}>
@@ -100,11 +161,11 @@ export default function TransactionList({ transactions, onEdit, onDelete }: Tran
                   </span>
                 </td>
                 <td className="px-4 py-4 text-center">
-                  <div className="flex items-center justify-center space-x-1">
-                    <button onClick={() => onEdit(tx)} className="text-gray-400 hover:text-blue-600 p-1 rounded-lg hover:bg-blue-50 transition-colors" title={tCommon('edit')}>
+                  <div className="flex items-center justify-center gap-1">
+                    <button onClick={() => onEdit(tx)} className="text-gray-400 hover:text-blue-600 p-1 rounded-lg hover:bg-blue-50 transition-colors">
                       <Edit className="w-4 h-4" />
                     </button>
-                    <button onClick={() => setShowDeleteConfirm(tx.id)} className="text-gray-400 hover:text-red-600 p-1 rounded-lg hover:bg-red-50 transition-colors" title={tCommon('delete')}>
+                    <button onClick={() => setShowDeleteConfirm(tx.id)} className="text-gray-400 hover:text-red-600 p-1 rounded-lg hover:bg-red-50 transition-colors">
                       <Trash2 className="w-4 h-4" />
                     </button>
                   </div>
@@ -116,43 +177,39 @@ export default function TransactionList({ transactions, onEdit, onDelete }: Tran
       </div>
 
       {/* Footer */}
-      <div className="bg-gray-50 px-6 py-4 border-t border-gray-200">
-        <div className="flex items-center justify-between">
-          <p className="text-sm text-gray-600">
+      <div className="bg-gray-50 px-4 py-3 border-t border-gray-200">
+        <div className="flex items-center justify-between flex-wrap gap-2">
+          <p className="text-xs text-gray-500">
             {tCommon('showing')} {transactions.length} {t('transactionsLabel')}
           </p>
-          <div className="flex items-center space-x-6 text-sm">
-            <div>
-              <span className="text-gray-600">{t('incomes')}: </span>
-              <span className="font-semibold text-green-600">{formatCurrency(totalIncome)}</span>
-            </div>
-            <div>
-              <span className="text-gray-600">{t('expenses')}: </span>
-              <span className="font-semibold text-red-600">{formatCurrency(totalExpenses)}</span>
-            </div>
+          <div className="flex items-center gap-4 text-xs">
+            <span className="text-gray-500">{t('incomes')}: <span className="font-semibold text-green-600">{formatCurrency(totalIncome)}</span></span>
+            <span className="text-gray-500">{t('expenses')}: <span className="font-semibold text-red-600">{formatCurrency(totalExpenses)}</span></span>
           </div>
         </div>
       </div>
 
       {/* Delete Modal */}
       {showDeleteConfirm && (
-        <div className="fixed inset-0 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-lg max-w-sm w-full shadow-xl border border-gray-200 p-6">
-            <div className="flex items-center space-x-3 mb-4">
-              <div className="w-10 h-10 bg-red-100 rounded-full flex items-center justify-center">
+        <div className="fixed inset-0 flex items-center justify-center z-50 p-4 bg-black/40">
+          <div className="bg-white rounded-xl max-w-sm w-full shadow-xl p-6">
+            <div className="flex items-center gap-3 mb-4">
+              <div className="w-10 h-10 bg-red-100 rounded-full flex items-center justify-center shrink-0">
                 <Trash2 className="w-5 h-5 text-red-600" />
               </div>
               <div>
-                <h3 className="text-lg font-semibold text-gray-900">{tCommon('delete')}</h3>
-                <p className="text-sm text-gray-500">{t('deleteConfirmTitle')}</p>
+                <h3 className="text-base font-semibold text-gray-900">{tCommon('delete')}</h3>
+                <p className="text-xs text-gray-500">{t('deleteConfirmTitle')}</p>
               </div>
             </div>
-            <p className="text-gray-700 mb-6 text-sm">{t('deleteConfirmMsg', { name: '' })}</p>
-            <div className="flex items-center justify-end space-x-3">
-              <button onClick={() => setShowDeleteConfirm(null)} className="px-4 py-2 text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200 text-sm">
+            <p className="text-sm text-gray-700 mb-5">{t('deleteConfirmMsg', { name: '' })}</p>
+            <div className="flex items-center justify-end gap-3">
+              <button onClick={() => setShowDeleteConfirm(null)}
+                className="px-4 py-2 text-sm text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200">
                 {tCommon('cancel')}
               </button>
-              <button onClick={() => { onDelete(showDeleteConfirm); setShowDeleteConfirm(null) }} className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 text-sm">
+              <button onClick={() => { onDelete(showDeleteConfirm); setShowDeleteConfirm(null) }}
+                className="px-4 py-2 text-sm bg-red-600 text-white rounded-lg hover:bg-red-700">
                 {tCommon('delete')}
               </button>
             </div>
