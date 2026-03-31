@@ -6,6 +6,7 @@ import { useRouter } from 'next/navigation'
 import { Check, Zap, Shield, BarChart3, Users, FileText, Bell } from 'lucide-react'
 import { createCheckoutSession } from '@/lib/subscriptionService'
 import { isAuthenticated } from '@/lib/auth'
+import { useTranslations } from 'next-intl'
 
 const FEATURES = [
   { icon: BarChart3, text: 'Dashboard con métricas en tiempo real' },
@@ -18,6 +19,7 @@ const FEATURES = [
 
 export default function PricingPage() {
   const router = useRouter()
+  const t = useTranslations('billing')
   const [loading, setLoading] = useState<'monthly' | 'annual' | null>(null)
   const [error, setError]     = useState<string | null>(null)
 
@@ -32,7 +34,7 @@ export default function PricingPage() {
       const { url } = await createCheckoutSession(plan)
       window.location.href = url
     } catch (e: unknown) {
-      setError(e instanceof Error ? e.message : 'Error al iniciar el pago.')
+      setError(e instanceof Error ? e.message : t('checkoutError'))
       setLoading(null)
     }
   }

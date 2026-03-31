@@ -4,10 +4,12 @@ import { useState, useEffect, Suspense } from 'react'
 import { useSearchParams } from 'next/navigation'
 import { Check, AlertCircle, Zap } from 'lucide-react'
 import { createCheckoutSession, getSubscriptionStatus } from '@/lib/subscriptionService'
+import { useTranslations } from 'next-intl'
 
 function SubscribeContent() {
   const searchParams = useSearchParams()
   const canceled     = searchParams?.get('canceled') === '1'
+  const t = useTranslations('billing')
 
   const [loading, setLoading]   = useState<'monthly' | 'annual' | null>(null)
   const [error, setError]       = useState<string | null>(null)
@@ -26,7 +28,7 @@ function SubscribeContent() {
       const { url } = await createCheckoutSession(plan)
       window.location.href = url
     } catch (e: unknown) {
-      setError(e instanceof Error ? e.message : 'Error al iniciar el pago.')
+      setError(e instanceof Error ? e.message : t('checkoutError'))
       setLoading(null)
     }
   }

@@ -1,8 +1,9 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { useRouter } from 'next/navigation'
+import { useRouter } from '@/i18n/routing'
 import { useAuth } from '@/hooks/useAuth'
+import PageLayout from '@/components/ui/PageLayout'
 import { 
   Calendar, 
   FileText, 
@@ -38,7 +39,6 @@ export default function ReportsPage() {
   const { user, isLoading, isAuthenticated, logout } = useAuth()
   const t = useTranslations('reports')
   const [selectedPeriod, setSelectedPeriod] = useState<'week' | 'month' | 'year'>('week')
-  const [sidebarCollapsed, setSidebarCollapsed] = useState(false)
 
   // Onboarding hook
   const {
@@ -62,10 +62,6 @@ export default function ReportsPage() {
 
   const handleLogout = async () => {
     logout() // Usar la función logout del hook useAuth
-  }
-
-  const handleSidebarToggle = (isCollapsed: boolean) => {
-    setSidebarCollapsed(isCollapsed)
   }
 
   const handleGenerateReport = (reportId: string) => {
@@ -97,7 +93,7 @@ export default function ReportsPage() {
         router.push(`/reports/week-close?${params.toString()}`)
         break
       default:
-        console.warn('Reporte no disponible:', reportId)
+        break // report not available
     }
   }
 
@@ -151,21 +147,17 @@ export default function ReportsPage() {
   return (
     <div className="flex min-h-screen bg-gray-50">
       {/* Sidebar */}
-      <Sidebar onLogout={handleLogout} onToggle={handleSidebarToggle} />
+      <Sidebar onLogout={handleLogout} />
       
       {/* Main Content */}
-      <div className={`flex-1 transition-all duration-300 ${sidebarCollapsed ? 'ml-16' : 'ml-64'}`}>
+      <PageLayout>
         {/* Header */}
         <div className="bg-white border-b border-gray-200 sticky top-0 z-10">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="flex items-center justify-between h-20">
-              <div>
-                <h1 className="text-2xl font-bold text-gray-900">
-                  {t('title')}
-                </h1>
-                <p className="text-sm text-gray-500 mt-1">
-                  {t('subtitle')}
-                </p>
+            <div className="flex items-center justify-between min-h-16 py-3">
+              <div className="min-w-0">
+                <h1 className="text-xl sm:text-2xl font-bold text-gray-900 truncate">{t('title')}</h1>
+                <p className="text-sm text-gray-500 mt-0.5 hidden sm:block">{t('subtitle')}</p>
               </div>
             </div>
           </div>
@@ -268,7 +260,7 @@ export default function ReportsPage() {
             ))}
           </div>
         </div>
-      </div>
+      </PageLayout>
 
       {/* Onboarding Tour */}
       <OnboardingTour

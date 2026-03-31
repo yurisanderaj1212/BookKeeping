@@ -1,7 +1,7 @@
-import { apiClient } from '@/lib/apiClient'
+import { getSupabase } from '@/lib/supabaseClient'
 
 export interface UserProfile {
-  id: number
+  id: string
   email: string
   firstName: string
   lastName: string
@@ -16,22 +16,65 @@ export interface UpdateProfileDto {
   jobTitle?: string
 }
 
+// ─── Profile — stored in Supabase auth.users.user_metadata ───────────────────
+
 export async function getProfile(): Promise<UserProfile> {
-  return apiClient('/users/profile')
+  const supabase = getSupabase()
+  const { data: { user }, error } = await supabase.auth.getUser()
+  if (error || !user) throw new Error(error?.message ?? 'Not authenticated')
+
+  const meta = user.user_metadata ?? {}
+  return {
+    id:        user.id,
+    email:     user.email ?? '',
+    firstName: meta.first_name ?? meta.firstName ?? '',
+    lastName:  meta.last_name  ?? meta.lastName  ?? '',
+    phone:     meta.phone      ?? '',
+    jobTitle:  meta.job_title  ?? meta.jobTitle  ?? '',
+  }
 }
 
 export async function updateProfile(dto: UpdateProfileDto): Promise<UserProfile> {
-  return apiClient('/users/profile', { method: 'PUT', body: JSON.stringify(dto) })
+  const supabase = getSupabase()
+  const { data: { user }, error } = await supabase.auth.updateUser({
+    data: {
+      first_name: dto.firstName,
+      last_name:  dto.lastName,
+      phone:      dto.phone,
+      job_title:  dto.jobTitle,
+    }
+  })
+  if (error || !user) throw new Error(error?.message ?? 'Update failed')
+
+  const meta = user.user_metadata ?? {}
+  return {
+    id:        user.id,
+    email:     user.email ?? '',
+    firstName: meta.first_name ?? '',
+    lastName:  meta.last_name  ?? '',
+    phone:     meta.phone      ?? '',
+    jobTitle:  meta.job_title  ?? '',
+  }
 }
 
 export async function changePassword(currentPassword: string, newPassword: string): Promise<void> {
-  return apiClient('/users/change-password', {
-    method: 'PUT',
-    body: JSON.stringify({ currentPassword, newPassword })
+  const supabase = getSupabase()
+  // Supabase doesn't require current password for updateUser — it relies on the active session.
+  // We re-authenticate first to validate the current password.
+  const { data: { user } } = await supabase.auth.getUser()
+  if (!user?.email) throw new Error('Not authenticated')
+
+  const { error: signInError } = await supabase.auth.signInWithPassword({
+    email: user.email,
+    password: currentPassword,
   })
+  if (signInError) throw new Error('invalidCredentials')
+
+  const { error } = await supabase.auth.updateUser({ password: newPassword })
+  if (error) throw new Error(error.message)
 }
 
-// ─── Preferencias locales (localStorage, sin backend) ───────────────────────
+// ─── Local preferences (localStorage, no backend needed) ─────────────────────
 
 const PREFS_KEY = 'bookkeeping_preferences'
 
@@ -47,6 +90,7 @@ export interface LocalPreferences {
   companyPhone: string
   companyEmail: string
   companyWebsite: string
+  sessionTimeout: number
   notifications: {
     emailNotifications: boolean
     transactionAlerts: boolean
@@ -70,6 +114,7 @@ const DEFAULT_PREFS: LocalPreferences = {
   companyPhone: '',
   companyEmail: '',
   companyWebsite: '',
+  sessionTimeout: 30,
   notifications: {
     emailNotifications: true,
     transactionAlerts: true,
@@ -77,7 +122,7 @@ const DEFAULT_PREFS: LocalPreferences = {
     weeklyDigest: false,
     monthlyReports: true,
     lowBalanceAlerts: true,
-    expenseThresholds: false
+    expenseThresholds: false,
   }
 }
 

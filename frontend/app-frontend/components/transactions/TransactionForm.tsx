@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { X } from 'lucide-react'
+import { X, AlertCircle } from 'lucide-react'
 import { Transaction } from '@/data/transactions-data'
 import * as categoryService from '@/services/categoryService'
 import accountService, { Account } from '@/services/accountService'
@@ -14,6 +14,27 @@ interface TransactionFormProps {
   onSave:       (transaction: Transaction) => void
   transaction?: Transaction | null
   mode:         'create' | 'edit'
+}
+
+// Inline error message component
+function FieldError({ message }: { message?: string }) {
+  if (!message) return null
+  return (
+    <div className="flex items-center gap-1.5 mt-1">
+      <AlertCircle className="w-3.5 h-3.5 text-red-500 shrink-0" />
+      <p className="text-xs text-red-600 font-medium">{message}</p>
+    </div>
+  )
+}
+
+// Required label helper
+function Label({ children, required }: { children: React.ReactNode; required?: boolean }) {
+  return (
+    <label className="block text-xs font-medium text-gray-700 mb-1">
+      {children}
+      {required && <span className="text-red-500 ml-0.5">*</span>}
+    </label>
+  )
 }
 
 export default function TransactionForm({ isOpen, onClose, onSave, transaction, mode = 'create' }: TransactionFormProps) {
@@ -138,7 +159,7 @@ export default function TransactionForm({ isOpen, onClose, onSave, transaction, 
         <form onSubmit={handleSubmit} className="p-4 space-y-3">
           <div className="grid grid-cols-3 gap-3">
             <div>
-              <label className="block text-xs font-medium text-gray-700 mb-1">{t('type')}</label>
+              <Label>{t('type')}</Label>
               <select value={formData.type} onChange={e => handleChange('type', e.target.value)}
                 className="w-full px-2 py-1.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 text-sm">
                 <option value="income">{t('income')}</option>
@@ -146,33 +167,31 @@ export default function TransactionForm({ isOpen, onClose, onSave, transaction, 
               </select>
             </div>
             <div>
-              <label className="block text-xs font-medium text-gray-700 mb-1">{t('date')}</label>
+              <Label required>{t('date')}</Label>
               <input type="date" value={formData.date} onChange={e => handleChange('date', e.target.value)}
-                className={`w-full px-2 py-1.5 border rounded-lg focus:ring-2 focus:ring-primary-500 text-sm ${errors.date ? 'border-red-500' : 'border-gray-300'}`} />
-              {errors.date && <p className="text-red-500 text-xs mt-0.5">{errors.date}</p>}
+                className={`w-full px-2 py-1.5 border rounded-lg focus:ring-2 focus:ring-primary-500 text-sm ${errors.date ? 'border-red-400 bg-red-50' : 'border-gray-300'}`} />
+              <FieldError message={errors.date} />
             </div>
             <div>
-              <label className="block text-xs font-medium text-gray-700 mb-1">{t('amount')}</label>
+              <Label required>{t('amount')}</Label>
               <input type="number" step="0.01" min="0" value={formData.amount} onChange={e => handleChange('amount', e.target.value)}
-                className={`w-full px-2 py-1.5 border rounded-lg focus:ring-2 focus:ring-primary-500 text-sm ${errors.amount ? 'border-red-500' : 'border-gray-300'}`}
+                className={`w-full px-2 py-1.5 border rounded-lg focus:ring-2 focus:ring-primary-500 text-sm ${errors.amount ? 'border-red-400 bg-red-50' : 'border-gray-300'}`}
                 placeholder="0.00" />
-              {errors.amount && <p className="text-red-500 text-xs mt-0.5">{errors.amount}</p>}
+              <FieldError message={errors.amount} />
             </div>
           </div>
 
           <div>
-            <label className="block text-xs font-medium text-gray-700 mb-1">{t('description')}</label>
+            <Label required>{t('description')}</Label>
             <input type="text" value={formData.description} onChange={e => handleChange('description', e.target.value)}
-              className={`w-full px-2 py-1.5 border rounded-lg focus:ring-2 focus:ring-primary-500 text-sm ${errors.description ? 'border-red-500' : 'border-gray-300'}`}
+              className={`w-full px-2 py-1.5 border rounded-lg focus:ring-2 focus:ring-primary-500 text-sm ${errors.description ? 'border-red-400 bg-red-50' : 'border-gray-300'}`}
               placeholder={t('description')} />
-            {errors.description && <p className="text-red-500 text-xs mt-0.5">{errors.description}</p>}
+            <FieldError message={errors.description} />
           </div>
 
           <div className="grid grid-cols-2 gap-3">
             <div>
-              <label className="block text-xs font-medium text-gray-700 mb-1">
-                {t('account')} <span className="text-gray-400 text-xs">({tCommon('no')})</span>
-              </label>
+              <Label>{t('account')} <span className="text-gray-400 font-normal">({tCommon('no')})</span></Label>
               <select value={formData.accountId} onChange={e => handleChange('accountId', e.target.value)}
                 disabled={loadingAccounts}
                 className={`w-full px-2 py-1.5 border rounded-lg focus:ring-2 focus:ring-primary-500 text-sm ${loadingAccounts ? 'opacity-50 cursor-not-allowed' : 'border-gray-300'}`}>
@@ -183,30 +202,32 @@ export default function TransactionForm({ isOpen, onClose, onSave, transaction, 
               </select>
             </div>
             <div>
-              <label className="block text-xs font-medium text-gray-700 mb-1">{t('category')}</label>
+              <Label required>{t('category')}</Label>
               <select value={formData.category} onChange={e => handleChange('category', e.target.value)}
                 disabled={loadingCategories}
-                className={`w-full px-2 py-1.5 border rounded-lg focus:ring-2 focus:ring-primary-500 text-sm ${errors.category ? 'border-red-500' : 'border-gray-300'} ${loadingCategories ? 'opacity-50 cursor-not-allowed' : ''}`}>
+                className={`w-full px-2 py-1.5 border rounded-lg focus:ring-2 focus:ring-primary-500 text-sm ${errors.category ? 'border-red-400 bg-red-50' : 'border-gray-300'} ${loadingCategories ? 'opacity-50 cursor-not-allowed' : ''}`}>
                 <option value="">{loadingCategories ? tCommon('loading') : tCommon('all')}</option>
                 {cats.map(c => <option key={c.value} value={c.value}>{translateCategoryName(c.label, tCategories)}</option>)}
               </select>
-              {errors.category && <p className="text-red-500 text-xs mt-0.5">{errors.category}</p>}
+              <FieldError message={errors.category} />
             </div>
           </div>
 
           {selectedAccount && (
-            <div className="bg-blue-50 border border-blue-200 rounded-lg p-2">
-              <p className="text-xs text-blue-800">{tCommon('balance') || 'Balance'}: {formatCurrency(selectedAccount.currentBalance)} {selectedAccount.currency}</p>
+            <div className="flex items-center gap-2 bg-blue-50 border border-blue-100 rounded-lg px-3 py-2">
+              <span className="text-xs text-blue-600 font-medium">{tCommon('balance')}:</span>
+              <span className="text-xs text-blue-800 font-semibold">{formatCurrency(selectedAccount.currentBalance)} {selectedAccount.currency}</span>
             </div>
           )}
           {showAccountWarning && (
-            <div className="bg-orange-50 border border-orange-200 rounded-lg p-2">
-              <p className="text-xs text-orange-800">⚠️ {formatCurrency(selectedAccount!.currentBalance - parseFloat(formData.amount || '0'))}</p>
+            <div className="flex items-center gap-2 bg-amber-50 border border-amber-200 rounded-lg px-3 py-2">
+              <AlertCircle className="w-3.5 h-3.5 text-amber-500 shrink-0" />
+              <span className="text-xs text-amber-700">{formatCurrency(selectedAccount!.currentBalance - parseFloat(formData.amount || '0'))}</span>
             </div>
           )}
 
           <div>
-            <label className="block text-xs font-medium text-gray-700 mb-1">{t('status')}</label>
+            <Label>{t('status')}</Label>
             <div className="grid grid-cols-2 gap-2">
               <button type="button" onClick={() => handleChange('status', 'pending')}
                 className={`px-2 py-1.5 rounded-lg border text-xs transition-all ${formData.status === 'pending' ? 'border-yellow-500 bg-yellow-50 text-yellow-700' : 'border-gray-200 hover:border-gray-300'}`}>
@@ -220,9 +241,7 @@ export default function TransactionForm({ isOpen, onClose, onSave, transaction, 
           </div>
 
           <div>
-            <label className="block text-xs font-medium text-gray-700 mb-1">
-              {t('notes') || 'Notes'} <span className="text-gray-400 text-xs">({tCommon('no')})</span>
-            </label>
+            <Label>{t('notes')} <span className="text-gray-400 font-normal">({tCommon('no')})</span></Label>
             <textarea value={formData.notes} onChange={e => handleChange('notes', e.target.value)}
               rows={2} className="w-full px-2 py-1.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 resize-none text-sm"
               placeholder="..." />

@@ -9,6 +9,7 @@ import OnboardingTour from '@/components/onboarding/OnboardingTour'
 import { useOnboarding } from '@/hooks/useOnboarding'
 import { useAuth } from '@/hooks/useAuth'
 import { useTranslations, useLocale } from 'next-intl'
+import PageLayout from '@/components/ui/PageLayout'
 import { useNotifications } from '@/hooks/useNotifications'
 import employeeService, { Employee, EmployeeStatus, PaginationMetadata } from '@/services/employeeService'
 
@@ -25,7 +26,6 @@ export default function EmployeesPage() {
   const [editingEmployee, setEditingEmployee] = useState<Employee | null>(null)
   const [searchTerm, setSearchTerm] = useState('')
   const [statusFilter, setStatusFilter] = useState<'all' | 'active' | 'inactive'>('active')
-  const [sidebarCollapsed, setSidebarCollapsed] = useState(false)
   const [totalPayroll, setTotalPayroll] = useState(0)
   const [pagination, setPagination] = useState<PaginationMetadata | null>(null)
   const [currentPage, setCurrentPage] = useState(1)
@@ -50,7 +50,7 @@ export default function EmployeesPage() {
       setEmployees(result.data)
       setPagination(result.pagination)
     } catch (err: any) {
-      setError(err.message || 'Error al cargar los empleados')
+      setError(err.message || t('loadError'))
     } finally {
       setLoading(false)
     }
@@ -81,10 +81,6 @@ export default function EmployeesPage() {
     logout()
   }, [logout])
 
-  const handleSidebarToggle = useCallback((isCollapsed: boolean) => {
-    setSidebarCollapsed(isCollapsed)
-  }, [])
-
   const handleAddEmployee = useCallback(async (employeeData: any) => {
     try {
       await employeeService.createEmployee(employeeData)
@@ -94,7 +90,7 @@ export default function EmployeesPage() {
       await loadTotalPayroll()
       showSuccess(tCommon('success'), t('form.create') + ' ✓')
     } catch (err: any) {
-      showError(tCommon('error'), err.message || 'Error al crear el empleado')
+      showError(tCommon('error'), err.message || t('form.saveError'))
     }
   }, [loadEmployees, loadTotalPayroll, showSuccess, showError, t, tCommon])
 
@@ -113,7 +109,7 @@ export default function EmployeesPage() {
       await loadTotalPayroll()
       showSuccess(tCommon('success'), t('form.saveChanges') + ' ✓')
     } catch (err: any) {
-      showError(tCommon('error'), err.message || 'Error al actualizar el empleado')
+      showError(tCommon('error'), err.message || t('form.saveError'))
     }
   }, [editingEmployee, loadEmployees, loadTotalPayroll, showSuccess, showError, t, tCommon])
 
@@ -126,7 +122,7 @@ export default function EmployeesPage() {
         .catch(() => {})
       showSuccess(tCommon('success'), t('deleteEmployee') + ' ✓')
     } catch (err: any) {
-      showError(tCommon('error'), err.message || 'Error al desactivar el empleado')
+      showError(tCommon('error'), err.message || t('loadError'))
     }
   }, [loadEmployees, showSuccess, showError, t, tCommon])
 
@@ -145,25 +141,25 @@ export default function EmployeesPage() {
 
   return (
     <div className="flex min-h-screen bg-gray-50">
-      <Sidebar onLogout={handleLogout} onToggle={handleSidebarToggle} />
+      <Sidebar onLogout={handleLogout} />
 
-      <div className={`flex-1 transition-all duration-300 ${sidebarCollapsed ? 'ml-16' : 'ml-64'}`}>
+      <PageLayout>
         {/* Header */}
         <div className="bg-white border-b border-gray-200 sticky top-0 z-10">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="flex items-center justify-between h-20">
-              <div>
-                <h1 className="text-2xl font-bold text-gray-900">{t('title')}</h1>
-                <p className="text-sm text-gray-500 mt-1">{t('subtitle')}</p>
+            <div className="flex items-center justify-between min-h-16 py-3 gap-3">
+              <div className="min-w-0">
+                <h1 className="text-xl sm:text-2xl font-bold text-gray-900 truncate">{t('title')}</h1>
+                <p className="text-sm text-gray-500 mt-0.5 hidden sm:block">{t('subtitle')}</p>
               </div>
-              <div className="flex items-center space-x-3">
+              <div className="flex items-center gap-2 shrink-0">
                 <button
                   onClick={() => setIsFormOpen(true)}
-                  className="bg-primary-600 text-white px-4 py-2 rounded-lg hover:bg-primary-700 transition-colors duration-200 flex items-center space-x-2"
+                  className="bg-primary-600 text-white px-3 py-2 rounded-lg hover:bg-primary-700 transition-colors flex items-center gap-1.5"
                   data-tour="add-employee-btn"
                 >
                   <Plus className="w-4 h-4" />
-                  <span>{t('new')}</span>
+                  <span className="hidden sm:inline text-sm">{t('new')}</span>
                 </button>
               </div>
             </div>
@@ -321,7 +317,7 @@ export default function EmployeesPage() {
             editingEmployee={editingEmployee}
           />
         </div>
-      </div>
+      </PageLayout>
 
       <OnboardingTour
         isOpen={isOnboardingOpen}

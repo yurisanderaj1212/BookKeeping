@@ -36,7 +36,8 @@ import {
   type LocalPreferences
 } from '@/services/userService'
 import { useTranslations } from 'next-intl'
-import { translateApiError, getErrorCode } from '@/lib/apiErrorMap'
+import { useNotifications } from '@/hooks/useNotifications'
+import PageLayout from '@/components/ui/PageLayout'
 
 // ─── BillingRedirect ─────────────────────────────────────────────────────────
 // Componente separado para que el useEffect no viole las reglas de hooks
@@ -343,10 +344,9 @@ const SecurityTab = ({
 export default function SettingsPage() {
   const router = useRouter()
   const { isLoading: authLoading, isAuthenticated, logout } = useAuth()
+  const { showSuccess, showError } = useNotifications()
   const [activeTab, setActiveTab] = useState('profile')
   const [isLoading, setIsLoading] = useState(false)
-  const [sidebarCollapsed, setSidebarCollapsed] = useState(false)
-  const [toast, setToast] = useState<{ msg: string; type: 'success' | 'error' } | null>(null)
 
   const { isOnboardingOpen, currentStep: onboardingStep, setStep: setOnboardingStep, closeOnboarding, completeOnboarding, resetOnboarding } = useOnboarding()
   const t = useTranslations('settings')
@@ -374,9 +374,9 @@ export default function SettingsPage() {
   })
 
   const showToast = useCallback((msg: string, type: 'success' | 'error' = 'success') => {
-    setToast({ msg, type })
-    setTimeout(() => setToast(null), 3500)
-  }, [])
+    if (type === 'success') showSuccess(tCommon('success'), msg)
+    else showError(tCommon('error'), msg)
+  }, [showSuccess, showError, tCommon])
 
   // Load profile from API on mount
   useEffect(() => {
@@ -396,11 +396,12 @@ export default function SettingsPage() {
       await updateProfile({ firstName, lastName, phone, jobTitle })
       showToast(t('profileSaved'))
     } catch (e: unknown) {
-      showToast(translateApiError(getErrorCode(e), tErr, t('profileSaved')), 'error')
+      const msg = e instanceof Error ? e.message : ''
+      showToast(msg || tCommon('error'), 'error')
     } finally {
       setIsLoading(false)
     }
-  }, [firstName, lastName, phone, jobTitle, showToast, t, tErr])
+  }, [firstName, lastName, phone, jobTitle, showToast, t, tCommon])
 
   const handleSaveCompany = useCallback(() => {
     saveLocalPreferences(prefs)
@@ -428,7 +429,9 @@ export default function SettingsPage() {
       setSecForm(f => ({ ...f, currentPassword: '', newPassword: '', confirmPassword: '' }))
       showToast(t('passwordSaved'))
     } catch (e: unknown) {
-      showToast(translateApiError(getErrorCode(e), tErr), 'error')
+      const msg = e instanceof Error ? e.message : ''
+      // 'invalidCredentials' is thrown by userService when current password is wrong
+      showToast(msg === 'invalidCredentials' ? tErr('invalidCredentials') : (msg || tCommon('error')), 'error')
     } finally {
       setIsLoading(false)
     }
@@ -608,9 +611,9 @@ export default function SettingsPage() {
 
   return (
     <div className="flex min-h-screen bg-gray-50">
-      <Sidebar onLogout={logout} onToggle={setSidebarCollapsed} />
+      <Sidebar onLogout={logout} />
 
-      <div className={`flex-1 transition-all duration-300 ${sidebarCollapsed ? 'ml-16' : 'ml-64'}`}>
+      <PageLayout>
         {/* Header compacto */}
         <div className="bg-white border-b border-gray-200 sticky top-0 z-10">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -632,22 +635,22 @@ export default function SettingsPage() {
         </div>
 
         {/* Content */}
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6" data-tour="settings-main">
           <div className="flex flex-col lg:flex-row gap-6">
-            {/* Tabs Navigation */}
+            {/* Tabs Navigation — horizontal scroll on mobile, vertical on desktop */}
             <div className="lg:w-56 shrink-0">
-              <nav className="space-y-1">
+              <nav className="flex lg:flex-col gap-1 overflow-x-auto lg:overflow-x-visible pb-2 lg:pb-0 scrollbar-hide">
                 {tabs.map(tab => {
                   const Icon = tab.icon
                   return (
                     <button key={tab.id} onClick={() => setActiveTab(tab.id)}
-                      className={`w-full flex items-center space-x-3 px-3 py-2.5 rounded-lg transition-all text-left ${
+                      className={`flex items-center gap-2 px-3 py-2.5 rounded-lg transition-all text-left shrink-0 lg:w-full ${
                         activeTab === tab.id
                           ? 'bg-primary-50 text-primary-600 shadow-sm'
                           : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
                       }`}>
-                      <Icon className={`w-5 h-5 ${activeTab === tab.id ? 'text-primary-600' : 'text-gray-400'}`} />
-                      <span className="font-medium text-sm">{tab.label}</span>
+                      <Icon className={`w-4 h-4 shrink-0 ${activeTab === tab.id ? 'text-primary-600' : 'text-gray-400'}`} />
+                      <span className="font-medium text-sm whitespace-nowrap">{tab.label}</span>
                     </button>
                   )
                 })}
@@ -658,16 +661,7 @@ export default function SettingsPage() {
             <div className="flex-1">{renderTabContent()}</div>
           </div>
         </div>
-      </div>
-
-      {/* Toast */}
-      {toast && (
-        <div className={`fixed bottom-6 right-6 z-50 px-4 py-3 rounded-lg shadow-lg text-white text-sm transition-all ${
-          toast.type === 'success' ? 'bg-green-600' : 'bg-red-600'
-        }`}>
-          {toast.msg}
-        </div>
-      )}
+      </PageLayout>
 
       <OnboardingTour isOpen={isOnboardingOpen} onClose={closeOnboarding} onComplete={completeOnboarding} currentStep={onboardingStep} setStep={setOnboardingStep} />
     </div>

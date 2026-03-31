@@ -3,6 +3,7 @@
 import { useState, useEffect, useRef } from 'react'
 import { X, CheckCircle, AlertTriangle, Info, AlertCircle, ArrowRight } from 'lucide-react'
 import { useRouter } from 'next/navigation'
+import { useTranslations } from 'next-intl'
 import type { Toast } from '@/lib/notificationContext'
 
 export type ToastNotification = Toast & { id: string }
@@ -15,28 +16,28 @@ const CONFIGS = {
     accent:  '#22c55e',
     iconBg:  '#f0fdf4',
     iconFg:  '#16a34a',
-    label:   'Éxito',
+    labelKey: 'success' as const,
   },
   error: {
     icon:    AlertCircle,
     accent:  '#ef4444',
     iconBg:  '#fef2f2',
     iconFg:  '#dc2626',
-    label:   'Error',
+    labelKey: 'error' as const,
   },
   warning: {
     icon:    AlertTriangle,
     accent:  '#f59e0b',
     iconBg:  '#fffbeb',
     iconFg:  '#d97706',
-    label:   'Aviso',
+    labelKey: 'warning' as const,
   },
   info: {
     icon:    Info,
     accent:  '#3b82f6',
     iconBg:  '#eff6ff',
     iconFg:  '#2563eb',
-    label:   'Info',
+    labelKey: 'info' as const,
   },
 }
 
@@ -44,16 +45,15 @@ const CONFIGS = {
 
 function ToastItem({ toast, onRemove }: { toast: Toast; onRemove: (id: string) => void }) {
   const [phase, setPhase] = useState<'enter' | 'idle' | 'exit'>('enter')
-  const router  = useRouter()
+  const router   = useRouter()
   const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
-  const cfg     = CONFIGS[toast.type]
-  const Icon    = cfg.icon
-  const dur     = toast.duration ?? 5000
+  const t        = useTranslations('toast')
+  const cfg      = CONFIGS[toast.type]
+  const Icon     = cfg.icon
+  const dur      = toast.duration ?? 5000
 
   useEffect(() => {
-    // Enter animation
     const t1 = setTimeout(() => setPhase('idle'), 20)
-    // Auto-dismiss
     timerRef.current = setTimeout(() => dismiss(), dur)
     return () => { clearTimeout(t1); if (timerRef.current) clearTimeout(timerRef.current) }
   }, [])
@@ -112,7 +112,7 @@ function ToastItem({ toast, onRemove }: { toast: Toast; onRemove: (id: string) =
         <div style={{ flex: 1, minWidth: 0 }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '2px' }}>
             <span style={{ fontSize: '9px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.5px', color: cfg.iconFg }}>
-              {cfg.label}
+              {t(cfg.labelKey)}
             </span>
           </div>
           <p style={{ fontSize: '13px', fontWeight: 600, color: '#111827', lineHeight: '1.3', margin: 0 }}>
@@ -192,3 +192,4 @@ export default function NotificationToast({ toasts, onRemove }: NotificationToas
     </div>
   )
 }
+

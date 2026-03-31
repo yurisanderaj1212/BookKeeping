@@ -41,7 +41,8 @@
     "viewTour": "View Tour",
     "system": "System",
     "expand": "Expand",
-    "collapse": "Collapse"
+    "collapse": "Collapse",
+    "balance": "Balance"
   },
   "nav": {
     "home": "Home",
@@ -155,15 +156,37 @@
       }
     },
     "forgotPassword": {
-      "title": "Reset password",
-      "subtitle": "We'll send you a link to reset your password",
+      "title": "Forgot your password?",
+      "subtitle": "Enter your email and we'll send you a code to reset it.",
       "email": "Email",
-      "submit": "Send link",
-      "backToLogin": "Back to sign in"
+      "emailPlaceholder": "your@email.com",
+      "submit": "Send verification code",
+      "sending": "Sending...",
+      "backToLogin": "Back to sign in",
+      "sentTitle": "Check your email",
+      "sentDesc": "If {email} is registered, you'll receive a verification code in the next few minutes.",
+      "sentHint": "The code expires in 15 minutes. Also check your spam folder.",
+      "haveCode": "I have my code",
+      "useOtherEmail": "Use a different email",
+      "newPasswordTitle": "New password",
+      "newPasswordSubtitle": "Enter the code you received and your new password.",
+      "codeLabel": "Verification code",
+      "codePlaceholder": "e.g. 847291",
+      "newPasswordLabel": "New password",
+      "confirmPasswordLabel": "Confirm password",
+      "confirmPasswordPlaceholder": "Repeat your password",
+      "resetting": "Saving...",
+      "resetSubmit": "Reset password",
+      "doneTitle": "Password updated!",
+      "doneDesc": "Your password was reset successfully. You can now sign in.",
+      "doneBtn": "Go to sign in",
+      "errors": {
+        "codeRequired": "Please enter the verification code."
+      }
     }
   },
   "dashboard": {
-    "title": "Dashboard",
+    "title": "Home",
     "welcome": "Welcome back! Here's your financial summary",
     "addTransaction": "Add Transaction",
     "addTransactionDesc": "Record a new income or expense",
@@ -178,12 +201,12 @@
     "statsCards": {
       "totalIncome": "Total Income",
       "totalExpenses": "Total Expenses",
-      "netProfit": "Net Profit",
+      "netProfit": "Revenue",
       "pending": "Pending Items",
       "showingData": "Showing data for:"
     },
     "weeklyChart": {
-      "title": "Weekly Comparison",
+      "title": "Weekly Summary",
       "subtitle": "Income vs Expenses by Week",
       "income": "Income",
       "expenses": "Expenses",
@@ -192,7 +215,7 @@
       "weekLabel": "Week {n}"
     },
     "monthlyChart": {
-      "title": "Monthly Trends",
+      "title": "Monthly Summary",
       "subtitle": "Performance over the last 6 months",
       "income": "Income",
       "expenses": "Expenses",
@@ -290,6 +313,12 @@
     "perPage100": "100 per page",
     "transactionsLabel": "transactions",
     "notes": "Notes",
+    "errors": {
+      "amountRequired": "Amount must be greater than 0",
+      "descriptionRequired": "Description is required",
+      "categoryRequired": "Category is required",
+      "dateRequired": "Date is required"
+    },
     "export": {
       "title": "Export Transactions",
       "format": "Format",
@@ -517,7 +546,7 @@
       "statusOpen": "Open",
       "summaryIncome": "Monthly Income",
       "summaryExpenses": "Monthly Expenses",
-      "summaryProfit": "Net Profit",
+      "summaryProfit": "Revenue",
       "summaryClosures": "Closure Status",
       "summaryClosed": "{closed}/{total} Closed",
       "summaryPending": "{count} pending",
@@ -607,7 +636,7 @@
       "executiveSummary": "Executive Summary",
       "totalIncome": "Total Income",
       "totalExpenses": "Total Expenses",
-      "netProfit": "Net Profit",
+      "netProfit": "Revenue",
       "netLoss": "Net Loss",
       "margin": "Margin",
       "totalTransactions": "Total Transactions",
@@ -630,7 +659,7 @@
       "generatedOn": "Generated on",
       "totalIncome": "Total income",
       "totalExpenses": "Total expenses",
-      "netProfit": "Net profit",
+      "netProfit": "Revenue",
       "profitMargin": "Profit margin",
       "colMonth": "Month",
       "colPeriod": "Period",
@@ -652,7 +681,7 @@
       "generalSummary": "General Summary",
       "totalIncome": "Total Income",
       "totalExpenses": "Total Expenses",
-      "netProfit": "Net Profit",
+      "netProfit": "Revenue",
       "netLoss": "Net Loss",
       "profitMargin": "Profit margin",
       "totalTransactions": "Total Transactions",
@@ -1199,7 +1228,8 @@
       "titleHighlight": "for Everyone",
       "subtitle": "Manage your business finances with ease. No accounting knowledge required.",
       "cta": "Free Trial",
-      "learnMore": "Learn More"
+      "learnMore": "Learn More",
+      "loginBtn": "Sign in"
     },
     "nav": {
       "features": "Features",
@@ -1442,56 +1472,64 @@
     "ariaStep": "Step {n}",
     "steps": {
       "welcome": {
-        "title": "Welcome to Chill Numbers!",
-        "description": "We will guide you through all the features of your accounting tool. The tour takes less than 2 minutes."
+        "title": "Welcome to Chill Numbers! 🎉",
+        "description": "Welcome to your professional accounting tool. In the next steps we'll show you everything you can do. No accounting knowledge required — it's designed so anyone can use it with ease."
       },
       "sidebar": {
-        "title": "Main Navigation",
-        "description": "From here you access all sections. You can collapse the menu with the corner button to gain space."
+        "title": "Main Navigation Menu",
+        "description": "This is your main menu. From here you access all sections: Home, Transactions, Reports, Analytics, Accounts and Employees. You can collapse it with the arrow to gain screen space. The language button lets you switch between Spanish and English."
       },
       "dashboard": {
-        "title": "Control Panel",
-        "description": "Your real-time financial summary: income, expenses and net profit. All at a glance."
+        "title": "Real-Time Financial Summary",
+        "description": "These cards show your key metrics: total income, total expenses, net profit and pending transactions. Data updates automatically every time you record a transaction. At a glance you know how your business is doing."
+      },
+      "quickActions": {
+        "title": "Quick Actions",
+        "description": "These buttons take you directly to the most frequent actions: add a transaction, generate a report, view analytics or connect your bank. They are shortcuts so you can work faster without navigating the menu."
       },
       "notifications": {
-        "title": "Notifications",
-        "description": "Important alerts, reminders and system updates. The icon shows the number of unread notifications."
+        "title": "Notification Center 🔔",
+        "description": "Here you receive important alerts: weekly close reminders, transactions pending review, and system notifications. The red number shows how many you haven't read. Notifications also appear as floating messages in the corner of the screen."
       },
       "accounts": {
-        "title": "Account Management",
-        "description": "Create your bank accounts, cash or cards. Each transaction can be linked to an account to automatically update its balance."
+        "title": "Bank Account Management",
+        "description": "Accounts are the foundation of your accounting. Here you can create bank accounts, cash, credit cards, loans and more. Each account has a balance that updates automatically when you record transactions linked to it."
       },
       "addAccount": {
-        "title": "Create New Account",
-        "description": "Add bank accounts, cash, credit cards or any other type. Set the initial balance and the system keeps it updated."
+        "title": "Your Accounts Summary",
+        "description": "Here you see the total balance of all your accounts, how many active accounts you have and the total registered. To create a new account, use the 'New Account' button at the top. You can also connect your real bank with Plaid to import transactions automatically."
       },
       "transactions": {
-        "title": "Transactions",
-        "description": "Record income and expenses. Filter by category, type, date or account. Each transaction can be linked to an account for precise control."
+        "title": "Transaction Records",
+        "description": "This is the most important section. Here you record all your income and expenses. Each transaction has: type (income/expense), amount, category, date and linked account. You can filter by category, type, account or date range to find any movement."
       },
       "addTransaction": {
-        "title": "New Transaction",
-        "description": "Record an income or expense in seconds. Select the category, account and the balance updates automatically."
+        "title": "Add New Transaction",
+        "description": "This button opens the form to record an income or expense. Fill in the type, amount, description, category and date. If you link an account, the balance updates automatically. This is the heart of your daily accounting."
+      },
+      "txFilters": {
+        "title": "Filters and Search",
+        "description": "Use these filters to find specific transactions. You can search by text, filter by category, type (income/expense), bank account or date range. Results update in real time. Very useful for reviewing expenses from a specific period."
       },
       "employees": {
-        "title": "Employee Management",
-        "description": "Manage your team: personal data, payroll type (hourly, weekly, monthly) and calculate the total annual payroll cost."
+        "title": "Employee & Payroll Management",
+        "description": "Manage your workforce. Register employees with their personal information, position, payroll type (hourly, weekly, biweekly, monthly) and salary. The system automatically calculates the total annual payroll cost for your financial reports."
       },
       "reports": {
-        "title": "Financial Reports",
-        "description": "Generate professional reports: P&L, transaction summary, category breakdown and more. Export to Excel or PDF."
+        "title": "Professional Financial Reports 📊",
+        "description": "Generate three types of reports: Income Statement (income vs expenses), Transaction Summary (period activity) and Weekly Close (week control). Select the period (week, month, year) before generating. You can export to Excel or PDF."
       },
       "analytics": {
-        "title": "Advanced Analytics",
-        "description": "Visualize trends, compare annual periods and get deep insights with interactive charts."
+        "title": "Advanced Analytics with Charts 📈",
+        "description": "Visualize your business performance with interactive charts. Compare periods, analyze annual trends, see cash flow, category breakdown and employee analysis. Ideal for making strategic decisions based on real data."
       },
       "settings": {
-        "title": "Settings",
-        "description": "Customize your profile, company information, notification preferences and account security."
+        "title": "Account Settings ⚙️",
+        "description": "Customize your experience: update your personal profile, company data, notification preferences, security (password change) and system preferences (language, currency, timezone). You can also manage your subscription from the Billing tab."
       },
       "complete": {
-        "title": "Ready to start!",
-        "description": "You now know the full flow: create accounts, record transactions and generate reports. Your business under control."
+        "title": "You're an expert now! 🚀",
+        "description": "You know all the features of Chill Numbers. The basic flow is: create your accounts → record transactions daily → generate weekly reports → analyze trends. If you need help, use the help button (?) on the dashboard. Best of luck with your business!"
       }
     }
   },
@@ -1519,6 +1557,17 @@
     "weekAlreadyOpen": "This week is already open.",
     "categoryNotFound": "Category not found.",
     "categoriesFixed": "Categories are fixed and cannot be modified."
+  },
+  "legal": {
+    "signIn": "Sign in",
+    "lastUpdated": "Last updated",
+    "cookiesTitle": "Cookie Policy",
+    "privacyTitle": "Privacy Policy",
+    "termsTitle": "Terms of Service",
+    "terms": "Terms of Service",
+    "privacy": "Privacy Policy",
+    "cookies": "Cookie Policy",
+    "backHome": "Back to home"
   },
   "billing": {
     "title": "Billing & Subscription",
@@ -1557,6 +1606,12 @@
     "redirecting": "Redirecting...",
     "poweredByStripe": "Payments securely processed by Stripe."
   },
+  "toast": {
+    "success": "Success",
+    "error": "Error",
+    "warning": "Warning",
+    "info": "Info"
+  },
   "notificationEvents": {
     "NOTIFY_TRANSACTION_CREATED_TITLE": "New Transaction Recorded",
     "NOTIFY_TRANSACTION_CREATED_MSG": "A transaction of {amount} was recorded in {category}",
@@ -1571,7 +1626,16 @@
     "NOTIFY_HIGH_EXPENSES_TITLE": "High Expenses Detected",
     "NOTIFY_HIGH_EXPENSES_MSG": "Expenses have exceeded the average by {percentage}%",
     "NOTIFY_PENDING_TRANSACTIONS_TITLE": "Pending Transactions",
-    "NOTIFY_PENDING_TRANSACTIONS_MSG": "You have {count} transactions pending review"
+    "NOTIFY_PENDING_TRANSACTIONS_MSG": "You have {count} transactions pending review",
+    "WEEKLY_REMINDER_TITLE": "📊 Pending Reports",
+    "WEEKLY_REMINDER_MSG": "It's the end of the week. Remember to generate your weekly financial reports.",
+    "WEEKLY_REMINDER_ACTION": "View reports",
+    "DAILY_REMINDER_TITLE": "📋 Daily Reminder",
+    "DAILY_REMINDER_MSG": "Have you recorded your transactions for today?",
+    "DAILY_REMINDER_ACTION": "Record now",
+    "WEEK_ENDING_TITLE": "⚠️ Week Ending Soon",
+    "WEEK_ENDING_MSG": "The current week is ending and hasn't been closed yet. Remember to do the weekly close.",
+    "WEEK_ENDING_ACTION": "Close week"
   },
   "plaid": {
     "reviewQueue": {

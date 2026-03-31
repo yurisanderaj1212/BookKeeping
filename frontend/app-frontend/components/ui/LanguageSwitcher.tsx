@@ -2,7 +2,7 @@
 
 import { Suspense } from 'react'
 import { useLocale } from 'next-intl'
-import { useRouter, usePathname, useSearchParams } from 'next/navigation'
+import { usePathname, useRouter } from '@/i18n/routing'
 import { Globe } from 'lucide-react'
 
 interface LanguageSwitcherProps {
@@ -16,28 +16,13 @@ const LOCALES = [
 ]
 
 function LanguageSwitcherInner({ variant = 'compact', className = '' }: LanguageSwitcherProps) {
-  const locale = useLocale()
-  const router = useRouter()
+  const locale   = useLocale()
+  const router   = useRouter()
   const pathname = usePathname()
-  const searchParams = useSearchParams()
 
   const switchLocale = (newLocale: string) => {
     if (newLocale === locale) return
-
-    document.cookie = `NEXT_LOCALE=${newLocale}; path=/; max-age=31536000; SameSite=Lax`
-
-    const segments = pathname.split('/')
-    const knownLocales = ['es', 'en']
-    const withoutLocale = knownLocales.includes(segments[1])
-      ? '/' + segments.slice(2).join('/')
-      : pathname
-    const cleanPath = withoutLocale || '/'
-
-    // Preservar query params al cambiar de idioma
-    const qs = searchParams.toString()
-    const fullPath = qs ? `${cleanPath}?${qs}` : cleanPath
-
-    router.push(newLocale === 'es' ? fullPath : `/${newLocale}${fullPath}`)
+    router.replace(pathname as any, { locale: newLocale })
   }
 
   if (variant === 'full') {
@@ -65,7 +50,7 @@ function LanguageSwitcherInner({ variant = 'compact', className = '' }: Language
     )
   }
 
-  // compact variant — used inside Sidebar
+  // compact variant
   return (
     <div className={`flex items-center gap-1 ${className}`}>
       <Globe className="w-3.5 h-3.5 text-gray-400 shrink-0" />

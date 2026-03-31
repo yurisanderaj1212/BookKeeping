@@ -1,13 +1,15 @@
 'use client'
 
 import { useState, Suspense } from 'react'
-import { useRouter, useSearchParams } from 'next/navigation'
+import { useSearchParams } from 'next/navigation'
+import { useRouter } from '@/i18n/routing'
 import { ArrowLeft, Download } from 'lucide-react'
 import Sidebar from '@/components/dashboard/Sidebar'
 import TransactionSummaryReport from '@/components/reports/TransactionSummaryReport'
 import { exportTransactionSummary, showExportModal } from '@/services/exportService'
 import { useAuth } from '@/hooks/useAuth'
 import { useTranslations } from 'next-intl'
+import PageLayout from '@/components/ui/PageLayout'
 
 function TransactionSummaryContent() {
   const { logout, isLoading } = useAuth()
@@ -15,7 +17,6 @@ function TransactionSummaryContent() {
   const tReport = useTranslations('reports')
   const router = useRouter()
   const searchParams = useSearchParams()
-  const [sidebarCollapsed, setSidebarCollapsed] = useState(false)
   
   const period = searchParams.get('period') || 'month'
   const year = searchParams.get('year') || String(new Date().getFullYear())
@@ -34,10 +35,6 @@ function TransactionSummaryContent() {
     logout()
   }
 
-  const handleSidebarToggle = (isCollapsed: boolean) => {
-    setSidebarCollapsed(isCollapsed)
-  }
-
   const handleBack = () => {
     router.push('/reports')
   }
@@ -50,9 +47,9 @@ function TransactionSummaryContent() {
 
   return (
     <div className="flex min-h-screen bg-gray-50">
-      <Sidebar onLogout={handleLogout} onToggle={handleSidebarToggle} />
+      <Sidebar onLogout={handleLogout} />
       
-      <div className={`flex-1 transition-all duration-300 ${sidebarCollapsed ? 'ml-16' : 'ml-64'}`}>
+      <PageLayout>
         {/* Header */}
         <div className="bg-white border-b border-gray-200 sticky top-0 z-10">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -90,7 +87,7 @@ function TransactionSummaryContent() {
             month={month}
           />
         </div>
-      </div>
+      </PageLayout>
     </div>
   )
 }

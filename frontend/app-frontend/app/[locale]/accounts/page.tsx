@@ -8,6 +8,7 @@ import AccountList from '@/components/accounts/AccountList'
 import OnboardingTour from '@/components/onboarding/OnboardingTour'
 import { useAuth } from '@/hooks/useAuth'
 import { useTranslations, useLocale } from 'next-intl'
+import PageLayout from '@/components/ui/PageLayout'
 import { useOnboarding } from '@/hooks/useOnboarding'
 import { useNotifications } from '@/hooks/useNotifications'
 import accountService, { Account } from '@/services/accountService'
@@ -31,7 +32,6 @@ export default function AccountsPage() {
   const [loading, setLoading] = useState(true)
   const [showForm, setShowForm] = useState(false)
   const [editingAccount, setEditingAccount] = useState<Account | null>(null)
-  const [sidebarCollapsed, setSidebarCollapsed] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [confirmDeleteId, setConfirmDeleteId] = useState<number | null>(null)
   const [plaidRefreshKey, setPlaidRefreshKey] = useState(0)
@@ -52,11 +52,8 @@ export default function AccountsPage() {
       
       setAccounts(data)
     } catch (err: any) {
-      console.error('Error loading accounts:', err)
       setError(err.message || t('loadError'))
-      
-      // Si es error de autenticación, mostrar mensaje específico
-      if (err.message.includes('401') || err.message.includes('autenticado')) {
+      if (err.message?.includes('401') || err.message?.includes('autenticado')) {
         setError(t('loadError'))
       }
     } finally {
@@ -91,7 +88,6 @@ export default function AccountsPage() {
       setShowForm(false)
       setEditingAccount(null)
     } catch (err: any) {
-      console.error('Error saving account:', err)
       throw err // Re-lanzar el error para que AccountForm lo maneje
     }
   }
@@ -117,10 +113,6 @@ export default function AccountsPage() {
     logout()
   }
 
-  const handleSidebarToggle = (isCollapsed: boolean) => {
-    setSidebarCollapsed(isCollapsed)
-  }
-
   // Calcular totales
   const totalBalance = accounts
     .filter(acc => acc.isActive)
@@ -131,21 +123,17 @@ export default function AccountsPage() {
   return (
     <div className="flex min-h-screen bg-gray-50">
       {/* Sidebar */}
-      <Sidebar onLogout={handleLogout} onToggle={handleSidebarToggle} />
+      <Sidebar onLogout={handleLogout} />
 
       {/* Main Content */}
-      <div className={`flex-1 transition-all duration-300 ${sidebarCollapsed ? 'ml-16' : 'ml-64'}`} data-tour="accounts-main">
+      <PageLayout data-tour="accounts-main">
         {/* Header */}
         <div className="bg-white border-b border-gray-200 sticky top-0 z-10">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="flex items-center justify-between h-20">
-              <div>
-                <h1 className="text-2xl font-bold text-gray-900">
-                  {t('title')}
-                </h1>
-                <p className="text-sm text-gray-500 mt-1">
-                  {t('subtitle')}
-                </p>
+            <div className="flex items-center justify-between min-h-16 py-3 gap-3">
+              <div className="min-w-0">
+                <h1 className="text-xl sm:text-2xl font-bold text-gray-900 truncate">{t('title')}</h1>
+                <p className="text-sm text-gray-500 mt-0.5 hidden sm:block">{t('subtitle')}</p>
               </div>
               <PlaidLinkButton
                 data-tour="add-account-btn"
@@ -279,7 +267,7 @@ export default function AccountsPage() {
             <ConnectedBanks refreshKey={plaidRefreshKey} />
           </div>
         </div>
-      </div>
+      </PageLayout>
 
       {/* Account Form Modal */}
       <AccountForm

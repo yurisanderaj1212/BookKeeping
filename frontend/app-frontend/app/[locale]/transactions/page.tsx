@@ -10,9 +10,9 @@ import OnboardingTour from '@/components/onboarding/OnboardingTour'
 import { useOnboarding } from '@/hooks/useOnboarding'
 import { useAuth } from '@/hooks/useAuth'
 import { useTranslations } from 'next-intl'
+import PageLayout from '@/components/ui/PageLayout'
 import { useNotifications } from '@/hooks/useNotifications'
 import { translateCategoryName } from '@/lib/categoryTranslator'
-import { Transaction } from '@/data/transactions-data'
 import * as transactionService from '@/services/transactionService'
 import * as categoryService from '@/services/categoryService'
 import accountService from '@/services/accountService'
@@ -36,7 +36,6 @@ export default function TransactionsPage() {
   const [transactions, setTransactions] = useState<Transaction[]>([])
   const [accounts, setAccounts] = useState<Array<{ id: number; name: string }>>([])
   const [categories, setCategories] = useState<categoryService.CategoryDto[]>([])
-  const [sidebarCollapsed, setSidebarCollapsed] = useState(false)
   const [loadingTransactions, setLoadingTransactions] = useState(true)
   const [loadingAccounts, setLoadingAccounts] = useState(true)
   const [loadingCategories, setLoadingCategories] = useState(true)
@@ -174,7 +173,7 @@ export default function TransactionsPage() {
       setTransactions(mappedTransactions)
       setPagination(result.pagination)
     } catch (err: any) {
-      setError(err.message || 'Error al cargar las transacciones')
+      setError(err.message || t('loadError'))
     } finally {
       setLoadingTransactions(false)
     }
@@ -231,7 +230,7 @@ export default function TransactionsPage() {
       await loadTransactions()
       setShowForm(false)
     } catch (err: any) {
-      showError(tCommon('error'), err.message || 'Error al guardar la transacción')
+      showError(tCommon('error'), err.message || t('loadError'))
     }
   }
 
@@ -240,7 +239,7 @@ export default function TransactionsPage() {
       await transactionService.deleteTransaction(parseInt(transactionId))
       await loadTransactions()
     } catch (err: any) {
-      showError(tCommon('error'), err.message || 'Error al eliminar la transacción')
+      showError(tCommon('error'), err.message || t('loadError'))
     }
   }
 
@@ -267,44 +266,40 @@ export default function TransactionsPage() {
     logout() // Usar la función logout del hook useAuth
   }
 
-  const handleSidebarToggle = (isCollapsed: boolean) => {
-    setSidebarCollapsed(isCollapsed)
-  }
-
   return (
     <div className="flex min-h-screen bg-gray-50">
       {/* Sidebar */}
-      <Sidebar onLogout={handleLogout} onToggle={handleSidebarToggle} />
+      <Sidebar onLogout={handleLogout} />
       
       {/* Main Content */}
-      <div className={`flex-1 transition-all duration-300 ${sidebarCollapsed ? 'ml-16' : 'ml-64'}`}>
+      <PageLayout>
         {/* Header */}
         <div className="bg-white border-b border-gray-200 sticky top-0 z-10">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="flex items-center justify-between h-19">
-              <div>
-                <h1 className="text-2xl font-bold text-gray-900">
+            <div className="flex items-center justify-between min-h-16 py-3 gap-3">
+              <div className="min-w-0">
+                <h1 className="text-xl sm:text-2xl font-bold text-gray-900 truncate">
                   {t('title')}
                 </h1>
-                <p className="text-sm text-gray-500 mt-1">
+                <p className="text-sm text-gray-500 mt-0.5 hidden sm:block">
                   {t('subtitle')}
                 </p>
               </div>
-              <div className="flex items-center space-x-3">
+              <div className="flex items-center gap-2 shrink-0">
                 <button 
                   onClick={handleExport}
-                  className="bg-white border border-gray-300 text-gray-700 px-4 py-2 rounded-lg hover:bg-gray-50 transition-colors duration-200 flex items-center space-x-2"
+                  className="bg-white border border-gray-300 text-gray-700 px-3 py-2 rounded-lg hover:bg-gray-50 transition-colors flex items-center gap-1.5"
                 >
                   <Download className="w-4 h-4" />
-                  <span>{tCommon('export')}</span>
+                  <span className="hidden sm:inline text-sm">{tCommon('export')}</span>
                 </button>
                 <button 
                   onClick={handleCreateTransaction}
-                  className="bg-primary-600 text-white px-4 py-2 rounded-lg hover:bg-primary-700 transition-colors duration-200 flex items-center space-x-2"
+                  className="bg-primary-600 text-white px-3 py-2 rounded-lg hover:bg-primary-700 transition-colors flex items-center gap-1.5"
                   data-tour="add-transaction-btn"
                 >
                   <Plus className="w-4 h-4" />
-                  <span>{t('new')}</span>
+                  <span className="hidden sm:inline text-sm">{t('new')}</span>
                 </button>
               </div>
             </div>
@@ -342,7 +337,7 @@ export default function TransactionsPage() {
         )}
         
         <div className="bg-white rounded-lg border border-gray-200 p-6 mb-6" data-tour="transaction-filters">
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3">
             {/* Search */}
             <div className="relative">
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
@@ -549,7 +544,7 @@ export default function TransactionsPage() {
           transaction={editingTransaction}
           mode={editingTransaction ? 'edit' : 'create'}
         />
-      </div>
+      </PageLayout>
 
       {/* Onboarding Tour */}
       <OnboardingTour

@@ -8,6 +8,7 @@ import OnboardingTour from '@/components/onboarding/OnboardingTour'
 import { useOnboarding } from '@/hooks/useOnboarding'
 import { useAuth } from '@/hooks/useAuth'
 import { useTranslations } from 'next-intl'
+import PageLayout from '@/components/ui/PageLayout'
 import ReportsOverview from '@/components/analytics/ReportsOverview'
 import AnnualPerformance from '@/components/analytics/AnnualPerformance'
 import WeeklyClosureAnalysis from '@/components/analytics/WeeklyClosureAnalysis'
@@ -27,7 +28,6 @@ export default function ReportsPage() {
   const [selectedYear, setSelectedYear] = useState(String(new Date().getFullYear()))
   const [selectedMonth, setSelectedMonth] = useState('01')
   const [selectedWeek, setSelectedWeek] = useState('1')
-  const [sidebarCollapsed, setSidebarCollapsed] = useState(false)
   const {
     isOnboardingOpen,
     currentStep: onboardingStep,
@@ -51,10 +51,6 @@ export default function ReportsPage() {
 
   const handleLogout = async () => {
     logout() // Usar la función logout del hook useAuth
-  }
-
-  const handleSidebarToggle = (isCollapsed: boolean) => {
-    setSidebarCollapsed(isCollapsed)
   }
 
   const handleExportReport = () => {
@@ -86,29 +82,25 @@ export default function ReportsPage() {
   return (
     <div className="flex min-h-screen bg-gray-50">
       {/* Sidebar */}
-      <Sidebar onLogout={handleLogout} onToggle={handleSidebarToggle} />
+      <Sidebar onLogout={handleLogout} />
       
       {/* Main Content */}
-      <div className={`flex-1 transition-all duration-300 ${sidebarCollapsed ? 'ml-16' : 'ml-64'}`}>
+      <PageLayout>
         {/* Header */}
         <div className="bg-white border-b border-gray-200 sticky top-0 z-10">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="flex items-center justify-between h-20">
-              <div>
-                <h1 className="text-2xl font-bold text-gray-900">
-                  {t('title')}
-                </h1>
-                <p className="text-sm text-gray-500 mt-1">
-                  {t('subtitle')}
-                </p>
+            <div className="flex items-center justify-between min-h-16 py-3 gap-3">
+              <div className="min-w-0">
+                <h1 className="text-xl sm:text-2xl font-bold text-gray-900 truncate">{t('title')}</h1>
+                <p className="text-sm text-gray-500 mt-0.5 hidden sm:block">{t('subtitle')}</p>
               </div>
-              <div className="flex items-center space-x-3">
+              <div className="flex items-center gap-2 shrink-0">
                 <button 
                   onClick={handleExportReport}
-                  className="bg-white border border-gray-300 text-gray-700 px-4 py-2 rounded-lg hover:bg-gray-50 transition-colors duration-200 flex items-center space-x-2"
+                  className="bg-white border border-gray-300 text-gray-700 px-3 py-2 rounded-lg hover:bg-gray-50 transition-colors flex items-center gap-1.5"
                 >
                   <Download className="w-4 h-4" />
-                  <span>{t('exportBtn')}</span>
+                  <span className="hidden sm:inline text-sm">{t('exportBtn')}</span>
                 </button>
               </div>
             </div>
@@ -255,7 +247,7 @@ export default function ReportsPage() {
             />
           </div>
         </div>
-      </div>
+      </PageLayout>
 
       {/* Onboarding Tour */}
       <OnboardingTour

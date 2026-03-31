@@ -1,7 +1,8 @@
 'use client'
 
 import { useState, useEffect, useCallback, Suspense } from 'react'
-import { useRouter, useSearchParams } from 'next/navigation'
+import { useSearchParams } from 'next/navigation'
+import { useRouter } from '@/i18n/routing'
 import { useAuth } from '@/hooks/useAuth'
 import {
   Calendar, Lock, Unlock, CheckCircle, AlertCircle,
@@ -9,16 +10,19 @@ import {
 } from 'lucide-react'
 import Sidebar from '@/components/dashboard/Sidebar'
 import {
-  getWeekClosures, closeWeek, reopenWeek, formatCurrency,
+  getWeekClosures, closeWeek, closeWeekByDefinition, reopenWeek, formatCurrency,
   type WeekClosureData, type WeekClosureSummary
 } from '@/services/weekClosureService'
-import { exportReportData, showExportModal } from '@/services/exportService'
+import { exportWeekClose, showExportModal } from '@/services/exportService'
 import { useTranslations } from 'next-intl'
+import { useNotifications } from '@/hooks/useNotifications'
+import PageLayout from '@/components/ui/PageLayout'
 
 function WeekCloseContent() {
   const router = useRouter()
   const searchParams = useSearchParams()
   const { isLoading, isAuthenticated, logout } = useAuth()
+  const { showSuccess, showError } = useNotifications()
   const t = useTranslations('reports.rptWeekClose')
   const tCommon = useTranslations('common')
   const tMonths = useTranslations('reports.months')
@@ -32,7 +36,6 @@ function WeekCloseContent() {
   const [selectedMonth, setSelectedMonth] = useState(
     parseInt(searchParams.get('month') || String(currentMonth))
   )
-  const [sidebarCollapsed, setSidebarCollapsed] = useState(false)
   const [weeks, setWeeks] = useState<WeekClosureData[]>([])
   const [summary, setSummary] = useState<WeekClosureSummary | null>(null)
   const [loadingData, setLoadingData] = useState(true)
@@ -44,11 +47,10 @@ function WeekCloseContent() {
   const [actionType, setActionType] = useState<'close' | 'reopen'>('close')
   const [actionNotes, setActionNotes] = useState('')
   const [actionLoading, setActionLoading] = useState(false)
-  const [toast, setToast] = useState<{ msg: string; type: 'success' | 'error' } | null>(null)
 
   const showToast = (msg: string, type: 'success' | 'error') => {
-    setToast({ msg, type })
-    setTimeout(() => setToast(null), 3500)
+    if (type === 'success') showSuccess(tCommon('success'), msg)
+    else showError(tCommon('error'), msg)
   }
 
   const fetchData = useCallback(async () => {
@@ -76,17 +78,25 @@ function WeekCloseContent() {
     setActionLoading(true)
     try {
       if (actionType === 'close') {
-        await closeWeek(actionWeek.id, undefined, actionNotes || undefined)
-        showToast(t('toastClosed', { n: actionWeek.weekNumber }), 'success')
+        if (actionWeek.id < 0) {
+          await closeWeekByDefinition(
+            actionWeek.weekNumber, actionWeek.year, actionWeek.month,
+            actionWeek.startDate, actionWeek.endDate,
+            undefined, actionNotes || undefined
+          )
+        } else {
+          await closeWeek(actionWeek.id, undefined, actionNotes || undefined)
+        }
+        showSuccess(tCommon('success'), t('toastClosed', { n: actionWeek.weekNumber }))
       } else {
         await reopenWeek(actionWeek.id, actionNotes || undefined)
-        showToast(t('toastReopened', { n: actionWeek.weekNumber }), 'success')
+        showSuccess(tCommon('success'), t('toastReopened', { n: actionWeek.weekNumber }))
       }
       setActionWeek(null)
       setActionNotes('')
       await fetchData()
     } catch (err: any) {
-      showToast(err.message || t('toastError'), 'error')
+      showError(tCommon('error'), err.message || t('toastError'))
     } finally {
       setActionLoading(false)
     }
@@ -120,9 +130,9 @@ function WeekCloseContent() {
 
   return (
     <div className="flex min-h-screen bg-gray-50">
-      <Sidebar onLogout={logout} onToggle={setSidebarCollapsed} />
+      <Sidebar onLogout={logout} />
 
-      <div className={`flex-1 transition-all duration-300 ${sidebarCollapsed ? 'ml-16' : 'ml-64'}`}>
+      <PageLayout>
         {/* Header */}
         <div className="bg-white border-b border-gray-200 sticky top-0 z-10">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -137,7 +147,7 @@ function WeekCloseContent() {
                 </div>
               </div>
               <button
-                onClick={() => showExportModal((fmt) => exportReportData('week-close', fmt))}
+                onClick={() => showExportModal((fmt) => exportWeekClose(selectedYear, selectedMonth, fmt))}
                 className="bg-white border border-gray-300 text-gray-700 px-4 py-2 rounded-lg hover:bg-gray-50 transition-colors flex items-center space-x-2"
               >
                 <Download className="w-4 h-4" />
@@ -411,7 +421,7 @@ function WeekCloseContent() {
             </div>
           </div>
         </div>
-      </div>
+      </PageLayout>
 
       {/* Modal — Detalles de semana */}
       {detailsWeek && (
@@ -556,14 +566,6 @@ function WeekCloseContent() {
         </div>
       )}
 
-      {/* Toast */}
-      {toast && (
-        <div className={`fixed bottom-6 right-6 z-50 px-5 py-3 rounded-lg shadow-lg text-white text-sm font-medium transition-all ${
-          toast.type === 'success' ? 'bg-green-600' : 'bg-red-600'
-        }`}>
-          {toast.msg}
-        </div>
-      )}
     </div>
   )
 }

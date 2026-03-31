@@ -19,17 +19,18 @@ export default function ForgotPasswordPage() {
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError]         = useState('')
 
-  const t = useTranslations('auth.forgotPassword')
+  const t    = useTranslations('auth.forgotPassword')
+  const tReg = useTranslations('auth.register')
   const tErr = useTranslations('apiErrors')
 
-  // ─── Paso 1: solicitar reset ──────────────────────────────────────────────
+  // ─── Step 1: request reset ────────────────────────────────────────────────
   const handleRequestReset = async (e: React.FormEvent) => {
     e.preventDefault()
     setError('')
 
     const emailRegex = /^[^@\s]+@[^@\s]+\.[^@\s]+$/
     if (!emailRegex.test(email)) {
-      setError(t('email') + ' inválido.')
+      setError(tErr('emailInvalid'))
       return
     }
 
@@ -47,13 +48,13 @@ export default function ForgotPasswordPage() {
     }
   }
 
-  // ─── Paso 3: establecer nueva contraseña ──────────────────────────────────
+  // ─── Step 3: set new password ─────────────────────────────────────────────
   const handleResetPassword = async (e: React.FormEvent) => {
     e.preventDefault()
     setError('')
 
-    if (!token.trim()) { setError('Ingresa el código de verificación.'); return }
-    if (password.length < 8) { setError('La contraseña debe tener al menos 8 caracteres.'); return }
+    if (!token.trim()) { setError(t('errors.codeRequired')); return }
+    if (password.length < 8) { setError(tErr('passwordWeak')); return }
 
     const hasUpper  = /[A-Z]/.test(password)
     const hasLower  = /[a-z]/.test(password)
@@ -72,7 +73,7 @@ export default function ForgotPasswordPage() {
       if (err) throw err
       setStep('done')
     } catch (err: unknown) {
-      setError(err instanceof Error ? err.message : 'Error al restablecer contraseña')
+      setError(err instanceof Error ? err.message : tErr('internalError'))
     } finally {
       setIsLoading(false)
     }
@@ -91,36 +92,33 @@ export default function ForgotPasswordPage() {
     <div className="min-h-screen bg-slate-50 flex items-center justify-center px-4">
       <div className="w-full max-w-md">
 
-        {/* Logo */}
         <div className="flex justify-center mb-8">
           <AppLogo size={36} variant="full" />
         </div>
 
         <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-8">
 
-          {/* ── PASO 1: Solicitar reset ── */}
+          {/* ── Step 1: Request reset ── */}
           {step === 'request' && (
             <>
               <div className="text-center mb-6">
                 <div className="w-12 h-12 bg-primary-50 rounded-xl flex items-center justify-center mx-auto mb-4">
                   <Mail className="w-6 h-6 text-primary-500" />
                 </div>
-                <h1 className="text-xl font-bold text-gray-900">¿Olvidaste tu contraseña?</h1>
-                <p className="text-sm text-gray-500 mt-1">
-                  Ingresa tu email y te enviaremos un código para restablecerla.
-                </p>
+                <h1 className="text-xl font-bold text-gray-900">{t('title')}</h1>
+                <p className="text-sm text-gray-500 mt-1">{t('subtitle')}</p>
               </div>
 
               <form onSubmit={handleRequestReset} className="space-y-4">
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Email
+                    {t('email')}
                   </label>
                   <input
                     type="email"
                     value={email}
                     onChange={e => { setEmail(e.target.value); setError('') }}
-                    placeholder="tu@email.com"
+                    placeholder={t('emailPlaceholder')}
                     required
                     className="w-full px-3 py-2.5 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent"
                   />
@@ -138,66 +136,63 @@ export default function ForgotPasswordPage() {
                   disabled={isLoading}
                   className="w-full py-2.5 px-4 bg-primary-500 hover:bg-primary-600 text-white text-sm font-semibold rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                 >
-                  {isLoading ? 'Enviando...' : 'Enviar código de verificación'}
+                  {isLoading ? t('sending') : t('submit')}
                 </button>
               </form>
             </>
           )}
 
-          {/* ── PASO 2: Email enviado ── */}
+          {/* ── Step 2: Email sent ── */}
           {step === 'sent' && (
             <>
               <div className="text-center mb-6">
                 <div className="w-12 h-12 bg-green-50 rounded-xl flex items-center justify-center mx-auto mb-4">
                   <CheckCircle className="w-6 h-6 text-green-500" />
                 </div>
-                <h1 className="text-xl font-bold text-gray-900">Revisa tu email</h1>
+                <h1 className="text-xl font-bold text-gray-900">{t('sentTitle')}</h1>
                 <p className="text-sm text-gray-500 mt-1">
-                  Si <span className="font-medium text-gray-700">{email}</span> está registrado,
-                  recibirás un código de verificación en los próximos minutos.
+                  {t('sentDesc', { email })}
                 </p>
               </div>
 
               <div className="bg-amber-50 border border-amber-200 rounded-lg p-3 mb-6 text-xs text-amber-700">
-                El código expira en 15 minutos. Revisa también tu carpeta de spam.
+                {t('sentHint')}
               </div>
 
               <button
                 onClick={() => setStep('reset')}
                 className="w-full py-2.5 px-4 bg-primary-500 hover:bg-primary-600 text-white text-sm font-semibold rounded-lg transition-colors mb-3"
               >
-                Tengo mi código
+                {t('haveCode')}
               </button>
 
               <button
                 onClick={() => { setStep('request'); setError('') }}
                 className="w-full py-2 text-sm text-gray-500 hover:text-gray-700 transition-colors"
               >
-                Usar otro email
+                {t('useOtherEmail')}
               </button>
             </>
           )}
 
-          {/* ── PASO 3: Ingresar código + nueva contraseña ── */}
+          {/* ── Step 3: Enter code + new password ── */}
           {step === 'reset' && (
             <>
               <div className="text-center mb-6">
-                <h1 className="text-xl font-bold text-gray-900">Nueva contraseña</h1>
-                <p className="text-sm text-gray-500 mt-1">
-                  Ingresa el código que recibiste y tu nueva contraseña.
-                </p>
+                <h1 className="text-xl font-bold text-gray-900">{t('newPasswordTitle')}</h1>
+                <p className="text-sm text-gray-500 mt-1">{t('newPasswordSubtitle')}</p>
               </div>
 
               <form onSubmit={handleResetPassword} className="space-y-4">
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Código de verificación
+                    {t('codeLabel')}
                   </label>
                   <input
                     type="text"
                     value={token}
                     onChange={e => { setToken(e.target.value); setError('') }}
-                    placeholder="Ej: 847291"
+                    placeholder={t('codePlaceholder')}
                     required
                     className="w-full px-3 py-2.5 border border-gray-300 rounded-lg text-sm font-mono tracking-widest focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent"
                   />
@@ -205,14 +200,14 @@ export default function ForgotPasswordPage() {
 
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Nueva contraseña
+                    {t('newPasswordLabel')}
                   </label>
                   <div className="relative">
                     <input
                       type={showPass ? 'text' : 'password'}
                       value={password}
                       onChange={e => { setPassword(e.target.value); setError('') }}
-                      placeholder="Mínimo 8 caracteres"
+                      placeholder={tReg('passwordPlaceholder')}
                       required
                       className={`w-full px-3 py-2.5 pr-10 border rounded-lg text-sm focus:outline-none focus:ring-2 focus:border-transparent ${
                         password && passwordStrong
@@ -241,11 +236,11 @@ export default function ForgotPasswordPage() {
                   {password && (
                     <div className="mt-2 grid grid-cols-2 gap-1">
                       {[
-                        { ok: passwordReqs.length, label: '8+ caracteres' },
-                        { ok: passwordReqs.upper,  label: 'Mayúscula' },
-                        { ok: passwordReqs.lower,  label: 'Minúscula' },
-                        { ok: passwordReqs.digit,  label: 'Número' },
-                        { ok: passwordReqs.symbol, label: 'Símbolo' },
+                        { ok: passwordReqs.length, label: tReg('req8chars') },
+                        { ok: passwordReqs.upper,  label: tReg('reqUpper') },
+                        { ok: passwordReqs.lower,  label: tReg('reqLower') },
+                        { ok: passwordReqs.digit,  label: tReg('reqNumber') },
+                        { ok: passwordReqs.symbol, label: tReg('reqSymbol') },
                       ].map(r => (
                         <div key={r.label} className={`flex items-center gap-1 text-xs ${r.ok ? 'text-green-600' : 'text-gray-400'}`}>
                           <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -260,13 +255,13 @@ export default function ForgotPasswordPage() {
 
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Confirmar contraseña
+                    {t('confirmPasswordLabel')}
                   </label>
                   <input
                     type={showPass ? 'text' : 'password'}
                     value={confirm}
                     onChange={e => { setConfirm(e.target.value); setError('') }}
-                    placeholder="Repite la contraseña"
+                    placeholder={t('confirmPasswordPlaceholder')}
                     required
                     className={`w-full px-3 py-2.5 border rounded-lg text-sm focus:outline-none focus:ring-2 focus:border-transparent ${
                       confirm && confirm === password
@@ -288,34 +283,31 @@ export default function ForgotPasswordPage() {
                   disabled={isLoading || !passwordStrong || password !== confirm}
                   className="w-full py-2.5 px-4 bg-primary-500 hover:bg-primary-600 text-white text-sm font-semibold rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                 >
-                  {isLoading ? 'Guardando...' : 'Restablecer contraseña'}
+                  {isLoading ? t('resetting') : t('resetSubmit')}
                 </button>
               </form>
             </>
           )}
 
-          {/* ── PASO 4: Éxito ── */}
+          {/* ── Step 4: Success ── */}
           {step === 'done' && (
             <div className="text-center">
               <div className="w-12 h-12 bg-green-50 rounded-xl flex items-center justify-center mx-auto mb-4">
                 <CheckCircle className="w-6 h-6 text-green-500" />
               </div>
-              <h1 className="text-xl font-bold text-gray-900 mb-2">¡Contraseña actualizada!</h1>
-              <p className="text-sm text-gray-500 mb-6">
-                Tu contraseña fue restablecida exitosamente. Ya puedes iniciar sesión.
-              </p>
+              <h1 className="text-xl font-bold text-gray-900 mb-2">{t('doneTitle')}</h1>
+              <p className="text-sm text-gray-500 mb-6">{t('doneDesc')}</p>
               <Link
                 href="/auth/login"
                 className="block w-full py-2.5 px-4 bg-primary-500 hover:bg-primary-600 text-white text-sm font-semibold rounded-lg transition-colors text-center"
               >
-                Ir al inicio de sesión
+                {t('doneBtn')}
               </Link>
             </div>
           )}
 
         </div>
 
-        {/* Back to login */}
         {step !== 'done' && (
           <div className="text-center mt-6">
             <Link
@@ -323,7 +315,7 @@ export default function ForgotPasswordPage() {
               className="inline-flex items-center gap-1.5 text-sm text-gray-500 hover:text-gray-700 transition-colors"
             >
               <ArrowLeft className="w-4 h-4" />
-              Volver al inicio de sesión
+              {t('backToLogin')}
             </Link>
           </div>
         )}

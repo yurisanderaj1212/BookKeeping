@@ -132,24 +132,103 @@ function openPDF(title: string, body: string, subtitle = '') {
 // ─── FINANCIAL SUMMARY ───────────────────────────────────────────────────────
 export async function exportFinancialSummary(params: ReportParams, format: 'excel' | 'pdf') {
   const data = await getFinancialSummary(params)
-  const income: number = data.totalIncome ?? 0
+  const income: number   = data.totalIncome ?? 0
   const expenses: number = data.totalExpenses ?? 0
-  const net = income - expenses
-  const margin = income > 0 ? ((net / income) * 100).toFixed(1) : '0.0'
-  const byMonth: any[] = data.byMonth ?? []
+  const net              = income - expenses
+  const margin           = income > 0 ? ((net / income) * 100).toFixed(1) : '0.0'
+  const incomeBreakdown: any[]  = data.incomeBreakdown  ?? []
+  const expenseBreakdown: any[] = data.expenseBreakdown ?? []
+  const txCount: number  = data.transactionCount ?? 0
+  const incomeCount: number  = data.incomeCount  ?? 0
+  const expenseCount: number = data.expenseCount ?? 0
+
+  const periodLabel = params.period === 'week' ? 'Semana actual'
+    : params.period === 'month' ? `${new Date(params.year ?? new Date().getFullYear(), (params.month ?? 1) - 1, 1).toLocaleDateString('es-ES', { month: 'long', year: 'numeric' })}`
+    : `Año ${params.year ?? new Date().getFullYear()}`
 
   if (format === 'excel') {
     const wb = XLSX.utils.book_new()
-    const rows: any[][] = [['CHILL NUMBERS — RESUMEN FINANCIERO'],[`Generado el: ${today()}`],[],['MÉTRICAS PRINCIPALES'],['Concepto','Valor'],['Ingresos Totales',income],['Gastos Totales',expenses],['Resultado Neto',net],['Margen (%)',parseFloat(margin)]]
-    if (byMonth.length > 0) { rows.push([],['DESGLOSE MENSUAL'],['Mes','Año','Tipo','Monto']); byMonth.forEach((m:any) => rows.push([m.month,m.year,m.type===0?'Ingreso':'Gasto',m.amount])) }
-    const ws = XLSX.utils.aoa_to_sheet(rows)
-    ws['!cols'] = [{wch:28},{wch:18},{wch:12},{wch:16}]
-    titleRow(ws,0,4,'CHILL NUMBERS — RESUMEN FINANCIERO'); applyHeaderStyle(ws,'A5:B5')
-    if (byMonth.length>0) applyHeaderStyle(ws,'A12:D12')
-    XLSX.utils.book_append_sheet(wb,ws,'Resumen Financiero'); XLSX.writeFile(wb,filename('resumen-financiero','xlsx'))
+
+    // Sheet 1 — Executive Summary
+    const s1: any[][] = [
+      ['CHILL NUMBERS — ESTADO DE RESULTADOS'],
+      [`Período: ${periodLabel}  |  Generado: ${today()}`],
+      [],
+      ['RESUMEN EJECUTIVO'],
+      ['Indicador', 'Valor', 'Transacciones'],
+      ['Ingresos Totales', income, incomeCount],
+      ['Gastos Totales', expenses, expenseCount],
+      ['Resultado Neto', net, txCount],
+      ['Margen de Beneficio (%)', parseFloat(margin), ''],
+    ]
+    const ws1 = XLSX.utils.aoa_to_sheet(s1)
+    ws1['!cols'] = [{wch:30},{wch:18},{wch:16}]
+    titleRow(ws1, 0, 3, 'CHILL NUMBERS — ESTADO DE RESULTADOS')
+    applyHeaderStyle(ws1, 'A5:C5')
+    XLSX.utils.book_append_sheet(wb, ws1, 'Resumen')
+
+    // Sheet 2 — Category Breakdown
+    const s2: any[][] = [
+      ['DESGLOSE POR CATEGORÍAS'],
+      [`Período: ${periodLabel}`],
+      [],
+      ['INGRESOS POR CATEGORÍA'],
+      ['Categoría', 'Monto', '% del Total', 'Transacciones'],
+    ]
+    incomeBreakdown.forEach((c: any) => s2.push([c.categoryName, c.amount, c.percentage, c.transactionCount]))
+    s2.push([], ['GASTOS POR CATEGORÍA'], ['Categoría', 'Monto', '% del Total', 'Transacciones'])
+    expenseBreakdown.forEach((c: any) => s2.push([c.categoryName, c.amount, c.percentage, c.transactionCount]))
+    const ws2 = XLSX.utils.aoa_to_sheet(s2)
+    ws2['!cols'] = [{wch:28},{wch:16},{wch:14},{wch:14}]
+    titleRow(ws2, 0, 4, 'DESGLOSE POR CATEGORÍAS')
+    applyHeaderStyle(ws2, 'A5:D5')
+    applyHeaderStyle(ws2, `A${7 + incomeBreakdown.length}:D${7 + incomeBreakdown.length}`, BRAND_COLOR)
+    XLSX.utils.book_append_sheet(wb, ws2, 'Categorías')
+
+    XLSX.writeFile(wb, filename('estado-resultados', 'xlsx'))
+
   } else {
-    const kpis = `<div class="kpi-grid"><div class="kpi"><div class="kpi-label">Ingresos Totales</div><div class="kpi-value positive">${formatCurrency(income)}</div></div><div class="kpi"><div class="kpi-label">Gastos Totales</div><div class="kpi-value negative">${formatCurrency(expenses)}</div></div><div class="kpi"><div class="kpi-label">Resultado Neto</div><div class="kpi-value ${net>=0?'positive':'negative'}">${formatCurrency(net)}</div></div></div>`
-    openPDF('Resumen Financiero', kpis)
+    // Build category bar chart
+    const chartData = [...incomeBreakdown.slice(0, 6).map((c: any) => ({ label: c.categoryName.substring(0, 8), income: c.amount, expense: 0 })),
+      ...expenseBreakdown.slice(0, 6).map((c: any) => ({ label: c.categoryName.substring(0, 8), income: 0, expense: c.amount }))]
+    const chart = chartData.length > 0 ? svgBarChart(chartData, 'Distribución por Categorías', false) : ''
+
+    const incomeRows = incomeBreakdown.slice(0, 10).map((c: any) =>
+      `<tr><td>${c.categoryName}</td><td class="c">${c.transactionCount}</td><td class="r pos">+${formatCurrency(c.amount)}</td><td class="r">${c.percentage}%</td></tr>`
+    ).join('') || '<tr><td colspan="4" style="text-align:center;color:#a0aec0;padding:10px">Sin ingresos en este período</td></tr>'
+
+    const expenseRows = expenseBreakdown.slice(0, 10).map((c: any) =>
+      `<tr><td>${c.categoryName}</td><td class="c">${c.transactionCount}</td><td class="r neg">-${formatCurrency(c.amount)}</td><td class="r">${c.percentage}%</td></tr>`
+    ).join('') || '<tr><td colspan="4" style="text-align:center;color:#a0aec0;padding:10px">Sin gastos en este período</td></tr>'
+
+    const netClass = net >= 0 ? 'green' : 'red'
+    const body = `
+      <div class="kpi-grid kpi-grid-4">
+        <div class="kpi green"><div class="kpi-label">Ingresos Totales</div><div class="kpi-value">${formatCurrency(income)}</div><div class="kpi-sub">${incomeCount} transacciones</div></div>
+        <div class="kpi red"><div class="kpi-label">Gastos Totales</div><div class="kpi-value">${formatCurrency(expenses)}</div><div class="kpi-sub">${expenseCount} transacciones</div></div>
+        <div class="kpi ${netClass}"><div class="kpi-label">${net >= 0 ? 'Beneficio Neto' : 'Pérdida Neta'}</div><div class="kpi-value">${formatCurrency(Math.abs(net))}</div><div class="kpi-sub">${net >= 0 ? 'Resultado positivo' : 'Resultado negativo'}</div></div>
+        <div class="kpi teal"><div class="kpi-label">Margen</div><div class="kpi-value">${margin}%</div><div class="kpi-sub">${txCount} transacciones totales</div></div>
+      </div>
+
+      ${chart}
+
+      <div class="two-col">
+        <div class="section" style="margin:0">
+          <div class="section-header"><div class="section-dot"></div><div class="section-title">Desglose de Ingresos</div><div class="section-sub">${formatCurrency(income)}</div></div>
+          <table><thead><tr><th>Categoría</th><th class="c">Txs</th><th class="r">Monto</th><th class="r">%</th></tr></thead><tbody>${incomeRows}</tbody></table>
+        </div>
+        <div class="section" style="margin:0">
+          <div class="section-header"><div class="section-dot"></div><div class="section-title">Desglose de Gastos</div><div class="section-sub">${formatCurrency(expenses)}</div></div>
+          <table><thead><tr><th>Categoría</th><th class="c">Txs</th><th class="r">Monto</th><th class="r">%</th></tr></thead><tbody>${expenseRows}</tbody></table>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-header"><div class="section-dot"></div><div class="section-title">Nota del Reporte</div></div>
+        <p style="font-size:10px;color:#718096;line-height:1.6">Este reporte incluye todas las transacciones registradas en el período seleccionado. Los porcentajes se calculan sobre el total de ingresos o gastos según corresponda.</p>
+      </div>
+    `
+    openPDF('Estado de Resultados', body, periodLabel)
   }
 }
 
@@ -179,24 +258,137 @@ export async function exportProfitLoss(params: ReportParams, format: 'excel' | '
 // ─── TRANSACTION SUMMARY ─────────────────────────────────────────────────────
 export async function exportTransactionSummary(params: ReportParams, format: 'excel' | 'pdf') {
   const data = await getTransactionSummary(params)
-  const total: number = data.totalTransactions ?? 0
-  const income: number = data.totalIncome ?? 0
-  const expenses: number = data.totalExpenses ?? 0
-  const pending: number = data.pendingCount ?? 0
-  const completed: number = data.completedCount ?? (total - pending)
-  const byCategory: any[] = data.byCategory ?? []
+  const total: number     = data.totalTransactions ?? 0
+  const income: number    = data.totalIncome       ?? 0
+  const expenses: number  = data.totalExpenses     ?? 0
+  const net               = income - expenses
+  const pending: number   = data.pendingCount      ?? 0
+  const completed: number = data.completedCount    ?? (total - pending)
+  const incomeCount: number  = data.incomeCount    ?? 0
+  const expenseCount: number = data.expenseCount   ?? 0
+  const txs: any[]        = data.transactions      ?? []
+
+  const profitMargin = income > 0 ? ((net / income) * 100).toFixed(1) : '0.0'
+  const avgIncome    = incomeCount  > 0 ? income  / incomeCount  : 0
+  const avgExpense   = expenseCount > 0 ? expenses / expenseCount : 0
+
+  const periodLabel = params.period === 'week' ? 'Semana actual'
+    : params.period === 'month' ? `${new Date(params.year ?? new Date().getFullYear(), (params.month ?? 1) - 1, 1).toLocaleDateString('es-ES', { month: 'long', year: 'numeric' })}`
+    : `Año ${params.year ?? new Date().getFullYear()}`
 
   if (format === 'excel') {
     const wb = XLSX.utils.book_new()
-    const rows: any[][] = [['CHILL NUMBERS — RESUMEN DE TRANSACCIONES'],[`Generado el: ${today()}`],[],['RESUMEN GENERAL'],['Concepto','Valor'],['Total Transacciones',total],['Completadas',completed],['Pendientes',pending],['Total Ingresos',income],['Total Gastos',expenses]]
-    if (byCategory.length>0) { rows.push([],['POR CATEGORÍA'],['Categoría','Tipo','Transacciones','Monto Total']); byCategory.forEach((c:any)=>rows.push([c.categoryName??c.category,c.type===0?'Ingreso':'Gasto',c.count??0,c.total??c.amount??0])) }
-    const ws = XLSX.utils.aoa_to_sheet(rows)
-    ws['!cols'] = [{wch:28},{wch:16},{wch:16},{wch:16}]
-    titleRow(ws,0,4,'CHILL NUMBERS — RESUMEN DE TRANSACCIONES'); applyHeaderStyle(ws,'A5:B5')
-    XLSX.utils.book_append_sheet(wb,ws,'Resumen Transacciones'); XLSX.writeFile(wb,filename('resumen-transacciones','xlsx'))
+
+    // Sheet 1 — Summary
+    const s1: any[][] = [
+      ['CHILL NUMBERS — RESUMEN DE TRANSACCIONES'],
+      [`Período: ${periodLabel}  |  Generado: ${today()}`],
+      [],
+      ['RESUMEN GENERAL'],
+      ['Indicador', 'Valor', 'Detalle'],
+      ['Total Transacciones', total, `${completed} completadas, ${pending} pendientes`],
+      ['Total Ingresos', income, `${incomeCount} transacciones · Promedio: ${formatCurrency(avgIncome)}`],
+      ['Total Gastos', expenses, `${expenseCount} transacciones · Promedio: ${formatCurrency(avgExpense)}`],
+      ['Resultado Neto', net, net >= 0 ? 'Beneficio' : 'Pérdida'],
+      ['Margen de Beneficio (%)', parseFloat(profitMargin), ''],
+      [],
+      ['ESTADO DE TRANSACCIONES'],
+      ['Estado', 'Cantidad', '% del Total'],
+      ['Completadas', completed, total > 0 ? parseFloat(((completed / total) * 100).toFixed(1)) : 0],
+      ['Pendientes', pending, total > 0 ? parseFloat(((pending / total) * 100).toFixed(1)) : 0],
+    ]
+    const ws1 = XLSX.utils.aoa_to_sheet(s1)
+    ws1['!cols'] = [{wch:32},{wch:18},{wch:36}]
+    titleRow(ws1, 0, 3, 'CHILL NUMBERS — RESUMEN DE TRANSACCIONES')
+    applyHeaderStyle(ws1, 'A5:C5')
+    applyHeaderStyle(ws1, 'A13:C13')
+    XLSX.utils.book_append_sheet(wb, ws1, 'Resumen')
+
+    // Sheet 2 — All transactions
+    const s2: any[][] = [
+      ['DETALLE DE TRANSACCIONES'],
+      [`Período: ${periodLabel}`],
+      [],
+      ['Fecha', 'Tipo', 'Descripción', 'Categoría', 'Monto', 'Estado'],
+    ]
+    txs.sort((a, b) => (b.date ?? '').localeCompare(a.date ?? '')).forEach((tx: any) => {
+      s2.push([
+        tx.date ?? '',
+        tx.type === 1 ? 'Ingreso' : 'Gasto',
+        tx.description ?? '',
+        tx.categoryName ?? '',
+        tx.amount ?? 0,
+        tx.status === 0 ? 'Completada' : 'Pendiente',
+      ])
+    })
+    const ws2 = XLSX.utils.aoa_to_sheet(s2)
+    ws2['!cols'] = [{wch:14},{wch:10},{wch:36},{wch:22},{wch:14},{wch:12}]
+    titleRow(ws2, 0, 6, 'DETALLE DE TRANSACCIONES')
+    applyHeaderStyle(ws2, 'A4:F4')
+    XLSX.utils.book_append_sheet(wb, ws2, 'Transacciones')
+
+    XLSX.writeFile(wb, filename('resumen-transacciones', 'xlsx'))
+
   } else {
-    const kpis = `<div class="kpi-grid"><div class="kpi"><div class="kpi-label">Total Transacciones</div><div class="kpi-value neutral">${total}</div></div><div class="kpi"><div class="kpi-label">Completadas</div><div class="kpi-value positive">${completed}</div></div><div class="kpi"><div class="kpi-label">Pendientes</div><div class="kpi-value negative">${pending}</div></div></div>`
-    openPDF('Resumen de Transacciones', kpis)
+    // Completed vs pending amounts
+    const completedIncome   = txs.filter((r: any) => r.type === 1 && r.status === 0).reduce((s: number, r: any) => s + r.amount, 0)
+    const completedExpenses = txs.filter((r: any) => r.type === 2 && r.status === 0).reduce((s: number, r: any) => s + r.amount, 0)
+    const pendingIncome     = txs.filter((r: any) => r.type === 1 && r.status === 1).reduce((s: number, r: any) => s + r.amount, 0)
+    const pendingExpenses   = txs.filter((r: any) => r.type === 2 && r.status === 1).reduce((s: number, r: any) => s + r.amount, 0)
+
+    // Recent 20 transactions table
+    const recentRows = txs.slice(0, 20).map((tx: any) =>
+      `<tr>
+        <td>${tx.date ?? ''}</td>
+        <td><span class="badge ${tx.type === 1 ? 'badge-green' : 'badge-red'}">${tx.type === 1 ? 'Ingreso' : 'Gasto'}</span></td>
+        <td>${(tx.description ?? '').substring(0, 30)}</td>
+        <td>${tx.categoryName ?? ''}</td>
+        <td class="r ${tx.type === 1 ? 'pos' : 'neg'}">${tx.type === 1 ? '+' : '-'}${formatCurrency(tx.amount ?? 0)}</td>
+        <td class="c"><span class="badge ${tx.status === 0 ? 'badge-blue' : 'badge-yellow'}">${tx.status === 0 ? 'Completada' : 'Pendiente'}</span></td>
+      </tr>`
+    ).join('') || '<tr><td colspan="6" style="text-align:center;color:#a0aec0;padding:12px">Sin transacciones en este período</td></tr>'
+
+    const netClass = net >= 0 ? 'green' : 'red'
+    const body = `
+      <div class="kpi-grid kpi-grid-4">
+        <div class="kpi green"><div class="kpi-label">Total Ingresos</div><div class="kpi-value">${formatCurrency(income)}</div><div class="kpi-sub">${incomeCount} txs · Prom. ${formatCurrency(avgIncome)}</div></div>
+        <div class="kpi red"><div class="kpi-label">Total Gastos</div><div class="kpi-value">${formatCurrency(expenses)}</div><div class="kpi-sub">${expenseCount} txs · Prom. ${formatCurrency(avgExpense)}</div></div>
+        <div class="kpi ${netClass}"><div class="kpi-label">${net >= 0 ? 'Beneficio Neto' : 'Pérdida Neta'}</div><div class="kpi-value">${formatCurrency(Math.abs(net))}</div><div class="kpi-sub">Margen: ${profitMargin}%</div></div>
+        <div class="kpi blue"><div class="kpi-label">Total Transacciones</div><div class="kpi-value">${total}</div><div class="kpi-sub">${completed} completadas · ${pending} pendientes</div></div>
+      </div>
+
+      <div class="two-col">
+        <div class="section" style="margin:0">
+          <div class="section-header"><div class="section-dot"></div><div class="section-title">Transacciones Completadas</div><span class="badge badge-blue">${completed}</span></div>
+          <table>
+            <thead><tr><th>Concepto</th><th class="c">Cantidad</th><th class="r">Monto</th></tr></thead>
+            <tbody>
+              <tr><td>Ingresos completados</td><td class="c">${txs.filter((r:any)=>r.type===1&&r.status===0).length}</td><td class="r pos">+${formatCurrency(completedIncome)}</td></tr>
+              <tr><td>Gastos completados</td><td class="c">${txs.filter((r:any)=>r.type===2&&r.status===0).length}</td><td class="r neg">-${formatCurrency(completedExpenses)}</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="section" style="margin:0">
+          <div class="section-header"><div class="section-dot"></div><div class="section-title">Transacciones Pendientes</div><span class="badge badge-yellow">${pending}</span></div>
+          <table>
+            <thead><tr><th>Concepto</th><th class="c">Cantidad</th><th class="r">Monto</th></tr></thead>
+            <tbody>
+              <tr><td>Ingresos pendientes</td><td class="c">${txs.filter((r:any)=>r.type===1&&r.status===1).length}</td><td class="r pos">+${formatCurrency(pendingIncome)}</td></tr>
+              <tr><td>Gastos pendientes</td><td class="c">${txs.filter((r:any)=>r.type===2&&r.status===1).length}</td><td class="r neg">-${formatCurrency(pendingExpenses)}</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-header"><div class="section-dot"></div><div class="section-title">Transacciones Recientes</div><div class="section-sub">${txs.length > 20 ? `Mostrando 20 de ${txs.length}` : `${txs.length} transacciones`}</div></div>
+        <table>
+          <thead><tr><th>Fecha</th><th>Tipo</th><th>Descripción</th><th>Categoría</th><th class="r">Monto</th><th class="c">Estado</th></tr></thead>
+          <tbody>${recentRows}</tbody>
+        </table>
+      </div>
+    `
+    openPDF('Resumen de Transacciones', body, periodLabel)
   }
 }
 
@@ -552,6 +744,126 @@ export async function exportAnalyticsReport(
   }
 }
 
+// ─── WEEK CLOSE REPORT ───────────────────────────────────────────────────────
+export async function exportWeekClose(year: number, month: number, format: 'excel' | 'pdf') {
+  const { getWeekClosures, formatCurrency: fmtCur } = await import('@/services/weekClosureService')
+  const result = await getWeekClosures(year, month)
+  const weeks   = result.weeks
+  const summary = result.summary
+
+  const monthName = new Date(year, month - 1, 1).toLocaleDateString('es-ES', { month: 'long', year: 'numeric' })
+  const periodLabel = `${monthName.charAt(0).toUpperCase() + monthName.slice(1)}`
+
+  if (format === 'excel') {
+    const wb = XLSX.utils.book_new()
+
+    // Sheet 1 — Summary
+    const s1: any[][] = [
+      ['CHILL NUMBERS — CIERRE SEMANAL'],
+      [`Período: ${periodLabel}  |  Generado: ${today()}`],
+      [],
+      ['RESUMEN DEL MES'],
+      ['Indicador', 'Valor'],
+      ['Ingresos del Mes', summary.totalIncome],
+      ['Gastos del Mes', summary.totalExpenses],
+      ['Beneficio Neto', summary.netProfit],
+      ['Total Semanas', summary.totalWeeks],
+      ['Semanas Cerradas', summary.closedWeeks],
+      ['Semanas Pendientes', summary.pendingWeeks],
+      ['Semanas Abiertas', summary.openWeeks],
+      [],
+      ['DETALLE POR SEMANA'],
+      ['Semana', 'Período', 'Ingresos', 'Gastos', 'Beneficio', 'Transacciones', 'Estado', 'Cerrada el'],
+    ]
+    weeks.forEach(w => {
+      s1.push([
+        `Semana ${w.weekNumber}`,
+        `${w.startDate} — ${w.endDate}`,
+        w.income,
+        w.expenses,
+        w.netProfit,
+        w.transactionCount,
+        w.status === 'closed' ? 'Cerrada' : w.status === 'pending' ? 'Pendiente' : 'Abierta',
+        w.closedAt ? new Date(w.closedAt).toLocaleDateString('es-ES') : '—',
+      ])
+    })
+    const ws1 = XLSX.utils.aoa_to_sheet(s1)
+    ws1['!cols'] = [{wch:12},{wch:26},{wch:14},{wch:14},{wch:14},{wch:14},{wch:12},{wch:16}]
+    titleRow(ws1, 0, 8, 'CHILL NUMBERS — CIERRE SEMANAL')
+    applyHeaderStyle(ws1, 'A5:B5')
+    applyHeaderStyle(ws1, 'A15:H15')
+    XLSX.utils.book_append_sheet(wb, ws1, 'Cierre Semanal')
+
+    XLSX.writeFile(wb, filename(`cierre-semanal-${year}-${String(month).padStart(2,'0')}`, 'xlsx'))
+
+  } else {
+    const statusBadge = (status: string) => {
+      if (status === 'closed')  return '<span class="badge badge-green">Cerrada</span>'
+      if (status === 'pending') return '<span class="badge badge-yellow">Pendiente</span>'
+      return '<span class="badge badge-blue">Abierta</span>'
+    }
+
+    const weekRows = weeks.map(w => `
+      <tr>
+        <td><strong>Semana ${w.weekNumber}</strong></td>
+        <td class="c" style="font-size:9px;color:#718096">${w.startDate} — ${w.endDate}</td>
+        <td class="c">${w.transactionCount}</td>
+        <td class="r pos">+${fmtCur(w.income)}</td>
+        <td class="r neg">-${fmtCur(w.expenses)}</td>
+        <td class="r ${w.netProfit >= 0 ? 'pos' : 'neg'}">${w.netProfit >= 0 ? '+' : ''}${fmtCur(w.netProfit)}</td>
+        <td class="c">${statusBadge(w.status)}</td>
+        <td class="c" style="font-size:9px;color:#718096">${w.closedAt ? new Date(w.closedAt).toLocaleDateString('es-ES') : '—'}</td>
+      </tr>`
+    ).join('')
+
+    const closedPct = summary.totalWeeks > 0 ? ((summary.closedWeeks / summary.totalWeeks) * 100).toFixed(0) : '0'
+    const netClass  = summary.netProfit >= 0 ? 'green' : 'red'
+
+    const body = `
+      <div class="kpi-grid kpi-grid-4">
+        <div class="kpi green"><div class="kpi-label">Ingresos del Mes</div><div class="kpi-value">${fmtCur(summary.totalIncome)}</div><div class="kpi-sub">Período: ${periodLabel}</div></div>
+        <div class="kpi red"><div class="kpi-label">Gastos del Mes</div><div class="kpi-value">${fmtCur(summary.totalExpenses)}</div><div class="kpi-sub">Período: ${periodLabel}</div></div>
+        <div class="kpi ${netClass}"><div class="kpi-label">${summary.netProfit >= 0 ? 'Beneficio Neto' : 'Pérdida Neta'}</div><div class="kpi-value">${fmtCur(Math.abs(summary.netProfit))}</div><div class="kpi-sub">${summary.netProfit >= 0 ? 'Resultado positivo' : 'Resultado negativo'}</div></div>
+        <div class="kpi teal"><div class="kpi-label">Estado de Cierres</div><div class="kpi-value">${summary.closedWeeks}/${summary.totalWeeks}</div><div class="kpi-sub">${closedPct}% cerradas</div></div>
+      </div>
+
+      <div class="section">
+        <div class="section-header"><div class="section-dot"></div><div class="section-title">Detalle de Semanas</div><div class="section-sub">${summary.pendingWeeks > 0 ? `⚠️ ${summary.pendingWeeks} semana(s) pendiente(s)` : '✅ Todo al día'}</div></div>
+        <table>
+          <thead>
+            <tr>
+              <th>Semana</th>
+              <th class="c">Período</th>
+              <th class="c">Transacciones</th>
+              <th class="r">Ingresos</th>
+              <th class="r">Gastos</th>
+              <th class="r">Beneficio</th>
+              <th class="c">Estado</th>
+              <th class="c">Cerrada el</th>
+            </tr>
+          </thead>
+          <tbody>${weekRows}</tbody>
+          <tfoot>
+            <tr style="background:#f7fafc;font-weight:700">
+              <td colspan="3"><strong>TOTALES</strong></td>
+              <td class="r pos">+${fmtCur(summary.totalIncome)}</td>
+              <td class="r neg">-${fmtCur(summary.totalExpenses)}</td>
+              <td class="r ${summary.netProfit >= 0 ? 'pos' : 'neg'}">${summary.netProfit >= 0 ? '+' : ''}${fmtCur(summary.netProfit)}</td>
+              <td colspan="2"></td>
+            </tr>
+          </tfoot>
+        </table>
+      </div>
+
+      <div class="section">
+        <div class="section-header"><div class="section-dot"></div><div class="section-title">¿Qué es el Cierre Semanal?</div></div>
+        <p style="font-size:10px;color:#718096;line-height:1.6">El cierre semanal bloquea las transacciones de una semana específica, evitando modificaciones accidentales y manteniendo la integridad de los registros financieros. Las semanas cerradas aparecen en verde, las pendientes en amarillo y las abiertas en azul.</p>
+      </div>
+    `
+    openPDF('Cierre Semanal', body, periodLabel)
+  }
+}
+
 // ─── ANALYTICS (legacy stub — now delegates to full report) ──────────────────
 export async function exportAnalyticsData(format: 'excel' | 'pdf') {
   const year  = String(new Date().getFullYear())
@@ -563,12 +875,12 @@ export async function exportAnalyticsData(format: 'excel' | 'pdf') {
 export const showExportModal = (onExport: (format: 'excel' | 'pdf') => void) => {
   const locale = document.documentElement.lang?.startsWith('en') ? 'en' : 'es'
   const s = locale === 'en'
-    ? { title: 'Export report', subtitle: 'Select export format', cancel: 'Cancel' }
-    : { title: 'Exportar reporte', subtitle: 'Selecciona el formato de exportación', cancel: 'Cancelar' }
+    ? { title: 'Export Report', subtitle: 'Select export format', excel: 'Excel (.xlsx)', pdf: 'PDF', cancel: 'Cancel' }
+    : { title: 'Exportar Reporte', subtitle: 'Selecciona el formato de exportación', excel: 'Excel (.xlsx)', pdf: 'PDF', cancel: 'Cancelar' }
 
   const modal = document.createElement('div')
   modal.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,.5);display:flex;align-items:center;justify-content:center;z-index:9999'
-  modal.innerHTML = `<div style="background:#fff;border-radius:12px;padding:28px;max-width:380px;width:90%;box-shadow:0 20px 60px rgba(0,0,0,.2)"><h3 style="margin:0 0 6px;font-size:17px;font-weight:700;color:#2d3748">${s.title}</h3><p style="margin:0 0 20px;font-size:13px;color:#718096">${s.subtitle}</p><div style="display:flex;gap:10px"><button id="exp-excel" style="flex:1;background:#1a7f4b;color:#fff;border:none;border-radius:8px;padding:11px;font-size:13px;font-weight:600;cursor:pointer">📊 Excel (.xlsx)</button><button id="exp-pdf" style="flex:1;background:#c53030;color:#fff;border:none;border-radius:8px;padding:11px;font-size:13px;font-weight:600;cursor:pointer">📄 PDF</button></div><button id="exp-cancel" style="width:100%;margin-top:10px;background:#edf2f7;color:#4a5568;border:none;border-radius:8px;padding:9px;font-size:13px;cursor:pointer">${s.cancel}</button></div>`
+  modal.innerHTML = `<div style="background:#fff;border-radius:12px;padding:28px;max-width:380px;width:90%;box-shadow:0 20px 60px rgba(0,0,0,.2)"><h3 style="margin:0 0 6px;font-size:17px;font-weight:700;color:#2d3748">${s.title}</h3><p style="margin:0 0 20px;font-size:13px;color:#718096">${s.subtitle}</p><div style="display:flex;gap:10px"><button id="exp-excel" style="flex:1;background:#1a7f4b;color:#fff;border:none;border-radius:8px;padding:11px;font-size:13px;font-weight:600;cursor:pointer">📊 ${s.excel}</button><button id="exp-pdf" style="flex:1;background:#c53030;color:#fff;border:none;border-radius:8px;padding:11px;font-size:13px;font-weight:600;cursor:pointer">📄 ${s.pdf}</button></div><button id="exp-cancel" style="width:100%;margin-top:10px;background:#edf2f7;color:#4a5568;border:none;border-radius:8px;padding:9px;font-size:13px;cursor:pointer">${s.cancel}</button></div>`
   document.body.appendChild(modal)
   const close = () => document.body.removeChild(modal)
   modal.querySelector('#exp-excel')?.addEventListener('click', () => { close(); onExport('excel') })
@@ -580,13 +892,15 @@ export const showExportModal = (onExport: (format: 'excel' | 'pdf') => void) => 
 // ─── Compatibilidad con llamadas antiguas ────────────────────────────────────
 export const exportReportData = async (reportType: string, format: 'excel' | 'pdf' | 'csv') => {
   const fmt = format === 'csv' ? 'excel' : format
-  const year = new Date().getFullYear()
+  const year  = new Date().getFullYear()
+  const month = new Date().getMonth() + 1
   switch (reportType) {
-    case 'financial-summary': return exportFinancialSummary({ period: 'month' }, fmt)
+    case 'financial-summary':    return exportFinancialSummary({ period: 'month' }, fmt)
     case 'profit-loss-detailed': return exportProfitLoss({ year }, fmt)
-    case 'transaction-summary': return exportTransactionSummary({ period: 'month' }, fmt)
-    case 'category-breakdown': return exportCategoryBreakdown({ period: 'month' }, fmt)
-    case 'employee-summary': return exportEmployeeSummary(fmt)
-    default: return exportFinancialSummary({ period: 'month' }, fmt)
+    case 'transaction-summary':  return exportTransactionSummary({ period: 'month' }, fmt)
+    case 'category-breakdown':   return exportCategoryBreakdown({ period: 'month' }, fmt)
+    case 'employee-summary':     return exportEmployeeSummary(fmt)
+    case 'week-close':           return exportWeekClose(year, month, fmt)
+    default:                     return exportFinancialSummary({ period: 'month' }, fmt)
   }
 }

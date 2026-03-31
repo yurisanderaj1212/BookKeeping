@@ -1,13 +1,11 @@
-import type { Metadata } from 'next'
+'use client'
+
 import Link from 'next/link'
 import AppLogo from '@/components/ui/AppLogo'
-
-export const metadata: Metadata = {
-  title: 'Términos de Servicio — Chill Numbers',
-  description: 'Lee los términos y condiciones de uso de Chill Numbers.',
-}
+import { useTranslations } from 'next-intl'
 
 export default function TermsPage() {
+  const t = useTranslations('legal')
   const lastUpdated = '19 de marzo de 2026'
 
   return (
@@ -18,11 +16,8 @@ export default function TermsPage() {
           <Link href="/">
             <AppLogo size={32} variant="full" />
           </Link>
-          <Link
-            href="/auth/login"
-            className="text-sm text-primary-600 hover:text-primary-700 font-medium transition-colors"
-          >
-            Iniciar sesión
+          <Link href="/auth/login" className="text-sm text-primary-600 hover:text-primary-700 font-medium transition-colors">
+            {t('signIn')}
           </Link>
         </div>
       </header>
@@ -32,8 +27,8 @@ export default function TermsPage() {
         <div className="bg-white rounded-2xl shadow-sm border border-slate-200 p-8 md:p-12">
           {/* Title */}
           <div className="mb-10 pb-8 border-b border-slate-100">
-            <h1 className="text-3xl font-bold text-slate-900 mb-2">Términos de Servicio</h1>
-            <p className="text-sm text-slate-500">Última actualización: {lastUpdated}</p>
+            <h1 className="text-3xl font-bold text-slate-900 mb-2">{t('termsTitle')}</h1>
+            <p className="text-sm text-slate-500">{t('lastUpdated')}: {lastUpdated}</p>
           </div>
 
           <div className="prose-legal">
@@ -205,9 +200,9 @@ export default function TermsPage() {
 
         {/* Footer links */}
         <div className="mt-8 flex flex-wrap justify-center gap-6 text-sm text-slate-500">
-          <Link href="/privacy" className="hover:text-primary-600 transition-colors">Política de Privacidad</Link>
-          <Link href="/cookies" className="hover:text-primary-600 transition-colors">Política de Cookies</Link>
-          <Link href="/" className="hover:text-primary-600 transition-colors">Volver al inicio</Link>
+          <Link href="/privacy" className="hover:text-primary-600 transition-colors">{t('privacy')}</Link>
+          <Link href="/cookies" className="hover:text-primary-600 transition-colors">{t('cookies')}</Link>
+          <Link href="/" className="hover:text-primary-600 transition-colors">{t('backHome')}</Link>
         </div>
       </main>
     </div>

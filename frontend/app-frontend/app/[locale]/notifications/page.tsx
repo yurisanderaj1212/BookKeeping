@@ -4,6 +4,7 @@ import { useState, useEffect, useCallback } from 'react'
 import { useRouter } from 'next/navigation'
 import { useAuth } from '@/hooks/useAuth'
 import { useTranslations, useLocale } from 'next-intl'
+import PageLayout from '@/components/ui/PageLayout'
 import {
   Bell, Filter, Search, Check, CheckCheck, Trash2,
   Receipt, FileText, Users, Settings, Clock, AlertTriangle,
@@ -63,7 +64,6 @@ export default function NotificationsPage() {
   const [priorityFilter, setPriorityFilter] = useState('all')
   const [selectedIds, setSelectedIds] = useState<number[]>([])
   const [showFilters, setShowFilters] = useState(false)
-  const [sidebarCollapsed, setSidebarCollapsed] = useState(false)
 
   const loadData = useCallback(async () => {
     setLoading(true)
@@ -71,9 +71,8 @@ export default function NotificationsPage() {
       const [notifs, st] = await Promise.all([getNotifications(), getStats()])
       setNotifications(notifs)
       setStats(st)
-    } catch (err) {
-      console.error('Error cargando notificaciones:', err)
-      // No mostrar error al usuario — el backend puede estar reiniciando
+    } catch {
+      // silencioso — no mostrar error al usuario
     } finally {
       setLoading(false)
     }
@@ -164,37 +163,33 @@ export default function NotificationsPage() {
 
   return (
     <div className="flex min-h-screen bg-gray-50">
-      <Sidebar onLogout={logout} onToggle={setSidebarCollapsed} />
+      <Sidebar onLogout={logout} />
 
-      <div className={`flex-1 transition-all duration-300 ${sidebarCollapsed ? 'ml-16' : 'ml-64'}`}>
+      <PageLayout>
         {/* Header */}
         <div className="bg-white border-b border-gray-200 sticky top-0 z-10">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="flex items-center justify-between h-20">
-              <div>
-                <h1 className="text-2xl font-bold text-gray-900 flex items-center space-x-2">
-                  <Bell className="w-6 h-6 text-primary-600" />
-                  <span>{t('title')}</span>
+            <div className="flex items-center justify-between min-h-16 py-3 gap-3">
+              <div className="min-w-0">
+                <h1 className="text-xl sm:text-2xl font-bold text-gray-900 flex items-center gap-2">
+                  <Bell className="w-5 h-5 text-primary-600 shrink-0" />
+                  <span className="truncate">{t('title')}</span>
                 </h1>
-                <p className="text-sm text-gray-500 mt-1">{t('subtitle')}</p>
+                <p className="text-sm text-gray-500 mt-0.5 hidden sm:block">{t('subtitle')}</p>
               </div>
-              <div className="flex items-center space-x-2">
+              <div className="flex items-center gap-2 shrink-0">
                 {stats && stats.unread > 0 && (
-                  <button
-                    onClick={handleMarkAllAsRead}
-                    className="bg-primary-600 text-white px-4 py-2 rounded-lg hover:bg-primary-700 transition-colors flex items-center space-x-2 text-sm"
-                  >
+                  <button onClick={handleMarkAllAsRead}
+                    className="bg-primary-600 text-white px-3 py-2 rounded-lg hover:bg-primary-700 transition-colors flex items-center gap-1.5 text-sm">
                     <CheckCheck className="w-4 h-4" />
-                  <span>{t('markAllRead')}</span>
+                    <span className="hidden sm:inline">{t('markAllRead')}</span>
                   </button>
                 )}
                 {stats && stats.read > 0 && (
-                  <button
-                    onClick={handleDeleteAllRead}
-                    className="border border-gray-300 text-gray-600 px-4 py-2 rounded-lg hover:bg-gray-50 transition-colors flex items-center space-x-2 text-sm"
-                  >
+                  <button onClick={handleDeleteAllRead}
+                    className="border border-gray-300 text-gray-600 px-3 py-2 rounded-lg hover:bg-gray-50 transition-colors flex items-center gap-1.5 text-sm">
                     <Trash2 className="w-4 h-4" />
-                  <span>{t('clearRead')}</span>
+                    <span className="hidden sm:inline">{t('clearRead')}</span>
                   </button>
                 )}
               </div>
@@ -412,7 +407,7 @@ export default function NotificationsPage() {
             )}
           </div>
         </div>
-      </div>
+      </PageLayout>
     </div>
   )
 }

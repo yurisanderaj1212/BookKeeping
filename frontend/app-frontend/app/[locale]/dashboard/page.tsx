@@ -16,9 +16,9 @@ import { useOnboarding } from '@/hooks/useOnboarding'
 import { useTranslations, useLocale } from 'next-intl'
 import { useAuth } from '@/hooks/useAuth'
 import { useSubscription } from '@/hooks/useSubscription'
+import PageLayout from '@/components/ui/PageLayout'
 import TrialBanner from '@/components/subscription/TrialBanner'
 import * as dashboardService from '@/services/dashboardService'
-import { mockWeeklyData, mockMonthlyData } from '@/data/dashboard-data'
 
 /** Construye el label del período en el idioma del usuario */
 function buildPeriodLabel(
@@ -59,7 +59,6 @@ export default function DashboardPage() {
   const t = useTranslations('dashboard')
   const locale = useLocale()
   const selectedPeriod = 'week' as const
-  const [sidebarCollapsed, setSidebarCollapsed] = useState(false)
   
   // Estados para datos del dashboard
   const [dashboardSummary, setDashboardSummary] = useState<dashboardService.DashboardSummary | null>(null)
@@ -122,7 +121,6 @@ export default function DashboardPage() {
       const summary = await dashboardService.getSummary({ period: selectedPeriod })
       setDashboardSummary(summary)
     } catch (err: any) {
-      console.error('Error loading dashboard summary:', err)
       setError(err.message || t('statsError'))
     } finally {
       setLoadingSummary(false)
@@ -141,8 +139,8 @@ export default function DashboardPage() {
       
       setWeeklyChartData(weekly)
       setMonthlyChartData(monthly)
-    } catch (err: any) {
-      console.error('Error loading chart data:', err)
+    } catch {
+      // silencioso — no crítico
     } finally {
       setLoadingCharts(false)
     }
@@ -159,8 +157,8 @@ export default function DashboardPage() {
       ])
 
       setCategoryBreakdown([...incomeBreakdown, ...expenseBreakdown])
-    } catch (err: any) {
-      console.error('Error loading category breakdown:', err)
+    } catch {
+      // silencioso — no crítico
     } finally {
       setLoadingCategories(false)
     }
@@ -169,10 +167,6 @@ export default function DashboardPage() {
   if (!isAuthenticated && !isLoading) return null
 
   // FUNCIONES DEL COMPONENTE
-  const handleSidebarToggle = (isCollapsed: boolean) => {
-    setSidebarCollapsed(isCollapsed)
-  }
-
   const handleQuickAction = (actionId: string) => {
     switch (actionId) {
       case 'add-transaction':
@@ -206,34 +200,25 @@ export default function DashboardPage() {
   return (
     <div className="flex min-h-screen bg-gray-50">
       {/* Sidebar */}
-      <Sidebar onLogout={handleLogout} onToggle={handleSidebarToggle} />
+      <Sidebar onLogout={handleLogout} />
 
       {/* Main Content */}
-      <div className={`flex-1 transition-all duration-300 ${sidebarCollapsed ? 'ml-16' : 'ml-64'}`}>
+      <PageLayout>
         {/* Trial Banner */}
         {subInfo && <TrialBanner info={subInfo} />}
 
         {/* Header */}
         <div className="bg-white border-b border-gray-200 sticky top-0 z-10">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="flex items-center justify-between h-20">
-              <div>
-                <h1 className="text-2xl font-bold text-gray-900">
-                  {t('title')}
-                </h1>
-                <p className="text-sm text-gray-500 mt-1">
-                  {t('welcome')}
-                </p>
+            <div className="flex items-center justify-between min-h-16 py-3 gap-3">
+              <div className="min-w-0">
+                <h1 className="text-xl sm:text-2xl font-bold text-gray-900 truncate">{t('title')}</h1>
+                <p className="text-sm text-gray-500 mt-0.5 hidden sm:block">{t('welcome')}</p>
               </div>
-              <div className="flex items-center space-x-2">
-                  {/* Notification Button */}
-                  <div data-tour="notification-btn">
-                    <NotificationButton />
-                  </div>
-
-                  {/* Help Button */}
-                  <HelpButton onStartTour={resetOnboarding} />
-                </div>
+              <div className="flex items-center gap-2 shrink-0">
+                <div data-tour="notification-btn"><NotificationButton /></div>
+                <HelpButton onStartTour={resetOnboarding} />
+              </div>
             </div>
           </div>
         </div>
@@ -351,7 +336,13 @@ export default function DashboardPage() {
                 expenses: d.expenses
               }))} />
             ) : (
-              <WeeklyChart data={mockWeeklyData} />
+              <div className="bg-white rounded-lg border border-gray-200 p-6 flex flex-col items-center justify-center h-64 text-center">
+                <div className="w-12 h-12 bg-gray-100 rounded-full flex items-center justify-center mb-3">
+                  <BarChart3 className="w-6 h-6 text-gray-400" />
+                </div>
+                <p className="text-sm font-medium text-gray-500">{t('weeklyChart.title')}</p>
+                <p className="text-xs text-gray-400 mt-1">{t('recentTransactions.emptyDesc')}</p>
+              </div>
             )}
           </div>
           <div className="min-w-0">
@@ -367,7 +358,13 @@ export default function DashboardPage() {
                 expenses: d.expenses
               }))} />
             ) : (
-              <MonthlyChart data={mockMonthlyData} />
+              <div className="bg-white rounded-lg border border-gray-200 p-6 flex flex-col items-center justify-center h-64 text-center">
+                <div className="w-12 h-12 bg-gray-100 rounded-full flex items-center justify-center mb-3">
+                  <BarChart3 className="w-6 h-6 text-gray-400" />
+                </div>
+                <p className="text-sm font-medium text-gray-500">{t('monthlyChart.title')}</p>
+                <p className="text-xs text-gray-400 mt-1">{t('recentTransactions.emptyDesc')}</p>
+              </div>
             )}
           </div>
         </div>
@@ -403,7 +400,7 @@ export default function DashboardPage() {
             )}
           </div>
         </div>
-      </div>
+      </PageLayout>
 
       {/* Welcome Modal — solo para usuarios nuevos */}
       <WelcomeModal

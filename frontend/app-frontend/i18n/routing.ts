@@ -1,13 +1,11 @@
 import { defineRouting } from 'next-intl/routing'
+import { createNavigation } from 'next-intl/navigation'
 
 export const routing = defineRouting({
-  // Idiomas soportados
   locales: ['es', 'en'],
-
-  // Idioma por defecto — la app está en español
   defaultLocale: 'es',
-
-  // /dashboard → /es/dashboard automáticamente
-  // El prefijo del idioma por defecto se omite en la URL
   localePrefix: 'as-needed',
 })
+
+// Typed navigation helpers — use these instead of next/navigation in app code
+export const { Link, redirect, usePathname, useRouter } = createNavigation(routing)

@@ -1,40 +1,47 @@
 'use client'
 
-import { useEffect, useCallback, useState } from 'react'
+import { useEffect, useCallback, useState, useRef } from 'react'
 import { useRouter } from 'next/navigation'
-import { useTranslations } from 'next-intl'
+import { useTranslations, useLocale } from 'next-intl'
 import {
   LayoutDashboard, Receipt, Users, FileText, BarChart3,
-  Settings, Bell, Wallet, Check, ChevronRight, ChevronLeft, X, Sparkles
+  Settings, Bell, Wallet, Check, ChevronRight, ChevronLeft,
+  X, Sparkles, Zap, TrendingUp, PieChart, Lock
 } from 'lucide-react'
 
-// Step IDs — the text comes from i18n, only metadata stays here
+// ─── Step definitions ─────────────────────────────────────────────────────────
+
 const STEP_META = [
-  { id: 'welcome',      target: '',                                page: '/dashboard',    icon: Sparkles,        iconColor: 'text-yellow-500' },
-  { id: 'sidebar',      target: '[data-tour="sidebar"]',           page: '/dashboard',    icon: LayoutDashboard, iconColor: 'text-blue-500'   },
-  { id: 'dashboard',    target: '[data-tour="stats-cards"]',       page: '/dashboard',    icon: LayoutDashboard, iconColor: 'text-blue-500'   },
-  { id: 'notifs',       target: '[data-tour="notification-btn"]',  page: '/dashboard',    icon: Bell,            iconColor: 'text-purple-500' },
-  { id: 'accounts',     target: '[data-tour="accounts-main"]',     page: '/accounts',     icon: Wallet,          iconColor: 'text-green-500'  },
-  { id: 'add-account',  target: '[data-tour="add-account-btn"]',   page: '/accounts',     icon: Wallet,          iconColor: 'text-green-500'  },
-  { id: 'transactions', target: '[data-tour="transactions-main"]', page: '/transactions', icon: Receipt,         iconColor: 'text-orange-500' },
-  { id: 'add-tx',       target: '[data-tour="add-transaction-btn"]',page: '/transactions',icon: Receipt,         iconColor: 'text-orange-500' },
-  { id: 'employees',    target: '[data-tour="employees-main"]',    page: '/employees',    icon: Users,           iconColor: 'text-indigo-500' },
-  { id: 'reports',      target: '[data-tour="reports-grid"]',      page: '/reports',      icon: FileText,        iconColor: 'text-red-500'    },
-  { id: 'analytics',    target: '[data-tour="analytics-main"]',    page: '/analytics',    icon: BarChart3,       iconColor: 'text-teal-500'   },
-  { id: 'settings',     target: '[data-tour="settings-main"]',     page: '/settings',     icon: Settings,        iconColor: 'text-gray-500'   },
-  { id: 'complete',     target: '',                                page: '/dashboard',    icon: Check,           iconColor: 'text-green-500'  },
+  { id: 'welcome',      target: '',                                   page: '/dashboard',    icon: Sparkles,       iconColor: '#f59e0b', bg: '#fffbeb' },
+  { id: 'sidebar',      target: '[data-tour="sidebar"]',              page: '/dashboard',    icon: LayoutDashboard,iconColor: '#6366f1', bg: '#eef2ff' },
+  { id: 'dashboard',    target: '[data-tour="stats-cards"]',          page: '/dashboard',    icon: TrendingUp,     iconColor: '#10b981', bg: '#ecfdf5' },
+  { id: 'quickActions', target: '[data-tour="quick-actions"]',        page: '/dashboard',    icon: Zap,            iconColor: '#f59e0b', bg: '#fffbeb' },
+  { id: 'notifs',       target: '[data-tour="notification-btn"]',     page: '/dashboard',    icon: Bell,           iconColor: '#8b5cf6', bg: '#f5f3ff' },
+  { id: 'accounts',     target: '[data-tour="accounts-main"]',        page: '/accounts',     icon: Wallet,         iconColor: '#10b981', bg: '#ecfdf5' },
+  { id: 'add-account',  target: '[data-tour="accounts-summary"]',     page: '/accounts',     icon: Wallet,         iconColor: '#10b981', bg: '#ecfdf5' },
+  { id: 'transactions', target: '[data-tour="transactions-main"]',    page: '/transactions', icon: Receipt,        iconColor: '#f97316', bg: '#fff7ed' },
+  { id: 'add-tx',       target: '[data-tour="add-transaction-btn"]',  page: '/transactions', icon: Receipt,        iconColor: '#f97316', bg: '#fff7ed' },
+  { id: 'tx-filters',   target: '[data-tour="transaction-filters"]',  page: '/transactions', icon: Receipt,        iconColor: '#f97316', bg: '#fff7ed' },
+  { id: 'employees',    target: '[data-tour="employees-main"]',       page: '/employees',    icon: Users,          iconColor: '#6366f1', bg: '#eef2ff' },
+  { id: 'reports',      target: '[data-tour="reports-grid"]',         page: '/reports',      icon: FileText,       iconColor: '#ef4444', bg: '#fef2f2' },
+  { id: 'analytics',    target: '[data-tour="analytics-main"]',       page: '/analytics',    icon: PieChart,       iconColor: '#0ea5e9', bg: '#f0f9ff' },
+  { id: 'settings',     target: '[data-tour="settings-main"]',        page: '/settings',     icon: Settings,       iconColor: '#6b7280', bg: '#f9fafb' },
+  { id: 'complete',     target: '',                                   page: '/dashboard',    icon: Check,          iconColor: '#10b981', bg: '#ecfdf5' },
 ] as const
 
-// Map step id → translation key (matches the keys in tour.steps.*)
-const STEP_KEY: Record<string, string> = {
+type StepId = typeof STEP_META[number]['id']
+
+const STEP_KEY: Record<StepId, string> = {
   'welcome':      'welcome',
   'sidebar':      'sidebar',
   'dashboard':    'dashboard',
+  'quickActions': 'quickActions',
   'notifs':       'notifications',
   'accounts':     'accounts',
   'add-account':  'addAccount',
   'transactions': 'transactions',
   'add-tx':       'addTransaction',
+  'tx-filters':   'txFilters',
   'employees':    'employees',
   'reports':      'reports',
   'analytics':    'analytics',
@@ -50,72 +57,186 @@ export interface OnboardingTourProps {
   setStep?: (s: number) => void
 }
 
-interface SpotRect { top: number; left: number; width: number; height: number }
+// ─── Smart positioning ────────────────────────────────────────────────────────
 
-function useSpotlight(selector: string, active: boolean): SpotRect | null {
-  const [rect, setRect] = useState<SpotRect | null>(null)
+interface Rect { top: number; left: number; width: number; height: number }
+type Side = 'top' | 'bottom' | 'left' | 'right' | 'center'
+
+const TOOLTIP_W = 340
+const TOOLTIP_H = 280
+const PAD = 12
+const MARGIN = 16
+
+function computePosition(rect: Rect): { side: Side; x: number; y: number } {
+  const vw = window.innerWidth
+  const vh = window.innerHeight
+
+  const spaceBottom = vh - rect.top - rect.height
+  const spaceTop    = rect.top
+  const spaceRight  = vw - rect.left - rect.width
+  const spaceLeft   = rect.left
+
+  const cx = rect.left + rect.width / 2
+  const cy = rect.top  + rect.height / 2
+
+  // Prefer bottom, then right, then top, then left
+  const candidates: { side: Side; score: number; x: number; y: number }[] = [
+    {
+      side: 'bottom', score: spaceBottom,
+      x: Math.max(MARGIN, Math.min(vw - TOOLTIP_W - MARGIN, cx - TOOLTIP_W / 2)),
+      y: rect.top + rect.height + PAD,
+    },
+    {
+      side: 'right', score: spaceRight,
+      x: rect.left + rect.width + PAD,
+      y: Math.max(MARGIN, Math.min(vh - TOOLTIP_H - MARGIN, cy - TOOLTIP_H / 2)),
+    },
+    {
+      side: 'top', score: spaceTop,
+      x: Math.max(MARGIN, Math.min(vw - TOOLTIP_W - MARGIN, cx - TOOLTIP_W / 2)),
+      y: rect.top - TOOLTIP_H - PAD,
+    },
+    {
+      side: 'left', score: spaceLeft,
+      x: rect.left - TOOLTIP_W - PAD,
+      y: Math.max(MARGIN, Math.min(vh - TOOLTIP_H - MARGIN, cy - TOOLTIP_H / 2)),
+    },
+  ]
+
+  // Filter candidates that fit
+  const fits = candidates.filter(c => {
+    if (c.side === 'bottom') return spaceBottom >= TOOLTIP_H + PAD
+    if (c.side === 'top')    return spaceTop    >= TOOLTIP_H + PAD
+    if (c.side === 'right')  return spaceRight  >= TOOLTIP_W + PAD
+    if (c.side === 'left')   return spaceLeft   >= TOOLTIP_W + PAD
+    return false
+  })
+
+  const best = fits.length > 0
+    ? fits.sort((a, b) => b.score - a.score)[0]
+    : candidates.sort((a, b) => b.score - a.score)[0]
+
+  // Clamp to viewport
+  best.x = Math.max(MARGIN, Math.min(vw - TOOLTIP_W - MARGIN, best.x))
+  best.y = Math.max(MARGIN, Math.min(vh - TOOLTIP_H - MARGIN, best.y))
+
+  return best
+}
+
+// ─── Spotlight hook ───────────────────────────────────────────────────────────
+
+function useSpotlight(selector: string, active: boolean) {
+  const [rect, setRect] = useState<Rect | null>(null)
+  const [pos, setPos]   = useState<{ side: Side; x: number; y: number } | null>(null)
+
   useEffect(() => {
-    if (!active || !selector) { setRect(null); return }
+    if (!active || !selector) { setRect(null); setPos(null); return }
+
     const measure = () => {
       const el = document.querySelector(selector)
-      if (!el) { setRect(null); return }
+      if (!el) { setRect(null); setPos(null); return }
       const r = el.getBoundingClientRect()
-      setRect({ top: r.top, left: r.left, width: r.width, height: r.height })
+      const newRect = { top: r.top, left: r.left, width: r.width, height: r.height }
+      setRect(newRect)
+      setPos(computePosition(newRect))
     }
-    const t = setTimeout(measure, 200)
+
+    const t = setTimeout(measure, 250)
     window.addEventListener('resize', measure)
     window.addEventListener('scroll', measure, true)
-    return () => {
-      clearTimeout(t)
-      window.removeEventListener('resize', measure)
-      window.removeEventListener('scroll', measure, true)
-    }
+    return () => { clearTimeout(t); window.removeEventListener('resize', measure); window.removeEventListener('scroll', measure, true) }
   }, [selector, active])
-  return rect
+
+  return { rect, pos }
 }
+
+// ─── Arrow ────────────────────────────────────────────────────────────────────
+
+function Arrow({ side, rect, tooltipX, tooltipY }: { side: Side; rect: Rect; tooltipX: number; tooltipY: number }) {
+  const S = 10
+  const cx = rect.left + rect.width / 2
+  const cy = rect.top  + rect.height / 2
+
+  const style: React.CSSProperties = { position: 'absolute', width: 0, height: 0, pointerEvents: 'none' }
+
+  if (side === 'bottom') {
+    const arrowLeft = Math.max(S + 4, Math.min(TOOLTIP_W - S * 2 - 4, cx - tooltipX))
+    return <div style={{ ...style, top: -S, left: arrowLeft,
+      borderLeft: `${S}px solid transparent`, borderRight: `${S}px solid transparent`,
+      borderBottom: `${S}px solid white`, filter: 'drop-shadow(0 -1px 2px rgba(0,0,0,0.08))' }} />
+  }
+  if (side === 'top') {
+    const arrowLeft = Math.max(S + 4, Math.min(TOOLTIP_W - S * 2 - 4, cx - tooltipX))
+    return <div style={{ ...style, bottom: -S, left: arrowLeft,
+      borderLeft: `${S}px solid transparent`, borderRight: `${S}px solid transparent`,
+      borderTop: `${S}px solid white`, filter: 'drop-shadow(0 1px 2px rgba(0,0,0,0.08))' }} />
+  }
+  if (side === 'right') {
+    const arrowTop = Math.max(S + 4, Math.min(TOOLTIP_H - S * 2 - 4, cy - tooltipY))
+    return <div style={{ ...style, left: -S, top: arrowTop,
+      borderTop: `${S}px solid transparent`, borderBottom: `${S}px solid transparent`,
+      borderRight: `${S}px solid white`, filter: 'drop-shadow(-1px 0 2px rgba(0,0,0,0.08))' }} />
+  }
+  if (side === 'left') {
+    const arrowTop = Math.max(S + 4, Math.min(TOOLTIP_H - S * 2 - 4, cy - tooltipY))
+    return <div style={{ ...style, right: -S, top: arrowTop,
+      borderTop: `${S}px solid transparent`, borderBottom: `${S}px solid transparent`,
+      borderLeft: `${S}px solid white`, filter: 'drop-shadow(1px 0 2px rgba(0,0,0,0.08))' }} />
+  }
+  return null
+}
+
+// ─── Main component ───────────────────────────────────────────────────────────
 
 export default function OnboardingTour({
   isOpen, onClose, onComplete, currentStep = 0, setStep,
 }: OnboardingTourProps) {
-  const router = useRouter()
-  const t = useTranslations('tour')
-  const tSteps = useTranslations('tour.steps')
+  const router  = useRouter()
+  const locale  = useLocale()
+  const t       = useTranslations('tour')
+  const tSteps  = useTranslations('tour.steps')
 
   const [step, setLocalStep] = useState(currentStep)
-  const [fading, setFading] = useState(false)
+  const [fading, setFading]  = useState(false)
+  const prevPage = useRef<string>('')
 
-  const meta = STEP_META[step]
-  const isLast = step === STEP_META.length - 1
-  const isFirst = step === 0
+  const meta     = STEP_META[step]
+  const isLast   = step === STEP_META.length - 1
+  const isFirst  = step === 0
   const progress = ((step + 1) / STEP_META.length) * 100
+  const stepKey  = STEP_KEY[meta.id as StepId] ?? 'welcome'
+  const Icon     = meta.icon
 
+  // Sync external step
   useEffect(() => { setLocalStep(currentStep) }, [currentStep])
 
+  // Navigate to the right page when step changes
   useEffect(() => {
     if (!isOpen || !meta) return
-    const target = `/es${meta.page}`
-    if (!window.location.pathname.includes(meta.page)) router.push(target)
-  }, [step, isOpen, meta, router])
+    const targetPath = `/${locale}${meta.page}`
+    if (prevPage.current !== meta.page && !window.location.pathname.includes(meta.page)) {
+      prevPage.current = meta.page
+      router.push(targetPath)
+    }
+  }, [step, isOpen, meta, router, locale])
 
-  const spot = useSpotlight(meta?.target ?? '', isOpen && !!(meta?.target))
-
-  const goTo = useCallback((next: number) => {
-    setFading(true)
-    localStorage.setItem('cn-onboarding-step', String(next))
-    setTimeout(() => { setLocalStep(next); setStep?.(next); setFading(false) }, 160)
-  }, [setStep])
-
+  // Restore step from localStorage
   useEffect(() => {
     if (!isOpen) return
     const saved = localStorage.getItem('cn-onboarding-step')
     if (saved !== null) {
       const n = parseInt(saved)
-      if (!isNaN(n) && n > 0 && n < STEP_META.length) {
-        setLocalStep(n)
-        setStep?.(n)
-      }
+      if (!isNaN(n) && n > 0 && n < STEP_META.length) { setLocalStep(n); setStep?.(n) }
     }
   }, [isOpen])
+
+  const { rect, pos } = useSpotlight(meta?.target ?? '', isOpen && !!(meta?.target))
+
+  const goTo = useCallback((next: number) => {
+    setFading(true)
+    localStorage.setItem('cn-onboarding-step', String(next))
+    setTimeout(() => { setLocalStep(next); setStep?.(next); setFading(false) }, 180)
+  }, [setStep])
 
   const handleNext = useCallback(() => {
     if (isLast) { localStorage.removeItem('cn-onboarding-step'); onComplete() }
@@ -126,115 +247,190 @@ export default function OnboardingTour({
 
   const handleSkip = useCallback(() => {
     localStorage.removeItem('cn-onboarding-step')
-    onComplete()
-    onClose()
+    onComplete(); onClose()
   }, [onComplete, onClose])
 
   if (!isOpen || !meta) return null
 
-  const Icon = meta.icon
-  const PAD = 10
-  const stepKey = STEP_KEY[meta.id] ?? 'welcome'
+  const PAD_SPOT = 8
+  const hasSpot  = !!rect && !!pos
 
-  const overlayPanels = spot ? [
-    { top: 0,                              left: 0, right: 0,                                    height: Math.max(0, spot.top - PAD) },
-    { top: spot.top + spot.height + PAD,   left: 0, right: 0,                                    bottom: 0 },
-    { top: spot.top - PAD,                 left: 0, width: Math.max(0, spot.left - PAD),          height: spot.height + PAD * 2 },
-    { top: spot.top - PAD,                 left: spot.left + spot.width + PAD, right: 0,          height: spot.height + PAD * 2 },
-  ] : null
+  // Tooltip position
+  const tooltipX = hasSpot && pos ? pos.x : window.innerWidth  / 2 - TOOLTIP_W / 2
+  const tooltipY = hasSpot && pos ? pos.y : window.innerHeight / 2 - TOOLTIP_H / 2
+  const side     = hasSpot && pos ? pos.side : 'center'
 
   return (
     <>
-      {/* Overlay */}
-      {spot && overlayPanels ? (
+      {/* ── Overlay ── */}
+      {hasSpot && rect ? (
         <>
-          {overlayPanels.map((s, i) => (
-            <div key={i} className="fixed z-9998 pointer-events-none"
-              style={{ ...s, background: 'rgba(0,0,0,0.55)' }} />
-          ))}
-          <div className="fixed z-9998 pointer-events-none rounded-xl" style={{
-            top: spot.top - PAD, left: spot.left - PAD,
-            width: spot.width + PAD * 2, height: spot.height + PAD * 2,
-            outline: '2px solid rgba(99,102,241,0.85)',
-            transition: 'top 0.25s ease, left 0.25s ease, width 0.25s ease, height 0.25s ease',
-          }} />
+          {/* 4 dark panels around the spotlight */}
+          <div className="fixed inset-0 pointer-events-none" style={{ zIndex: 9998 }}>
+            {/* top */}
+            <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: Math.max(0, rect.top - PAD_SPOT), background: 'rgba(0,0,0,0.6)' }} />
+            {/* bottom */}
+            <div style={{ position: 'absolute', top: rect.top + rect.height + PAD_SPOT, left: 0, right: 0, bottom: 0, background: 'rgba(0,0,0,0.6)' }} />
+            {/* left */}
+            <div style={{ position: 'absolute', top: rect.top - PAD_SPOT, left: 0, width: Math.max(0, rect.left - PAD_SPOT), height: rect.height + PAD_SPOT * 2, background: 'rgba(0,0,0,0.6)' }} />
+            {/* right */}
+            <div style={{ position: 'absolute', top: rect.top - PAD_SPOT, left: rect.left + rect.width + PAD_SPOT, right: 0, height: rect.height + PAD_SPOT * 2, background: 'rgba(0,0,0,0.6)' }} />
+            {/* spotlight border */}
+            <div style={{
+              position: 'absolute',
+              top: rect.top - PAD_SPOT, left: rect.left - PAD_SPOT,
+              width: rect.width + PAD_SPOT * 2, height: rect.height + PAD_SPOT * 2,
+              borderRadius: 12,
+              outline: '2.5px solid rgba(99,102,241,0.9)',
+              boxShadow: '0 0 0 4px rgba(99,102,241,0.2)',
+              transition: 'all 0.3s cubic-bezier(0.4,0,0.2,1)',
+            }} />
+          </div>
         </>
       ) : (
-        <div className="fixed inset-0 z-9998 pointer-events-none"
-          style={{ background: 'rgba(0,0,0,0.45)' }} />
+        <div className="fixed inset-0 pointer-events-none" style={{ zIndex: 9998, background: 'rgba(0,0,0,0.55)' }} />
       )}
 
-      {/* Tour panel */}
-      <div className="fixed bottom-6 right-6 z-9999 w-80 bg-white rounded-2xl shadow-2xl border border-gray-100 overflow-hidden">
-        {/* Progress bar */}
-        <div className="h-1 bg-gray-100">
-          <div className="h-1 bg-linear-to-r from-indigo-500 to-blue-500 transition-all duration-300"
-            style={{ width: `${progress}%` }} />
-        </div>
-
-        {/* Header */}
-        <div className="flex items-center justify-between px-4 pt-4 pb-2">
-          <div className="flex items-center gap-2.5">
-            <div className={`w-8 h-8 rounded-lg bg-gray-50 flex items-center justify-center shrink-0 ${meta.iconColor}`}>
-              <Icon className="w-4 h-4" />
-            </div>
-            <span className="text-xs font-medium text-gray-400 tabular-nums">
-              {step + 1} / {STEP_META.length}
-            </span>
-          </div>
-          <button onClick={handleSkip}
-            className="text-gray-300 hover:text-gray-500 transition-colors p-1 rounded-lg hover:bg-gray-50"
-            aria-label={t('ariaClose')}>
-            <X className="w-4 h-4" />
-          </button>
-        </div>
-
-        {/* Content */}
-        <div className="px-4 pb-3" style={{
+      {/* ── Tooltip ── */}
+      <div
+        style={{
+          position: 'fixed',
+          zIndex: 9999,
+          left: tooltipX,
+          top: tooltipY,
+          width: TOOLTIP_W,
           opacity: fading ? 0 : 1,
-          transform: fading ? 'translateY(6px)' : 'translateY(0)',
-          transition: 'opacity 0.16s ease, transform 0.16s ease',
+          transform: fading ? 'scale(0.97) translateY(4px)' : 'scale(1) translateY(0)',
+          transition: 'opacity 0.18s ease, transform 0.18s ease, left 0.3s cubic-bezier(0.4,0,0.2,1), top 0.3s cubic-bezier(0.4,0,0.2,1)',
+          pointerEvents: 'auto',
+        }}
+      >
+        {/* Arrow pointing to element */}
+        {hasSpot && rect && pos && side !== 'center' && (
+          <Arrow side={side} rect={rect} tooltipX={tooltipX} tooltipY={tooltipY} />
+        )}
+
+        <div style={{
+          background: '#ffffff',
+          borderRadius: 16,
+          boxShadow: '0 20px 60px rgba(0,0,0,0.2), 0 4px 16px rgba(0,0,0,0.1)',
+          overflow: 'hidden',
+          border: '1px solid rgba(0,0,0,0.06)',
         }}>
-          <h3 className="text-[15px] font-semibold text-gray-900 mb-1.5 leading-snug">
-            {tSteps(`${stepKey}.title` as any)}
-          </h3>
-          <p className="text-sm text-gray-500 leading-relaxed">
-            {tSteps(`${stepKey}.description` as any)}
-          </p>
-        </div>
+          {/* Progress bar */}
+          <div style={{ height: 3, background: '#f1f5f9' }}>
+            <div style={{
+              height: '100%',
+              width: `${progress}%`,
+              background: 'linear-gradient(90deg, #6366f1, #8b5cf6)',
+              transition: 'width 0.3s ease',
+            }} />
+          </div>
 
-        {/* Dots */}
-        <div className="flex items-center justify-center gap-1 py-2">
-          {STEP_META.map((_, i) => (
-            <button key={i} onClick={() => goTo(i)} aria-label={t('ariaStep', { n: String(i + 1) })}>
-              <div className="rounded-full transition-all duration-200" style={{
-                width: i === step ? 16 : 6, height: 6,
-                background: i === step ? '#6366f1' : i < step ? '#a5b4fc' : '#e5e7eb',
-              }} />
-            </button>
-          ))}
-        </div>
+          {/* Header */}
+          <div style={{ padding: '16px 16px 12px', display: 'flex', alignItems: 'flex-start', gap: 12 }}>
+            <div style={{
+              width: 40, height: 40, borderRadius: 10,
+              background: meta.bg, display: 'flex', alignItems: 'center',
+              justifyContent: 'center', flexShrink: 0,
+            }}>
+              <Icon style={{ width: 20, height: 20, color: meta.iconColor }} />
+            </div>
+            <div style={{ flex: 1, minWidth: 0 }}>
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 2 }}>
+                <span style={{ fontSize: 11, fontWeight: 600, color: '#9ca3af', letterSpacing: '0.4px', textTransform: 'uppercase' }}>
+                  {step + 1} / {STEP_META.length}
+                </span>
+                <button onClick={handleSkip} style={{
+                  background: 'none', border: 'none', cursor: 'pointer',
+                  color: '#d1d5db', padding: 4, borderRadius: 6, lineHeight: 0,
+                  transition: 'color 0.15s',
+                }}
+                  onMouseEnter={e => (e.currentTarget as HTMLElement).style.color = '#6b7280'}
+                  onMouseLeave={e => (e.currentTarget as HTMLElement).style.color = '#d1d5db'}
+                >
+                  <X style={{ width: 14, height: 14 }} />
+                </button>
+              </div>
+              <h3 style={{ margin: 0, fontSize: 15, fontWeight: 700, color: '#111827', lineHeight: 1.3 }}>
+                {tSteps(`${stepKey}.title` as any)}
+              </h3>
+            </div>
+          </div>
 
-        {/* Actions */}
-        <div className="flex items-center justify-between px-4 pb-4 pt-1 gap-2">
-          <button onClick={handleSkip}
-            className="text-xs text-gray-400 hover:text-gray-600 transition-colors font-medium">
-            {t('btnSkip')}
-          </button>
-          <div className="flex items-center gap-2">
-            {!isFirst && (
-              <button onClick={handlePrev} disabled={fading}
-                className="flex items-center gap-1 px-3 py-1.5 text-xs font-medium text-gray-500 hover:text-gray-700 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors disabled:opacity-40">
-                <ChevronLeft className="w-3.5 h-3.5" />{t('btnPrev')}
+          {/* Description */}
+          <div style={{ padding: '0 16px 14px' }}>
+            <p style={{ margin: 0, fontSize: 13, color: '#4b5563', lineHeight: 1.65 }}>
+              {tSteps(`${stepKey}.description` as any)}
+            </p>
+          </div>
+
+          {/* Dots */}
+          <div style={{ display: 'flex', justifyContent: 'center', gap: 4, padding: '0 16px 12px' }}>
+            {STEP_META.map((_, i) => (
+              <button key={i} onClick={() => goTo(i)} style={{
+                background: 'none', border: 'none', cursor: 'pointer', padding: 2,
+              }}>
+                <div style={{
+                  borderRadius: 99,
+                  width: i === step ? 18 : 6, height: 6,
+                  background: i === step ? '#6366f1' : i < step ? '#a5b4fc' : '#e5e7eb',
+                  transition: 'all 0.2s ease',
+                }} />
               </button>
-            )}
-            <button onClick={handleNext} disabled={fading}
-              className="flex items-center gap-1 px-4 py-1.5 text-xs font-semibold text-white bg-indigo-600 hover:bg-indigo-700 rounded-lg transition-colors disabled:opacity-40 shadow-sm">
-              {isLast
-                ? (<><Check className="w-3.5 h-3.5" />{t('btnFinish')}</>)
-                : (<>{t('btnNext')}<ChevronRight className="w-3.5 h-3.5" /></>)
-              }
+            ))}
+          </div>
+
+          {/* Actions */}
+          <div style={{
+            padding: '10px 16px 14px',
+            display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+            borderTop: '1px solid #f3f4f6',
+          }}>
+            <button onClick={handleSkip} style={{
+              background: 'none', border: 'none', cursor: 'pointer',
+              fontSize: 12, color: '#9ca3af', fontWeight: 500,
+              transition: 'color 0.15s',
+            }}
+              onMouseEnter={e => (e.currentTarget as HTMLElement).style.color = '#6b7280'}
+              onMouseLeave={e => (e.currentTarget as HTMLElement).style.color = '#9ca3af'}
+            >
+              {t('btnSkip')}
             </button>
+
+            <div style={{ display: 'flex', gap: 8 }}>
+              {!isFirst && (
+                <button onClick={handlePrev} disabled={fading} style={{
+                  display: 'flex', alignItems: 'center', gap: 4,
+                  padding: '6px 12px', borderRadius: 8, border: '1px solid #e5e7eb',
+                  background: '#ffffff', cursor: 'pointer', fontSize: 12, fontWeight: 600,
+                  color: '#6b7280', transition: 'all 0.15s',
+                }}
+                  onMouseEnter={e => { (e.currentTarget as HTMLElement).style.background = '#f9fafb'; (e.currentTarget as HTMLElement).style.borderColor = '#d1d5db' }}
+                  onMouseLeave={e => { (e.currentTarget as HTMLElement).style.background = '#ffffff'; (e.currentTarget as HTMLElement).style.borderColor = '#e5e7eb' }}
+                >
+                  <ChevronLeft style={{ width: 13, height: 13 }} />
+                  {t('btnPrev')}
+                </button>
+              )}
+              <button onClick={handleNext} disabled={fading} style={{
+                display: 'flex', alignItems: 'center', gap: 4,
+                padding: '6px 14px', borderRadius: 8, border: 'none',
+                background: 'linear-gradient(135deg, #6366f1, #8b5cf6)',
+                cursor: 'pointer', fontSize: 12, fontWeight: 700,
+                color: '#ffffff', boxShadow: '0 2px 8px rgba(99,102,241,0.35)',
+                transition: 'all 0.15s',
+              }}
+                onMouseEnter={e => (e.currentTarget as HTMLElement).style.boxShadow = '0 4px 12px rgba(99,102,241,0.5)'}
+                onMouseLeave={e => (e.currentTarget as HTMLElement).style.boxShadow = '0 2px 8px rgba(99,102,241,0.35)'}
+              >
+                {isLast ? (
+                  <><Check style={{ width: 13, height: 13 }} />{t('btnFinish')}</>
+                ) : (
+                  <>{t('btnNext')}<ChevronRight style={{ width: 13, height: 13 }} /></>
+                )}
+              </button>
+            </div>
           </div>
         </div>
       </div>

@@ -41,7 +41,8 @@
     "viewTour": "Ver Tour",
     "system": "Sistema",
     "expand": "Expandir",
-    "collapse": "Colapsar"
+    "collapse": "Colapsar",
+    "balance": "Balance"
   },
   "nav": {
     "home": "Inicio",
@@ -155,15 +156,37 @@
       }
     },
     "forgotPassword": {
-      "title": "Recuperar contraseña",
-      "subtitle": "Te enviaremos un enlace para restablecer tu contraseña",
+      "title": "¿Olvidaste tu contraseña?",
+      "subtitle": "Ingresa tu email y te enviaremos un código para restablecerla.",
       "email": "Email",
-      "submit": "Enviar enlace",
-      "backToLogin": "Volver al inicio de sesión"
+      "emailPlaceholder": "tu@email.com",
+      "submit": "Enviar código de verificación",
+      "sending": "Enviando...",
+      "backToLogin": "Volver al inicio de sesión",
+      "sentTitle": "Revisa tu email",
+      "sentDesc": "Si {email} está registrado, recibirás un código de verificación en los próximos minutos.",
+      "sentHint": "El código expira en 15 minutos. Revisa también tu carpeta de spam.",
+      "haveCode": "Tengo mi código",
+      "useOtherEmail": "Usar otro email",
+      "newPasswordTitle": "Nueva contraseña",
+      "newPasswordSubtitle": "Ingresa el código que recibiste y tu nueva contraseña.",
+      "codeLabel": "Código de verificación",
+      "codePlaceholder": "Ej: 847291",
+      "newPasswordLabel": "Nueva contraseña",
+      "confirmPasswordLabel": "Confirmar contraseña",
+      "confirmPasswordPlaceholder": "Repite la contraseña",
+      "resetting": "Guardando...",
+      "resetSubmit": "Restablecer contraseña",
+      "doneTitle": "¡Contraseña actualizada!",
+      "doneDesc": "Tu contraseña fue restablecida exitosamente. Ya puedes iniciar sesión.",
+      "doneBtn": "Ir al inicio de sesión",
+      "errors": {
+        "codeRequired": "Ingresa el código de verificación."
+      }
     }
   },
   "dashboard": {
-    "title": "Resumen",
+    "title": "Inicio",
     "welcome": "¡Bienvenido de vuelta! Aquí está tu resumen financiero",
     "addTransaction": "Agregar Transacción",
     "addTransactionDesc": "Registrar nuevo ingreso o gasto",
@@ -178,12 +201,12 @@
     "statsCards": {
       "totalIncome": "Ingresos totales",
       "totalExpenses": "Gastos totales",
-      "netProfit": "Beneficio neto",
+      "netProfit": "Ingresos",
       "pending": "Asuntos pendientes",
       "showingData": "Mostrando datos de:"
     },
     "weeklyChart": {
-      "title": "Comparación Semanal",
+      "title": "Resumen Semanal",
       "subtitle": "Ingresos vs Gastos por Semana",
       "income": "Ingresos",
       "expenses": "Gastos",
@@ -192,7 +215,7 @@
       "weekLabel": "Semana {n}"
     },
     "monthlyChart": {
-      "title": "Tendencias Mensuales",
+      "title": "Resumen Mensual",
       "subtitle": "Rendimiento en los últimos 6 meses",
       "income": "Ingresos",
       "expenses": "Gastos",
@@ -290,6 +313,12 @@
     "perPage100": "100 por página",
     "transactionsLabel": "transacciones",
     "notes": "Notas",
+    "errors": {
+      "amountRequired": "El monto debe ser mayor a 0",
+      "descriptionRequired": "La descripción es requerida",
+      "categoryRequired": "La categoría es requerida",
+      "dateRequired": "La fecha es requerida"
+    },
     "export": {
       "title": "Exportar Transacciones",
       "format": "Formato",
@@ -529,7 +558,7 @@
       "statusOpen": "Abierta",
       "summaryIncome": "Ingresos del Mes",
       "summaryExpenses": "Gastos del Mes",
-      "summaryProfit": "Beneficio Neto",
+      "summaryProfit": "Ingresos",
       "summaryClosures": "Estado de Cierres",
       "summaryClosed": "{closed}/{total} Cerradas",
       "summaryPending": "{count} pendientes",
@@ -607,7 +636,7 @@
       "executiveSummary": "Resumen Ejecutivo",
       "totalIncome": "Ingresos Totales",
       "totalExpenses": "Gastos Totales",
-      "netProfit": "Beneficio Neto",
+      "netProfit": "Ingresos",
       "netLoss": "Pérdida Neta",
       "margin": "Margen",
       "totalTransactions": "Total Transacciones",
@@ -630,7 +659,7 @@
       "generatedOn": "Generado el",
       "totalIncome": "Ingresos totales",
       "totalExpenses": "Gastos totales",
-      "netProfit": "Beneficio neto",
+      "netProfit": "Ingresos",
       "profitMargin": "Margen de beneficio",
       "colMonth": "Mes",
       "colPeriod": "Periodo",
@@ -652,7 +681,7 @@
       "generalSummary": "Resumen General",
       "totalIncome": "Total Ingresos",
       "totalExpenses": "Total Gastos",
-      "netProfit": "Beneficio Neto",
+      "netProfit": "Ingresos",
       "netLoss": "Pérdida Neta",
       "profitMargin": "Margen de beneficio",
       "totalTransactions": "Total Transacciones",
@@ -1105,6 +1134,23 @@
       "configConfirm": "Añadir al negocio"
     }
   },
+  "toast": {
+    "success": "Éxito",
+    "error": "Error",
+    "warning": "Aviso",
+    "info": "Info"
+  },
+  "legal": {
+    "signIn": "Iniciar sesión",
+    "lastUpdated": "Última actualización",
+    "cookiesTitle": "Política de Cookies",
+    "privacyTitle": "Política de Privacidad",
+    "termsTitle": "Términos de Servicio",
+    "terms": "Términos de Servicio",
+    "privacy": "Política de Privacidad",
+    "cookies": "Política de Cookies",
+    "backHome": "Volver al inicio"
+  },
   "notificationsPage": {
     "title": "Centro de Notificaciones",
     "subtitle": "Gestiona todas tus notificaciones y alertas",
@@ -1199,7 +1245,8 @@
       "titleHighlight": "para Todos",
       "subtitle": "Gestiona las finanzas de tu negocio con facilidad. No se requiere conocimiento contable.",
       "cta": "Prueba Gratuita",
-      "learnMore": "Conocer Más"
+      "learnMore": "Conocer Más",
+      "loginBtn": "Iniciar sesión"
     },
     "nav": {
       "features": "Funciones",
@@ -1405,56 +1452,64 @@
     "ariaStep": "Paso {n}",
     "steps": {
       "welcome": {
-        "title": "¡Bienvenido a Chill Numbers!",
-        "description": "Te guiaremos por todas las funciones de tu herramienta de contabilidad. El tour toma menos de 2 minutos."
+        "title": "¡Bienvenido a Chill Numbers! 🎉",
+        "description": "Hola, te damos la bienvenida a tu herramienta de contabilidad profesional. En los próximos pasos te mostraremos todo lo que puedes hacer. No necesitas conocimientos contables — está diseñado para que cualquier persona pueda usarlo con facilidad."
       },
       "sidebar": {
-        "title": "Navegación Principal",
-        "description": "Desde aquí accedes a todas las secciones. Puedes colapsar el menú con el botón de la esquina para ganar espacio."
+        "title": "Menú de Navegación",
+        "description": "Este es tu menú principal. Desde aquí accedes a todas las secciones: Inicio, Transacciones, Reportes, Análisis, Cuentas y Empleados. Puedes colapsarlo con la flecha para ganar espacio en pantalla. El botón de idioma te permite cambiar entre Español e Inglés."
       },
       "dashboard": {
-        "title": "Panel de Control",
-        "description": "Tu resumen financiero en tiempo real: ingresos, gastos y ganancias netas. Todo de un vistazo."
+        "title": "Resumen Financiero en Tiempo Real",
+        "description": "Estas tarjetas muestran tus métricas clave: ingresos totales, gastos totales, beneficio neto y transacciones pendientes. Los datos se actualizan automáticamente cada vez que registras una transacción. De un vistazo sabes cómo va tu negocio."
+      },
+      "quickActions": {
+        "title": "Acciones Rápidas",
+        "description": "Estos botones te llevan directamente a las acciones más frecuentes: agregar una transacción, generar un reporte, ver análisis o conectar tu banco. Son atajos para que trabajes más rápido sin navegar por el menú."
       },
       "notifications": {
-        "title": "Notificaciones",
-        "description": "Alertas importantes, recordatorios y actualizaciones del sistema. El ícono muestra el número de no leídas."
+        "title": "Centro de Notificaciones 🔔",
+        "description": "Aquí recibes alertas importantes: recordatorios de cierre semanal, transacciones pendientes de revisión, y notificaciones del sistema. El número rojo indica cuántas no has leído. Las notificaciones también aparecen como mensajes flotantes en la esquina de la pantalla."
       },
       "accounts": {
-        "title": "Gestión de Cuentas",
-        "description": "Crea tus cuentas bancarias, efectivo o tarjetas. Cada transacción puede vincularse a una cuenta para actualizar su balance automáticamente."
+        "title": "Gestión de Cuentas Bancarias",
+        "description": "Las cuentas son la base de tu contabilidad. Aquí puedes crear cuentas bancarias, efectivo, tarjetas de crédito, préstamos y más. Cada cuenta tiene un balance que se actualiza automáticamente cuando registras transacciones vinculadas a ella."
       },
       "addAccount": {
-        "title": "Crear Nueva Cuenta",
-        "description": "Agrega cuentas bancarias, efectivo, tarjetas de crédito o cualquier otro tipo. Define el balance inicial y el sistema lo mantiene actualizado."
+        "title": "Resumen de tus Cuentas",
+        "description": "Aquí ves el balance total de todas tus cuentas, cuántas cuentas activas tienes y el total registrado. Para crear una nueva cuenta, usa el botón 'Nueva Cuenta' en la parte superior. También puedes conectar tu banco real con Plaid para importar transacciones automáticamente."
       },
       "transactions": {
-        "title": "Transacciones",
-        "description": "Registra ingresos y gastos. Filtra por categoría, tipo, fecha o cuenta. Cada transacción puede vincularse a una cuenta para control preciso."
+        "title": "Registro de Transacciones",
+        "description": "Esta es la sección más importante. Aquí registras todos tus ingresos y gastos. Cada transacción tiene: tipo (ingreso/gasto), monto, categoría, fecha y cuenta asociada. Puedes filtrar por categoría, tipo, cuenta o rango de fechas para encontrar cualquier movimiento."
       },
       "addTransaction": {
-        "title": "Nueva Transacción",
-        "description": "Registra un ingreso o gasto en segundos. Selecciona la categoría, cuenta y el balance se actualiza automáticamente."
+        "title": "Agregar Nueva Transacción",
+        "description": "Con este botón abres el formulario para registrar un ingreso o gasto. Completa el tipo, monto, descripción, categoría y fecha. Si vinculas una cuenta, el balance se actualiza automáticamente. Es el corazón de tu contabilidad diaria."
+      },
+      "txFilters": {
+        "title": "Filtros y Búsqueda",
+        "description": "Usa estos filtros para encontrar transacciones específicas. Puedes buscar por texto, filtrar por categoría, tipo (ingreso/gasto), cuenta bancaria o rango de fechas. Los resultados se actualizan en tiempo real. Muy útil para revisar gastos de un período específico."
       },
       "employees": {
-        "title": "Gestión de Empleados",
-        "description": "Administra tu equipo: datos personales, tipo de nómina (hora, semanal, mensual) y calcula el costo total anual de nómina."
+        "title": "Gestión de Empleados y Nómina",
+        "description": "Administra tu equipo de trabajo. Registra empleados con su información personal, cargo, tipo de nómina (por hora, semanal, quincenal, mensual) y salario. El sistema calcula automáticamente el costo total anual de nómina para tus reportes financieros."
       },
       "reports": {
-        "title": "Reportes Financieros",
-        "description": "Genera reportes profesionales: P&L, resumen de transacciones, desglose por categoría y más. Exporta a Excel o PDF."
+        "title": "Reportes Financieros Profesionales 📊",
+        "description": "Genera tres tipos de reportes: Estado de Resultados (ingresos vs gastos), Resumen de Transacciones (actividad del período) y Cierre Semanal (control de semanas). Selecciona el período (semana, mes, año) antes de generar. Puedes exportar a Excel o PDF."
       },
       "analytics": {
-        "title": "Análisis Avanzado",
-        "description": "Visualiza tendencias, compara períodos anuales y obtén insights profundos con gráficos interactivos."
+        "title": "Análisis Avanzado con Gráficos 📈",
+        "description": "Visualiza el rendimiento de tu negocio con gráficos interactivos. Compara períodos, analiza tendencias anuales, ve el flujo de efectivo, el desglose por categorías y el análisis de empleados. Ideal para tomar decisiones estratégicas basadas en datos reales."
       },
       "settings": {
-        "title": "Configuración",
-        "description": "Personaliza tu perfil, información de empresa, preferencias de notificaciones y seguridad de tu cuenta."
+        "title": "Configuración de tu Cuenta ⚙️",
+        "description": "Personaliza tu experiencia: actualiza tu perfil personal, datos de empresa, preferencias de notificaciones, seguridad (cambio de contraseña) y preferencias del sistema (idioma, moneda, zona horaria). También puedes gestionar tu suscripción desde la pestaña Facturación."
       },
       "complete": {
-        "title": "¡Listo para empezar!",
-        "description": "Ya conoces todo el flujo: crea cuentas, registra transacciones y genera reportes. Tu negocio bajo control."
+        "title": "¡Ya eres un experto! 🚀",
+        "description": "Conoces todas las funciones de Chill Numbers. El flujo básico es: crea tus cuentas → registra transacciones diariamente → genera reportes semanales → analiza tendencias. Si necesitas ayuda, usa el botón de ayuda (?) en el dashboard. ¡Mucho éxito con tu negocio!"
       }
     }
   },
@@ -1571,7 +1626,16 @@
     "NOTIFY_HIGH_EXPENSES_TITLE": "Gastos Elevados Detectados",
     "NOTIFY_HIGH_EXPENSES_MSG": "Los gastos han superado el promedio en un {percentage}%",
     "NOTIFY_PENDING_TRANSACTIONS_TITLE": "Transacciones Pendientes",
-    "NOTIFY_PENDING_TRANSACTIONS_MSG": "Tienes {count} transacciones pendientes de revisión"
+    "NOTIFY_PENDING_TRANSACTIONS_MSG": "Tienes {count} transacciones pendientes de revisión",
+    "WEEKLY_REMINDER_TITLE": "📊 Reportes pendientes",
+    "WEEKLY_REMINDER_MSG": "Es el final de la semana. Recuerda generar tus reportes financieros semanales.",
+    "WEEKLY_REMINDER_ACTION": "Ver reportes",
+    "DAILY_REMINDER_TITLE": "📋 Recordatorio diario",
+    "DAILY_REMINDER_MSG": "¿Ya registraste tus transacciones de hoy?",
+    "DAILY_REMINDER_ACTION": "Registrar ahora",
+    "WEEK_ENDING_TITLE": "⚠️ Semana por cerrar",
+    "WEEK_ENDING_MSG": "La semana actual termina pronto y aún no ha sido cerrada. Recuerda hacer el cierre semanal.",
+    "WEEK_ENDING_ACTION": "Cerrar semana"
   },
   "plaid": {
     "reviewQueue": {

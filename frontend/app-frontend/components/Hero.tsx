@@ -2,18 +2,28 @@
 
 import Link from 'next/link'
 import { useEffect, useState } from 'react'
+import { useLocale, useTranslations } from 'next-intl'
+import { usePathname, useRouter } from '@/i18n/routing'
+import { Globe } from 'lucide-react'
 
 export default function Hero() {
   const [isScrolled, setIsScrolled] = useState(false)
+  const locale   = useLocale()
+  const router   = useRouter()
+  const pathname = usePathname()
+  const t  = useTranslations('landing')
+  const tn = useTranslations('landing.nav')
 
   useEffect(() => {
-    const handleScroll = () => {
-      setIsScrolled(window.scrollY > 50)
-    }
-
+    const handleScroll = () => setIsScrolled(window.scrollY > 50)
     window.addEventListener('scroll', handleScroll)
     return () => window.removeEventListener('scroll', handleScroll)
   }, [])
+
+  const switchLocale = () => {
+    const next = locale === 'es' ? 'en' : 'es'
+    router.replace(pathname as any, { locale: next })
+  }
 
   return (
     <div className="relative bg-linear-to-br from-blue-900 via-blue-800 to-indigo-800 min-h-screen">
@@ -35,52 +45,37 @@ export default function Hero() {
             </span>
           </div>
           
-          <div className="hidden md:flex items-center space-x-8">
-            <button 
-              onClick={() => document.getElementById('features')?.scrollIntoView({ behavior: 'smooth' })}
-              className={`transition-colors duration-300 cursor-pointer ${
-                isScrolled 
-                  ? 'text-slate-600 hover:text-primary-500' 
-                  : 'text-white/90 hover:text-white'
-              }`}
-            >
-              Funciones
+          <div className="hidden md:flex items-center space-x-3">
+            <button onClick={() => document.getElementById('features')?.scrollIntoView({ behavior: 'smooth' })}
+              className={`transition-colors duration-300 cursor-pointer text-sm ${isScrolled ? 'text-slate-600 hover:text-primary-500' : 'text-white/90 hover:text-white'}`}>
+              {tn('features')}
             </button>
-            <button 
-              onClick={() => document.getElementById('benefits')?.scrollIntoView({ behavior: 'smooth' })}
-              className={`transition-colors duration-300 cursor-pointer ${
-                isScrolled 
-                  ? 'text-slate-600 hover:text-primary-500' 
-                  : 'text-white/90 hover:text-white'
-              }`}
-            >
-              Beneficios
+            <button onClick={() => document.getElementById('benefits')?.scrollIntoView({ behavior: 'smooth' })}
+              className={`transition-colors duration-300 cursor-pointer text-sm ${isScrolled ? 'text-slate-600 hover:text-primary-500' : 'text-white/90 hover:text-white'}`}>
+              {tn('benefits')}
             </button>
-            <button 
-              onClick={() => document.getElementById('about')?.scrollIntoView({ behavior: 'smooth' })}
-              className={`transition-colors duration-300 cursor-pointer ${
-                isScrolled 
-                  ? 'text-slate-600 hover:text-primary-500' 
-                  : 'text-white/90 hover:text-white'
-              }`}
-            >
-              Sobre Nosotros
+            <button onClick={() => document.getElementById('pricing')?.scrollIntoView({ behavior: 'smooth' })}
+              className={`transition-colors duration-300 cursor-pointer text-sm ${isScrolled ? 'text-slate-600 hover:text-primary-500' : 'text-white/90 hover:text-white'}`}>
+              {tn('pricing')}
             </button>
-            <button 
-              onClick={() => document.getElementById('pricing')?.scrollIntoView({ behavior: 'smooth' })}
-              className={`transition-colors duration-300 cursor-pointer ${
-                isScrolled 
-                  ? 'text-slate-600 hover:text-primary-500' 
-                  : 'text-white/90 hover:text-white'
-              }`}
-            >
-              Precios
+
+            {/* Language toggle */}
+            <button onClick={switchLocale} title={locale === 'es' ? 'Switch to English' : 'Cambiar a Español'}
+              className={`flex items-center gap-1.5 text-sm font-semibold px-3 py-1.5 rounded-lg border transition-all duration-200 ${
+                isScrolled ? 'border-gray-300 text-slate-600 hover:border-primary-400 hover:text-primary-600' : 'border-white/30 text-white/90 hover:border-white hover:text-white'
+              }`}>
+              <Globe className="w-3.5 h-3.5" />
+              {locale === 'es' ? 'EN' : 'ES'}
             </button>
-            <Link 
-              href="/auth/register" 
-              className="bg-primary-500 text-white px-6 py-2 rounded-lg hover:bg-primary-600 transition-colors"
-            >
-              Comenzar
+
+            <Link href="/auth/login"
+              className={`px-5 py-2 rounded-lg font-semibold text-sm border transition-all duration-200 ${
+                isScrolled ? 'border-primary-500 text-primary-600 hover:bg-primary-50' : 'border-white/60 text-white hover:border-white hover:bg-white/10'
+              }`}>
+              {t('hero.loginBtn')}
+            </Link>
+            <Link href="/auth/register" className="bg-primary-500 text-white px-5 py-2 rounded-lg font-semibold text-sm hover:bg-primary-600 transition-colors">
+              {tn('getStarted')}
             </Link>
           </div>
 
@@ -101,28 +96,21 @@ export default function Hero() {
       <div className="relative px-6 py-32 lg:px-8 flex items-center min-h-screen">
         <div className="mx-auto max-w-4xl text-center">
           <h1 className="text-4xl font-bold tracking-tight text-white sm:text-6xl">
-            Contabilidad Simple
+            {t('hero.title')}
             <br />
-            <span className="text-blue-200">para Todos</span>
+            <span className="text-blue-200">{t('hero.titleHighlight')}</span>
           </h1>
-          
           <p className="mt-6 text-lg leading-8 text-blue-200 max-w-2xl mx-auto">
-            Gestiona las finanzas de tu negocio con facilidad. No se requiere conocimiento contable. 
-            Rastrea ingresos, gastos y haz crecer tu negocio con confianza.
+            {t('hero.subtitle')}
           </p>
-          
           <div className="mt-10 flex items-center justify-center gap-x-6">
-            <Link
-              href="/auth/register"
-              className="bg-primary-500 px-8 py-3 text-lg font-semibold text-white shadow-sm hover:bg-primary-600 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-500 rounded-lg transition-all duration-200 hover:shadow-medium"
-            >
-              Prueba Gratuita
+            <Link href="/auth/register"
+              className="bg-primary-500 px-8 py-3 text-lg font-semibold text-white shadow-sm hover:bg-primary-600 rounded-lg transition-all duration-200 hover:shadow-medium">
+              {t('hero.cta')}
             </Link>
-            <button
-              onClick={() => document.getElementById('features')?.scrollIntoView({ behavior: 'smooth' })}
-              className="text-lg font-semibold leading-6 text-blue-100 hover:text-white transition-colors cursor-pointer"
-            >
-              Conocer Más <span aria-hidden="true">→</span>
+            <button onClick={() => document.getElementById('features')?.scrollIntoView({ behavior: 'smooth' })}
+              className="text-lg font-semibold leading-6 text-blue-100 hover:text-white transition-colors cursor-pointer">
+              {t('hero.learnMore')} <span aria-hidden="true">→</span>
             </button>
           </div>
         </div>

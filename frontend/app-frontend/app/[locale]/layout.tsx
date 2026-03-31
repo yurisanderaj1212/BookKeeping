@@ -4,6 +4,7 @@ import { notFound } from 'next/navigation'
 import { routing } from '@/i18n/routing'
 import { NotificationProvider } from '@/lib/notificationContext'
 import GlobalToastContainer from '@/components/notifications/GlobalToastContainer'
+import ErrorBoundary from '@/components/ui/ErrorBoundary'
 
 // Genera los parámetros estáticos para los locales soportados
 export function generateStaticParams() {
@@ -33,8 +34,12 @@ export default async function LocaleLayout({
   return (
     <NextIntlClientProvider locale={locale} messages={messages}>
       <NotificationProvider>
-        {children}
-        <GlobalToastContainer />
+        <ErrorBoundary>
+          <div className="locale-root">
+            {children}
+            <GlobalToastContainer />
+          </div>
+        </ErrorBoundary>
       </NotificationProvider>
     </NextIntlClientProvider>
   )
