@@ -12,13 +12,30 @@ export function useOnboarding() {
   const [isOnboardingCompleted, setIsOnboardingCompleted] = useState(true)
 
   // Solo al montar: mostrar WelcomeModal si es la primera vez
+  // O restaurar el tour si estaba activo en otra página
   useEffect(() => {
     if (typeof window === 'undefined') return
     const completed   = localStorage.getItem(KEY_COMPLETED) === 'true'
     const welcomeSeen = localStorage.getItem(KEY_WELCOME)   === 'true'
+    const savedStep   = localStorage.getItem('cn-onboarding-step')
+
     setIsOnboardingCompleted(completed)
-    // Solo mostrar welcome si nunca lo vio Y no completó el tour
-    if (!welcomeSeen && !completed) {
+
+    if (completed) return  // tour ya terminado, no hacer nada
+
+    // Si hay un step guardado, el tour estaba activo — restaurarlo
+    if (savedStep !== null) {
+      const n = parseInt(savedStep)
+      if (!isNaN(n) && n >= 0) {
+        setCurrentStep(n)
+        // Small delay to let the page render first
+        setTimeout(() => setIsOnboardingOpen(true), 300)
+        return
+      }
+    }
+
+    // Primera vez: mostrar welcome si no lo ha visto
+    if (!welcomeSeen) {
       setIsWelcomeOpen(true)
     }
   }, [])
