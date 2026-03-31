@@ -165,21 +165,21 @@ export default function ReportsOverview({ period, year, month }: ReportsOverview
   return (
     <div className="space-y-6 mb-8">
       {/* Summary Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+      <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-4">
         {cards.map((c, i) => {
           const Icon = c.icon
           return (
-            <div key={i} className="bg-white rounded-lg border border-gray-200 p-6">
-              <div className="flex items-start justify-between mb-4">
+            <div key={i} className="bg-white rounded-lg border border-gray-200 p-3 sm:p-4">
+              <div className="flex items-start justify-between mb-3">
                 <div className={`${c.bg} p-2 rounded-lg`}>
                   <Icon className={`w-5 h-5 ${c.iconColor}`} />
                 </div>
               </div>
-              <p className="text-sm text-gray-500 mb-2">{c.label}</p>
+              <p className="text-xs text-gray-500 mb-1">{c.label}</p>
               {loading ? (
-                <div className="h-8 bg-gray-100 rounded animate-pulse" />
+                <div className="h-6 bg-gray-100 rounded animate-pulse" />
               ) : (
-                <p className="text-2xl font-bold text-gray-900">
+                <p className="text-base sm:text-xl font-bold text-gray-900">
                   {c.pct !== undefined ? `${c.pct.toFixed(1)}%` : formatCurrency(c.value ?? 0)}
                 </p>
               )}
@@ -189,27 +189,29 @@ export default function ReportsOverview({ period, year, month }: ReportsOverview
       </div>
 
       {/* Chart */}
-      <div className="bg-white rounded-lg border border-gray-200 p-6">
-        <div className="mb-6">
-          <h3 className="text-lg font-semibold text-gray-900">{t('incomeVsExpenses')}</h3>
-          <p className="text-sm text-gray-500 mt-1">
+      <div className="bg-white rounded-lg border border-gray-200 p-4 sm:p-6">
+        <div className="mb-4">
+          <h3 className="text-base sm:text-lg font-semibold text-gray-900">{t('incomeVsExpenses')}</h3>
+          <p className="text-xs sm:text-sm text-gray-500 mt-0.5">
             {period === 'week' ? t('comparisonDaily') : period === 'month' ? t('comparisonWeekly') : t('comparisonMonthly')}
           </p>
         </div>
         {loading ? (
-          <div className="h-80 bg-gray-50 rounded-lg flex items-center justify-center">
+          <div className="h-56 bg-gray-50 rounded-lg flex items-center justify-center">
             <div className="text-gray-400 text-sm">{t('loadingData')}</div>
           </div>
         ) : (
-          <ResponsiveContainer width="100%" height={320}>
-            <BarChart data={chartData} margin={{ top: 20, right: 30, left: 20, bottom: 5 }}>
-              <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
-              <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{ fontSize: 12, fill: '#6b7280' }} />
-              <YAxis axisLine={false} tickLine={false} tick={{ fontSize: 12, fill: '#6b7280' }}
+          <ResponsiveContainer width="100%" height={220}>
+            <BarChart data={chartData}
+              margin={{ top: 8, right: 8, left: -10, bottom: 0 }}
+              barCategoryGap="20%" barGap={3}>
+              <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" vertical={false} />
+              <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{ fontSize: 10, fill: '#6b7280' }} interval={0} />
+              <YAxis axisLine={false} tickLine={false} tick={{ fontSize: 10, fill: '#6b7280' }} width={32}
                 tickFormatter={(v) => `$${(v / 1000).toFixed(0)}k`} />
               <Tooltip content={<CustomTooltip />} />
-              <Bar dataKey="ingresos" fill="#10b981" radius={[4, 4, 0, 0]} />
-              <Bar dataKey="gastos" fill="#ef4444" radius={[4, 4, 0, 0]} />
+              <Bar dataKey="ingresos" fill="#10b981" radius={[3, 3, 0, 0]} />
+              <Bar dataKey="gastos" fill="#ef4444" radius={[3, 3, 0, 0]} />
             </BarChart>
           </ResponsiveContainer>
         )}

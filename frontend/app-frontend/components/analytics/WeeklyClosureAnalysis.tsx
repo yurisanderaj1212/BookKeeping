@@ -97,7 +97,7 @@ export default function WeeklyClosureAnalysis({ year, month }: WeeklyClosureAnal
   return (
     <div className="space-y-6 mb-8">
       {/* Summary Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+      <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-4">
         {[
           { icon: CheckCircle, bg: 'bg-green-100', iconColor: 'text-green-600', badgeBg: 'bg-green-100', badgeText: 'text-green-600',
             badge: closures.length > 0 ? `${((closed.length / closures.length) * 100).toFixed(0)}%` : '0%',
@@ -114,13 +114,13 @@ export default function WeeklyClosureAnalysis({ year, month }: WeeklyClosureAnal
         ].map((card, i) => {
           const Icon = card.icon
           return (
-            <div key={i} className="bg-white rounded-lg border border-gray-200 p-6">
-              <div className="flex items-start justify-between mb-4">
+            <div key={i} className="bg-white rounded-lg border border-gray-200 p-3 sm:p-4">
+              <div className="flex items-start justify-between mb-3">
                 <div className={`${card.bg} p-2 rounded-lg`}><Icon className={`w-5 h-5 ${card.iconColor}`} /></div>
                 <div className={`${card.badgeBg} px-2 py-1 rounded text-xs font-medium ${card.badgeText}`}>{card.badge}</div>
               </div>
-              <p className="text-sm text-gray-500 mb-2">{card.label}</p>
-              <p className="text-2xl font-bold text-gray-900">{card.isCurrency ? card.value : card.value}</p>
+              <p className="text-xs text-gray-500 mb-1">{card.label}</p>
+              <p className="text-base sm:text-xl font-bold text-gray-900">{card.isCurrency ? card.value : card.value}</p>
             </div>
           )
         })}

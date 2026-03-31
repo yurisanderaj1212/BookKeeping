@@ -89,111 +89,101 @@ export default function AnnualPerformance({ year }: AnnualPerformanceProps) {
         </div>
       </div>
 
-      {/* Annual Summary Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
-        <div className="bg-green-50 p-4 rounded-lg">
-          <div className="flex items-center space-x-2 mb-2">
-            <TrendingUp className="w-4 h-4 text-green-600" />
-            <span className="text-sm font-medium text-green-600">{t('annualIncome')}</span>
+      {/* Annual Summary Cards — 2x2 on mobile */}
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4 mb-6">
+        <div className="bg-green-50 p-3 sm:p-4 rounded-lg">
+          <div className="flex items-center gap-1.5 mb-1.5">
+            <TrendingUp className="w-3.5 h-3.5 text-green-600" />
+            <span className="text-xs font-medium text-green-600">{t('annualIncome')}</span>
           </div>
-          <p className="text-xl font-bold text-green-700">{formatCurrency(totalAnnualIncome)}</p>
-          <p className="text-xs text-green-600 mt-1">
+          <p className="text-base sm:text-xl font-bold text-green-700">{formatCurrency(totalAnnualIncome)}</p>
+          <p className="text-xs text-green-600 mt-0.5 hidden sm:block">
             {t('average')}: {formatCurrency(avgMonthlyIncome)}{t('perMonth')}
           </p>
         </div>
 
-        <div className="bg-red-50 p-4 rounded-lg">
-          <div className="flex items-center space-x-2 mb-2">
-            <BarChart3 className="w-4 h-4 text-red-600" />
-            <span className="text-sm font-medium text-red-600">{t('annualExpenses')}</span>
+        <div className="bg-red-50 p-3 sm:p-4 rounded-lg">
+          <div className="flex items-center gap-1.5 mb-1.5">
+            <BarChart3 className="w-3.5 h-3.5 text-red-600" />
+            <span className="text-xs font-medium text-red-600">{t('annualExpenses')}</span>
           </div>
-          <p className="text-xl font-bold text-red-700">{formatCurrency(totalAnnualExpenses)}</p>
-          <p className="text-xs text-red-600 mt-1">
+          <p className="text-base sm:text-xl font-bold text-red-700">{formatCurrency(totalAnnualExpenses)}</p>
+          <p className="text-xs text-red-600 mt-0.5 hidden sm:block">
             {t('average')}: {formatCurrency(avgMonthlyExpenses)}{t('perMonth')}
           </p>
         </div>
 
-        <div className={`${totalAnnualProfit >= 0 ? 'bg-blue-50' : 'bg-orange-50'} p-4 rounded-lg`}>
-          <div className="flex items-center space-x-2 mb-2">
-            <TrendingUp className={`w-4 h-4 ${totalAnnualProfit >= 0 ? 'text-blue-600' : 'text-orange-600'}`} />
-            <span className={`text-sm font-medium ${totalAnnualProfit >= 0 ? 'text-blue-600' : 'text-orange-600'}`}>
+        <div className={`${totalAnnualProfit >= 0 ? 'bg-blue-50' : 'bg-orange-50'} p-3 sm:p-4 rounded-lg`}>
+          <div className="flex items-center gap-1.5 mb-1.5">
+            <TrendingUp className={`w-3.5 h-3.5 ${totalAnnualProfit >= 0 ? 'text-blue-600' : 'text-orange-600'}`} />
+            <span className={`text-xs font-medium ${totalAnnualProfit >= 0 ? 'text-blue-600' : 'text-orange-600'}`}>
               {t('annualProfit')}
             </span>
           </div>
-          <p className={`text-xl font-bold ${totalAnnualProfit >= 0 ? 'text-blue-700' : 'text-orange-700'}`}>
+          <p className={`text-base sm:text-xl font-bold ${totalAnnualProfit >= 0 ? 'text-blue-700' : 'text-orange-700'}`}>
             {formatCurrency(totalAnnualProfit)}
           </p>
-          <p className={`text-xs mt-1 ${totalAnnualProfit >= 0 ? 'text-blue-600' : 'text-orange-600'}`}>
+          <p className={`text-xs mt-0.5 hidden sm:block ${totalAnnualProfit >= 0 ? 'text-blue-600' : 'text-orange-600'}`}>
             {t('margin')}: {totalAnnualIncome > 0 ? ((totalAnnualProfit / totalAnnualIncome) * 100).toFixed(1) : 0}%
           </p>
         </div>
 
-        <div className="bg-purple-50 p-4 rounded-lg">
-          <div className="flex items-center space-x-2 mb-2">
-            <TrendingUp className="w-4 h-4 text-purple-600" />
-            <span className="text-sm font-medium text-purple-600">{t('bestMonth')}</span>
+        <div className="bg-purple-50 p-3 sm:p-4 rounded-lg">
+          <div className="flex items-center gap-1.5 mb-1.5">
+            <TrendingUp className="w-3.5 h-3.5 text-purple-600" />
+            <span className="text-xs font-medium text-purple-600">{t('bestMonth')}</span>
           </div>
-          <p className="text-lg font-bold text-purple-700">{bestMonth.month}</p>
-          <p className="text-xs text-purple-600 mt-1">{formatCurrency(bestMonth.beneficio)}</p>
+          <p className="text-sm sm:text-lg font-bold text-purple-700 truncate">{bestMonth.month}</p>
+          <p className="text-xs text-purple-600 mt-0.5">{formatCurrency(bestMonth.beneficio)}</p>
         </div>
       </div>
 
-      {/* Annual Performance Chart */}
-      <div className="w-full mb-8" style={{ height: 384 }}>
+      {/* Annual Performance Chart — responsive height */}
+      <div className="w-full mb-6" style={{ height: 280 }}>
         {loading ? (
           <div className="w-full h-full flex items-center justify-center bg-gray-50 rounded-lg">
             <div className="text-gray-400">{t('loadingChart')}</div>
           </div>
         ) : (
-          <ResponsiveContainer width="100%" height={384}>
-            <BarChart data={annualData} margin={{ top: 20, right: 30, left: 20, bottom: 5 }}>
-              <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
-              <XAxis dataKey="monthShort" axisLine={false} tickLine={false} tick={{ fontSize: 12, fill: '#6b7280' }} />
-              <YAxis axisLine={false} tickLine={false} tick={{ fontSize: 12, fill: '#6b7280' }}
+          <ResponsiveContainer width="100%" height={280}>
+            <BarChart data={annualData} margin={{ top: 10, right: 8, left: -10, bottom: 0 }}>
+              <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" vertical={false} />
+              <XAxis dataKey="monthShort" axisLine={false} tickLine={false} tick={{ fontSize: 10, fill: '#6b7280' }} />
+              <YAxis axisLine={false} tickLine={false} tick={{ fontSize: 10, fill: '#6b7280' }} width={32}
                 tickFormatter={(value) => `${(value / 1000).toFixed(0)}k`} />
               <Tooltip content={<CustomTooltip />} />
-              <Bar dataKey="ingresos" fill="#10b981" radius={[4, 4, 0, 0]} name={t('income')} animationDuration={1500} />
-              <Bar dataKey="gastos"   fill="#ef4444" radius={[4, 4, 0, 0]} name={t('expenses')} animationDuration={1500} animationBegin={300} />
+              <Bar dataKey="ingresos" fill="#10b981" radius={[3, 3, 0, 0]} name={t('income')} animationDuration={1200} />
+              <Bar dataKey="gastos"   fill="#ef4444" radius={[3, 3, 0, 0]} name={t('expenses')} animationDuration={1200} animationBegin={200} />
             </BarChart>
           </ResponsiveContainer>
         )}
       </div>
 
-      {/* Monthly Performance Table */}
-      <div className="mt-8">
-        <h4 className="text-md font-semibold text-gray-900 mb-4">{t('monthlyBreakdownTitle')}</h4>
-        <div className="overflow-hidden">
-          <table className="w-full table-fixed">
+      {/* Monthly Breakdown Table — scrollable on mobile */}
+      <div className="mt-4">
+        <h4 className="text-sm font-semibold text-gray-900 mb-3">{t('monthlyBreakdownTitle')}</h4>
+        <div className="overflow-x-auto -mx-4 sm:mx-0">
+          <table className="min-w-full sm:w-full">
             <thead className="bg-gray-50">
               <tr>
-                <th className="w-[20%] px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  {t('month')}
-                </th>
-                <th className="w-[25%] px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  {t('income')}
-                </th>
-                <th className="w-[25%] px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  {t('expenses')}
-                </th>
-                <th className="w-[25%] px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  {t('profit')}
-                </th>
-                <th className="w-[5%] px-4 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  {t('status')}
-                </th>
+                <th className="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase whitespace-nowrap">{t('month')}</th>
+                <th className="px-3 py-2 text-right text-xs font-medium text-gray-500 uppercase whitespace-nowrap">{t('income')}</th>
+                <th className="px-3 py-2 text-right text-xs font-medium text-gray-500 uppercase whitespace-nowrap">{t('expenses')}</th>
+                <th className="px-3 py-2 text-right text-xs font-medium text-gray-500 uppercase whitespace-nowrap">{t('profit')}</th>
+                <th className="px-3 py-2 text-center text-xs font-medium text-gray-500 uppercase">●</th>
               </tr>
             </thead>
-            <tbody className="bg-white divide-y divide-gray-200">
+            <tbody className="bg-white divide-y divide-gray-100">
               {annualData.map((monthData, index) => (
                 <tr key={index} className="hover:bg-gray-50">
-                  <td className="px-4 py-3 font-medium text-gray-900">{monthData.month}</td>
-                  <td className="px-4 py-3 text-right text-green-600 font-semibold">{formatCurrency(monthData.ingresos)}</td>
-                  <td className="px-4 py-3 text-right text-red-600 font-semibold">{formatCurrency(monthData.gastos)}</td>
-                  <td className={`px-4 py-3 text-right font-semibold ${monthData.beneficio >= 0 ? 'text-blue-600' : 'text-orange-600'}`}>
+                  <td className="px-3 py-2 text-xs font-medium text-gray-900 whitespace-nowrap">{monthData.monthShort ?? monthData.month}</td>
+                  <td className="px-3 py-2 text-right text-xs text-green-600 font-semibold whitespace-nowrap">{formatCurrency(monthData.ingresos)}</td>
+                  <td className="px-3 py-2 text-right text-xs text-red-600 font-semibold whitespace-nowrap">{formatCurrency(monthData.gastos)}</td>
+                  <td className={`px-3 py-2 text-right text-xs font-semibold whitespace-nowrap ${monthData.beneficio >= 0 ? 'text-blue-600' : 'text-orange-600'}`}>
                     {formatCurrency(monthData.beneficio)}
                   </td>
-                  <td className="px-4 py-3 text-center">
-                    <div className={`w-3 h-3 rounded-full mx-auto ${
+                  <td className="px-3 py-2 text-center">
+                    <div className={`w-2.5 h-2.5 rounded-full mx-auto ${
                       monthData.beneficio >= avgMonthlyIncome * 0.1 ? 'bg-green-500' :
                       monthData.beneficio >= 0 ? 'bg-yellow-500' : 'bg-red-500'
                     }`} />

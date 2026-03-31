@@ -19,6 +19,14 @@ export default function CashFlowAnalysis({ period, year, month }: CashFlowAnalys
   const [viewType, setViewType] = useState<'daily' | 'weekly'>('weekly')
   const [cashFlowData, setCashFlowData] = useState<any[]>([])
   const [loading, setLoading] = useState(true)
+  const [isMobile, setIsMobile] = useState(false)
+
+  useEffect(() => {
+    const check = () => setIsMobile(window.innerWidth < 640)
+    check()
+    window.addEventListener('resize', check)
+    return () => window.removeEventListener('resize', check)
+  }, [])
 
   const formatCurrency = (amount: number) =>
     new Intl.NumberFormat(locale === 'en' ? 'en-US' : 'es-ES', { style: 'currency', currency: 'USD' }).format(amount)
@@ -125,44 +133,43 @@ export default function CashFlowAnalysis({ period, year, month }: CashFlowAnalys
           </div>
         </div>
 
-        {/* Summary Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
-          <div className="bg-green-50 p-4 rounded-lg">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-6">
+          <div className="bg-green-50 p-3 sm:p-4 rounded-lg">
             <div className="flex items-center space-x-2 mb-2">
               <TrendingUp className="w-4 h-4 text-green-600" />
-              <span className="text-sm font-medium text-green-600">{t('cardInflow')}</span>
+              <span className="text-xs font-medium text-green-600">{t('cardInflow')}</span>
             </div>
-            <p className="text-xl font-bold text-green-700">{formatCurrency(totalInflow)}</p>
+            <p className="text-base sm:text-xl font-bold text-green-700">{formatCurrency(totalInflow)}</p>
           </div>
-          <div className="bg-red-50 p-4 rounded-lg">
+          <div className="bg-red-50 p-3 sm:p-4 rounded-lg">
             <div className="flex items-center space-x-2 mb-2">
               <TrendingDown className="w-4 h-4 text-red-600" />
-              <span className="text-sm font-medium text-red-600">{t('cardOutflow')}</span>
+              <span className="text-xs font-medium text-red-600">{t('cardOutflow')}</span>
             </div>
-            <p className="text-xl font-bold text-red-700">{formatCurrency(totalOutflow)}</p>
+            <p className="text-base sm:text-xl font-bold text-red-700">{formatCurrency(totalOutflow)}</p>
           </div>
-          <div className={`${netCashFlow >= 0 ? 'bg-blue-50' : 'bg-orange-50'} p-4 rounded-lg`}>
+          <div className={`${netCashFlow >= 0 ? 'bg-blue-50' : 'bg-orange-50'} p-3 sm:p-4 rounded-lg`}>
             <div className="flex items-center space-x-2 mb-2">
               <DollarSign className={`w-4 h-4 ${netCashFlow >= 0 ? 'text-blue-600' : 'text-orange-600'}`} />
-              <span className={`text-sm font-medium ${netCashFlow >= 0 ? 'text-blue-600' : 'text-orange-600'}`}>
+              <span className={`text-xs font-medium ${netCashFlow >= 0 ? 'text-blue-600' : 'text-orange-600'}`}>
                 {t('cardNet')}
               </span>
             </div>
-            <p className={`text-xl font-bold ${netCashFlow >= 0 ? 'text-blue-700' : 'text-orange-700'}`}>
+            <p className={`text-base sm:text-xl font-bold ${netCashFlow >= 0 ? 'text-blue-700' : 'text-orange-700'}`}>
               {formatCurrency(netCashFlow)}
             </p>
           </div>
-          <div className="bg-purple-50 p-4 rounded-lg">
+          <div className="bg-purple-50 p-3 sm:p-4 rounded-lg">
             <div className="flex items-center space-x-2 mb-2">
               <Calendar className="w-4 h-4 text-purple-600" />
-              <span className="text-sm font-medium text-purple-600">{t('cardFinalBalance')}</span>
+              <span className="text-xs font-medium text-purple-600">{t('cardFinalBalance')}</span>
             </div>
-            <p className="text-xl font-bold text-purple-700">{formatCurrency(finalBalance)}</p>
+            <p className="text-base sm:text-xl font-bold text-purple-700">{formatCurrency(finalBalance)}</p>
           </div>
         </div>
 
         {/* Cash Flow Chart */}
-        <div className="w-full" style={{ height: 320 }}>
+        <div className="w-full" style={{ height: isMobile ? 220 : 280 }}>
           <h4 className="text-md font-medium text-gray-900 mb-4">
             {viewType === 'daily' ? t('chartTitleDaily') : t('chartTitleWeekly')}
           </h4>
@@ -171,11 +178,19 @@ export default function CashFlowAnalysis({ period, year, month }: CashFlowAnalys
               <div className="text-gray-400">{t('loading')}</div>
             </div>
           ) : (
-            <ResponsiveContainer width="100%" height={280}>
-              <LineChart data={cashFlowData} margin={{ top: 20, right: 30, left: 20, bottom: 5 }}>
-                <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
-                <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{ fontSize: 12, fill: '#6b7280' }} />
-                <YAxis axisLine={false} tickLine={false} tick={{ fontSize: 12, fill: '#6b7280' }}
+            <ResponsiveContainer width="100%" height={isMobile ? 220 : 280}>
+              <LineChart
+                data={cashFlowData}
+                margin={isMobile
+                  ? { top: 8, right: 8, left: -10, bottom: 0 }
+                  : { top: 20, right: 30, left: 20, bottom: 5 }}
+              >
+                <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" vertical={false} />
+                <XAxis dataKey="name" axisLine={false} tickLine={false}
+                  tick={{ fontSize: isMobile ? 10 : 12, fill: '#6b7280' }} />
+                <YAxis axisLine={false} tickLine={false}
+                  tick={{ fontSize: isMobile ? 10 : 12, fill: '#6b7280' }}
+                  width={isMobile ? 32 : undefined}
                   tickFormatter={(value) => `${(value / 1000).toFixed(0)}k`} />
                 <Tooltip content={<CustomTooltip />} />
                 <Line type="monotone" dataKey="flujoNeto" stroke="#3b82f6" strokeWidth={3}

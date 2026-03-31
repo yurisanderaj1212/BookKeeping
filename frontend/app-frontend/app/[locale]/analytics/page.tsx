@@ -114,102 +114,91 @@ export default function ReportsPage() {
         {/* Content */}
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6" data-tour="analytics-main">
           
-          {/* Period Filter Bar - Same as Reports */}
-          <div className="bg-white rounded-lg border border-gray-200 p-4 shadow-sm mb-6">
-            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-              <div className="flex items-center space-x-3">
-                <Calendar className="w-5 h-5 text-primary-600" />
-                <div>
-                  <h3 className="font-medium text-gray-900">{t('period')}</h3>
-                  <p className="text-sm text-gray-500">{getPeriodLabel()}</p>
-                </div>
+          {/* Period Filter Bar */}
+          <div className="bg-white rounded-lg border border-gray-200 p-3 sm:p-4 shadow-sm mb-4 sm:mb-6">
+            <div className="flex items-center gap-2 mb-2">
+              <Calendar className="w-4 h-4 text-primary-600 shrink-0" />
+              <div>
+                <h3 className="text-sm font-medium text-gray-900">{t('period')}</h3>
+                <p className="text-xs text-gray-500">{getPeriodLabel()}</p>
               </div>
-              
-              <div className="flex items-center space-x-3">
-                {/* Period Type Selector */}
+            </div>
+            <div className="flex items-center gap-2 flex-wrap">
+              <select
+                value={selectedPeriod}
+                onChange={(e) => setSelectedPeriod(e.target.value as 'week' | 'month' | 'year')}
+                className="flex-1 min-w-[90px] px-2 py-1.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 text-sm bg-white"
+              >
+                <option value="week">{t('thisWeek')}</option>
+                <option value="month">{t('thisMonth')}</option>
+                <option value="year">{t('thisYear')}</option>
+              </select>
+              <select
+                value={selectedYear}
+                onChange={(e) => setSelectedYear(e.target.value)}
+                className="px-2 py-1.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 text-sm bg-white"
+              >
+                {Array.from({ length: 4 }, (_, i) => new Date().getFullYear() - i).map(y => (
+                  <option key={y} value={String(y)}>{y}</option>
+                ))}
+              </select>
+              {(selectedPeriod === 'month' || selectedPeriod === 'week') && (
                 <select
-                  value={selectedPeriod}
-                  onChange={(e) => setSelectedPeriod(e.target.value as 'week' | 'month' | 'year')}
-                  className="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 text-sm bg-white"
+                  value={selectedMonth}
+                  onChange={(e) => setSelectedMonth(e.target.value)}
+                  className="flex-1 min-w-[90px] px-2 py-1.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 text-sm bg-white"
                 >
-                  <option value="week">{t('thisWeek')}</option>
-                  <option value="month">{t('thisMonth')}</option>
-                  <option value="year">{t('thisYear')}</option>
-                </select>
-
-                {/* Year Selector */}
-                <select
-                  value={selectedYear}
-                  onChange={(e) => setSelectedYear(e.target.value)}
-                  className="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 text-sm bg-white"
-                >
-                  {Array.from({ length: 4 }, (_, i) => new Date().getFullYear() - i).map(y => (
-                    <option key={y} value={String(y)}>{y}</option>
+                  {Array.from({ length: 12 }, (_, i) => (
+                    <option key={i + 1} value={String(i + 1).padStart(2, '0')}>
+                      {tReports(`months.${i + 1}` as any)}
+                    </option>
                   ))}
                 </select>
-
-                {(selectedPeriod === 'month' || selectedPeriod === 'week') && (
-                  <select
-                    value={selectedMonth}
-                    onChange={(e) => setSelectedMonth(e.target.value)}
-                    className="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 text-sm bg-white"
-                  >
-                    {Array.from({ length: 12 }, (_, i) => (
-                      <option key={i + 1} value={String(i + 1).padStart(2, '0')}>
-                        {tReports(`months.${i + 1}` as any)}
-                      </option>
-                    ))}
-                  </select>
-                )}
-
-                {/* Week Selector - Only show when week is selected */}
-                {selectedPeriod === 'week' && (
-                  <select
-                    value={selectedWeek}
-                    onChange={(e) => setSelectedWeek(e.target.value)}
-                    className="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 text-sm bg-white"
-                  >
-                    {getWeeksInMonth().map((week) => (
-                      <option key={week.value} value={week.value}>
-                        {week.label}
-                      </option>
-                    ))}
-                  </select>
-                )}
-              </div>
+              )}
+              {selectedPeriod === 'week' && (
+                <select
+                  value={selectedWeek}
+                  onChange={(e) => setSelectedWeek(e.target.value)}
+                  className="flex-1 min-w-[80px] px-2 py-1.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 text-sm bg-white"
+                >
+                  {getWeeksInMonth().map((week) => (
+                    <option key={week.value} value={week.value}>{week.label}</option>
+                  ))}
+                </select>
+              )}
             </div>
           </div>
 
-          {/* Summary Stats */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-            <div className="bg-white rounded-lg border border-gray-200 p-4">
+          {/* Summary Stats — 2x2 on mobile, 3-col on md+ */}
+          <div className="grid grid-cols-2 md:grid-cols-3 gap-3 sm:gap-4 mb-4 sm:mb-6">
+            <div className="bg-white rounded-lg border border-gray-200 p-3 sm:p-4">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm text-gray-600">{t('totalTransactions')}</p>
-                  <p className="text-2xl font-bold text-gray-900">{transactionStats.totalTransactions}</p>
+                  <p className="text-xs text-gray-600">{t('totalTransactions')}</p>
+                  <p className="text-xl sm:text-2xl font-bold text-gray-900">{transactionStats.totalTransactions}</p>
                 </div>
-                <BarChart3 className="w-8 h-8 text-primary-600" />
+                <BarChart3 className="w-6 h-6 sm:w-8 sm:h-8 text-primary-600" />
               </div>
             </div>
-            <div className="bg-white rounded-lg border border-gray-200 p-4">
+            <div className="bg-white rounded-lg border border-gray-200 p-3 sm:p-4">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm text-gray-600">{t('pendingTransactions')}</p>
-                  <p className="text-2xl font-bold text-gray-900">{transactionStats.pendingCount}</p>
+                  <p className="text-xs text-gray-600">{t('pendingTransactions')}</p>
+                  <p className="text-xl sm:text-2xl font-bold text-gray-900">{transactionStats.pendingCount}</p>
                 </div>
-                <TrendingUp className="w-8 h-8 text-orange-600" />
+                <TrendingUp className="w-6 h-6 sm:w-8 sm:h-8 text-orange-600" />
               </div>
             </div>
-            <div className="bg-white rounded-lg border border-gray-200 p-4">
+            <div className="col-span-2 md:col-span-1 bg-white rounded-lg border border-gray-200 p-3 sm:p-4">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm text-gray-600">{t('selectedPeriod')}</p>
-                  <p className="text-lg font-bold text-gray-900">
+                  <p className="text-xs text-gray-600">{t('selectedPeriod')}</p>
+                  <p className="text-base sm:text-lg font-bold text-gray-900">
                     {selectedPeriod === 'week' ? t('weekly') :
                      selectedPeriod === 'month' ? t('monthly') : t('annual')}
                   </p>
                 </div>
-                <Calendar className="w-8 h-8 text-green-600" />
+                <Calendar className="w-6 h-6 sm:w-8 sm:h-8 text-green-600" />
               </div>
             </div>
           </div>
