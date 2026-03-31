@@ -6,6 +6,7 @@ import { ArrowLeft, Mail, CheckCircle, AlertCircle } from 'lucide-react'
 import { useTranslations } from 'next-intl'
 import { getSupabase } from '@/lib/supabaseClient'
 import AppLogo from '@/components/ui/AppLogo'
+import LanguageSwitcher from '@/components/ui/LanguageSwitcher'
 
 type Step = 'request' | 'sent' | 'reset' | 'done'
 
@@ -89,11 +90,12 @@ export default function ForgotPasswordPage() {
   const passwordStrong = Object.values(passwordReqs).every(Boolean)
 
   return (
-    <div className="min-h-screen bg-slate-50 flex items-center justify-center px-4">
+    <div className="min-h-screen bg-slate-50 flex items-center justify-center px-4 py-6">
       <div className="w-full max-w-md">
 
-        <div className="flex justify-center mb-8">
-          <AppLogo size={36} variant="full" />
+        <div className="flex items-center justify-between mb-6">
+          <AppLogo size={32} variant="full" />
+          <LanguageSwitcher variant="compact" />
         </div>
 
         <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-8">

@@ -7,6 +7,12 @@ import { useTranslations } from 'next-intl'
 import { useAuth } from '@/hooks/useAuth'
 import { useNotifications } from '@/hooks/useNotifications'
 import AppLogo from '@/components/ui/AppLogo'
+import LanguageSwitcher from '@/components/ui/LanguageSwitcher'
+
+// Inline wrapper needed because LanguageSwitcher uses Suspense internally
+function LanguageSwitcherInline() {
+  return <LanguageSwitcher variant="compact" />
+}
 
 // Componente interno que usa useSearchParams — debe estar dentro de <Suspense>
 function LoginForm() {
@@ -133,11 +139,12 @@ function LoginForm() {
   return (
     <div className="min-h-screen bg-slate-50 flex">
       {/* Left Column - Form */}
-      <div className="flex-1 flex flex-col justify-center py-6 px-4 sm:px-6 lg:px-20 xl:px-24">
+      <div className="flex-1 flex flex-col justify-center py-4 sm:py-8 px-4 sm:px-6 lg:px-20 xl:px-24">
         <div className="mx-auto w-full max-w-sm lg:w-96">
-          {/* Logo */}
-          <div className="flex items-center mb-4">
+          {/* Logo + language switcher row */}
+          <div className="flex items-center justify-between mb-4">
             <AppLogo size={32} variant="full" />
+            <LanguageSwitcherInline />
           </div>
 
           <div>

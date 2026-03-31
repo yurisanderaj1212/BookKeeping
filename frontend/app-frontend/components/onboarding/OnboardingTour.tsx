@@ -62,14 +62,16 @@ export interface OnboardingTourProps {
 interface Rect { top: number; left: number; width: number; height: number }
 type Side = 'top' | 'bottom' | 'left' | 'right' | 'center'
 
-const TOOLTIP_W = 340
-const TOOLTIP_H = 280
-const PAD = 12
-const MARGIN = 16
+// Responsive tooltip width
+const getTooltipW = () => typeof window !== 'undefined' ? Math.min(300, window.innerWidth - 24) : 300
+const TOOLTIP_H = 260
+const PAD = 10
+const MARGIN = 12
 
 function computePosition(rect: Rect): { side: Side; x: number; y: number } {
   const vw = window.innerWidth
   const vh = window.innerHeight
+  const TOOLTIP_W = getTooltipW()
 
   const spaceBottom = vh - rect.top - rect.height
   const spaceTop    = rect.top
@@ -140,7 +142,6 @@ function useSpotlight(selector: string, active: boolean) {
       setRect(newRect)
       setPos(computePosition(newRect))
     }
-
     const t = setTimeout(measure, 250)
     window.addEventListener('resize', measure)
     window.addEventListener('scroll', measure, true)
@@ -152,7 +153,7 @@ function useSpotlight(selector: string, active: boolean) {
 
 // ─── Arrow ────────────────────────────────────────────────────────────────────
 
-function Arrow({ side, rect, tooltipX, tooltipY }: { side: Side; rect: Rect; tooltipX: number; tooltipY: number }) {
+function Arrow({ side, rect, tooltipX, tooltipY, tooltipW }: { side: Side; rect: Rect; tooltipX: number; tooltipY: number; tooltipW: number }) {
   const S = 10
   const cx = rect.left + rect.width / 2
   const cy = rect.top  + rect.height / 2
@@ -160,13 +161,13 @@ function Arrow({ side, rect, tooltipX, tooltipY }: { side: Side; rect: Rect; too
   const style: React.CSSProperties = { position: 'absolute', width: 0, height: 0, pointerEvents: 'none' }
 
   if (side === 'bottom') {
-    const arrowLeft = Math.max(S + 4, Math.min(TOOLTIP_W - S * 2 - 4, cx - tooltipX))
+    const arrowLeft = Math.max(S + 4, Math.min(tooltipW - S * 2 - 4, cx - tooltipX))
     return <div style={{ ...style, top: -S, left: arrowLeft,
       borderLeft: `${S}px solid transparent`, borderRight: `${S}px solid transparent`,
       borderBottom: `${S}px solid white`, filter: 'drop-shadow(0 -1px 2px rgba(0,0,0,0.08))' }} />
   }
   if (side === 'top') {
-    const arrowLeft = Math.max(S + 4, Math.min(TOOLTIP_W - S * 2 - 4, cx - tooltipX))
+    const arrowLeft = Math.max(S + 4, Math.min(tooltipW - S * 2 - 4, cx - tooltipX))
     return <div style={{ ...style, bottom: -S, left: arrowLeft,
       borderLeft: `${S}px solid transparent`, borderRight: `${S}px solid transparent`,
       borderTop: `${S}px solid white`, filter: 'drop-shadow(0 1px 2px rgba(0,0,0,0.08))' }} />
@@ -252,6 +253,7 @@ export default function OnboardingTour({
 
   if (!isOpen || !meta) return null
 
+  const TOOLTIP_W = getTooltipW()
   const PAD_SPOT = 8
   const hasSpot  = !!rect && !!pos
 
@@ -307,7 +309,7 @@ export default function OnboardingTour({
       >
         {/* Arrow pointing to element */}
         {hasSpot && rect && pos && side !== 'center' && (
-          <Arrow side={side} rect={rect} tooltipX={tooltipX} tooltipY={tooltipY} />
+          <Arrow side={side} rect={rect} tooltipX={tooltipX} tooltipY={tooltipY} tooltipW={TOOLTIP_W} />
         )}
 
         <div style={{
@@ -328,52 +330,52 @@ export default function OnboardingTour({
           </div>
 
           {/* Header */}
-          <div style={{ padding: '16px 16px 12px', display: 'flex', alignItems: 'flex-start', gap: 12 }}>
+          <div style={{ padding: '12px 12px 10px', display: 'flex', alignItems: 'flex-start', gap: 10 }}>
             <div style={{
-              width: 40, height: 40, borderRadius: 10,
+              width: 34, height: 34, borderRadius: 8,
               background: meta.bg, display: 'flex', alignItems: 'center',
               justifyContent: 'center', flexShrink: 0,
             }}>
-              <Icon style={{ width: 20, height: 20, color: meta.iconColor }} />
+              <Icon style={{ width: 17, height: 17, color: meta.iconColor }} />
             </div>
             <div style={{ flex: 1, minWidth: 0 }}>
               <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 2 }}>
-                <span style={{ fontSize: 11, fontWeight: 600, color: '#9ca3af', letterSpacing: '0.4px', textTransform: 'uppercase' }}>
+                <span style={{ fontSize: 10, fontWeight: 600, color: '#9ca3af', letterSpacing: '0.4px', textTransform: 'uppercase' }}>
                   {step + 1} / {STEP_META.length}
                 </span>
                 <button onClick={handleSkip} style={{
                   background: 'none', border: 'none', cursor: 'pointer',
-                  color: '#d1d5db', padding: 4, borderRadius: 6, lineHeight: 0,
+                  color: '#d1d5db', padding: 3, borderRadius: 6, lineHeight: 0,
                   transition: 'color 0.15s',
                 }}
                   onMouseEnter={e => (e.currentTarget as HTMLElement).style.color = '#6b7280'}
                   onMouseLeave={e => (e.currentTarget as HTMLElement).style.color = '#d1d5db'}
                 >
-                  <X style={{ width: 14, height: 14 }} />
+                  <X style={{ width: 13, height: 13 }} />
                 </button>
               </div>
-              <h3 style={{ margin: 0, fontSize: 15, fontWeight: 700, color: '#111827', lineHeight: 1.3 }}>
+              <h3 style={{ margin: 0, fontSize: 13, fontWeight: 700, color: '#111827', lineHeight: 1.3 }}>
                 {tSteps(`${stepKey}.title` as any)}
               </h3>
             </div>
           </div>
 
           {/* Description */}
-          <div style={{ padding: '0 16px 14px' }}>
-            <p style={{ margin: 0, fontSize: 13, color: '#4b5563', lineHeight: 1.65 }}>
+          <div style={{ padding: '0 12px 12px' }}>
+            <p style={{ margin: 0, fontSize: 12, color: '#4b5563', lineHeight: 1.55 }}>
               {tSteps(`${stepKey}.description` as any)}
             </p>
           </div>
 
           {/* Dots */}
-          <div style={{ display: 'flex', justifyContent: 'center', gap: 4, padding: '0 16px 12px' }}>
+          <div style={{ display: 'flex', justifyContent: 'center', gap: 3, padding: '0 12px 10px' }}>
             {STEP_META.map((_, i) => (
               <button key={i} onClick={() => goTo(i)} style={{
                 background: 'none', border: 'none', cursor: 'pointer', padding: 2,
               }}>
                 <div style={{
                   borderRadius: 99,
-                  width: i === step ? 18 : 6, height: 6,
+                  width: i === step ? 14 : 5, height: 5,
                   background: i === step ? '#6366f1' : i < step ? '#a5b4fc' : '#e5e7eb',
                   transition: 'all 0.2s ease',
                 }} />
@@ -383,13 +385,13 @@ export default function OnboardingTour({
 
           {/* Actions */}
           <div style={{
-            padding: '10px 16px 14px',
+            padding: '8px 12px 12px',
             display: 'flex', alignItems: 'center', justifyContent: 'space-between',
             borderTop: '1px solid #f3f4f6',
           }}>
             <button onClick={handleSkip} style={{
               background: 'none', border: 'none', cursor: 'pointer',
-              fontSize: 12, color: '#9ca3af', fontWeight: 500,
+              fontSize: 11, color: '#9ca3af', fontWeight: 500,
               transition: 'color 0.15s',
             }}
               onMouseEnter={e => (e.currentTarget as HTMLElement).style.color = '#6b7280'}
@@ -398,36 +400,36 @@ export default function OnboardingTour({
               {t('btnSkip')}
             </button>
 
-            <div style={{ display: 'flex', gap: 8 }}>
+            <div style={{ display: 'flex', gap: 6 }}>
               {!isFirst && (
                 <button onClick={handlePrev} disabled={fading} style={{
-                  display: 'flex', alignItems: 'center', gap: 4,
-                  padding: '6px 12px', borderRadius: 8, border: '1px solid #e5e7eb',
-                  background: '#ffffff', cursor: 'pointer', fontSize: 12, fontWeight: 600,
+                  display: 'flex', alignItems: 'center', gap: 3,
+                  padding: '5px 10px', borderRadius: 7, border: '1px solid #e5e7eb',
+                  background: '#ffffff', cursor: 'pointer', fontSize: 11, fontWeight: 600,
                   color: '#6b7280', transition: 'all 0.15s',
                 }}
-                  onMouseEnter={e => { (e.currentTarget as HTMLElement).style.background = '#f9fafb'; (e.currentTarget as HTMLElement).style.borderColor = '#d1d5db' }}
-                  onMouseLeave={e => { (e.currentTarget as HTMLElement).style.background = '#ffffff'; (e.currentTarget as HTMLElement).style.borderColor = '#e5e7eb' }}
+                  onMouseEnter={e => { (e.currentTarget as HTMLElement).style.background = '#f9fafb' }}
+                  onMouseLeave={e => { (e.currentTarget as HTMLElement).style.background = '#ffffff' }}
                 >
-                  <ChevronLeft style={{ width: 13, height: 13 }} />
+                  <ChevronLeft style={{ width: 12, height: 12 }} />
                   {t('btnPrev')}
                 </button>
               )}
               <button onClick={handleNext} disabled={fading} style={{
-                display: 'flex', alignItems: 'center', gap: 4,
-                padding: '6px 14px', borderRadius: 8, border: 'none',
+                display: 'flex', alignItems: 'center', gap: 3,
+                padding: '5px 12px', borderRadius: 7, border: 'none',
                 background: 'linear-gradient(135deg, #6366f1, #8b5cf6)',
-                cursor: 'pointer', fontSize: 12, fontWeight: 700,
-                color: '#ffffff', boxShadow: '0 2px 8px rgba(99,102,241,0.35)',
+                cursor: 'pointer', fontSize: 11, fontWeight: 700,
+                color: '#ffffff', boxShadow: '0 2px 6px rgba(99,102,241,0.35)',
                 transition: 'all 0.15s',
               }}
-                onMouseEnter={e => (e.currentTarget as HTMLElement).style.boxShadow = '0 4px 12px rgba(99,102,241,0.5)'}
-                onMouseLeave={e => (e.currentTarget as HTMLElement).style.boxShadow = '0 2px 8px rgba(99,102,241,0.35)'}
+                onMouseEnter={e => (e.currentTarget as HTMLElement).style.boxShadow = '0 4px 10px rgba(99,102,241,0.5)'}
+                onMouseLeave={e => (e.currentTarget as HTMLElement).style.boxShadow = '0 2px 6px rgba(99,102,241,0.35)'}
               >
                 {isLast ? (
-                  <><Check style={{ width: 13, height: 13 }} />{t('btnFinish')}</>
+                  <><Check style={{ width: 12, height: 12 }} />{t('btnFinish')}</>
                 ) : (
-                  <>{t('btnNext')}<ChevronRight style={{ width: 13, height: 13 }} /></>
+                  <>{t('btnNext')}<ChevronRight style={{ width: 12, height: 12 }} /></>
                 )}
               </button>
             </div>

@@ -1,7 +1,7 @@
 'use client'
 
-import { useState } from 'react'
-import { X, Sparkles, Play, ArrowRight } from 'lucide-react'
+import { Play, ArrowRight, X, Sparkles } from 'lucide-react'
+import { useTranslations } from 'next-intl'
 
 interface WelcomeModalProps {
   isOpen: boolean
@@ -10,93 +10,75 @@ interface WelcomeModalProps {
   userName?: string
 }
 
-export default function WelcomeModal({ isOpen, onClose, onStartTour, userName = 'Usuario' }: WelcomeModalProps) {
+export default function WelcomeModal({ isOpen, onClose, onStartTour, userName }: WelcomeModalProps) {
+  const t = useTranslations('welcomeModal')
+
   if (!isOpen) return null
 
-  const handleStartTour = () => {
-    onStartTour()
-    onClose()
-  }
+  const handleStartTour = () => { onStartTour(); onClose() }
+
+  const features = [
+    { emoji: '🏦', label: t('featureAccounts') },
+    { emoji: '💰', label: t('featureExpenses') },
+    { emoji: '📊', label: t('featureReports') },
+    { emoji: '📈', label: t('featureAnalytics') },
+  ]
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-      <div className="bg-white rounded-2xl shadow-2xl max-w-lg w-full mx-4 overflow-hidden border border-gray-200">
-        {/* Header with gradient */}
-        <div className="bg-linear-to-r from-primary-500 to-primary-600 px-8 py-6 text-white relative">
-          <button
-            onClick={onClose}
-            className="absolute top-4 right-4 text-white/80 hover:text-white transition-colors"
-          >
-            <X className="w-5 h-5" />
+    <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4">
+      {/* Backdrop */}
+      <div className="absolute inset-0 bg-black/40" onClick={onClose} />
+
+      {/* Modal — bottom sheet on mobile, centered on desktop */}
+      <div className="relative bg-white w-full sm:max-w-md sm:rounded-2xl rounded-t-2xl shadow-2xl border border-gray-100 overflow-hidden">
+
+        {/* Header */}
+        <div className="bg-linear-to-r from-primary-500 to-primary-600 px-5 py-4 text-white">
+          <button onClick={onClose}
+            className="absolute top-3 right-3 text-white/70 hover:text-white p-1 rounded-lg hover:bg-white/10 transition-colors">
+            <X className="w-4 h-4" />
           </button>
-          
-          <div className="flex items-center space-x-3 mb-2">
-            <div className="w-12 h-12 bg-white/20 rounded-xl flex items-center justify-center">
-              <Sparkles className="w-6 h-6" />
+          <div className="flex items-center gap-3">
+            <div className="w-9 h-9 bg-white/20 rounded-xl flex items-center justify-center shrink-0">
+              <Sparkles className="w-4 h-4" />
             </div>
-            <div>
-              <h2 className="text-2xl font-bold">¡Bienvenido a Chill Numbers!</h2>
-              <p className="text-primary-100">Hola {userName}, tu cuenta está lista</p>
+            <div className="min-w-0">
+              <h2 className="text-base font-bold leading-tight">{t('title')}</h2>
+              <p className="text-primary-100 text-xs mt-0.5">
+                {userName ? t('subtitle', { name: userName }) : t('title')}
+              </p>
             </div>
           </div>
         </div>
 
         {/* Content */}
-        <div className="px-8 py-6">
-          <div className="text-center mb-6">
-            <h3 className="text-xl font-semibold text-gray-900 mb-3">
-              Tu herramienta de contabilidad profesional
-            </h3>
-            <p className="text-gray-600 leading-relaxed">
-              Gestiona tus cuentas bancarias, registra transacciones, genera reportes automáticos 
-              y obtén análisis detallados. Todo diseñado para pequeñas empresas.
-            </p>
+        <div className="px-5 py-4">
+          <div className="text-center mb-4">
+            <h3 className="text-base font-semibold text-gray-900 mb-1.5">{t('heading')}</h3>
+            <p className="text-gray-500 text-xs leading-relaxed">{t('description')}</p>
           </div>
 
-          {/* Features preview */}
-          <div className="grid grid-cols-2 gap-4 mb-6">
-            <div className="text-center p-3 bg-gray-50 rounded-lg">
-              <div className="w-8 h-8 bg-primary-100 rounded-lg mx-auto mb-2 flex items-center justify-center">
-                <span className="text-primary-600 text-sm font-bold">🏦</span>
+          {/* Features grid — compact */}
+          <div className="grid grid-cols-4 gap-2 mb-4">
+            {features.map(f => (
+              <div key={f.label} className="text-center p-2 bg-gray-50 rounded-lg">
+                <div className="text-lg mb-1">{f.emoji}</div>
+                <p className="text-xs font-medium text-gray-600 leading-tight">{f.label}</p>
               </div>
-              <p className="text-sm font-medium text-gray-700">Gestión de Cuentas</p>
-            </div>
-            <div className="text-center p-3 bg-gray-50 rounded-lg">
-              <div className="w-8 h-8 bg-primary-100 rounded-lg mx-auto mb-2 flex items-center justify-center">
-                <span className="text-primary-600 text-sm font-bold">💰</span>
-              </div>
-              <p className="text-sm font-medium text-gray-700">Control de Gastos</p>
-            </div>
-            <div className="text-center p-3 bg-gray-50 rounded-lg">
-              <div className="w-8 h-8 bg-primary-100 rounded-lg mx-auto mb-2 flex items-center justify-center">
-                <span className="text-primary-600 text-sm font-bold">📊</span>
-              </div>
-              <p className="text-sm font-medium text-gray-700">Reportes Automáticos</p>
-            </div>
-            <div className="text-center p-3 bg-gray-50 rounded-lg">
-              <div className="w-8 h-8 bg-primary-100 rounded-lg mx-auto mb-2 flex items-center justify-center">
-                <span className="text-primary-600 text-sm font-bold">📈</span>
-              </div>
-              <p className="text-sm font-medium text-gray-700">Análisis Avanzado</p>
-            </div>
+            ))}
           </div>
 
-          {/* Call to action */}
-          <div className="space-y-3">
-            <button
-              onClick={handleStartTour}
-              className="w-full bg-primary-600 text-white px-6 py-3 rounded-lg hover:bg-primary-700 transition-colors font-medium flex items-center justify-center space-x-2"
-            >
-              <Play className="w-4 h-4" />
-              <span>Comenzar Tour Guiado</span>
-              <ArrowRight className="w-4 h-4" />
+          {/* CTAs */}
+          <div className="space-y-2">
+            <button onClick={handleStartTour}
+              className="w-full bg-primary-600 text-white px-4 py-2.5 rounded-lg hover:bg-primary-700 transition-colors font-semibold text-sm flex items-center justify-center gap-2">
+              <Play className="w-3.5 h-3.5" />
+              {t('btnTour')}
+              <ArrowRight className="w-3.5 h-3.5" />
             </button>
-            
-            <button
-              onClick={onClose}
-              className="w-full text-gray-600 hover:text-gray-800 transition-colors text-sm font-medium py-2"
-            >
-              Explorar por mi cuenta
+            <button onClick={onClose}
+              className="w-full text-gray-500 hover:text-gray-700 transition-colors text-xs font-medium py-1.5">
+              {t('btnSkip')}
             </button>
           </div>
         </div>

@@ -7,6 +7,7 @@ import { useTranslations } from 'next-intl'
 import { useAuth } from '@/hooks/useAuth'
 import { useNotifications } from '@/hooks/useNotifications'
 import AppLogo from '@/components/ui/AppLogo'
+import LanguageSwitcher from '@/components/ui/LanguageSwitcher'
 
 // Lista de empleos comunes en Estados Unidos
 const US_JOBS = [
@@ -339,9 +340,10 @@ export default function RegisterPage() {
       {/* Right Column - Form */}
       <div className="flex-1 flex flex-col justify-center py-2 px-4 sm:px-6 lg:px-20 xl:px-24">
         <div className="mx-auto w-full max-w-sm lg:w-96">
-          {/* Logo */}
-          <div className="flex items-center mb-2">
+          {/* Logo + language switcher */}
+          <div className="flex items-center justify-between mb-2">
             <AppLogo size={28} variant="full" />
+            <LanguageSwitcher variant="compact" />
           </div>
 
           <div>
