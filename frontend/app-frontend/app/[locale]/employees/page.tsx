@@ -178,59 +178,56 @@ export default function EmployeesPage() {
             </div>
           )}
 
-          {/* Stats Cards */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
-            <div className="bg-white rounded-lg p-6 shadow-sm border border-gray-200">
-              <div className="flex items-center">
-                <div className="p-2 bg-blue-100 rounded-lg shrink-0"><Users className="w-6 h-6 text-blue-600" /></div>
-                <div className="ml-4 min-w-0">
-                  <p className="text-sm font-medium text-gray-500">{t('totalEmployees')}</p>
-                  <p className="text-2xl font-bold text-gray-900">{employees.length}</p>
+          {/* Stats Cards — 2x2 on mobile, 3rd full width */}
+          <div className="grid grid-cols-2 md:grid-cols-3 gap-3 sm:gap-4 mb-4 sm:mb-6">
+            <div className="bg-white rounded-lg p-3 sm:p-4 shadow-sm border border-gray-200">
+              <div className="flex items-center gap-3">
+                <div className="p-2 bg-blue-100 rounded-lg shrink-0"><Users className="w-5 h-5 text-blue-600" /></div>
+                <div className="min-w-0">
+                  <p className="text-xs font-medium text-gray-500">{t('totalEmployees')}</p>
+                  <p className="text-xl sm:text-2xl font-bold text-gray-900">{employees.length}</p>
                 </div>
               </div>
             </div>
-            <div className="bg-white rounded-lg p-6 shadow-sm border border-gray-200">
-              <div className="flex items-center">
-                <div className="p-2 bg-green-100 rounded-lg shrink-0"><UserCheck className="w-6 h-6 text-green-600" /></div>
-                <div className="ml-4 min-w-0">
-                  <p className="text-sm font-medium text-gray-500">{t('activeEmployees')}</p>
-                  <p className="text-2xl font-bold text-gray-900">{activeEmployees.length}</p>
+            <div className="bg-white rounded-lg p-3 sm:p-4 shadow-sm border border-gray-200">
+              <div className="flex items-center gap-3">
+                <div className="p-2 bg-green-100 rounded-lg shrink-0"><UserCheck className="w-5 h-5 text-green-600" /></div>
+                <div className="min-w-0">
+                  <p className="text-xs font-medium text-gray-500">{t('activeEmployees')}</p>
+                  <p className="text-xl sm:text-2xl font-bold text-gray-900">{activeEmployees.length}</p>
                 </div>
               </div>
             </div>
-            <div className="bg-white rounded-lg p-6 shadow-sm border border-gray-200">
-              <div className="flex items-center">
-                <div className="p-2 bg-yellow-100 rounded-lg shrink-0"><DollarSign className="w-6 h-6 text-yellow-600" /></div>
-                <div className="ml-4 min-w-0">
-                  <p className="text-sm font-medium text-gray-500">{t('annualPayroll')}</p>
-                  <p className="text-lg font-bold text-gray-900 truncate">{formatSalary(totalPayroll)}</p>
+            <div className="col-span-2 md:col-span-1 bg-white rounded-lg p-3 sm:p-4 shadow-sm border border-gray-200">
+              <div className="flex items-center gap-3">
+                <div className="p-2 bg-yellow-100 rounded-lg shrink-0"><DollarSign className="w-5 h-5 text-yellow-600" /></div>
+                <div className="min-w-0">
+                  <p className="text-xs font-medium text-gray-500">{t('annualPayroll')}</p>
+                  <p className="text-base sm:text-lg font-bold text-gray-900 truncate">{formatSalary(totalPayroll)}</p>
                 </div>
               </div>
             </div>
           </div>
 
-          {/* Filters */}
-          <div className="bg-white rounded-lg p-4 shadow-sm border border-gray-200 mb-6">
-            <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between space-y-4 lg:space-y-0 lg:space-x-4">
-              <div className="relative flex-1 max-w-md">
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
+          {/* Filters — compact inline on mobile */}
+          <div className="bg-white rounded-lg p-3 sm:p-4 shadow-sm border border-gray-200 mb-4 sm:mb-6">
+            <div className="flex items-center gap-2">
+              <div className="relative flex-1">
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 w-4 h-4" />
                 <input
                   type="text"
                   placeholder={t('searchPlaceholder')}
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
-                  className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                  className="w-full pl-9 pr-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent text-sm"
                 />
               </div>
-              <div className="flex items-center space-x-4">
-                <div className="flex items-center space-x-2">
-                  <Filter className="w-4 h-4 text-gray-500" />
-                  <span className="text-sm font-medium text-gray-700">{t('filterLabel')}</span>
-                </div>
+              <div className="flex items-center gap-1.5 shrink-0">
+                <Filter className="w-4 h-4 text-gray-400 shrink-0" />
                 <select
                   value={statusFilter}
                   onChange={(e) => setStatusFilter(e.target.value as any)}
-                  className="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent text-sm"
+                  className="px-2 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent text-sm bg-white"
                 >
                   <option value="all">{t('allStatuses')}</option>
                   <option value="active">{tCommon('active')}</option>

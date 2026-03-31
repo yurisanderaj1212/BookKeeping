@@ -81,31 +81,34 @@ export default function NotificationCenter({ isOpen, onClose, onRefresh }: Props
 
   return (
     <div className="fixed inset-0 z-50 overflow-hidden pointer-events-none">
+      {/* Backdrop on mobile */}
+      <div className="absolute inset-0 sm:hidden pointer-events-auto" onClick={onClose} />
       <div
         ref={ref}
-        className="absolute right-4 top-20 w-96 max-h-[80vh] bg-white rounded-lg shadow-xl border border-gray-200 flex flex-col pointer-events-auto"
+        className="absolute right-0 sm:right-4 top-0 sm:top-20 w-full sm:w-96 max-h-screen sm:max-h-[80vh] bg-white sm:rounded-lg shadow-xl border-0 sm:border border-gray-200 flex flex-col pointer-events-auto"
+        style={{ maxHeight: '100dvh' }}
       >
         {/* Header */}
-        <div className="flex items-center justify-between p-4 border-b border-gray-200">
-          <div className="flex items-center space-x-2">
+        <div className="flex items-center justify-between p-4 border-b border-gray-200 shrink-0">
+          <div className="flex items-center gap-2">
             <Bell className="w-5 h-5 text-primary-600" />
             <h3 className="font-semibold text-gray-900">Notificaciones</h3>
             {unread > 0 && (
-              <span className="bg-red-500 text-white text-xs px-2 py-1 rounded-full">{unread}</span>
+              <span className="bg-red-500 text-white text-xs px-2 py-0.5 rounded-full">{unread}</span>
             )}
           </div>
-          <button onClick={onClose} className="p-1 hover:bg-gray-100 rounded-full transition-colors">
-            <X className="w-4 h-4 text-gray-500" />
+          <button onClick={onClose} className="p-2 hover:bg-gray-100 rounded-full transition-colors">
+            <X className="w-5 h-5 text-gray-500" />
           </button>
         </div>
 
         {/* Filters */}
-        <div className="p-3 border-b border-gray-200 space-y-2">
-          <div className="flex items-center gap-2">
+        <div className="p-3 border-b border-gray-200 shrink-0">
+          <div className="flex items-center gap-2 flex-wrap">
             <select
               value={filter}
               onChange={e => setFilter(e.target.value as any)}
-              className="text-sm border border-gray-300 rounded px-2 py-1 focus:ring-2 focus:ring-primary-500"
+              className="flex-1 min-w-[120px] text-sm border border-gray-300 rounded-lg px-2 py-1.5 focus:ring-2 focus:ring-primary-500 bg-white"
             >
               <option value="all">Todas ({total})</option>
               <option value="unread">No leídas ({unread})</option>
@@ -114,7 +117,7 @@ export default function NotificationCenter({ isOpen, onClose, onRefresh }: Props
             <select
               value={typeFilter}
               onChange={e => setTypeFilter(e.target.value)}
-              className="text-sm border border-gray-300 rounded px-2 py-1 focus:ring-2 focus:ring-primary-500"
+              className="flex-1 min-w-[120px] text-sm border border-gray-300 rounded-lg px-2 py-1.5 focus:ring-2 focus:ring-primary-500 bg-white"
             >
               <option value="all">Todos los tipos</option>
               <option value="transaction">Transacciones</option>
@@ -126,8 +129,8 @@ export default function NotificationCenter({ isOpen, onClose, onRefresh }: Props
             </select>
           </div>
           {unread > 0 && (
-            <button onClick={handleMarkAll} className="text-sm text-primary-600 hover:text-primary-700 flex items-center gap-1">
-              <CheckCheck className="w-4 h-4" /> Marcar todas como leídas
+            <button onClick={handleMarkAll} className="mt-2 text-xs text-primary-600 hover:text-primary-700 flex items-center gap-1">
+              <CheckCheck className="w-3.5 h-3.5" /> Marcar todas como leídas
             </button>
           )}
         </div>
