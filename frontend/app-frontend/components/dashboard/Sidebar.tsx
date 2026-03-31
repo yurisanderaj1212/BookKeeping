@@ -319,7 +319,12 @@ export default function Sidebar({ onLogout }: SidebarProps) {
                 <p className="text-sm font-medium text-gray-900 truncate">
                   {userName || userEmail.split('@')[0] || '—'}
                 </p>
-                <p className="text-xs text-gray-500 truncate">{userEmail}</p>
+                <p className="text-xs truncate">
+                  {userName
+                    ? <span className="text-gray-500">{userEmail}</span>
+                    : <span className="text-primary-500 font-medium">Completa tu perfil →</span>
+                  }
+                </p>
               </div>
             </div>
             <button

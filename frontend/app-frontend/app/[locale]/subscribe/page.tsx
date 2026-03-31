@@ -72,63 +72,61 @@ function SubscribeContent() {
           </div>
         )}
 
-        {/* Plans */}
-        <div className="grid sm:grid-cols-2 gap-5">
-          {/* Monthly */}
-          <div className="bg-white/5 border border-white/10 rounded-2xl p-7 flex flex-col">
-            <p className="text-slate-400 text-sm font-medium mb-1">Plan mensual</p>
-            <div className="flex items-end gap-1 mb-1">
-              <span className="text-3xl font-bold">$9.99</span>
-              <span className="text-slate-400 mb-1">/mes</span>
+          {/* Plans */}
+          <div className="grid sm:grid-cols-2 gap-4 sm:gap-5">
+            {/* Monthly */}
+            <div className="bg-white/5 border border-white/10 rounded-2xl p-5 sm:p-7 flex flex-col">
+              <p className="text-slate-400 text-sm font-medium mb-1">{t('monthly')}</p>
+              <div className="flex items-end gap-1 mb-1">
+                <span className="text-2xl sm:text-3xl font-bold">$9.99</span>
+                <span className="text-slate-400 mb-1">{t('perMonth')}</span>
+              </div>
+              <p className="text-slate-500 text-xs mb-5">{t('planMonthly')}</p>
+              <ul className="space-y-2 mb-6 flex-1 text-sm text-slate-300">
+                {['Acceso completo', 'Transacciones ilimitadas', 'Soporte incluido', 'Cancela cuando quieras'].map(f => (
+                  <li key={f} className="flex items-center gap-2">
+                    <Check className="w-4 h-4 text-green-400 shrink-0" />{f}
+                  </li>
+                ))}
+              </ul>
+              <button
+                onClick={() => handleSelect('monthly')}
+                disabled={loading !== null}
+                className="w-full bg-white/10 hover:bg-white/20 border border-white/20 disabled:opacity-60 disabled:cursor-not-allowed rounded-xl py-3 font-semibold transition-colors text-sm"
+              >
+                {loading === 'monthly' ? t('redirecting') : t('planMonthlyBtn')}
+              </button>
             </div>
-            <p className="text-slate-500 text-xs mb-6">Facturado mensualmente</p>
-            <ul className="space-y-2 mb-8 flex-1 text-sm text-slate-300">
-              {['Acceso completo', 'Transacciones ilimitadas', 'Soporte incluido', 'Cancela cuando quieras'].map(f => (
-                <li key={f} className="flex items-center gap-2">
-                  <Check className="w-4 h-4 text-green-400 shrink-0" />{f}
-                </li>
-              ))}
-            </ul>
-            <button
-              onClick={() => handleSelect('monthly')}
-              disabled={loading !== null}
-              className="w-full bg-white/10 hover:bg-white/20 border border-white/20 disabled:opacity-60 disabled:cursor-not-allowed rounded-xl py-3 font-semibold transition-colors"
-            >
-              {loading === 'monthly' ? 'Redirigiendo...' : 'Elegir mensual'}
-            </button>
+
+            {/* Annual */}
+            <div className="bg-blue-600/20 border-2 border-blue-500 rounded-2xl p-5 sm:p-7 flex flex-col relative">
+              <div className="absolute -top-3 left-1/2 -translate-x-1/2">
+                <span className="bg-blue-500 text-white text-xs font-bold px-3 py-1 rounded-full">{t('upgrade')}</span>
+              </div>
+              <p className="text-blue-300 text-sm font-medium mb-1">{t('annual')}</p>
+              <div className="flex items-end gap-1 mb-1">
+                <span className="text-2xl sm:text-3xl font-bold">$99.99</span>
+                <span className="text-blue-300 mb-1">{t('perYear')}</span>
+              </div>
+              <p className="text-blue-400 text-xs mb-5">$8.33{t('perMonth')} · {t('subscribe')}</p>
+              <ul className="space-y-2 mb-6 flex-1 text-sm text-slate-200">
+                {['Acceso completo', 'Transacciones ilimitadas', 'Soporte prioritario', 'Cancela cuando quieras'].map(f => (
+                  <li key={f} className="flex items-center gap-2">
+                    <Check className="w-4 h-4 text-green-400 shrink-0" />{f}
+                  </li>
+                ))}
+              </ul>
+              <button
+                onClick={() => handleSelect('annual')}
+                disabled={loading !== null}
+                className="w-full bg-blue-500 hover:bg-blue-400 disabled:opacity-60 disabled:cursor-not-allowed rounded-xl py-3 font-semibold transition-colors text-sm"
+              >
+                {loading === 'annual' ? t('redirecting') : t('planAnnualBtn')}
+              </button>
+            </div>
           </div>
 
-          {/* Annual */}
-          <div className="bg-blue-600/20 border-2 border-blue-500 rounded-2xl p-7 flex flex-col relative">
-            <div className="absolute -top-3 left-1/2 -translate-x-1/2">
-              <span className="bg-blue-500 text-white text-xs font-bold px-3 py-1 rounded-full">MEJOR VALOR</span>
-            </div>
-            <p className="text-blue-300 text-sm font-medium mb-1">Plan anual</p>
-            <div className="flex items-end gap-1 mb-1">
-              <span className="text-3xl font-bold">$99.99</span>
-              <span className="text-blue-300 mb-1">/año</span>
-            </div>
-            <p className="text-blue-400 text-xs mb-6">$8.33/mes · Ahorras $20</p>
-            <ul className="space-y-2 mb-8 flex-1 text-sm text-slate-200">
-              {['Acceso completo', 'Transacciones ilimitadas', 'Soporte prioritario', 'Cancela cuando quieras'].map(f => (
-                <li key={f} className="flex items-center gap-2">
-                  <Check className="w-4 h-4 text-green-400 shrink-0" />{f}
-                </li>
-              ))}
-            </ul>
-            <button
-              onClick={() => handleSelect('annual')}
-              disabled={loading !== null}
-              className="w-full bg-blue-500 hover:bg-blue-400 disabled:opacity-60 disabled:cursor-not-allowed rounded-xl py-3 font-semibold transition-colors"
-            >
-              {loading === 'annual' ? 'Redirigiendo...' : 'Elegir anual'}
-            </button>
-          </div>
-        </div>
-
-        <p className="text-center text-slate-500 text-xs mt-6">
-          Pagos procesados de forma segura por Stripe. No almacenamos datos de tu tarjeta.
-        </p>
+          <p className="text-center text-slate-500 text-xs mt-5">{t('poweredByStripe')}</p>
       </div>
     </div>
   )
