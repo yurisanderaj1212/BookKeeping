@@ -232,7 +232,7 @@ export default function DashboardPage() {
 
         {/* Quick Actions - Compact version right after header */}
         <div className="bg-white rounded-lg border border-gray-200 p-4 shadow-sm mb-6" data-tour="quick-actions">
-          <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2 sm:gap-3">
             {quickActions.map((action, index) => {
               const Icon = action.icon
               return (

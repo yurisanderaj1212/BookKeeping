@@ -2,8 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip } from 'recharts'
-import { Eye } from 'lucide-react'
-import { useRouter } from 'next/navigation'
+import { PieChart as PieIcon } from 'lucide-react'
 import { useTranslations, useLocale } from 'next-intl'
 
 export interface CategoryData {
@@ -34,7 +33,6 @@ const CustomTooltip = ({ active, payload, formatCurrency }: any) => {
 }
 
 export default function CategoryBreakdown({ categories }: CategoryBreakdownProps) {
-  const router = useRouter()
   const t = useTranslations('dashboard.categoryBreakdown')
   const tCat = useTranslations('categories')
   const locale = useLocale()
@@ -95,23 +93,14 @@ export default function CategoryBreakdown({ categories }: CategoryBreakdownProps
 
   return (
     <div className="bg-white rounded-xl border border-gray-200 p-6 hover:shadow-lg transition-shadow duration-300 h-full flex flex-col">
-      {/* Header */}
-      <div className="flex items-center justify-between mb-4">
-        <div>
-          <h3 className="text-lg font-semibold text-gray-900">
-            {activeTab === 'income' ? t('titleIncome') : t('titleExpense')}
-          </h3>
-          <p className="text-sm text-gray-500 mt-0.5">
-            {activeTab === 'income' ? t('subtitleIncome') : t('subtitleExpense')}
-          </p>
-        </div>
-        <button
-          onClick={() => router.push('/transactions')}
-          className="text-primary-600 hover:text-primary-700 text-sm font-medium flex items-center space-x-1 hover:bg-primary-50 px-3 py-1.5 rounded-lg transition-colors duration-200"
-        >
-          <Eye className="w-4 h-4" />
-          <span>{t('viewAll')}</span>
-        </button>
+      {/* Header — title full width, no View All button */}
+      <div className="mb-3">
+        <h3 className="text-base sm:text-lg font-semibold text-gray-900">
+          {activeTab === 'income' ? t('titleIncome') : t('titleExpense')}
+        </h3>
+        <p className="text-xs sm:text-sm text-gray-500 mt-0.5">
+          {activeTab === 'income' ? t('subtitleIncome') : t('subtitleExpense')}
+        </p>
       </div>
 
       {/* Tabs */}
@@ -128,7 +117,7 @@ export default function CategoryBreakdown({ categories }: CategoryBreakdownProps
         <div className="flex-1 flex items-center justify-center">
           <div className="text-center">
             <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
-              <Eye className="w-8 h-8 text-gray-400" />
+              <PieIcon className="w-8 h-8 text-gray-400" />
             </div>
             <p className="text-gray-500 text-sm">{t('empty')}</p>
             <p className="text-gray-400 text-xs mt-1">{t('emptyDesc')}</p>
