@@ -84,18 +84,27 @@ export default function Sidebar({ onLogout }: SidebarProps) {
 
   return (
     <>
-      {/* Mobile overlay — closes sidebar when tapping outside on small screens */}
+      {/* ── Mobile overlay ── */}
       {!isCollapsed && (
         <div
-          className="fixed inset-0 bg-black/30 z-40 lg:hidden"
+          className="fixed inset-0 bg-black/40 z-40 lg:hidden"
           onClick={toggleSidebar}
           aria-hidden="true"
         />
       )}
+
+      {/* ── Sidebar ──
+          Mobile:  fixed drawer, hidden off-screen when collapsed, slides in when open
+          Desktop: fixed sidebar, w-16 when collapsed, w-64 when expanded
+      */}
       <div
-        className={`fixed left-0 top-0 h-full bg-white border-r border-gray-200 flex flex-col shadow-sm transition-all duration-300 z-50 ${
-          isCollapsed ? 'w-16' : 'w-64'
-        }`}
+        className={`fixed left-0 top-0 h-full bg-white border-r border-gray-200 flex flex-col shadow-sm z-50
+          transition-transform duration-300 ease-in-out
+          lg:transition-all lg:duration-300
+          ${isCollapsed
+            ? '-translate-x-full lg:translate-x-0 lg:w-16'
+            : 'translate-x-0 w-64'
+          }`}
         data-tour="sidebar"
       >
       {/* ── Logo ── */}

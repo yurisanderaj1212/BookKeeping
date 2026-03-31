@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation'
 import { useAuth } from '@/hooks/useAuth'
 import { useTranslations, useLocale } from 'next-intl'
 import PageLayout from '@/components/ui/PageLayout'
+import MobileMenuButton from '@/components/ui/MobileMenuButton'
 import {
   Bell, Filter, Search, Check, CheckCheck, Trash2,
   Receipt, FileText, Users, Settings, Clock, AlertTriangle,
@@ -170,12 +171,15 @@ export default function NotificationsPage() {
         <div className="bg-white border-b border-gray-200 sticky top-0 z-10">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="flex items-center justify-between min-h-16 py-3 gap-3">
-              <div className="min-w-0">
+              <div className="flex items-center gap-2 min-w-0">
+                <MobileMenuButton />
+                <div className="min-w-0">
                 <h1 className="text-xl sm:text-2xl font-bold text-gray-900 flex items-center gap-2">
                   <Bell className="w-5 h-5 text-primary-600 shrink-0" />
                   <span className="truncate">{t('title')}</span>
                 </h1>
                 <p className="text-sm text-gray-500 mt-0.5 hidden sm:block">{t('subtitle')}</p>
+              </div>
               </div>
               <div className="flex items-center gap-2 shrink-0">
                 {stats && stats.unread > 0 && (

@@ -9,6 +9,7 @@ import OnboardingTour from '@/components/onboarding/OnboardingTour'
 import { useAuth } from '@/hooks/useAuth'
 import { useTranslations, useLocale } from 'next-intl'
 import PageLayout from '@/components/ui/PageLayout'
+import MobileMenuButton from '@/components/ui/MobileMenuButton'
 import { useOnboarding } from '@/hooks/useOnboarding'
 import { useNotifications } from '@/hooks/useNotifications'
 import accountService, { Account } from '@/services/accountService'
@@ -131,9 +132,12 @@ export default function AccountsPage() {
         <div className="bg-white border-b border-gray-200 sticky top-0 z-10">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="flex items-center justify-between min-h-16 py-3 gap-3">
-              <div className="min-w-0">
+              <div className="flex items-center gap-2 min-w-0">
+                <MobileMenuButton />
+                <div className="min-w-0">
                 <h1 className="text-xl sm:text-2xl font-bold text-gray-900 truncate">{t('title')}</h1>
                 <p className="text-sm text-gray-500 mt-0.5 hidden sm:block">{t('subtitle')}</p>
+              </div>
               </div>
               <PlaidLinkButton
                 data-tour="add-account-btn"

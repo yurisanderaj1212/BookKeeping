@@ -38,6 +38,7 @@ import {
 import { useTranslations } from 'next-intl'
 import { useNotifications } from '@/hooks/useNotifications'
 import PageLayout from '@/components/ui/PageLayout'
+import MobileMenuButton from '@/components/ui/MobileMenuButton'
 
 // ─── BillingRedirect ─────────────────────────────────────────────────────────
 // Componente separado para que el useEffect no viole las reglas de hooks
@@ -618,9 +619,12 @@ export default function SettingsPage() {
         <div className="bg-white border-b border-gray-200 sticky top-0 z-10">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="flex items-center justify-between h-16">
-              <div>
-                <h1 className="text-xl font-bold text-gray-900">{t('title')}</h1>
-                <p className="text-xs text-gray-500">{t('subtitle')}</p>
+              <div className="flex items-center gap-2 min-w-0">
+                <MobileMenuButton />
+                <div className="min-w-0">
+                  <h1 className="text-xl font-bold text-gray-900">{t('title')}</h1>
+                  <p className="text-xs text-gray-500">{t('subtitle')}</p>
+                </div>
               </div>
               {/* Tour comprimido — solo un botón en el header */}
               <button

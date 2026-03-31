@@ -10,6 +10,7 @@ import { exportTransactionSummary, showExportModal } from '@/services/exportServ
 import { useAuth } from '@/hooks/useAuth'
 import { useTranslations } from 'next-intl'
 import PageLayout from '@/components/ui/PageLayout'
+import MobileMenuButton from '@/components/ui/MobileMenuButton'
 
 function TransactionSummaryContent() {
   const { logout, isLoading } = useAuth()
@@ -55,6 +56,7 @@ function TransactionSummaryContent() {
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="flex items-center justify-between h-20">
               <div className="flex items-center space-x-4">
+                <MobileMenuButton />
                 <button
                   onClick={handleBack}
                   className="p-2 hover:bg-gray-100 rounded-lg transition-colors duration-200"

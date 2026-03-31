@@ -17,6 +17,7 @@ import { useTranslations, useLocale } from 'next-intl'
 import { useAuth } from '@/hooks/useAuth'
 import { useSubscription } from '@/hooks/useSubscription'
 import PageLayout from '@/components/ui/PageLayout'
+import MobileMenuButton from '@/components/ui/MobileMenuButton'
 import TrialBanner from '@/components/subscription/TrialBanner'
 import * as dashboardService from '@/services/dashboardService'
 
@@ -211,9 +212,12 @@ export default function DashboardPage() {
         <div className="bg-white border-b border-gray-200 sticky top-0 z-10">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="flex items-center justify-between min-h-16 py-3 gap-3">
-              <div className="min-w-0">
+              <div className="flex items-center gap-2 min-w-0">
+                <MobileMenuButton />
+                <div className="min-w-0">
                 <h1 className="text-xl sm:text-2xl font-bold text-gray-900 truncate">{t('title')}</h1>
                 <p className="text-sm text-gray-500 mt-0.5 hidden sm:block">{t('welcome')}</p>
+              </div>
               </div>
               <div className="flex items-center gap-2 shrink-0">
                 <div data-tour="notification-btn"><NotificationButton /></div>

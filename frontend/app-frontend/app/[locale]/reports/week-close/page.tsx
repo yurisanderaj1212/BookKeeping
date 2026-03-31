@@ -17,6 +17,7 @@ import { exportWeekClose, showExportModal } from '@/services/exportService'
 import { useTranslations } from 'next-intl'
 import { useNotifications } from '@/hooks/useNotifications'
 import PageLayout from '@/components/ui/PageLayout'
+import MobileMenuButton from '@/components/ui/MobileMenuButton'
 
 function WeekCloseContent() {
   const router = useRouter()
@@ -138,6 +139,7 @@ function WeekCloseContent() {
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="flex items-center justify-between h-20">
               <div className="flex items-center space-x-4">
+                <MobileMenuButton />
                 <button onClick={() => router.push('/reports')} className="p-2 hover:bg-gray-100 rounded-lg transition-colors">
                   <ArrowLeft className="w-5 h-5 text-gray-600" />
                 </button>
