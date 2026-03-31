@@ -182,42 +182,43 @@ export default function AccountsPage() {
             </div>
           )}
 
-          {/* Summary Cards */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6" data-tour="accounts-summary">
-            <div className="bg-white rounded-lg border border-gray-200 p-6">
-              <div className="flex items-center justify-between gap-3">
+          {/* Summary Cards — 2x2 on mobile */}
+          <div className="grid grid-cols-2 md:grid-cols-3 gap-3 sm:gap-4 mb-4 sm:mb-6" data-tour="accounts-summary">
+            <div className="bg-white rounded-lg border border-gray-200 p-3 sm:p-4">
+              <div className="flex items-center justify-between gap-2">
                 <div className="min-w-0">
-                  <p className="text-sm text-gray-500 mb-1">{t('totalBalance')}</p>
-                  <p className="text-2xl font-bold text-gray-900 break-all">
+                  <p className="text-xs text-gray-500 mb-0.5">{t('totalBalance')}</p>
+                  <p className="text-base sm:text-2xl font-bold text-gray-900 break-all">
                     ${totalBalance.toLocaleString(locale === 'en' ? 'en-US' : 'es-ES', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                   </p>
                 </div>
-                <div className="w-12 h-12 shrink-0 bg-green-100 rounded-lg flex items-center justify-center">
-                  <DollarSign className="w-6 h-6 text-green-600" />
+                <div className="w-9 h-9 sm:w-12 sm:h-12 shrink-0 bg-green-100 rounded-lg flex items-center justify-center">
+                  <DollarSign className="w-5 h-5 sm:w-6 sm:h-6 text-green-600" />
                 </div>
               </div>
             </div>
 
-            <div className="bg-white rounded-lg border border-gray-200 p-6">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm text-gray-500 mb-1">{t('activeAccounts')}</p>
-                  <p className="text-2xl font-bold text-gray-900">{activeAccounts}</p>
+            <div className="bg-white rounded-lg border border-gray-200 p-3 sm:p-4">
+              <div className="flex items-center justify-between gap-2">
+                <div className="min-w-0">
+                  <p className="text-xs text-gray-500 mb-0.5">{t('activeAccounts')}</p>
+                  <p className="text-base sm:text-2xl font-bold text-gray-900">{activeAccounts}</p>
                 </div>
-                <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center">
-                  <Wallet className="w-6 h-6 text-blue-600" />
+                <div className="w-9 h-9 sm:w-12 sm:h-12 shrink-0 bg-blue-100 rounded-lg flex items-center justify-center">
+                  <Wallet className="w-5 h-5 sm:w-6 sm:h-6 text-blue-600" />
                 </div>
               </div>
             </div>
 
-            <div className="bg-white rounded-lg border border-gray-200 p-6">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm text-gray-500 mb-1">{t('totalAccounts')}</p>
-                  <p className="text-2xl font-bold text-gray-900">{accounts.length}</p>
+            {/* 3rd card — full width on mobile */}
+            <div className="col-span-2 md:col-span-1 bg-white rounded-lg border border-gray-200 p-3 sm:p-4">
+              <div className="flex items-center justify-between gap-2">
+                <div className="min-w-0">
+                  <p className="text-xs text-gray-500 mb-0.5">{t('totalAccounts')}</p>
+                  <p className="text-base sm:text-2xl font-bold text-gray-900">{accounts.length}</p>
                 </div>
-                <div className="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center">
-                  <Landmark className="w-6 h-6 text-purple-600" />
+                <div className="w-9 h-9 sm:w-12 sm:h-12 shrink-0 bg-purple-100 rounded-lg flex items-center justify-center">
+                  <Landmark className="w-5 h-5 sm:w-6 sm:h-6 text-purple-600" />
                 </div>
               </div>
             </div>

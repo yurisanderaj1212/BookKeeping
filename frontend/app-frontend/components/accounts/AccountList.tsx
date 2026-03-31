@@ -79,54 +79,48 @@ export default function AccountList({ accounts, onEdit, onDelete }: AccountListP
 
             <div className="divide-y divide-gray-200">
               {accountsInGroup.map((account) => (
-                <div key={account.id} className="px-6 py-4 hover:bg-gray-50 transition-colors">
-                  <div className="flex items-center justify-between">
-                    <div className="flex-1">
-                      <div className="flex items-center space-x-3 mb-2">
-                        <h4 className="text-base font-medium text-gray-900">{account.name}</h4>
+                <div key={account.id} className="px-4 sm:px-6 py-3 sm:py-4 hover:bg-gray-50 transition-colors">
+                  {/* Mobile: stacked layout */}
+                  <div className="flex items-start justify-between gap-3">
+                    <div className="flex-1 min-w-0">
+                      {/* Name + badges */}
+                      <div className="flex items-center gap-2 flex-wrap mb-1">
+                        <h4 className="text-sm font-semibold text-gray-900 truncate">{account.name}</h4>
                         {account.code && (
-                          <span className="text-xs text-gray-500 bg-gray-100 px-2 py-1 rounded">{account.code}</span>
+                          <span className="text-xs text-gray-500 bg-gray-100 px-1.5 py-0.5 rounded shrink-0">{account.code}</span>
                         )}
                         {!account.isActive && (
-                          <span className="text-xs text-red-600 bg-red-50 px-2 py-1 rounded">{t('inactive')}</span>
+                          <span className="text-xs text-red-600 bg-red-50 px-1.5 py-0.5 rounded shrink-0">{t('inactive')}</span>
                         )}
                       </div>
-                      <div className="flex items-center space-x-4 text-sm text-gray-500">
-                        <span>{getSubTypeLabel(account.subType)}</span>
-                        <span>•</span>
-                        <span>{t('createdOn')} {formatDate(account.createdAt)}</span>
-                        {account.description && (
-                          <>
-                            <span>•</span>
-                            <span className="truncate max-w-xs">{account.description}</span>
-                          </>
-                        )}
-                      </div>
+                      {/* Subtype + date — compact on mobile */}
+                      <p className="text-xs text-gray-400 truncate">
+                        {getSubTypeLabel(account.subType)}
+                        <span className="mx-1">·</span>
+                        {t('createdOn')} {formatDate(account.createdAt)}
+                      </p>
+                      {/* Balance — shown inline on mobile */}
+                      <p className={`text-sm font-bold mt-1 ${account.currentBalance >= 0 ? 'text-green-600' : 'text-red-600'}`}>
+                        {formatCurrency(account.currentBalance, account.currency)}
+                      </p>
                     </div>
 
-                    <div className="flex items-center space-x-4 ml-4">
-                      <div className="text-right">
-                        <p className="text-xs text-gray-500 mb-1">{t('currentBalance')}</p>
-                        <p className={`text-lg font-semibold ${account.currentBalance >= 0 ? 'text-green-600' : 'text-red-600'}`}>
-                          {formatCurrency(account.currentBalance, account.currency)}
-                        </p>
-                      </div>
-                      <div className="flex items-center space-x-2">
-                        <button
-                          onClick={() => onEdit(account)}
-                          className="p-2 text-gray-400 hover:text-primary-600 hover:bg-primary-50 rounded-lg transition-colors"
-                          title={t('editTitle')}
-                        >
-                          <Edit2 className="w-4 h-4" />
-                        </button>
-                        <button
-                          onClick={() => onDelete(account.id)}
-                          className="p-2 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors"
-                          title={t('deactivateTitle')}
-                        >
-                          <Trash2 className="w-4 h-4" />
-                        </button>
-                      </div>
+                    {/* Actions */}
+                    <div className="flex items-center gap-1 shrink-0">
+                      <button
+                        onClick={() => onEdit(account)}
+                        className="p-1.5 text-gray-400 hover:text-primary-600 hover:bg-primary-50 rounded-lg transition-colors"
+                        title={t('editTitle')}
+                      >
+                        <Edit2 className="w-4 h-4" />
+                      </button>
+                      <button
+                        onClick={() => onDelete(account.id)}
+                        className="p-1.5 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+                        title={t('deactivateTitle')}
+                      >
+                        <Trash2 className="w-4 h-4" />
+                      </button>
                     </div>
                   </div>
                 </div>
