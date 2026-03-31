@@ -1641,8 +1641,8 @@
     "reviewQueue": {
       "title": "Transacciones Bancarias por Revisar",
       "subtitle": "Estas transacciones fueron importadas de tu banco. Decide si pertenecen a tu negocio.",
-      "btnYes": "Negocio",
-      "btnNo": "Personal",
+      "btnYes": "Sí",
+      "btnNo": "No",
       "btnYesTitle": "Esta transacción pertenece al negocio",
       "btnNoTitle": "Esta transacción no pertenece al negocio — descartarla",
       "configTitle": "Configurar Transacción",

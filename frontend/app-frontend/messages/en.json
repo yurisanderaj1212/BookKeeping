@@ -1641,8 +1641,8 @@
     "reviewQueue": {
       "title": "Bank Transactions to Review",
       "subtitle": "These transactions were imported from your bank. Decide if they belong to your business.",
-      "btnYes": "Business",
-      "btnNo": "Personal",
+      "btnYes": "Yes",
+      "btnNo": "No",
       "btnYesTitle": "This is a business transaction",
       "btnNoTitle": "This is not a business transaction — discard it",
       "configTitle": "Configure Transaction",
