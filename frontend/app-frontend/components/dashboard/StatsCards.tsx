@@ -41,19 +41,19 @@ function StatCard({ title, value, change, icon, color, delay = 0 }: StatCardProp
 
   return (
     <div
-      className="bg-white rounded-lg border border-gray-200 p-6 hover:shadow-md transition-shadow duration-200"
+      className="bg-white rounded-lg border border-gray-200 p-3 sm:p-4 lg:p-6 hover:shadow-md transition-shadow duration-200"
       style={{ animationDelay: `${delay}ms`, animation: 'fadeInUp 0.6s ease-out forwards' }}
     >
-      <div className="flex items-start justify-between mb-4">
-        <div className={`${colorClasses[color].iconBg} p-2 rounded-lg`}>
-          <div className={colorClasses[color].iconColor}>{icon}</div>
+      <div className="flex items-start justify-between mb-2 sm:mb-4">
+        <div className={`${colorClasses[color].iconBg} p-1.5 sm:p-2 rounded-lg`}>
+          <div className={`${colorClasses[color].iconColor} [&>svg]:w-4 [&>svg]:h-4 sm:[&>svg]:w-5 sm:[&>svg]:h-5`}>{icon}</div>
         </div>
-        <div className={`${changeBg} px-2 py-1 rounded text-xs font-medium ${changeColor}`}>
+        <div className={`${changeBg} px-1.5 py-0.5 rounded text-xs font-medium ${changeColor}`}>
           {formatPercentage(change)}
         </div>
       </div>
-      <p className="text-sm text-gray-500 mb-2">{title}</p>
-      <p className="text-2xl font-bold text-gray-900">{value}</p>
+      <p className="text-xs sm:text-sm text-gray-500 mb-1">{title}</p>
+      <p className="text-base sm:text-xl lg:text-2xl font-bold text-gray-900 truncate">{value}</p>
       <style jsx>{`
         @keyframes fadeInUp {
           from { opacity: 0; transform: translateY(20px); }
@@ -84,7 +84,7 @@ export default function StatsCards({
           </p>
         </div>
       )}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 lg:gap-6">
         <StatCard title={t('totalIncome')}   value={formatCurrency(totalIncome)}   change={incomeChange}   color="green"  delay={0}   icon={<DollarSign  className="w-5 h-5" />} />
         <StatCard title={t('totalExpenses')} value={formatCurrency(totalExpenses)} change={expensesChange} color="red"    delay={100} icon={<CreditCard   className="w-5 h-5" />} />
         <StatCard title={t('netProfit')}     value={formatCurrency(netProfit)}     change={profitChange}   color="blue"   delay={200} icon={<TrendingUp   className="w-5 h-5" />} />
