@@ -19,6 +19,7 @@ import * as categoryService from '@/services/categoryService'
 import accountService from '@/services/accountService'
 import { exportTransactionsList, showExportModal } from '@/services/exportService'
 import PlaidReviewQueue from '@/components/plaid/PlaidReviewQueue'
+import type { Transaction } from '@/data/transactions-data'
 
 export default function TransactionsPage() {
   // TODOS LOS HOOKS AL INICIO

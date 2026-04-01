@@ -11,7 +11,10 @@ export interface Transaction {
   date: string
   status: 'pending' | 'completed'
   notes?: string
-  accountId?: number // NUEVO: ID de la cuenta asociada
+  accountId?: number
+  isFromPlaid?: boolean
+  isBusinessTransaction?: boolean | null
+  merchantName?: string | null
 }
 
 // Mock transactions data - single source of truth
