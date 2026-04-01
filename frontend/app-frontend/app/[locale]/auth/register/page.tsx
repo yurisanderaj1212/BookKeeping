@@ -234,7 +234,7 @@ export default function RegisterPage() {
       if (msg.includes('already') || msg.includes('registrado') || msg.includes('email')) {
         setErrors({ email: t('errors.emailInUse') })
       } else {
-        showError(error instanceof Error ? error.message : t('errors.registerFailed'))
+        showError(tErr('registerFailed'), error instanceof Error ? error.message : t('errors.registerFailed'))
       }
     } finally {
       setIsLoading(false)
@@ -243,7 +243,7 @@ export default function RegisterPage() {
 
   const handleSocialRegister = (provider: string) => {
     // TODO: Implement social registration
-    showError(t('socialNotAvailable', { provider }))
+    showError(tErr('unknown'), t('socialNotAvailable', { provider }))
   }
 
   return (

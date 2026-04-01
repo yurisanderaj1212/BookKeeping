@@ -133,7 +133,7 @@ function LoginForm() {
 
   const handleSocialLogin = (provider: string) => {
     // TODO: Implement social login
-    showError(t('socialNotAvailable', { provider }))
+    showError(tc('error'), t('socialNotAvailable', { provider }))
   }
 
   return (
