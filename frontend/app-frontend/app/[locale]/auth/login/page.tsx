@@ -124,7 +124,7 @@ function LoginForm() {
       if (msg.toLowerCase().includes('invalid') || msg.toLowerCase().includes('credentials')) {
         setErrors({ email: t('errors.invalidCredentials'), password: t('errors.invalidCredentials') })
       } else {
-        showError(msg || tc('error'))
+        showError(tc('error'), msg || tc('error'))
       }
     } finally {
       setIsLoading(false)
