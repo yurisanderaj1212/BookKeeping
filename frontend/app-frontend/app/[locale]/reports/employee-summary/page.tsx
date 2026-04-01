@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation'
 import { useAuth } from '@/hooks/useAuth'
 import { ArrowLeft, Download } from 'lucide-react'
 import Sidebar from '@/components/dashboard/Sidebar'
+import PageLayout from '@/components/ui/PageLayout'
 import EmployeeSummaryReport from '@/components/reports/EmployeeSummaryReport'
 import { exportEmployeeSummary, showExportModal } from '@/services/exportService'
 import { useTranslations } from 'next-intl'
@@ -16,16 +17,11 @@ export default function EmployeeSummaryPage() {
   const tCommon = useTranslations('common')
   const tReports = useTranslations('reports')
   const [period, setPeriod] = useState<'week' | 'month' | 'year'>('week')
-  const [sidebarCollapsed, setSidebarCollapsed] = useState(false)
 
   if (!isAuthenticated && !isLoading) return null
 
   const handleLogout = async () => {
-    logout() // Usar la función logout del hook useAuth
-  }
-
-  const handleSidebarToggle = (isCollapsed: boolean) => {
-    setSidebarCollapsed(isCollapsed)
+    logout()
   }
 
   const handleExport = () => {
@@ -37,10 +33,10 @@ export default function EmployeeSummaryPage() {
   return (
     <div className="flex min-h-screen bg-gray-50">
       {/* Sidebar */}
-      <Sidebar onLogout={handleLogout} onToggle={handleSidebarToggle} />
+      <Sidebar onLogout={handleLogout} />
 
       {/* Main Content */}
-      <div className={`flex-1 transition-all duration-300 ${sidebarCollapsed ? 'ml-16' : 'ml-64'}`}>
+      <PageLayout>
         {/* Header */}
         <div className="bg-white border-b border-gray-200 sticky top-0 z-10">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -100,7 +96,7 @@ export default function EmployeeSummaryPage() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-6">
           <EmployeeSummaryReport period={period} />
         </div>
-      </div>
+      </PageLayout>
     </div>
   )
 }

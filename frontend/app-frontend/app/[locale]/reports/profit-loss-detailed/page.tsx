@@ -1,9 +1,10 @@
 'use client'
 
-import { useState, Suspense } from 'react'
+import { Suspense } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { ArrowLeft, Download } from 'lucide-react'
 import Sidebar from '@/components/dashboard/Sidebar'
+import PageLayout from '@/components/ui/PageLayout'
 import ProfitLossDetailedReport from '@/components/reports/ProfitLossDetailedReport'
 import { exportProfitLoss, showExportModal } from '@/services/exportService'
 import { useAuth } from '@/hooks/useAuth'
@@ -15,7 +16,6 @@ function ProfitLossDetailedContent() {
   const tReport = useTranslations('reports')
   const router = useRouter()
   const searchParams = useSearchParams()
-  const [sidebarCollapsed, setSidebarCollapsed] = useState(false)
   
   const period = searchParams.get('period') || 'month'
   const year = searchParams.get('year') || String(new Date().getFullYear())
@@ -34,10 +34,6 @@ function ProfitLossDetailedContent() {
     logout()
   }
 
-  const handleSidebarToggle = (isCollapsed: boolean) => {
-    setSidebarCollapsed(isCollapsed)
-  }
-
   const handleBack = () => {
     router.push('/reports')
   }
@@ -50,9 +46,9 @@ function ProfitLossDetailedContent() {
 
   return (
     <div className="flex min-h-screen bg-gray-50">
-      <Sidebar onLogout={handleLogout} onToggle={handleSidebarToggle} />
+      <Sidebar onLogout={handleLogout} />
       
-      <div className={`flex-1 transition-all duration-300 ${sidebarCollapsed ? 'ml-16' : 'ml-64'}`}>
+      <PageLayout>
         {/* Header */}
         <div className="bg-white border-b border-gray-200 sticky top-0 z-10">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -90,7 +86,7 @@ function ProfitLossDetailedContent() {
             month={month}
           />
         </div>
-      </div>
+      </PageLayout>
     </div>
   )
 }
