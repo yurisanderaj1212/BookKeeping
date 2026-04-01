@@ -161,7 +161,7 @@ export default function WeeklyClosureAnalysis({ year, month }: WeeklyClosureAnal
             <table className="w-full table-fixed">
               <thead className="bg-gray-50">
                 <tr>
-                  {['Semana', t('status'), t('income'), t('expenses'), t('profit')].map(h => (
+                  {[t('week'), t('status'), t('income'), t('expenses'), t('profit')].map(h => (
                     <th key={h} className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{h}</th>
                   ))}
                 </tr>

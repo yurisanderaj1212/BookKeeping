@@ -93,6 +93,21 @@ body {
   font-family: var(--font-geist-sans), system-ui, sans-serif;
 }
 
+/* Fix iOS Safari input text color — prevents light gray text on iPhone */
+input, textarea, select {
+  color: #111827;
+  -webkit-text-fill-color: #111827;
+}
+input::placeholder, textarea::placeholder {
+  color: #9ca3af;
+  -webkit-text-fill-color: #9ca3af;
+}
+input:disabled, textarea:disabled, select:disabled {
+  color: #6b7280;
+  -webkit-text-fill-color: #6b7280;
+  opacity: 1; /* iOS reduces opacity on disabled inputs */
+}
+
 /* Smooth fade-in on every locale/route change */
 @keyframes page-fade-in {
   from { opacity: 0; }

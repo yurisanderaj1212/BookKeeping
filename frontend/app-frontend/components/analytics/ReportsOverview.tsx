@@ -5,7 +5,7 @@ import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContaine
 import { DollarSign, CreditCard, TrendingUp, BarChart3 } from 'lucide-react'
 import { getSupabase } from '@/lib/supabaseClient'
 import { formatCurrency } from '@/services/reportService'
-import { useTranslations } from 'next-intl'
+import { useTranslations, useLocale } from 'next-intl'
 
 interface ReportsOverviewProps {
   period: string
@@ -49,6 +49,7 @@ function getPeriodDates(period: string, year: string, month: string): { start: s
 
 export default function ReportsOverview({ period, year, month }: ReportsOverviewProps) {
   const t = useTranslations('analytics.components')
+  const locale = useLocale()
   const [periodData, setPeriodData] = useState<PeriodData>({ totalIncome: 0, totalExpenses: 0, netProfit: 0, profitMargin: 0 })
   const [chartData, setChartData] = useState<ChartPoint[]>([])
   const [loading, setLoading] = useState(true)
@@ -89,7 +90,7 @@ export default function ReportsOverview({ period, year, month }: ReportsOverview
             const dateStr = d.toISOString().split('T')[0]
             const dayRows = rows.filter(r => r.date === dateStr)
             points.push({
-              name: d.toLocaleDateString('es', { weekday: 'short' }),
+              name: d.toLocaleDateString(locale, { weekday: 'short' }),
               ingresos: dayRows.filter(r => r.type === 1).reduce((s, r) => s + r.amount, 0),
               gastos: dayRows.filter(r => r.type === 2).reduce((s, r) => s + r.amount, 0),
             })
@@ -108,7 +109,7 @@ export default function ReportsOverview({ period, year, month }: ReportsOverview
           }
           const points: ChartPoint[] = Array.from({ length: 5 }, (_, i) => {
             const w = weekMap.get(i + 1) ?? { ingresos: 0, gastos: 0 }
-            return { name: `Sem ${i + 1}`, ...w }
+            return { name: `${t('week')} ${i + 1}`, ...w }
           })
           setChartData(points)
         } else {
@@ -125,14 +126,14 @@ export default function ReportsOverview({ period, year, month }: ReportsOverview
             const m = i + 1
             const w = monthMap.get(m) ?? { ingresos: 0, gastos: 0 }
             return {
-              name: new Date(parseInt(year), i, 1).toLocaleDateString('es', { month: 'short' }),
+              name: new Date(parseInt(year), i, 1).toLocaleDateString(locale, { month: 'short' }),
               ...w,
             }
           })
           setChartData(points)
         }
-      } catch (err) {
-        console.error('ReportsOverview error:', err)
+      } catch {
+        // silencioso
       } finally {
         if (!cancelled) setLoading(false)
       }
@@ -148,7 +149,7 @@ export default function ReportsOverview({ period, year, month }: ReportsOverview
         <p className="font-medium text-gray-900 mb-2">{label}</p>
         {payload.map((entry: any, i: number) => (
           <p key={i} className="text-sm" style={{ color: entry.color }}>
-            {entry.dataKey === 'ingresos' ? 'Ingresos' : 'Gastos'}: {formatCurrency(entry.value)}
+            {entry.dataKey === 'ingresos' ? t('income') : t('expenses')}: {formatCurrency(entry.value)}
           </p>
         ))}
       </div>
@@ -156,10 +157,10 @@ export default function ReportsOverview({ period, year, month }: ReportsOverview
   }
 
   const cards = [
-    { label: 'Ingresos totales',   value: periodData.totalIncome,   icon: DollarSign, bg: 'bg-green-100',  iconColor: 'text-green-600'  },
-    { label: 'Gastos totales',     value: periodData.totalExpenses, icon: CreditCard, bg: 'bg-red-100',    iconColor: 'text-red-600'    },
-    { label: 'Beneficio neto',     value: periodData.netProfit,     icon: TrendingUp, bg: 'bg-blue-100',   iconColor: 'text-blue-600'   },
-    { label: 'Margen de beneficio',value: null,                     icon: BarChart3,  bg: 'bg-purple-100', iconColor: 'text-purple-600', pct: periodData.profitMargin },
+    { label: t('totalIncome'),   value: periodData.totalIncome,   icon: DollarSign, bg: 'bg-green-100',  iconColor: 'text-green-600'  },
+    { label: t('totalExpenses'), value: periodData.totalExpenses, icon: CreditCard, bg: 'bg-red-100',    iconColor: 'text-red-600'    },
+    { label: t('profit'),        value: periodData.netProfit,     icon: TrendingUp, bg: 'bg-blue-100',   iconColor: 'text-blue-600'   },
+    { label: t('margin'),        value: null,                     icon: BarChart3,  bg: 'bg-purple-100', iconColor: 'text-purple-600', pct: periodData.profitMargin },
   ]
 
   return (
@@ -203,12 +204,16 @@ export default function ReportsOverview({ period, year, month }: ReportsOverview
         ) : (
           <ResponsiveContainer width="100%" height={220}>
             <BarChart data={chartData}
-              margin={{ top: 8, right: 8, left: -10, bottom: 0 }}
+              margin={{ top: 8, right: 8, left: 0, bottom: 0 }}
               barCategoryGap="20%" barGap={3}>
               <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" vertical={false} />
               <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{ fontSize: 10, fill: '#6b7280' }} interval={0} />
-              <YAxis axisLine={false} tickLine={false} tick={{ fontSize: 10, fill: '#6b7280' }} width={32}
-                tickFormatter={(v) => `$${(v / 1000).toFixed(0)}k`} />
+              <YAxis axisLine={false} tickLine={false} tick={{ fontSize: 10, fill: '#6b7280' }} width={56}
+                tickFormatter={(v) => {
+                  if (v === 0) return '$0'
+                  if (Math.abs(v) >= 1000) return `$${(v / 1000).toFixed(0)}k`
+                  return `$${v}`
+                }} />
               <Tooltip content={<CustomTooltip />} />
               <Bar dataKey="ingresos" fill="#10b981" radius={[3, 3, 0, 0]} />
               <Bar dataKey="gastos" fill="#ef4444" radius={[3, 3, 0, 0]} />
