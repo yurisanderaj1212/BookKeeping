@@ -110,7 +110,6 @@ export default function TransactionForm({ isOpen, onClose, onSave, transaction, 
   const validate = () => {
     const e: Record<string, string> = {}
     if (!formData.amount || parseFloat(formData.amount) <= 0) e.amount = t('errors.amountRequired') || 'Monto requerido'
-    if (!formData.description.trim()) e.description = t('errors.descriptionRequired') || 'Descripción requerida'
     if (!formData.category) e.category = t('errors.categoryRequired') || 'Categoría requerida'
     if (!formData.date) e.date = t('errors.dateRequired') || 'Fecha requerida'
     setErrors(e)
@@ -182,7 +181,7 @@ export default function TransactionForm({ isOpen, onClose, onSave, transaction, 
           </div>
 
           <div>
-            <Label required>{t('description')}</Label>
+            <Label>{t('description')}</Label>
             <input type="text" value={formData.description} onChange={e => handleChange('description', e.target.value)}
               className={`w-full px-2 py-1.5 border rounded-lg focus:ring-2 focus:ring-primary-500 text-sm ${errors.description ? 'border-red-400 bg-red-50' : 'border-gray-300'}`}
               placeholder={t('description')} />
