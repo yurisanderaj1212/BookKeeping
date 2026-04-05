@@ -70,13 +70,19 @@ class AccountService {
   // Creates a default Cash account if the user doesn't have one yet
   async ensureCashAccount(): Promise<void> {
     const supabase = getSupabase()
+    const { data: { user } } = await supabase.auth.getUser()
+    if (!user) return
+
     const { data: existing } = await supabase
       .from('accounts')
       .select('id')
       .eq('sub_type', AccountSubType.Cash)
+      .eq('user_id', user.id)
       .limit(1)
     if (existing && existing.length > 0) return // already has one
+
     await supabase.from('accounts').insert({
+      user_id: user.id,
       name: 'Efectivo / Cash',
       type: AccountType.Asset,
       sub_type: AccountSubType.Cash,

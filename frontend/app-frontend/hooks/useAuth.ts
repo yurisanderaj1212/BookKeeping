@@ -37,7 +37,7 @@ export function useAuth() {
         })
         // Ensure Cash account exists for this user
         import('@/services/accountService').then(({ accountService }) => {
-          accountService.ensureCashAccount().catch(() => {})
+          accountService.ensureCashAccount().catch(console.error)
         })
       } else {
         setUser(null)
