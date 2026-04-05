@@ -99,10 +99,12 @@ export default function AccountList({ accounts, onEdit, onDelete }: AccountListP
                         <span className="mx-1">·</span>
                         {t('createdOn')} {formatDate(account.createdAt)}
                       </p>
-                      {/* Balance — shown inline on mobile */}
-                      <p className={`text-sm font-bold mt-1 ${account.currentBalance >= 0 ? 'text-green-600' : 'text-red-600'}`}>
-                        {formatCurrency(account.currentBalance, account.currency)}
-                      </p>
+                      {/* Balance — hidden for Cash account */}
+                      {account.sub_type !== 1002 && (
+                        <p className={`text-sm font-bold mt-1 ${account.currentBalance >= 0 ? 'text-green-600' : 'text-red-600'}`}>
+                          {formatCurrency(account.currentBalance, account.currency)}
+                        </p>
+                      )}
                     </div>
 
                     {/* Actions */}

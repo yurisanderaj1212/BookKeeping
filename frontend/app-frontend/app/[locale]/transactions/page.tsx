@@ -37,7 +37,7 @@ export default function TransactionsPage() {
   const [showForm, setShowForm] = useState(false)
   const [editingTransaction, setEditingTransaction] = useState<Transaction | null>(null)
   const [transactions, setTransactions] = useState<Transaction[]>([])
-  const [accounts, setAccounts] = useState<Array<{ id: number; name: string }>>([])
+  const [accounts, setAccounts] = useState<Array<{ id: number; name: string; sub_type: number }>>([])
   const [categories, setCategories] = useState<categoryService.CategoryDto[]>([])
   const [loadingTransactions, setLoadingTransactions] = useState(true)
   const [loadingAccounts, setLoadingAccounts] = useState(true)
@@ -88,7 +88,7 @@ export default function TransactionsPage() {
     try {
       setLoadingAccounts(true)
       const data = await accountService.getAccounts()
-      setAccounts(data.map(acc => ({ id: acc.id, name: acc.name })))
+      setAccounts(data.map(acc => ({ id: acc.id, name: acc.name, sub_type: acc.sub_type })))
     } catch {
       // silenciar — no exponer detalles en consola
     } finally {
