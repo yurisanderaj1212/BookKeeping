@@ -9,14 +9,14 @@ import { TableSkeleton } from '@/components/ui/PageShell'
 import OnboardingTour from '@/components/onboarding/OnboardingTour'
 import { useOnboarding } from '@/hooks/useOnboarding'
 import { useAuth } from '@/hooks/useAuth'
-import { useTranslations } from 'next-intl'
+import { useTranslations, useLocale } from 'next-intl'
 import PageLayout from '@/components/ui/PageLayout'
 import MobileMenuButton from '@/components/ui/MobileMenuButton'
 import { useNotifications } from '@/hooks/useNotifications'
 import { translateCategoryName } from '@/lib/categoryTranslator'
 import * as transactionService from '@/services/transactionService'
 import * as categoryService from '@/services/categoryService'
-import accountService from '@/services/accountService'
+import accountService, { getAccountDisplayName } from '@/services/accountService'
 import { exportTransactionsList, showExportModal } from '@/services/exportService'
 import PlaidReviewQueue from '@/components/plaid/PlaidReviewQueue'
 import type { Transaction } from '@/data/transactions-data'
@@ -27,6 +27,7 @@ export default function TransactionsPage() {
   const t = useTranslations('transactions')
   const tCommon = useTranslations('common')
   const tCategories = useTranslations('categories')
+  const locale = useLocale()
   const { showError, showSuccess } = useNotifications()
   const [searchTerm, setSearchTerm] = useState('')
   const [selectedCategory, setSelectedCategory] = useState('all')
@@ -419,7 +420,7 @@ export default function TransactionsPage() {
                 <option value="none">{t('noAccount')}</option>
                 {accounts.map(account => (
                   <option key={account.id} value={account.id.toString()}>
-                    {account.name}
+                    {getAccountDisplayName(account as any, locale)}
                   </option>
                 ))}
               </select>
