@@ -119,7 +119,7 @@ export default function MonthlyChart({ data }: MonthlyChartProps) {
           />
           <Bar dataKey="income"   name={t('income')}   fill="#20B2AA" radius={[3,3,0,0]} animationDuration={1200} />
           <Bar dataKey="expenses" name={t('expenses')} fill="#FF6B6B" radius={[3,3,0,0]} animationDuration={1200} animationBegin={200} />
-          <Bar dataKey="profit"   name={t('profit')}   fill="#4ECDC4" radius={[3,3,0,0]} animationDuration={1200} animationBegin={400} />
+          <Bar dataKey="profit"   name={t('profit')}   fill="#60a5fa" radius={[3,3,0,0]} animationDuration={1200} animationBegin={400} />
         </BarChart>
       </ResponsiveContainer>
     </div>

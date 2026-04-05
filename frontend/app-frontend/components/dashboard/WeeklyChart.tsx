@@ -112,7 +112,7 @@ export default function WeeklyChart({ data }: WeeklyChartProps) {
           />
           <Bar dataKey="income"   name={t('income')}   fill="#20B2AA" radius={[3,3,0,0]} animationDuration={800} />
           <Bar dataKey="expenses" name={t('expenses')} fill="#FF6B6B" radius={[3,3,0,0]} animationDuration={800} animationBegin={150} />
-          <Bar dataKey="profit"   name={t('profit')}   fill="#4ECDC4" radius={[3,3,0,0]} animationDuration={800} animationBegin={300} />
+          <Bar dataKey="profit"   name={t('profit')}   fill="#60a5fa" radius={[3,3,0,0]} animationDuration={800} animationBegin={300} />
         </BarChart>
       </ResponsiveContainer>
     </div>

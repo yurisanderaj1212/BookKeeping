@@ -193,8 +193,8 @@ export default function CashFlowAnalysis({ period, year, month }: CashFlowAnalys
                   width={isMobile ? 32 : undefined}
                   tickFormatter={(value) => `${(value / 1000).toFixed(0)}k`} />
                 <Tooltip content={<CustomTooltip />} />
-                <Line type="monotone" dataKey="flujoNeto" stroke="#3b82f6" strokeWidth={3}
-                  dot={{ fill: '#3b82f6', strokeWidth: 2, r: 4 }} name={t('tooltipNet')} />
+                <Line type="monotone" dataKey="flujoNeto" stroke="#60a5fa" strokeWidth={3}
+                  dot={{ fill: '#60a5fa', strokeWidth: 2, r: 4 }} name={t('tooltipNet')} />
                 <Line type="monotone" dataKey="acumulado" stroke="#8b5cf6" strokeWidth={2}
                   strokeDasharray="5 5" dot={{ fill: '#8b5cf6', strokeWidth: 2, r: 3 }} name={t('tooltipAccum')} />
               </LineChart>
