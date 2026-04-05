@@ -22,6 +22,7 @@ import {
 } from 'lucide-react'
 import { useNotificationContext } from '@/lib/notificationContext'
 import { getSupabase } from '@/lib/supabaseClient'
+import { getAvatarUrl } from '@/services/userService'
 
 interface MenuItem {
   id: string
@@ -60,6 +61,7 @@ export default function Sidebar({ onLogout }: SidebarProps) {
   // Load real user data
   const [userName, setUserName]   = useState('')
   const [userEmail, setUserEmail] = useState('')
+  const [avatarUrl, setAvatarUrl] = useState<string | null>(null)
 
   useEffect(() => {
     getSupabase().auth.getUser().then(({ data: { user } }) => {
@@ -70,6 +72,7 @@ export default function Sidebar({ onLogout }: SidebarProps) {
       const full  = [first, last].filter(Boolean).join(' ')
       setUserName(full || user.email?.split('@')[0] || '')
       setUserEmail(user.email ?? '')
+      if (meta.avatar_path) setAvatarUrl(getAvatarUrl(meta.avatar_path))
     })
   }, [])
 
@@ -312,8 +315,11 @@ export default function Sidebar({ onLogout }: SidebarProps) {
         {!isCollapsed ? (
           <>
             <div className="flex items-center space-x-3 mb-2 p-2.5 rounded-lg bg-gray-50">
-              <div className="w-9 h-9 bg-primary-100 rounded-full flex items-center justify-center shrink-0">
-                <User className="w-4 h-4 text-primary-600" />
+              <div className="w-9 h-9 rounded-full overflow-hidden shrink-0 bg-primary-100 flex items-center justify-center">
+                {avatarUrl
+                  ? <img src={avatarUrl} alt={userName} className="w-full h-full object-cover" />
+                  : <User className="w-4 h-4 text-primary-600" />
+                }
               </div>
               <div className="flex-1 min-w-0">
                 <p className="text-sm font-medium text-gray-900 truncate">
@@ -337,8 +343,11 @@ export default function Sidebar({ onLogout }: SidebarProps) {
           </>
         ) : (
           <div className="flex flex-col items-center space-y-2">
-            <div className="w-9 h-9 bg-primary-100 rounded-full flex items-center justify-center">
-              <User className="w-4 h-4 text-primary-600" />
+            <div className="w-9 h-9 rounded-full overflow-hidden bg-primary-100 flex items-center justify-center">
+              {avatarUrl
+                ? <img src={avatarUrl} alt={userName} className="w-full h-full object-cover" />
+                : <User className="w-4 h-4 text-primary-600" />
+              }
             </div>
             <button
               onClick={onLogout}

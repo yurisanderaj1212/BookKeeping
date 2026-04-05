@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect, useCallback } from 'react'
+import { useState, useEffect, useCallback, useRef } from 'react'
 import { useRouter } from 'next/navigation'
 import { useAuth } from '@/hooks/useAuth'
 import { 
@@ -30,6 +30,9 @@ import { useOnboarding } from '@/hooks/useOnboarding'
 import {
   getProfile,
   updateProfile,
+  uploadAvatar,
+  getAvatarUrl,
+  removeAvatar,
   changePassword,
   getLocalPreferences,
   saveLocalPreferences,
@@ -75,6 +78,7 @@ const ProfileTab = ({
   email,
   phone, setPhone,
   jobTitle, setJobTitle,
+  avatarUrl, onAvatarChange, onAvatarRemove,
   isLoading, onSave
 }: {
   firstName: string; setFirstName: (v: string) => void
@@ -82,10 +86,13 @@ const ProfileTab = ({
   email: string
   phone: string; setPhone: (v: string) => void
   jobTitle: string; setJobTitle: (v: string) => void
+  avatarUrl: string | null; onAvatarChange: (file: File) => void; onAvatarRemove: () => void
   isLoading: boolean; onSave: () => void
 }) => {
   const t = useTranslations('settings')
   const tCommon = useTranslations('common')
+  const fileInputRef = useRef<HTMLInputElement>(null)
+
   return (
   <div className="space-y-6">
     <div className="bg-white rounded-lg border border-gray-200 p-6">
@@ -93,16 +100,58 @@ const ProfileTab = ({
 
       <div className="flex items-center space-x-4 mb-6">
         <div className="relative">
-          <div className="w-20 h-20 bg-primary-100 rounded-full flex items-center justify-center">
-            <User className="w-8 h-8 text-primary-600" />
-          </div>
-          <button className="absolute -bottom-1 -right-1 w-6 h-6 bg-primary-600 rounded-full flex items-center justify-center hover:bg-primary-700 transition-colors">
-            <Camera className="w-3 h-3 text-white" />
+          {avatarUrl ? (
+            <img
+              src={avatarUrl}
+              alt={`${firstName} ${lastName}`}
+              className="w-20 h-20 rounded-full object-cover border-2 border-primary-100"
+            />
+          ) : (
+            <div className="w-20 h-20 bg-primary-100 rounded-full flex items-center justify-center">
+              <User className="w-8 h-8 text-primary-600" />
+            </div>
+          )}
+          <button
+            type="button"
+            onClick={() => fileInputRef.current?.click()}
+            className="absolute -bottom-1 -right-1 w-7 h-7 bg-primary-600 rounded-full flex items-center justify-center hover:bg-primary-700 transition-colors shadow-md"
+            title={t('changePhoto')}
+          >
+            <Camera className="w-3.5 h-3.5 text-white" />
           </button>
+          <input
+            ref={fileInputRef}
+            type="file"
+            accept="image/jpeg,image/png,image/webp"
+            className="hidden"
+            onChange={e => {
+              const file = e.target.files?.[0]
+              if (file) onAvatarChange(file)
+              e.target.value = ''
+            }}
+          />
         </div>
         <div>
           <h4 className="font-medium text-gray-900">{firstName} {lastName}</h4>
           <p className="text-sm text-gray-500">{jobTitle || t('noPosition')}</p>
+          <div className="flex items-center gap-3 mt-1">
+            <button
+              type="button"
+              onClick={() => fileInputRef.current?.click()}
+              className="text-xs text-primary-600 hover:text-primary-700"
+            >
+              {t('changePhoto')}
+            </button>
+            {avatarUrl && (
+              <button
+                type="button"
+                onClick={onAvatarRemove}
+                className="text-xs text-red-500 hover:text-red-600"
+              >
+                {t('removePhoto')}
+              </button>
+            )}
+          </div>
         </div>
       </div>
 
@@ -360,6 +409,7 @@ export default function SettingsPage() {
   const [email, setEmail] = useState('')
   const [phone, setPhone] = useState('')
   const [jobTitle, setJobTitle] = useState('')
+  const [avatarUrl, setAvatarUrl] = useState<string | null>(null)
 
   // Local preferences (localStorage)
   const [prefs, setPrefs] = useState<LocalPreferences>(getLocalPreferences())
@@ -388,8 +438,37 @@ export default function SettingsPage() {
       setEmail(p.email ?? '')
       setPhone(p.phone ?? '')
       setJobTitle(p.jobTitle ?? '')
-    }).catch(() => {/* silencioso — puede que el backend no tenga los campos aún */})
+      if (p.avatarPath) setAvatarUrl(getAvatarUrl(p.avatarPath))
+    }).catch(() => {/* silencioso */})
   }, [isAuthenticated])
+
+  const handleAvatarChange = useCallback(async (file: File) => {
+    setIsLoading(true)
+    try {
+      const url = await uploadAvatar(file)
+      setAvatarUrl(url)
+      showToast(t('photoSaved'))
+    } catch (e: unknown) {
+      const msg = e instanceof Error ? e.message : ''
+      showToast(msg || tCommon('error'), 'error')
+    } finally {
+      setIsLoading(false)
+    }
+  }, [showToast, t, tCommon])
+
+  const handleAvatarRemove = useCallback(async () => {
+    setIsLoading(true)
+    try {
+      await removeAvatar()
+      setAvatarUrl(null)
+      showToast(t('photoRemoved'))
+    } catch (e: unknown) {
+      const msg = e instanceof Error ? e.message : ''
+      showToast(msg || tCommon('error'), 'error')
+    } finally {
+      setIsLoading(false)
+    }
+  }, [showToast, t, tCommon])
 
   const handleSaveProfile = useCallback(async () => {
     setIsLoading(true)
@@ -471,6 +550,7 @@ export default function SettingsPage() {
             email={email}
             phone={phone} setPhone={setPhone}
             jobTitle={jobTitle} setJobTitle={setJobTitle}
+            avatarUrl={avatarUrl} onAvatarChange={handleAvatarChange} onAvatarRemove={handleAvatarRemove}
             isLoading={isLoading} onSave={handleSaveProfile}
           />
         )

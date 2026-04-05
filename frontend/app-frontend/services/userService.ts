@@ -7,6 +7,7 @@ export interface UserProfile {
   lastName: string
   phone: string
   jobTitle: string
+  avatarPath?: string
 }
 
 export interface UpdateProfileDto {
@@ -25,12 +26,13 @@ export async function getProfile(): Promise<UserProfile> {
 
   const meta = user.user_metadata ?? {}
   return {
-    id:        user.id,
-    email:     user.email ?? '',
-    firstName: meta.first_name ?? meta.firstName ?? '',
-    lastName:  meta.last_name  ?? meta.lastName  ?? '',
-    phone:     meta.phone      ?? '',
-    jobTitle:  meta.job_title  ?? meta.jobTitle  ?? '',
+    id:         user.id,
+    email:      user.email ?? '',
+    firstName:  meta.first_name ?? meta.firstName ?? '',
+    lastName:   meta.last_name  ?? meta.lastName  ?? '',
+    phone:      meta.phone      ?? '',
+    jobTitle:   meta.job_title  ?? meta.jobTitle  ?? '',
+    avatarPath: meta.avatar_path ?? null,
   }
 }
 
@@ -55,6 +57,51 @@ export async function updateProfile(dto: UpdateProfileDto): Promise<UserProfile>
     phone:     meta.phone      ?? '',
     jobTitle:  meta.job_title  ?? '',
   }
+}
+
+// ─── Avatar — stored in Supabase Storage bucket "avatars" ────────────────────
+
+export async function uploadAvatar(file: File): Promise<string> {
+  const supabase = getSupabase()
+  const { data: { user } } = await supabase.auth.getUser()
+  if (!user) throw new Error('Not authenticated')
+
+  const ext  = file.name.split('.').pop() ?? 'jpg'
+  const path = `${user.id}/avatar.${ext}`
+
+  const { error: uploadError } = await supabase.storage
+    .from('avatars')
+    .upload(path, file, { upsert: true, contentType: file.type })
+  if (uploadError) throw new Error(uploadError.message)
+
+  // Save the path in user_metadata so it persists across sessions
+  const { error: metaError } = await supabase.auth.updateUser({
+    data: { avatar_path: path }
+  })
+  if (metaError) throw new Error(metaError.message)
+
+  const { data } = supabase.storage.from('avatars').getPublicUrl(path)
+  return `${data.publicUrl}?t=${Date.now()}`
+}
+
+export function getAvatarUrl(avatarPath: string | null | undefined): string | null {
+  if (!avatarPath) return null
+  const supabase = getSupabase()
+  const { data } = supabase.storage.from('avatars').getPublicUrl(avatarPath)
+  return data.publicUrl
+}
+
+export async function removeAvatar(): Promise<void> {
+  const supabase = getSupabase()
+  const { data: { user } } = await supabase.auth.getUser()
+  if (!user) throw new Error('Not authenticated')
+
+  const avatarPath = user.user_metadata?.avatar_path
+  if (avatarPath) {
+    await supabase.storage.from('avatars').remove([avatarPath])
+  }
+  const { error } = await supabase.auth.updateUser({ data: { avatar_path: null } })
+  if (error) throw new Error(error.message)
 }
 
 export async function changePassword(currentPassword: string, newPassword: string): Promise<void> {
