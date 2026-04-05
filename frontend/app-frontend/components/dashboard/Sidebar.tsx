@@ -137,99 +137,7 @@ export default function Sidebar({ onLogout }: SidebarProps) {
       </div>
 
       {/* ── Language switcher ── */}
-      <div className={`px-3 py-2 border-b border-gray-100 shrink-0 ${isCollapsed ? 'flex justify-center' : ''}`}>
-        {!isCollapsed ? (
-          <button
-            onClick={switchLocale}
-            title={locale === 'es' ? 'Switch to English' : 'Cambiar a Español'}
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              gap: '8px',
-              width: '100%',
-              padding: '6px 8px',
-              borderRadius: '8px',
-              border: '1px solid #e5e7eb',
-              background: '#f9fafb',
-              cursor: 'pointer',
-              transition: 'all 0.2s',
-            }}
-            onMouseEnter={e => {
-              (e.currentTarget as HTMLElement).style.borderColor = '#6366f1'
-              ;(e.currentTarget as HTMLElement).style.background = '#eef2ff'
-            }}
-            onMouseLeave={e => {
-              (e.currentTarget as HTMLElement).style.borderColor = '#e5e7eb'
-              ;(e.currentTarget as HTMLElement).style.background = '#f9fafb'
-            }}
-          >
-            <Globe style={{ width: '14px', height: '14px', color: '#6366f1', flexShrink: 0 }} />
-            {/* Pill toggle */}
-            <div style={{
-              display: 'flex',
-              alignItems: 'center',
-              background: '#e5e7eb',
-              borderRadius: '20px',
-              padding: '2px',
-              gap: '2px',
-              flex: 1,
-            }}>
-              {(['es', 'en'] as const).map(lang => (
-                <span
-                  key={lang}
-                  style={{
-                    flex: 1,
-                    textAlign: 'center',
-                    fontSize: '11px',
-                    fontWeight: 700,
-                    letterSpacing: '0.5px',
-                    padding: '3px 0',
-                    borderRadius: '16px',
-                    transition: 'all 0.25s cubic-bezier(0.4,0,0.2,1)',
-                    background: locale === lang ? '#6366f1' : 'transparent',
-                    color: locale === lang ? '#ffffff' : '#6b7280',
-                    boxShadow: locale === lang ? '0 1px 4px rgba(99,102,241,0.4)' : 'none',
-                  }}
-                >
-                  {lang.toUpperCase()}
-                </span>
-              ))}
-            </div>
-          </button>
-        ) : (
-          <button
-            onClick={switchLocale}
-            title={locale === 'es' ? 'Switch to English' : 'Cambiar a Español'}
-            style={{
-              width: '36px',
-              height: '36px',
-              borderRadius: '8px',
-              border: '1.5px solid #6366f1',
-              background: '#eef2ff',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              cursor: 'pointer',
-              fontSize: '10px',
-              fontWeight: 800,
-              color: '#6366f1',
-              letterSpacing: '0.5px',
-              transition: 'all 0.2s',
-              userSelect: 'none',
-            }}
-            onMouseEnter={e => {
-              (e.currentTarget as HTMLElement).style.background = '#6366f1'
-              ;(e.currentTarget as HTMLElement).style.color = '#ffffff'
-            }}
-            onMouseLeave={e => {
-              (e.currentTarget as HTMLElement).style.background = '#eef2ff'
-              ;(e.currentTarget as HTMLElement).style.color = '#6366f1'
-            }}
-          >
-            {locale === 'es' ? 'EN' : 'ES'}
-          </button>
-        )}
-      </div>
+      {/* moved to bottom — see user section */}
 
       {/* ── Navigation ── */}
       <nav className="flex-1 px-3 py-4 flex flex-col">
@@ -335,10 +243,30 @@ export default function Sidebar({ onLogout }: SidebarProps) {
             </div>
             <button
               onClick={onLogout}
-              className="w-full flex items-center space-x-3 px-3 py-2 text-gray-600 hover:bg-red-50 hover:text-red-600 rounded-lg transition-all duration-200 group"
+              className="w-full flex items-center space-x-3 px-3 py-2 text-gray-600 hover:bg-red-50 hover:text-red-600 rounded-lg transition-all duration-200 group mb-2"
             >
               <LogOut className="w-4 h-4 group-hover:text-red-600 shrink-0" />
               <span className="font-medium text-sm">{t('nav.logout')}</span>
+            </button>
+            {/* Language switcher */}
+            <button
+              onClick={switchLocale}
+              title={locale === 'es' ? 'Switch to English' : 'Cambiar a Español'}
+              className="w-full flex items-center gap-2 px-3 py-2 rounded-lg border border-gray-200 bg-gray-50 hover:border-indigo-400 hover:bg-indigo-50 transition-all duration-200"
+            >
+              <Globe className="w-3.5 h-3.5 text-indigo-500 shrink-0" />
+              <div className="flex items-center bg-gray-200 rounded-full p-0.5 gap-0.5 flex-1">
+                {(['es', 'en'] as const).map(lang => (
+                  <span key={lang} className="flex-1 text-center" style={{
+                    fontSize: '11px', fontWeight: 700, letterSpacing: '0.5px',
+                    padding: '3px 0', borderRadius: '16px', transition: 'all 0.25s',
+                    background: locale === lang ? '#6366f1' : 'transparent',
+                    color: locale === lang ? '#fff' : '#6b7280',
+                  }}>
+                    {lang.toUpperCase()}
+                  </span>
+                ))}
+              </div>
             </button>
           </>
         ) : (
@@ -355,6 +283,15 @@ export default function Sidebar({ onLogout }: SidebarProps) {
               title={t('nav.logout')}
             >
               <LogOut className="w-4 h-4" />
+            </button>
+            {/* Language switcher collapsed */}
+            <button
+              onClick={switchLocale}
+              title={locale === 'es' ? 'Switch to English' : 'Cambiar a Español'}
+              className="w-9 h-9 rounded-lg border border-indigo-300 bg-indigo-50 hover:bg-indigo-500 hover:text-white flex items-center justify-center transition-all duration-200"
+              style={{ fontSize: '10px', fontWeight: 800, color: '#6366f1', letterSpacing: '0.5px' }}
+            >
+              {locale === 'es' ? 'EN' : 'ES'}
             </button>
           </div>
         )}
