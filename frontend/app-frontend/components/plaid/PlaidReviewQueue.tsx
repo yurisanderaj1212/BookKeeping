@@ -5,13 +5,13 @@ import {
   Building2, CheckCircle, XCircle, AlertCircle,
   ChevronRight, Loader2, Tag, FileText, Landmark, X, Trash2
 } from 'lucide-react'
-import { useTranslations } from 'next-intl'
+import { useTranslations, useLocale } from 'next-intl'
 import {
   getPendingReview, reviewTransaction,
   type PendingTransaction,
 } from '@/lib/plaidService'
 import { getAll as getCategories, type CategoryDto } from '@/services/categoryService'
-import accountService, { type Account } from '@/services/accountService'
+import accountService, { type Account, getAccountDisplayName } from '@/services/accountService'
 
 // ─── Config Modal ─────────────────────────────────────────────────────────────
 
@@ -26,6 +26,7 @@ interface ConfigModalProps {
 
 function ConfigModal({ tx, categories, accounts, onConfirm, onCancel, saving }: ConfigModalProps) {
   const t = useTranslations('plaid.reviewQueue')
+  const locale = useLocale()
   const isExpense    = tx.type === 2
   const relevantCats = categories.filter(c => c.type === (isExpense ? 1 : 0))
 
@@ -109,7 +110,7 @@ function ConfigModal({ tx, categories, accounts, onConfirm, onCancel, saving }: 
             >
               <option value="">{t('configNoAccount')}</option>
               {accounts.map(a => (
-                <option key={a.id} value={String(a.id)}>{a.name}</option>
+                <option key={a.id} value={String(a.id)}>{getAccountDisplayName(a, locale)}</option>
               ))}
             </select>
           </div>

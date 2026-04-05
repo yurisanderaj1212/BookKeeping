@@ -83,7 +83,7 @@ class AccountService {
 
     await supabase.from('accounts').insert({
       user_id: user.id,
-      name: 'Efectivo / Cash',
+      name: 'cash_default',
       type: AccountType.Asset,
       sub_type: AccountSubType.Cash,
       initial_balance: 0,
@@ -134,6 +134,14 @@ class AccountService {
 
 export const accountService = new AccountService()
 export default accountService
+
+// Returns the display name for an account, localizing the default Cash account
+export function getAccountDisplayName(account: Account, locale: string): string {
+  if (account.sub_type === AccountSubType.Cash || account.name === 'cash_default') {
+    return locale === 'en' ? 'Cash' : 'Efectivo'
+  }
+  return account.name
+}
 
 export const getSubTypesForType = (type: AccountType): AccountSubType[] => {
   switch (type) {

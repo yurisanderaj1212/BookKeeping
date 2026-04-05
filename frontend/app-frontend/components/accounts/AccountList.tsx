@@ -1,7 +1,7 @@
 'use client'
 
 import { Wallet, CreditCard, Landmark, DollarSign, Edit2, Trash2, TrendingUp, TrendingDown } from 'lucide-react'
-import { Account, AccountType } from '../../services/accountService'
+import { Account, AccountType, getAccountDisplayName } from '../../services/accountService'
 import { useTranslations, useLocale } from 'next-intl'
 
 interface AccountListProps {
@@ -85,7 +85,7 @@ export default function AccountList({ accounts, onEdit, onDelete }: AccountListP
                     <div className="flex-1 min-w-0">
                       {/* Name + badges */}
                       <div className="flex items-center gap-2 flex-wrap mb-1">
-                        <h4 className="text-sm font-semibold text-gray-900 truncate">{account.name}</h4>
+                        <h4 className="text-sm font-semibold text-gray-900 truncate">{getAccountDisplayName(account, locale)}</h4>
                         {account.code && (
                           <span className="text-xs text-gray-500 bg-gray-100 px-1.5 py-0.5 rounded shrink-0">{account.code}</span>
                         )}

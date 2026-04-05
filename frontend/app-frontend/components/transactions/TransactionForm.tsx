@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react'
 import { X, AlertCircle } from 'lucide-react'
 import { Transaction } from '@/data/transactions-data'
 import * as categoryService from '@/services/categoryService'
-import accountService, { Account } from '@/services/accountService'
+import accountService, { Account, getAccountDisplayName } from '@/services/accountService'
 import { useTranslations, useLocale } from 'next-intl'
 import { translateCategoryName } from '@/lib/categoryTranslator'
 
@@ -195,9 +195,13 @@ export default function TransactionForm({ isOpen, onClose, onSave, transaction, 
                 disabled={loadingAccounts}
                 className={`w-full px-2 py-1.5 border rounded-lg focus:ring-2 focus:ring-primary-500 text-sm ${loadingAccounts ? 'opacity-50 cursor-not-allowed' : 'border-gray-300'}`}>
                 <option value="">{loadingAccounts ? tCommon('loading') : t('noAccount')}</option>
-                {accounts.map(a => (
-                  <option key={a.id} value={a.id}>{a.name} — {formatCurrency(a.currentBalance)}</option>
-                ))}
+                {accounts.map(a => {
+                  const isCash = a.sub_type === 1002
+                  const displayName = isCash
+                    ? getAccountDisplayName(a, locale)
+                    : `${a.name} — ${formatCurrency(a.currentBalance)}`
+                  return <option key={a.id} value={a.id}>{displayName}</option>
+                })}
               </select>
             </div>
             <div>
@@ -212,13 +216,13 @@ export default function TransactionForm({ isOpen, onClose, onSave, transaction, 
             </div>
           </div>
 
-          {selectedAccount && (
+          {selectedAccount && selectedAccount.sub_type !== 1002 && (
             <div className="flex items-center gap-2 bg-blue-50 border border-blue-100 rounded-lg px-3 py-2">
               <span className="text-xs text-blue-600 font-medium">{tCommon('balance')}:</span>
               <span className="text-xs text-blue-800 font-semibold">{formatCurrency(selectedAccount.currentBalance)} {selectedAccount.currency}</span>
             </div>
           )}
-          {showAccountWarning && (
+          {showAccountWarning && selectedAccount?.sub_type !== 1002 && (
             <div className="flex items-center gap-2 bg-amber-50 border border-amber-200 rounded-lg px-3 py-2">
               <AlertCircle className="w-3.5 h-3.5 text-amber-500 shrink-0" />
               <span className="text-xs text-amber-700">{formatCurrency(selectedAccount!.currentBalance - parseFloat(formData.amount || '0'))}</span>
