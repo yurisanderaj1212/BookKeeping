@@ -61,10 +61,32 @@ function mapAccount(r: any): Account {
 class AccountService {
   async getAccounts(): Promise<Account[]> {
     const supabase = getSupabase()
+    // Ensure every user has a Cash account
+    await this.ensureCashAccount()
     const { data, error } = await supabase
       .from('accounts').select('*').eq('is_active', true).order('name')
     if (error) throw new Error(error.message)
     return (data ?? []).map(mapAccount)
+  }
+
+  // Creates a default Cash account if the user doesn't have one yet
+  async ensureCashAccount(): Promise<void> {
+    const supabase = getSupabase()
+    const { data: existing } = await supabase
+      .from('accounts')
+      .select('id')
+      .eq('sub_type', AccountSubType.Cash)
+      .limit(1)
+    if (existing && existing.length > 0) return // already has one
+    await supabase.from('accounts').insert({
+      name: 'Efectivo / Cash',
+      type: AccountType.Asset,
+      sub_type: AccountSubType.Cash,
+      initial_balance: 0,
+      current_balance: 0,
+      currency: 'USD',
+      description: 'Cuenta de efectivo para registrar ingresos y gastos en efectivo',
+    })
   }
 
   async createAccount(dto: CreateAccountDto): Promise<Account> {

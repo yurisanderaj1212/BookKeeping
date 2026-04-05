@@ -138,7 +138,7 @@ export async function create(dto: CreateTransactionDto): Promise<TransactionDto>
     user_id:     user.id,
     type:        dto.type,
     amount:      dto.amount,
-    description: dto.description,
+    description: dto.description || '',
     date:        dto.date,
     notes:       dto.notes,
     category_id: dto.category_id ?? dto.categoryId,

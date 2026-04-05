@@ -227,6 +227,11 @@ export default function RegisterPage() {
     try {
       const { signUp } = await import('@/services/authService')
       await signUp(formData.email, formData.password, formData.firstName, formData.lastName)
+      // Create default Cash account for the new user
+      try {
+        const { accountService } = await import('@/services/accountService')
+        await accountService.ensureCashAccount()
+      } catch { /* silencioso — se reintentará al cargar cuentas */ }
       router.push('/auth/login?registered=1')
 
     } catch (error: unknown) {
