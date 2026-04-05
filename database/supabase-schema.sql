@@ -18,20 +18,14 @@ create table if not exists categories (
   created_at  timestamptz not null default now()
 );
 
--- Categorías globales por defecto
+-- Categorías globales por defecto (universales para ingresos y gastos)
 insert into categories (name, type, display_order) values
   ('Supply',    0, 1),
   ('Service',   0, 2),
   ('Transport', 0, 3),
   ('Payroll',   0, 4),
   ('Marketing', 0, 5),
-  ('Other',     0, 6),
-  ('Supply',    1, 1),
-  ('Service',   1, 2),
-  ('Transport', 1, 3),
-  ('Payroll',   1, 4),
-  ('Marketing', 1, 5),
-  ('Other',     1, 6)
+  ('Other',     0, 6)
 on conflict do nothing;
 
 -- ============================================================

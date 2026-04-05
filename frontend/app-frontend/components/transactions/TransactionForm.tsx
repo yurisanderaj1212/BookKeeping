@@ -62,11 +62,11 @@ export default function TransactionForm({ isOpen, onClose, onSave, transaction, 
     if (!isOpen) return
     setLoadingCategories(true)
     categoryService.getAll().then(all => {
-      const map = (type: number) => all
-        .filter(c => c.type === type && c.isActive)
+      const allActive = all
+        .filter(c => c.isActive)
         .sort((a, b) => a.displayOrder - b.displayOrder)
         .map(c => ({ value: c.id.toString(), label: c.name, isSystem: c.isSystemDefault }))
-      setCategories({ income: map(0), expense: map(1) })
+      setCategories({ income: allActive, expense: allActive })
     }).catch(() => setCategories({ income: [], expense: [] }))
       .finally(() => setLoadingCategories(false))
   }, [isOpen])
