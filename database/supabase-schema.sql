@@ -20,21 +20,18 @@ create table if not exists categories (
 
 -- Categorías globales por defecto
 insert into categories (name, type, display_order) values
-  ('Ventas',                  0, 1),
-  ('Servicios',               0, 2),
-  ('Consultoría',             0, 3),
-  ('Inversiones',             0, 4),
-  ('Otros Ingresos',          0, 5),
-  ('Oficina',                 1, 1),
-  ('Marketing',               1, 2),
-  ('Software',                1, 3),
-  ('Servicios Públicos',      1, 4),
-  ('Equipos',                 1, 5),
-  ('Viajes',                  1, 6),
-  ('Servicios Profesionales', 1, 7),
-  ('Alquiler',                1, 8),
-  ('Nómina',                  1, 9),
-  ('Otros Gastos',            1, 10)
+  ('Supply',    0, 1),
+  ('Service',   0, 2),
+  ('Transport', 0, 3),
+  ('Payroll',   0, 4),
+  ('Marketing', 0, 5),
+  ('Other',     0, 6),
+  ('Supply',    1, 1),
+  ('Service',   1, 2),
+  ('Transport', 1, 3),
+  ('Payroll',   1, 4),
+  ('Marketing', 1, 5),
+  ('Other',     1, 6)
 on conflict do nothing;
 
 -- ============================================================
