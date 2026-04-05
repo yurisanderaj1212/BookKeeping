@@ -144,7 +144,7 @@ export default function WeeklyClosureAnalysis({ year, month }: WeeklyClosureAnal
               <Tooltip content={<CustomTooltip />} />
               <Bar dataKey="ingresos"  fill="#10b981" radius={[4,4,0,0]} />
               <Bar dataKey="gastos"    fill="#ef4444" radius={[4,4,0,0]} />
-              <Bar dataKey="beneficio" fill="#3b82f6" radius={[4,4,0,0]} />
+              <Bar dataKey="beneficio" fill="#60a5fa" radius={[4,4,0,0]} />
             </BarChart>
           </ResponsiveContainer>
         </div>

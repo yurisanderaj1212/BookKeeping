@@ -230,7 +230,7 @@ export default function YearComparison({ year }: YearComparisonProps) {
                 <Tooltip content={<CustomTooltip />} />
                 <Bar dataKey="ingresos"  fill="#10b981" radius={[4,4,0,0]} name={t('income')} />
                 <Bar dataKey="gastos"    fill="#ef4444" radius={[4,4,0,0]} name={t('expenses')} />
-                <Bar dataKey="beneficio" fill="#3b82f6" radius={[4,4,0,0]} name={t('profit')} />
+                <Bar dataKey="beneficio" fill="#60a5fa" radius={[4,4,0,0]} name={t('profit')} />
               </BarChart>
             ) : (
               <LineChart data={yearComparisonData} margin={{ top: 20, right: 30, left: 20, bottom: 5 }}>
@@ -241,7 +241,7 @@ export default function YearComparison({ year }: YearComparisonProps) {
                 <Tooltip content={<CustomTooltip />} />
                 <Line type="monotone" dataKey="ingresos"  stroke="#10b981" strokeWidth={3} dot={{ fill: '#10b981', r: 5 }} name={t('income')} />
                 <Line type="monotone" dataKey="gastos"    stroke="#ef4444" strokeWidth={3} dot={{ fill: '#ef4444', r: 5 }} name={t('expenses')} />
-                <Line type="monotone" dataKey="beneficio" stroke="#3b82f6" strokeWidth={3} dot={{ fill: '#3b82f6', r: 5 }} name={t('profit')} />
+                <Line type="monotone" dataKey="beneficio" stroke="#60a5fa" strokeWidth={3} dot={{ fill: '#60a5fa', r: 5 }} name={t('profit')} />
               </LineChart>
             )}
           </ResponsiveContainer>

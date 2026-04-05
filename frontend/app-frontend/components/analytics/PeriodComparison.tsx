@@ -178,7 +178,7 @@ export default function PeriodComparison({ period, year, month }: PeriodComparis
               <Tooltip formatter={(v: any) => formatCurrency(v)} />
               <Bar dataKey="ingresos"  fill="#10b981" radius={[4,4,0,0]} name={t('income')} />
               <Bar dataKey="gastos"    fill="#ef4444" radius={[4,4,0,0]} name={t('expenses')} />
-              <Bar dataKey="beneficio" fill="#3b82f6" radius={[4,4,0,0]} name={t('profit')} />
+              <Bar dataKey="beneficio" fill="#60a5fa" radius={[4,4,0,0]} name={t('profit')} />
             </BarChart>
           </ResponsiveContainer>
         )}
