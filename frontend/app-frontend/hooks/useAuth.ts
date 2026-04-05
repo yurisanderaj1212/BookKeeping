@@ -35,6 +35,10 @@ export function useAuth() {
           firstName: u.user_metadata?.first_name ?? '',
           lastName: u.user_metadata?.last_name ?? '',
         })
+        // Ensure Cash account exists for this user
+        import('@/services/accountService').then(({ accountService }) => {
+          accountService.ensureCashAccount().catch(() => {})
+        })
       } else {
         setUser(null)
         if (isProtected(pathname)) router.replace('/auth/login')

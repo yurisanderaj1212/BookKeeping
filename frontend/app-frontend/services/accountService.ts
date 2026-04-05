@@ -61,8 +61,6 @@ function mapAccount(r: any): Account {
 class AccountService {
   async getAccounts(): Promise<Account[]> {
     const supabase = getSupabase()
-    // Ensure every user has a Cash account
-    await this.ensureCashAccount()
     const { data, error } = await supabase
       .from('accounts').select('*').eq('is_active', true).order('name')
     if (error) throw new Error(error.message)
