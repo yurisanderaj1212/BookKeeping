@@ -150,16 +150,19 @@ export default function Sidebar({ onLogout }: SidebarProps) {
                 <li key={item.id}>
                   <Link
                     href={item.href}
-                    className={`flex items-center space-x-3 px-3 py-2.5 rounded-lg transition-all duration-200 group ${
+                    className={`flex items-center space-x-3 px-3 py-2.5 rounded-lg transition-all duration-200 group relative ${
                       isActive
-                        ? 'bg-primary-50 dark:bg-primary-900/30 text-primary-600 shadow-sm'
-                        : 'text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:bg-gray-800 dark:hover:bg-gray-800 hover:text-gray-900 dark:hover:text-gray-100'
+                        ? 'bg-primary-50 dark:bg-primary-900/20 text-primary-600 dark:text-primary-400'
+                        : 'text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 hover:text-gray-900 dark:hover:text-gray-100'
                     }`}
                     title={isCollapsed ? t(item.label) : undefined}
                   >
-                    <Icon className={`w-5 h-5 shrink-0 ${isActive ? 'text-primary-600' : 'text-gray-400 dark:text-gray-500 group-hover:text-gray-600 dark:group-hover:text-gray-300'}`} />
+                    {isActive && (
+                      <span className="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-6 bg-primary-500 rounded-r-full" />
+                    )}
+                    <Icon className={`w-5 h-5 shrink-0 ${isActive ? 'text-primary-600 dark:text-primary-400' : 'text-gray-400 dark:text-gray-500 group-hover:text-gray-600 dark:group-hover:text-gray-300'}`} />
                     {!isCollapsed && (
-                      <span className="font-medium text-sm">{t(item.label)}</span>
+                      <span className={`font-medium text-sm ${isActive ? 'font-semibold' : ''}`}>{t(item.label)}</span>
                     )}
                   </Link>
                 </li>
@@ -184,16 +187,19 @@ export default function Sidebar({ onLogout }: SidebarProps) {
                 <li key={item.id}>
                   <Link
                     href={item.href}
-                    className={`flex items-center space-x-3 px-3 py-2.5 rounded-lg transition-all duration-200 group ${
+                    className={`flex items-center space-x-3 px-3 py-2.5 rounded-lg transition-all duration-200 group relative ${
                       isActive
-                        ? 'bg-primary-50 dark:bg-primary-900/30 text-primary-600 shadow-sm'
-                        : 'text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:bg-gray-800 dark:hover:bg-gray-800 hover:text-gray-900 dark:hover:text-gray-100'
+                        ? 'bg-primary-50 dark:bg-primary-900/20 text-primary-600 dark:text-primary-400'
+                        : 'text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 hover:text-gray-900 dark:hover:text-gray-100'
                     }`}
                     title={isCollapsed ? t(item.label) : undefined}
                     data-tour={item.id === 'settings' ? 'settings-link' : undefined}
                   >
+                    {isActive && (
+                      <span className="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-6 bg-primary-500 rounded-r-full" />
+                    )}
                     <div className="relative">
-                      <Icon className={`w-5 h-5 shrink-0 ${isActive ? 'text-primary-600' : 'text-gray-400 dark:text-gray-500 group-hover:text-gray-600 dark:group-hover:text-gray-300'}`} />
+                      <Icon className={`w-5 h-5 shrink-0 ${isActive ? 'text-primary-600 dark:text-primary-400' : 'text-gray-400 dark:text-gray-500 group-hover:text-gray-600 dark:group-hover:text-gray-300'}`} />
                       {badge > 0 && (
                         <span className="absolute -top-1.5 -right-1.5 bg-red-500 text-white text-[9px] font-bold rounded-full min-w-[14px] h-[14px] flex items-center justify-center px-0.5">
                           {badge > 99 ? '99+' : badge}

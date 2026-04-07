@@ -1,4 +1,4 @@
-﻿'use client'
+'use client'
 
 import { useState, useEffect, useCallback, useRef } from 'react'
 import { useRouter } from 'next/navigation'
@@ -741,8 +741,8 @@ export default function SettingsPage() {
                     <button key={tab.id} onClick={() => setActiveTab(tab.id)}
                       className={`flex items-center gap-2 px-3 py-2.5 rounded-xl transition-all text-left lg:w-full border ${
                         activeTab === tab.id
-                          ? 'bg-primary-50 text-primary-600 border-primary-200 shadow-sm'
-                          : 'text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-700 hover:text-gray-900 dark:hover:text-gray-100 border-gray-100 dark:border-gray-800 bg-white dark:bg-gray-900'
+                          ? 'bg-primary-50 dark:bg-primary-900/20 text-primary-600 dark:text-primary-400 border-primary-200 dark:border-primary-800'
+                          : 'text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-700 hover:text-gray-900 dark:hover:text-gray-100 border-transparent bg-transparent'
                       }`}>
                       <Icon className={`w-4 h-4 shrink-0 ${activeTab === tab.id ? 'text-primary-600' : 'text-gray-400'}`} />
                       <span className="font-medium text-xs sm:text-sm truncate">{tab.label}</span>
