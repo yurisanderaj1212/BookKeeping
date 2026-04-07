@@ -74,7 +74,12 @@ export default function WeeklyChart({ data }: WeeklyChartProps) {
     <div className="bg-white rounded-xl border border-gray-200 p-4 sm:p-6 hover:shadow-lg transition-shadow duration-300">
       <div className="flex items-center justify-between mb-4">
         <div>
-          <h3 className="text-base sm:text-lg font-semibold text-gray-900">{t('title')}</h3>
+          <h3 className="text-base sm:text-lg font-semibold text-gray-900">
+            <span className="text-primary-600 mr-1">
+              {new Date().toLocaleDateString(locale === 'en' ? 'en-US' : 'es-ES', { month: 'long' }).replace(/^\w/, c => c.toUpperCase())}
+            </span>
+            {t('title')}
+          </h3>
           <p className="text-xs sm:text-sm text-gray-500 mt-0.5">{t('subtitle')}</p>
         </div>
         <button className="p-1.5 hover:bg-gray-100 rounded-lg transition-colors">
