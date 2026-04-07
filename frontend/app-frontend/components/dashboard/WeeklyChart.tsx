@@ -1,7 +1,7 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts'
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, Cell } from 'recharts'
 import { WeeklyData } from '../../data/dashboard-data'
 import type { ChartDataPoint } from '@/services/dashboardService'
 import { MoreHorizontal } from 'lucide-react'
@@ -37,10 +37,10 @@ export default function WeeklyChart({ data }: WeeklyChartProps) {
       <div className="bg-white p-2.5 border border-gray-200 rounded-lg shadow-lg text-xs">
         <p className="font-semibold text-gray-900 mb-1.5">{label}</p>
         {payload.map((entry: any, index: number) => {
-          const value = entry.dataKey === 'profit' ? entry.payload.profitReal : entry.value
+          const value = entry.dataKey === 'profit' ? entry.value : entry.value
           const name = entry.dataKey === 'income' ? t('income')
             : entry.dataKey === 'expenses' ? t('expenses')
-            : value >= 0 ? t('profit') : t('loss')
+            : entry.value >= 0 ? t('profit') : t('loss')
           return (
             <p key={index} style={{ color: entry.color }}>
               {name}: {formatCurrency(value)}
@@ -57,10 +57,13 @@ export default function WeeklyChart({ data }: WeeklyChartProps) {
       name:       week.label,
       income:     week.income,
       expenses:   week.expenses,
-      profit:     profit > 0 ? profit : 0,
-      profitReal: profit,
+      profit:     profit,  // use real value — negative shows bar going down
     }
   })
+
+  // Cap negative profit display so it doesn't dwarf positive bars
+  const maxPositive = Math.max(...chartData.map(d => Math.max(d.income, d.expenses, 0)), 1)
+  const minNegative = -maxPositive * 0.25  // loss bar max = 25% of tallest bar
 
   // Responsive config
   const chartHeight  = isMobile ? 220 : 280
@@ -109,6 +112,7 @@ export default function WeeklyChart({ data }: WeeklyChartProps) {
             tick={{ fontSize: tickFontSize, fill: '#6b7280' }}
             tickFormatter={formatYAxis}
             width={isMobile ? 32 : 40}
+            domain={[minNegative, 'auto']}
           />
           <Tooltip content={<CustomTooltip />} cursor={{ fill: 'rgba(0,0,0,0.04)' }} />
           <Legend
@@ -132,7 +136,11 @@ export default function WeeklyChart({ data }: WeeklyChartProps) {
           />
           <Bar dataKey="income"   name={t('income')}   fill="#20B2AA" radius={[3,3,0,0]} animationDuration={800} />
           <Bar dataKey="expenses" name={t('expenses')} fill="#FF6B6B" radius={[3,3,0,0]} animationDuration={800} animationBegin={150} />
-          <Bar dataKey="profit"   name={t('profit')}   fill="#60a5fa" radius={[3,3,0,0]} animationDuration={800} animationBegin={300} />
+          <Bar dataKey="profit"   name={t('profit')}   radius={[3,3,0,0]} animationDuration={800} animationBegin={300} minPointSize={2}>
+            {chartData.map((entry, i) => (
+              <Cell key={i} fill={entry.profit >= 0 ? '#60a5fa' : '#f97316'} />
+            ))}
+          </Bar>
         </BarChart>
       </ResponsiveContainer>
     </div>
