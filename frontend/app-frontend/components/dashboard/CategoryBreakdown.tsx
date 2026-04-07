@@ -31,27 +31,26 @@ const CustomTooltip = ({ active, payload, formatCurrency }: any) => {
   )
 }
 
-interface MiniChartProps {
+interface ChartCardProps {
   title: string
-  subtitle: string
   data: CategoryData[]
   emptyText: string
   emptyDesc: string
   formatCurrency: (n: number) => string
 }
 
-function MiniChart({ title, subtitle, data, emptyText, emptyDesc, formatCurrency }: MiniChartProps) {
-  const chartData = data.map(c => ({ name: c.name, value: c.amount, percentage: c.percentage, color: c.color }))
+function ChartCard({ title, data, emptyText, emptyDesc, formatCurrency }: ChartCardProps) {
+  const chartData = data.map(c => ({
+    name: c.name, value: c.amount, percentage: c.percentage, color: c.color,
+  }))
 
   return (
-    <div className="flex-1 min-w-0 flex flex-col">
-      <div className="mb-3">
-        <h4 className="text-sm font-semibold text-gray-900 truncate">{title}</h4>
-        <p className="text-xs text-gray-500 mt-0.5 truncate">{subtitle}</p>
-      </div>
+    <div className="bg-white rounded-xl border border-gray-200 p-4 sm:p-6 hover:shadow-lg transition-shadow duration-300 flex-1 min-w-0">
+      {/* Title — large, top left, no subtitle */}
+      <h3 className="text-base sm:text-lg font-semibold text-gray-900 mb-4">{title}</h3>
 
       {data.length === 0 ? (
-        <div className="flex-1 flex items-center justify-center py-8">
+        <div className="flex items-center justify-center py-10">
           <div className="text-center">
             <div className="w-12 h-12 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-3">
               <PieIcon className="w-6 h-6 text-gray-400" />
@@ -61,13 +60,13 @@ function MiniChart({ title, subtitle, data, emptyText, emptyDesc, formatCurrency
           </div>
         </div>
       ) : (
-        <div className="flex flex-col flex-1">
-          <ResponsiveContainer width="100%" height={160}>
+        <>
+          <ResponsiveContainer width="100%" height={180}>
             <PieChart>
               <Pie
                 data={chartData}
                 cx="50%" cy="50%"
-                outerRadius={65} innerRadius={30}
+                outerRadius={70} innerRadius={32}
                 dataKey="value"
                 animationBegin={0} animationDuration={800}
               >
@@ -79,21 +78,21 @@ function MiniChart({ title, subtitle, data, emptyText, emptyDesc, formatCurrency
             </PieChart>
           </ResponsiveContainer>
 
-          <div className="mt-2 space-y-1">
-            {data.slice(0, 4).map((cat, i) => (
-              <div key={i} className="flex items-center justify-between py-1">
-                <div className="flex items-center gap-1.5 min-w-0">
+          <div className="mt-3 space-y-1.5">
+            {data.slice(0, 5).map((cat, i) => (
+              <div key={i} className="flex items-center justify-between">
+                <div className="flex items-center gap-2 min-w-0">
                   <div className="w-2.5 h-2.5 rounded-full shrink-0" style={{ backgroundColor: cat.color }} />
                   <span className="text-xs text-gray-700 truncate">{cat.name}</span>
                 </div>
-                <div className="text-right shrink-0 ml-2">
+                <div className="shrink-0 ml-3 text-right">
                   <span className="text-xs font-semibold text-gray-900">{formatCurrency(cat.amount)}</span>
                   <span className="text-xs text-gray-400 ml-1">{cat.percentage}%</span>
                 </div>
               </div>
             ))}
           </div>
-        </div>
+        </>
       )}
     </div>
   )
@@ -128,32 +127,21 @@ export default function CategoryBreakdown({ categories }: CategoryBreakdownProps
     .map((c, i) => ({ ...c, name: translateCategory(c.name), color: EXPENSE_COLORS[i % EXPENSE_COLORS.length] }))
 
   return (
-    <div className="bg-white rounded-xl border border-gray-200 p-4 sm:p-6 hover:shadow-lg transition-shadow duration-300">
-      <div className="mb-4">
-        <h3 className="text-base sm:text-lg font-semibold text-gray-900">{t('title')}</h3>
-        <p className="text-xs sm:text-sm text-gray-500 mt-0.5">{t('subtitle')}</p>
-      </div>
-
-      <div className="flex gap-4 sm:gap-6">
-        {/* Divider */}
-        <MiniChart
-          title={t('titleIncome')}
-          subtitle={t('subtitleIncome')}
-          data={incomeList}
-          emptyText={t('empty')}
-          emptyDesc={t('emptyDesc')}
-          formatCurrency={formatCurrency}
-        />
-        <div className="w-px bg-gray-100 shrink-0" />
-        <MiniChart
-          title={t('titleExpense')}
-          subtitle={t('subtitleExpense')}
-          data={expenseList}
-          emptyText={t('empty')}
-          emptyDesc={t('emptyDesc')}
-          formatCurrency={formatCurrency}
-        />
-      </div>
+    <div className="flex flex-col sm:flex-row gap-4 sm:gap-6">
+      <ChartCard
+        title={t('titleIncome')}
+        data={incomeList}
+        emptyText={t('empty')}
+        emptyDesc={t('emptyDesc')}
+        formatCurrency={formatCurrency}
+      />
+      <ChartCard
+        title={t('titleExpense')}
+        data={expenseList}
+        emptyText={t('empty')}
+        emptyDesc={t('emptyDesc')}
+        formatCurrency={formatCurrency}
+      />
     </div>
   )
 }
