@@ -119,8 +119,22 @@ export default function MonthlyChart({ data }: MonthlyChartProps) {
           <Tooltip content={<CustomTooltip />} cursor={{ fill: 'rgba(0,0,0,0.04)' }} />
           <Legend
             wrapperStyle={{ paddingTop: isMobile ? '10px' : '16px', fontSize: isMobile ? 11 : 12 }}
-            iconType="rect"
+            iconType="circle"
             iconSize={isMobile ? 8 : 10}
+            content={() => (
+              <div style={{ display: 'flex', justifyContent: 'center', gap: 16, paddingTop: isMobile ? 10 : 16, fontSize: isMobile ? 11 : 12 }}>
+                {[
+                  { label: t('income'),   color: '#20B2AA' },
+                  { label: t('expenses'), color: '#FF6B6B' },
+                  { label: t('profit'),   color: '#60a5fa' },
+                ].map(item => (
+                  <span key={item.label} style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
+                    <span style={{ width: isMobile ? 8 : 10, height: isMobile ? 8 : 10, borderRadius: '50%', background: item.color, display: 'inline-block' }} />
+                    <span style={{ color: '#4a5568' }}>{item.label}</span>
+                  </span>
+                ))}
+              </div>
+            )}
           />
           <Bar dataKey="income"   name={t('income')}   fill="#20B2AA" radius={[3,3,0,0]} animationDuration={1200} />
           <Bar dataKey="expenses" name={t('expenses')} fill="#FF6B6B" radius={[3,3,0,0]} animationDuration={1200} animationBegin={200} />

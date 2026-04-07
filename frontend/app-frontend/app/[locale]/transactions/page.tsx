@@ -165,7 +165,7 @@ export default function TransactionsPage() {
         description: dto.description,
         category: dto.categoryId.toString(),
         date: dto.date.split('T')[0],
-        status: 'completed',
+        status: dto.status === 1 ? 'pending' : 'completed',
         notes: dto.notes || '',
         accountId: dto.accountId || undefined,
         isFromPlaid: (dto as any).isFromPlaid ?? false,
@@ -216,14 +216,14 @@ export default function TransactionsPage() {
       } else {
         // Add new transaction
         const createDto: transactionService.CreateTransactionDto = {
-          // Income = 1, Expense = 2 (TransactionType enum del backend)
           type: transactionData.type === 'income' ? 1 : 2,
           amount: transactionData.amount,
           description: transactionData.description,
           categoryId: parseInt(transactionData.category),
-          accountId: transactionData.accountId || undefined, // Opcional
+          accountId: transactionData.accountId || undefined,
           date: transactionData.date,
-          notes: transactionData.notes || ''
+          notes: transactionData.notes || '',
+          status: transactionData.status === 'pending' ? 1 : 0,
         }
         
         await transactionService.create(createDto)

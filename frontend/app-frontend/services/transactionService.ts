@@ -10,6 +10,7 @@ export interface CreateTransactionDto {
   account_id?: number
   accountId?: number    // alias
   notes?: string
+  status?: number       // 0=completed, 1=pending
 }
 
 export interface UpdateTransactionDto extends Partial<CreateTransactionDto> {}
@@ -145,7 +146,7 @@ export async function create(dto: CreateTransactionDto): Promise<TransactionDto>
     account_id:  dto.account_id ?? dto.accountId ?? null,
     is_from_plaid:           false,
     is_business_transaction: true,
-    status:                  0,
+    status:                  dto.status ?? 0,
   }
   const { data, error } = await supabase
     .from('transactions').insert(payload)
