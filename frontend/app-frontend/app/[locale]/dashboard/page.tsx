@@ -333,11 +333,7 @@ export default function DashboardPage() {
                 <div className="h-64 bg-gray-200 rounded"></div>
               </div>
             ) : weeklyChartData.length > 0 ? (
-              <WeeklyChart data={weeklyChartData.map(d => ({
-                week: d.label,
-                income: d.income,
-                expenses: d.expenses
-              }))} />
+              <WeeklyChart data={weeklyChartData} />
             ) : (
               <div className="bg-white rounded-lg border border-gray-200 p-6 flex flex-col items-center justify-center h-64 text-center">
                 <div className="w-12 h-12 bg-gray-100 rounded-full flex items-center justify-center mb-3">
