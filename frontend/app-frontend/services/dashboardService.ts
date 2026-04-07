@@ -120,48 +120,54 @@ export async function getSummary(params: DashboardQueryParams = {}): Promise<Das
 export async function getWeeklyChartData(): Promise<ChartDataPoint[]> {
   const supabase = getSupabase()
   const now = new Date()
-  // Get all days of the current month
-  const year  = now.getFullYear()
-  const month = now.getMonth()
-  const firstDay = new Date(year, month, 1)
-  const lastDay  = new Date(year, month + 1, 0)
+
+  // Find the Sunday that starts the current week
+  const currentSunday = new Date(now)
+  currentSunday.setDate(now.getDate() - now.getDay()) // go back to Sunday
+  currentSunday.setHours(0, 0, 0, 0)
+
+  // Build 5 weeks going back from current week
+  const weeks: { start: Date; end: Date }[] = []
+  for (let i = 4; i >= 0; i--) {
+    const start = new Date(currentSunday)
+    start.setDate(currentSunday.getDate() - i * 7)
+    const end = new Date(start)
+    end.setDate(start.getDate() + 6)
+    weeks.push({ start, end })
+  }
+
+  // Fetch all transactions covering the full range
+  const rangeStart = weeks[0].start.toISOString().split('T')[0]
+  const rangeEnd   = weeks[4].end.toISOString().split('T')[0]
 
   const { data } = await supabase
     .from('transactions').select('type, amount, date')
-    .gte('date', firstDay.toISOString().split('T')[0])
-    .lte('date', lastDay.toISOString().split('T')[0])
+    .gte('date', rangeStart).lte('date', rangeEnd)
     .or('is_from_plaid.eq.false,is_business_transaction.eq.true')
 
   const rows = data ?? []
 
-  // Build 5 weekly buckets: 1-7, 8-14, 15-21, 22-28, 29-end
-  const weeks = [
-    { start: 1,  end: 7 },
-    { start: 8,  end: 14 },
-    { start: 15, end: 21 },
-    { start: 22, end: 28 },
-    { start: 29, end: lastDay.getDate() },
-  ].filter(w => w.start <= lastDay.getDate())
+  const fmt = (d: Date) => d.toISOString().split('T')[0]
 
-  const results: ChartDataPoint[] = weeks.map(w => {
-    const weekRows = rows.filter(r => {
-      const day = new Date(r.date + 'T00:00:00').getDate()
-      return day >= w.start && day <= w.end
-    })
+  return weeks.map(({ start, end }) => {
+    const startStr = fmt(start)
+    const endStr   = fmt(end)
+    const weekRows = rows.filter(r => r.date >= startStr && r.date <= endStr)
     let income = 0, expenses = 0
     for (const r of weekRows) {
       if (r.type === 1) income += r.amount
       else expenses += r.amount
     }
-    const startDate = new Date(year, month, w.start).toISOString().split('T')[0]
-    const endDate   = new Date(year, month, Math.min(w.end, lastDay.getDate())).toISOString().split('T')[0]
-    return {
-      label: `${w.start}-${Math.min(w.end, lastDay.getDate())}`,
-      income, expenses, startDate, endDate,
-    }
+    // Label: "Mar 29 - Apr 5" style if crosses months, else "29-5"
+    const startDay = start.getDate()
+    const endDay   = end.getDate()
+    const startMon = start.getMonth()
+    const endMon   = end.getMonth()
+    const label = startMon !== endMon
+      ? `${start.toLocaleDateString(undefined, { month: 'short', day: 'numeric' })}-${endDay}`
+      : `${startDay}-${endDay}`
+    return { label, income, expenses, startDate: startStr, endDate: endStr }
   })
-
-  return results
 }
 
 export async function getMonthlyChartData(): Promise<ChartDataPoint[]> {

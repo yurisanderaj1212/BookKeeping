@@ -112,6 +112,7 @@ export default function WeeklyChart({ data }: WeeklyChartProps) {
           />
           <Tooltip content={<CustomTooltip />} cursor={{ fill: 'rgba(0,0,0,0.04)' }} />
           <Legend
+            reversed
             wrapperStyle={{ paddingTop: isMobile ? '10px' : '16px', fontSize: isMobile ? 11 : 12 }}
             iconType="circle"
             iconSize={isMobile ? 8 : 10}
