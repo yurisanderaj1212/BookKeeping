@@ -97,11 +97,17 @@ export default function ReportsOverview({ period, year, month }: ReportsOverview
           }
           setChartData(points)
         } else if (period === 'month') {
-          // Group by week within the month
+          // Group by Sunday-based week within the month
           const weekMap = new Map<number, { ingresos: number; gastos: number }>()
           for (const r of rows) {
-            const day = new Date(r.date).getDate()
-            const weekNum = Math.ceil(day / 7)
+            const d = new Date(r.date + 'T00:00:00')
+            // Find which week slot (1-5) this day belongs to
+            // Week 1 starts on the Sunday on or before the 1st of the month
+            const firstOfMonth = new Date(d.getFullYear(), d.getMonth(), 1)
+            const firstSunday  = new Date(firstOfMonth)
+            firstSunday.setDate(firstOfMonth.getDate() - firstOfMonth.getDay())
+            const diffDays = Math.floor((d.getTime() - firstSunday.getTime()) / (86400000))
+            const weekNum  = Math.floor(diffDays / 7) + 1
             const existing = weekMap.get(weekNum) ?? { ingresos: 0, gastos: 0 }
             if (r.type === 1) existing.ingresos += r.amount
             else existing.gastos += r.amount

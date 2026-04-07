@@ -92,10 +92,9 @@ export function NotificationProvider({ children }: { children: ReactNode }) {
       // Check if current week has a closure record
       const year  = now.getFullYear()
       const month = now.getMonth() + 1
-      // Get start of current week (Monday)
-      const dayOfWeek = now.getDay() === 0 ? 7 : now.getDay()
+      // Get start of current week (Sunday)
       const weekStart = new Date(now)
-      weekStart.setDate(now.getDate() - dayOfWeek + 1)
+      weekStart.setDate(now.getDate() - now.getDay()) // go back to Sunday
       const weekStartStr = weekStart.toISOString().split('T')[0]
 
       const { data: existing } = await supabase

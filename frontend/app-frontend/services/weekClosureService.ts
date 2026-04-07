@@ -46,16 +46,15 @@ function getWeekNumber(date: Date): number {
   return Math.ceil((((d.getTime() - yearStart.getTime()) / 86400000) + 1) / 7)
 }
 
-/** Returns all calendar weeks that overlap with the given month */
+/** Returns all calendar weeks (Sun-Sat) that overlap with the given month */
 function getWeeksForMonth(year: number, month: number): Array<{ weekNumber: number; startDate: string; endDate: string }> {
   const weeks: Array<{ weekNumber: number; startDate: string; endDate: string }> = []
   const firstDay = new Date(year, month - 1, 1)
   const lastDay  = new Date(year, month, 0)
 
-  // Start from the Monday of the week containing the 1st
+  // Start from the Sunday on or before the 1st of the month
   const start = new Date(firstDay)
-  const dow = start.getDay()
-  start.setDate(start.getDate() - (dow === 0 ? 6 : dow - 1))
+  start.setDate(start.getDate() - start.getDay()) // go back to Sunday
 
   let weekNum = 1
   const current = new Date(start)
