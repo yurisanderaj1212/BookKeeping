@@ -50,10 +50,10 @@ export default function WeeklyChart({ data }: WeeklyChartProps) {
     )
   }
 
-  const chartData = data.slice(-5).map((week, index) => {
+  const chartData = data.slice(-5).map((week) => {
     const profit = week.income - week.expenses
     return {
-      name:       t('weekLabel', { n: String(index + 1) }),
+      name:       week.label,
       income:     week.income,
       expenses:   week.expenses,
       profit:     profit > 0 ? profit : 0,

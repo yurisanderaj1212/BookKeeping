@@ -120,23 +120,47 @@ export async function getSummary(params: DashboardQueryParams = {}): Promise<Das
 export async function getWeeklyChartData(): Promise<ChartDataPoint[]> {
   const supabase = getSupabase()
   const now = new Date()
-  const results: ChartDataPoint[] = []
+  // Get all days of the current month
+  const year  = now.getFullYear()
+  const month = now.getMonth()
+  const firstDay = new Date(year, month, 1)
+  const lastDay  = new Date(year, month + 1, 0)
 
-  for (let i = 6; i >= 0; i--) {
-    const d = new Date(now)
-    d.setDate(now.getDate() - i)
-    const dateStr = d.toISOString().split('T')[0]
-    const { data } = await supabase
-      .from('transactions').select('type, amount').eq('date', dateStr)
-      .or('is_from_plaid.eq.false,is_business_transaction.eq.true')
+  const { data } = await supabase
+    .from('transactions').select('type, amount, date')
+    .gte('date', firstDay.toISOString().split('T')[0])
+    .lte('date', lastDay.toISOString().split('T')[0])
+    .or('is_from_plaid.eq.false,is_business_transaction.eq.true')
 
+  const rows = data ?? []
+
+  // Build 5 weekly buckets: 1-7, 8-14, 15-21, 22-28, 29-end
+  const weeks = [
+    { start: 1,  end: 7 },
+    { start: 8,  end: 14 },
+    { start: 15, end: 21 },
+    { start: 22, end: 28 },
+    { start: 29, end: lastDay.getDate() },
+  ].filter(w => w.start <= lastDay.getDate())
+
+  const results: ChartDataPoint[] = weeks.map(w => {
+    const weekRows = rows.filter(r => {
+      const day = new Date(r.date + 'T00:00:00').getDate()
+      return day >= w.start && day <= w.end
+    })
     let income = 0, expenses = 0
-    for (const r of data ?? []) {
+    for (const r of weekRows) {
       if (r.type === 1) income += r.amount
       else expenses += r.amount
     }
-    results.push({ label: d.toLocaleDateString(undefined, { weekday: 'short' }), income, expenses, startDate: dateStr, endDate: dateStr })
-  }
+    const startDate = new Date(year, month, w.start).toISOString().split('T')[0]
+    const endDate   = new Date(year, month, Math.min(w.end, lastDay.getDate())).toISOString().split('T')[0]
+    return {
+      label: `${w.start}-${Math.min(w.end, lastDay.getDate())}`,
+      income, expenses, startDate, endDate,
+    }
+  })
+
   return results
 }
 
