@@ -1,4 +1,4 @@
-﻿'use client'
+'use client'
 
 import { useState } from 'react'
 import { ArrowUpRight, ArrowDownRight, Clock, CheckCircle, Filter } from 'lucide-react'
@@ -59,9 +59,9 @@ export default function TransactionDetailReport({ period, year, month }: Transac
       <td className="px-3 py-3">
         <div className="flex items-center space-x-1">
           {transaction.type === 'income' ? (
-            <ArrowUpRight className="w-3 h-3 text-green-600 shrink-0" />
+            <ArrowUpRight className="w-3 h-3 text-green-600 dark:text-green-400 shrink-0" />
           ) : (
-            <ArrowDownRight className="w-3 h-3 text-red-600 shrink-0" />
+            <ArrowDownRight className="w-3 h-3 text-red-600 dark:text-red-400 shrink-0" />
           )}
           <span className={`text-xs px-1.5 py-0.5 rounded-full font-medium truncate ${
             transaction.type === 'income' 
@@ -85,9 +85,9 @@ export default function TransactionDetailReport({ period, year, month }: Transac
       <td className="px-3 py-3">
         <div className="flex items-center space-x-1">
           {transaction.status === 'completed' ? (
-            <CheckCircle className="w-3 h-3 text-green-600 shrink-0" />
+            <CheckCircle className="w-3 h-3 text-green-600 dark:text-green-400 shrink-0" />
           ) : (
-            <Clock className="w-3 h-3 text-yellow-600 shrink-0" />
+            <Clock className="w-3 h-3 text-yellow-600 dark:text-yellow-400 shrink-0" />
           )}
           <span className={`text-xs px-1.5 py-0.5 rounded-full font-medium truncate ${
             transaction.status === 'completed' 
@@ -99,7 +99,7 @@ export default function TransactionDetailReport({ period, year, month }: Transac
         </div>
       </td>
       <td className="px-3 py-3 text-sm font-semibold text-right">
-        <span className={transaction.type === 'income' ? 'text-green-700' : 'text-red-700'}>
+        <span className={transaction.type === 'income' ? 'text-green-700 dark:text-green-300' : 'text-red-700 dark:text-red-300'}>
           {transaction.type === 'income' ? '+' : '-'}{formatCurrency(transaction.amount)}
         </span>
       </td>
@@ -162,13 +162,13 @@ export default function TransactionDetailReport({ period, year, month }: Transac
             <p className="text-sm text-gray-600 dark:text-gray-400 font-medium">Total Transacciones</p>
             <p className="text-xl font-bold text-gray-900 dark:text-gray-100">{filteredTransactions.length}</p>
           </div>
-          <div className="bg-green-50 p-4 rounded-lg">
-            <p className="text-sm text-green-600 font-medium">Total Ingresos</p>
-            <p className="text-xl font-bold text-green-700">{formatCurrency(incomeTotal)}</p>
+          <div className="bg-green-50 dark:bg-green-900/20 p-4 rounded-lg">
+            <p className="text-sm text-green-600 dark:text-green-400 font-medium">Total Ingresos</p>
+            <p className="text-xl font-bold text-green-700 dark:text-green-300">{formatCurrency(incomeTotal)}</p>
           </div>
-          <div className="bg-red-50 p-4 rounded-lg">
-            <p className="text-sm text-red-600 font-medium">Total Gastos</p>
-            <p className="text-xl font-bold text-red-700">{formatCurrency(expenseTotal)}</p>
+          <div className="bg-red-50 dark:bg-red-900/20 p-4 rounded-lg">
+            <p className="text-sm text-red-600 dark:text-red-400 font-medium">Total Gastos</p>
+            <p className="text-xl font-bold text-red-700 dark:text-red-300">{formatCurrency(expenseTotal)}</p>
           </div>
         </div>
       </div>

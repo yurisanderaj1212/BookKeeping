@@ -1,4 +1,4 @@
-﻿'use client'
+'use client'
 
 import { useState } from 'react'
 import { TrendingUp, TrendingDown, BarChart3, PieChart } from 'lucide-react'
@@ -96,13 +96,13 @@ export default function CategoryBreakdownReport({ period, year, month }: Categor
         <span className="text-lg font-bold text-gray-900 dark:text-gray-100">{data.transactionCount}</span>
       </td>
       <td className="px-4 py-4 text-center">
-        <span className="text-green-600 font-medium">{data.completedTransactions}</span>
+        <span className="text-green-600 dark:text-green-400 font-medium">{data.completedTransactions}</span>
       </td>
       <td className="px-4 py-4 text-center">
-        <span className="text-yellow-600 font-medium">{data.pendingTransactions}</span>
+        <span className="text-yellow-600 dark:text-yellow-400 font-medium">{data.pendingTransactions}</span>
       </td>
       <td className="px-4 py-4 text-right">
-        <span className={`text-lg font-bold ${activeTab === 'income' ? 'text-green-700' : 'text-red-700'}`}>
+        <span className={`text-lg font-bold ${activeTab === 'income' ? 'text-green-700 dark:text-green-300' : 'text-red-700 dark:text-red-300'}`}>
           {formatCurrency(data.totalAmount)}
         </span>
       </td>
@@ -140,7 +140,7 @@ export default function CategoryBreakdownReport({ period, year, month }: Categor
             onClick={() => setActiveTab('income')}
             className={`py-4 px-1 border-b-2 font-medium text-sm transition-colors duration-200 ${
               activeTab === 'income'
-                ? 'border-green-500 text-green-600'
+                ? 'border-green-500 text-green-600 dark:text-green-400'
                 : 'border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:text-gray-300 hover:border-gray-300 dark:border-gray-600'
             }`}
           >
@@ -156,7 +156,7 @@ export default function CategoryBreakdownReport({ period, year, month }: Categor
             onClick={() => setActiveTab('expense')}
             className={`py-4 px-1 border-b-2 font-medium text-sm transition-colors duration-200 ${
               activeTab === 'expense'
-                ? 'border-red-500 text-red-600'
+                ? 'border-red-500 text-red-600 dark:text-red-400'
                 : 'border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:text-gray-300 hover:border-gray-300 dark:border-gray-600'
             }`}
           >
@@ -174,18 +174,18 @@ export default function CategoryBreakdownReport({ period, year, month }: Categor
       {/* Summary Section */}
       <div className="p-6 border-b border-gray-200 dark:border-gray-700">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-          <div className={`${activeTab === 'income' ? 'bg-green-50' : 'bg-red-50'} p-4 rounded-lg`}>
+          <div className={`${activeTab === 'income' ? 'bg-green-50 dark:bg-green-900/20' : 'bg-red-50 dark:bg-red-900/20'} p-4 rounded-lg`}>
             <div className="flex items-center space-x-2 mb-2">
               {activeTab === 'income' ? (
-                <TrendingUp className="w-5 h-5 text-green-600" />
+                <TrendingUp className="w-5 h-5 text-green-600 dark:text-green-400" />
               ) : (
-                <TrendingDown className="w-5 h-5 text-red-600" />
+                <TrendingDown className="w-5 h-5 text-red-600 dark:text-red-400" />
               )}
-              <span className={`text-sm font-medium ${activeTab === 'income' ? 'text-green-600' : 'text-red-600'}`}>
+              <span className={`text-sm font-medium ${activeTab === 'income' ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'}`}>
                 Total {activeTab === 'income' ? 'Ingresos' : 'Gastos'}
               </span>
             </div>
-            <p className={`text-2xl font-bold ${activeTab === 'income' ? 'text-green-700' : 'text-red-700'}`}>
+            <p className={`text-2xl font-bold ${activeTab === 'income' ? 'text-green-700 dark:text-green-300' : 'text-red-700 dark:text-red-300'}`}>
               {formatCurrency(totalAmount)}
             </p>
           </div>
@@ -198,18 +198,18 @@ export default function CategoryBreakdownReport({ period, year, month }: Categor
             <p className="text-2xl font-bold text-gray-700 dark:text-gray-300">{currentData.length}</p>
           </div>
 
-          <div className="bg-blue-50 p-4 rounded-lg">
+          <div className="bg-blue-50 dark:bg-blue-900/20 p-4 rounded-lg">
             <div className="flex items-center space-x-2 mb-2">
-              <PieChart className="w-5 h-5 text-blue-600" />
-              <span className="text-sm font-medium text-blue-600">Total Transacciones</span>
+              <PieChart className="w-5 h-5 text-blue-600 dark:text-blue-400" />
+              <span className="text-sm font-medium text-blue-600 dark:text-blue-400">Total Transacciones</span>
             </div>
-            <p className="text-2xl font-bold text-blue-700">{totalTransactions}</p>
+            <p className="text-2xl font-bold text-blue-700 dark:text-blue-300">{totalTransactions}</p>
           </div>
 
-          <div className="bg-purple-50 p-4 rounded-lg">
+          <div className="bg-purple-50 dark:bg-purple-900/20 p-4 rounded-lg">
             <div className="flex items-center space-x-2 mb-2">
-              <BarChart3 className="w-5 h-5 text-purple-600" />
-              <span className="text-sm font-medium text-purple-600">Promedio por Categoría</span>
+              <BarChart3 className="w-5 h-5 text-purple-600 dark:text-purple-400" />
+              <span className="text-sm font-medium text-purple-600 dark:text-purple-400">Promedio por Categoría</span>
             </div>
             <p className="text-2xl font-bold text-purple-700">
               {formatCurrency(currentData.length > 0 ? totalAmount / currentData.length : 0)}

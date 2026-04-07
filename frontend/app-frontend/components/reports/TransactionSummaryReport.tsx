@@ -1,4 +1,4 @@
-﻿'use client'
+'use client'
 
 import { useState, useEffect } from 'react'
 import { Calendar, TrendingUp, TrendingDown, Clock, CheckCircle } from 'lucide-react'
@@ -52,7 +52,7 @@ export default function TransactionSummaryReport({ period, year, month }: Transa
 
   if (error) {
     return (
-      <div className="bg-red-50 border border-red-200 rounded-lg p-6 text-red-700 text-sm">{error}</div>
+      <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 rounded-lg p-6 text-red-700 dark:text-red-300 text-sm">{error}</div>
     )
   }
 
@@ -101,42 +101,42 @@ export default function TransactionSummaryReport({ period, year, month }: Transa
       <div className="p-4 sm:p-6 border-b border-gray-200 dark:border-gray-700">
         <h3 className="text-base sm:text-lg font-semibold text-gray-900 dark:text-gray-100 mb-3">{t('generalSummary')}</h3>
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
-          <div className="bg-green-50 p-3 sm:p-4 rounded-lg">
+          <div className="bg-green-50 dark:bg-green-900/20 p-3 sm:p-4 rounded-lg">
             <div className="flex items-center justify-between mb-1.5">
-              <TrendingUp className="w-4 h-4 text-green-600" />
+              <TrendingUp className="w-4 h-4 text-green-600 dark:text-green-400" />
               <span className="text-xs bg-green-100 text-green-800 px-1.5 py-0.5 rounded-full">{incomeCount}</span>
             </div>
-            <p className="text-xs text-green-600 font-medium">{t('totalIncome')}</p>
-            <p className="text-lg sm:text-2xl font-bold text-green-700">{formatCurrency(totalIncome)}</p>
-            <p className="text-xs text-green-600 mt-0.5">{t('average')}: {formatCurrency(avgIncome)}</p>
+            <p className="text-xs text-green-600 dark:text-green-400 font-medium">{t('totalIncome')}</p>
+            <p className="text-lg sm:text-2xl font-bold text-green-700 dark:text-green-300">{formatCurrency(totalIncome)}</p>
+            <p className="text-xs text-green-600 dark:text-green-400 mt-0.5">{t('average')}: {formatCurrency(avgIncome)}</p>
           </div>
 
-          <div className="bg-red-50 p-3 sm:p-4 rounded-lg">
+          <div className="bg-red-50 dark:bg-red-900/20 p-3 sm:p-4 rounded-lg">
             <div className="flex items-center justify-between mb-1.5">
-              <TrendingDown className="w-4 h-4 text-red-600" />
+              <TrendingDown className="w-4 h-4 text-red-600 dark:text-red-400" />
               <span className="text-xs bg-red-100 text-red-800 px-1.5 py-0.5 rounded-full">{expenseCount}</span>
             </div>
-            <p className="text-xs text-red-600 font-medium">{t('totalExpenses')}</p>
-            <p className="text-lg sm:text-2xl font-bold text-red-700">{formatCurrency(totalExpenses)}</p>
-            <p className="text-xs text-red-600 mt-0.5">{t('average')}: {formatCurrency(avgExpense)}</p>
+            <p className="text-xs text-red-600 dark:text-red-400 font-medium">{t('totalExpenses')}</p>
+            <p className="text-lg sm:text-2xl font-bold text-red-700 dark:text-red-300">{formatCurrency(totalExpenses)}</p>
+            <p className="text-xs text-red-600 dark:text-red-400 mt-0.5">{t('average')}: {formatCurrency(avgExpense)}</p>
           </div>
 
-          <div className={`${netProfit >= 0 ? 'bg-blue-50' : 'bg-orange-50'} p-3 sm:p-4 rounded-lg`}>
+          <div className={`${netProfit >= 0 ? 'bg-blue-50 dark:bg-blue-900/20' : 'bg-orange-50 dark:bg-orange-900/20'} p-3 sm:p-4 rounded-lg`}>
             <div className="flex items-center justify-between mb-1.5">
               {netProfit >= 0
-                ? <TrendingUp className="w-4 h-4 text-blue-600" />
-                : <TrendingDown className="w-4 h-4 text-orange-600" />}
+                ? <TrendingUp className="w-4 h-4 text-blue-600 dark:text-blue-400" />
+                : <TrendingDown className="w-4 h-4 text-orange-600 dark:text-orange-400" />}
               <span className={`text-xs px-1.5 py-0.5 rounded-full ${netProfit >= 0 ? 'bg-blue-100 text-blue-800' : 'bg-orange-100 text-orange-800'}`}>
                 {profitMargin.toFixed(1)}%
               </span>
             </div>
-            <p className={`text-xs font-medium ${netProfit >= 0 ? 'text-blue-600' : 'text-orange-600'}`}>
+            <p className={`text-xs font-medium ${netProfit >= 0 ? 'text-blue-600 dark:text-blue-400' : 'text-orange-600 dark:text-orange-400'}`}>
               {netProfit >= 0 ? t('netProfit') : t('netLoss')}
             </p>
-            <p className={`text-lg sm:text-2xl font-bold ${netProfit >= 0 ? 'text-blue-700' : 'text-orange-700'}`}>
+            <p className={`text-lg sm:text-2xl font-bold ${netProfit >= 0 ? 'text-blue-700 dark:text-blue-300' : 'text-orange-700'}`}>
               {formatCurrency(Math.abs(netProfit))}
             </p>
-            <p className={`text-xs mt-0.5 ${netProfit >= 0 ? 'text-blue-600' : 'text-orange-600'}`}>{t('profitMargin')}</p>
+            <p className={`text-xs mt-0.5 ${netProfit >= 0 ? 'text-blue-600 dark:text-blue-400' : 'text-orange-600 dark:text-orange-400'}`}>{t('profitMargin')}</p>
           </div>
 
           <div className="bg-gray-50 dark:bg-gray-800 p-3 sm:p-4 rounded-lg">
@@ -157,29 +157,29 @@ export default function TransactionSummaryReport({ period, year, month }: Transa
           {/* Completed */}
           <div>
             <div className="flex items-center space-x-2 mb-4">
-              <CheckCircle className="w-5 h-5 text-green-600" />
+              <CheckCircle className="w-5 h-5 text-green-600 dark:text-green-400" />
               <h4 className="text-md font-semibold text-gray-900 dark:text-gray-100">Completadas</h4>
               <span className="bg-green-100 text-green-800 text-xs px-2 py-1 rounded-full">{completedCount}</span>
             </div>
             <div className="space-y-3">
-              <div className="flex items-center justify-between p-3 bg-green-50 rounded-lg">
+              <div className="flex items-center justify-between p-3 bg-green-50 dark:bg-green-900/20 rounded-lg">
                 <div>
                   <p className="font-medium text-gray-900 dark:text-gray-100">Ingresos</p>
                   <p className="text-sm text-gray-600 dark:text-gray-400">{completedIncomeCount} transacciones</p>
                 </div>
                 <div className="text-right">
-                  <p className="font-bold text-green-700">{formatCurrency(completedIncome)}</p>
-                  <p className="text-xs text-green-600">{totalIncome > 0 ? ((completedIncome / totalIncome) * 100).toFixed(1) : 0}%</p>
+                  <p className="font-bold text-green-700 dark:text-green-300">{formatCurrency(completedIncome)}</p>
+                  <p className="text-xs text-green-600 dark:text-green-400">{totalIncome > 0 ? ((completedIncome / totalIncome) * 100).toFixed(1) : 0}%</p>
                 </div>
               </div>
-              <div className="flex items-center justify-between p-3 bg-red-50 rounded-lg">
+              <div className="flex items-center justify-between p-3 bg-red-50 dark:bg-red-900/20 rounded-lg">
                 <div>
                   <p className="font-medium text-gray-900 dark:text-gray-100">Gastos</p>
                   <p className="text-sm text-gray-600 dark:text-gray-400">{completedExpensesCount} transacciones</p>
                 </div>
                 <div className="text-right">
-                  <p className="font-bold text-red-700">{formatCurrency(completedExpenses)}</p>
-                  <p className="text-xs text-red-600">{totalExpenses > 0 ? ((completedExpenses / totalExpenses) * 100).toFixed(1) : 0}%</p>
+                  <p className="font-bold text-red-700 dark:text-red-300">{formatCurrency(completedExpenses)}</p>
+                  <p className="text-xs text-red-600 dark:text-red-400">{totalExpenses > 0 ? ((completedExpenses / totalExpenses) * 100).toFixed(1) : 0}%</p>
                 </div>
               </div>
             </div>
@@ -188,12 +188,12 @@ export default function TransactionSummaryReport({ period, year, month }: Transa
           {/* Pending */}
           <div>
             <div className="flex items-center space-x-2 mb-4">
-              <Clock className="w-5 h-5 text-yellow-600" />
+              <Clock className="w-5 h-5 text-yellow-600 dark:text-yellow-400" />
               <h4 className="text-md font-semibold text-gray-900 dark:text-gray-100">Pendientes</h4>
               <span className="bg-yellow-100 text-yellow-800 text-xs px-2 py-1 rounded-full">{pendingCount}</span>
             </div>
             <div className="space-y-3">
-              <div className="flex items-center justify-between p-3 bg-yellow-50 rounded-lg">
+              <div className="flex items-center justify-between p-3 bg-yellow-50 dark:bg-yellow-900/20 rounded-lg">
                 <div>
                   <p className="font-medium text-gray-900 dark:text-gray-100">Ingresos</p>
                   <p className="text-sm text-gray-600 dark:text-gray-400">{pendingIncomeCount} transacciones</p>
@@ -202,7 +202,7 @@ export default function TransactionSummaryReport({ period, year, month }: Transa
                   <p className="font-bold text-yellow-700">{formatCurrency(pendingIncome)}</p>
                 </div>
               </div>
-              <div className="flex items-center justify-between p-3 bg-orange-50 rounded-lg">
+              <div className="flex items-center justify-between p-3 bg-orange-50 dark:bg-orange-900/20 rounded-lg">
                 <div>
                   <p className="font-medium text-gray-900 dark:text-gray-100">Gastos</p>
                   <p className="text-sm text-gray-600 dark:text-gray-400">{pendingExpensesCount} transacciones</p>
@@ -236,7 +236,7 @@ export default function TransactionSummaryReport({ period, year, month }: Transa
                     <td className="px-3 py-2 text-gray-600 dark:text-gray-400">{new Date(tx.date + 'T00:00:00').toLocaleDateString()}</td>
                     <td className="px-3 py-2 text-gray-900 dark:text-gray-100 max-w-[200px] truncate">{tx.description}</td>
                     <td className="px-3 py-2 text-gray-600 dark:text-gray-400">{translateCategoryName(tx.categoryName, tCategories)}</td>
-                    <td className={`px-3 py-2 text-right font-semibold ${tx.type === 1 ? 'text-green-600' : 'text-red-600'}`}>
+                    <td className={`px-3 py-2 text-right font-semibold ${tx.type === 1 ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'}`}>
                       {tx.type === 1 ? '+' : '-'}{formatCurrency(tx.amount)}
                     </td>
                   </tr>

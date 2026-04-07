@@ -1,4 +1,4 @@
-﻿'use client'
+'use client'
 
 import { Calendar, TrendingUp, TrendingDown } from 'lucide-react'
 import { 
@@ -117,27 +117,27 @@ export default function ProfitLossDetailedReport({ period, year, month }: Profit
       {/* Summary Cards */}
       <div className="p-6 border-b border-gray-200 dark:border-gray-700">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-          <div className="bg-green-50 p-4 rounded-lg text-center">
-            <div className="text-green-600 text-sm font-medium mb-1">Ingresos totales</div>
-            <div className="text-2xl font-bold text-green-700">{formatCurrency(yearlyTotals.ingresos)}</div>
+          <div className="bg-green-50 dark:bg-green-900/20 p-4 rounded-lg text-center">
+            <div className="text-green-600 dark:text-green-400 text-sm font-medium mb-1">Ingresos totales</div>
+            <div className="text-2xl font-bold text-green-700 dark:text-green-300">{formatCurrency(yearlyTotals.ingresos)}</div>
           </div>
           
-          <div className="bg-red-50 p-4 rounded-lg text-center">
-            <div className="text-red-600 text-sm font-medium mb-1">Gastos totales</div>
-            <div className="text-2xl font-bold text-red-700">{formatCurrency(yearlyTotals.gastos)}</div>
+          <div className="bg-red-50 dark:bg-red-900/20 p-4 rounded-lg text-center">
+            <div className="text-red-600 dark:text-red-400 text-sm font-medium mb-1">Gastos totales</div>
+            <div className="text-2xl font-bold text-red-700 dark:text-red-300">{formatCurrency(yearlyTotals.gastos)}</div>
           </div>
           
-          <div className={`${yearlyTotals.beneficio >= 0 ? 'bg-blue-50' : 'bg-orange-50'} p-4 rounded-lg text-center`}>
-            <div className={`text-sm font-medium mb-1 ${yearlyTotals.beneficio >= 0 ? 'text-blue-600' : 'text-orange-600'}`}>
+          <div className={`${yearlyTotals.beneficio >= 0 ? 'bg-blue-50 dark:bg-blue-900/20' : 'bg-orange-50 dark:bg-orange-900/20'} p-4 rounded-lg text-center`}>
+            <div className={`text-sm font-medium mb-1 ${yearlyTotals.beneficio >= 0 ? 'text-blue-600 dark:text-blue-400' : 'text-orange-600 dark:text-orange-400'}`}>
               Beneficio neto
             </div>
-            <div className={`text-2xl font-bold ${yearlyTotals.beneficio >= 0 ? 'text-blue-700' : 'text-orange-700'}`}>
+            <div className={`text-2xl font-bold ${yearlyTotals.beneficio >= 0 ? 'text-blue-700 dark:text-blue-300' : 'text-orange-700'}`}>
               {formatCurrency(yearlyTotals.beneficio)}
             </div>
           </div>
           
-          <div className="bg-purple-50 p-4 rounded-lg text-center">
-            <div className="text-purple-600 text-sm font-medium mb-1">Margen de beneficio</div>
+          <div className="bg-purple-50 dark:bg-purple-900/20 p-4 rounded-lg text-center">
+            <div className="text-purple-600 dark:text-purple-400 text-sm font-medium mb-1">Margen de beneficio</div>
             <div className="text-2xl font-bold text-purple-700">{yearlyMargin.toFixed(1)}%</div>
           </div>
         </div>
@@ -162,19 +162,19 @@ export default function ProfitLossDetailedReport({ period, year, month }: Profit
               {monthlyData.map((monthData, index) => (
                 <tr key={index} className="border-b border-gray-100 dark:border-gray-800 hover:bg-gray-50 dark:bg-gray-800 dark:hover:bg-gray-800">
                   <td className="py-3 px-4 font-medium text-gray-900 dark:text-gray-100">{monthData.month}</td>
-                  <td className="py-3 px-4 text-right text-green-600 font-semibold">
+                  <td className="py-3 px-4 text-right text-green-600 dark:text-green-400 font-semibold">
                     {formatCurrency(monthData.ingresos)}
                   </td>
-                  <td className="py-3 px-4 text-right text-red-600 font-semibold">
+                  <td className="py-3 px-4 text-right text-red-600 dark:text-red-400 font-semibold">
                     {formatCurrency(monthData.gastos)}
                   </td>
                   <td className={`py-3 px-4 text-right font-semibold ${
-                    monthData.beneficio >= 0 ? 'text-blue-600' : 'text-orange-600'
+                    monthData.beneficio >= 0 ? 'text-blue-600 dark:text-blue-400' : 'text-orange-600 dark:text-orange-400'
                   }`}>
                     {formatCurrency(monthData.beneficio)}
                   </td>
                   <td className={`py-3 px-4 text-right font-medium ${
-                    monthData.margen >= 0 ? 'text-blue-600' : 'text-orange-600'
+                    monthData.margen >= 0 ? 'text-blue-600 dark:text-blue-400' : 'text-orange-600 dark:text-orange-400'
                   }`}>
                     {monthData.margen.toFixed(1)}%
                   </td>
@@ -185,19 +185,19 @@ export default function ProfitLossDetailedReport({ period, year, month }: Profit
               {monthlyData.length > 1 && (
                 <tr className="border-t-2 border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-800 font-bold">
                   <td className="py-4 px-4 text-gray-900 dark:text-gray-100">Total</td>
-                  <td className="py-4 px-4 text-right text-green-700">
+                  <td className="py-4 px-4 text-right text-green-700 dark:text-green-300">
                     {formatCurrency(yearlyTotals.ingresos)}
                   </td>
-                  <td className="py-4 px-4 text-right text-red-700">
+                  <td className="py-4 px-4 text-right text-red-700 dark:text-red-300">
                     {formatCurrency(yearlyTotals.gastos)}
                   </td>
                   <td className={`py-4 px-4 text-right ${
-                    yearlyTotals.beneficio >= 0 ? 'text-blue-700' : 'text-orange-700'
+                    yearlyTotals.beneficio >= 0 ? 'text-blue-700 dark:text-blue-300' : 'text-orange-700'
                   }`}>
                     {formatCurrency(yearlyTotals.beneficio)}
                   </td>
                   <td className={`py-4 px-4 text-right ${
-                    yearlyMargin >= 0 ? 'text-blue-700' : 'text-orange-700'
+                    yearlyMargin >= 0 ? 'text-blue-700 dark:text-blue-300' : 'text-orange-700'
                   }`}>
                     {yearlyMargin.toFixed(1)}%
                   </td>
