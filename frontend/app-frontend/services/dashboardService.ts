@@ -97,6 +97,10 @@ export async function getSummary(params: DashboardQueryParams = {}): Promise<Das
     return parseFloat(((a - b) / Math.abs(b) * 100).toFixed(1))
   }
 
+  // Profit margin = (profit / revenue) * 100
+  const profitMargin = (income: number, profit: number) =>
+    income === 0 ? 0 : parseFloat(((profit / income) * 100).toFixed(1))
+
   return {
     totalIncome: curr.income,
     totalExpenses: curr.expenses,
@@ -104,7 +108,7 @@ export async function getSummary(params: DashboardQueryParams = {}): Promise<Das
     pendingCount: curr.pending,
     incomeChange: pct(curr.income, prev.income),
     expensesChange: pct(curr.expenses, prev.expenses),
-    profitChange: pct(curr.income - curr.expenses, prev.income - prev.expenses),
+    profitChange: profitMargin(curr.income, curr.income - curr.expenses),
     pendingChange: pct(curr.pending, prev.pending),
     periodLabel: params.period ?? 'week',
     periodStart: start,

@@ -26,15 +26,16 @@ const colorClasses: Record<Color, { iconBg: string; iconColor: string; changeBg:
 }
 
 interface StatCardProps {
-  title:    string
-  value:    string
-  change:   number
-  icon:     React.ReactNode
-  color:    Color
-  delay?:   number
+  title:      string
+  value:      string
+  change:     number
+  showChange: boolean
+  icon:       React.ReactNode
+  color:      Color
+  delay?:     number
 }
 
-function StatCard({ title, value, change, icon, color, delay = 0 }: StatCardProps) {
+function StatCard({ title, value, change, showChange, icon, color, delay = 0 }: StatCardProps) {
   const isPositive = change >= 0
   const changeColor = isPositive ? colorClasses[color].changeText : 'text-red-600'
   const changeBg    = isPositive ? colorClasses[color].changeBg   : 'bg-red-100'
@@ -48,7 +49,7 @@ function StatCard({ title, value, change, icon, color, delay = 0 }: StatCardProp
         <div className={`${colorClasses[color].iconBg} p-1.5 sm:p-2 rounded-lg`}>
           <div className={`${colorClasses[color].iconColor} [&>svg]:w-4 [&>svg]:h-4 sm:[&>svg]:w-5 sm:[&>svg]:h-5`}>{icon}</div>
         </div>
-        {change !== 0 && (
+        {showChange && change !== 0 && (
           <div className={`${changeBg} px-1.5 py-0.5 rounded text-xs font-medium ${changeColor}`}>
             {formatPercentage(change)}
           </div>
@@ -87,10 +88,10 @@ export default function StatsCards({
         </div>
       )}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 lg:gap-6">
-        <StatCard title={t('totalIncome')}   value={formatCurrency(totalIncome)}   change={incomeChange}   color="green"  delay={0}   icon={<DollarSign  className="w-5 h-5" />} />
-        <StatCard title={t('totalExpenses')} value={formatCurrency(totalExpenses)} change={expensesChange} color="red"    delay={100} icon={<CreditCard   className="w-5 h-5" />} />
-        <StatCard title={t('netProfit')}     value={formatCurrency(netProfit)}     change={profitChange}   color="blue"   delay={200} icon={<TrendingUp   className="w-5 h-5" />} />
-        <StatCard title={t('pending')}       value={String(pending)}               change={pendingChange}  color="purple" delay={300} icon={<Clock        className="w-5 h-5" />} />
+        <StatCard title={t('totalIncome')}   value={formatCurrency(totalIncome)}   change={incomeChange}   showChange={false} color="green"  delay={0}   icon={<DollarSign  className="w-5 h-5" />} />
+        <StatCard title={t('totalExpenses')} value={formatCurrency(totalExpenses)} change={expensesChange} showChange={false} color="red"    delay={100} icon={<CreditCard   className="w-5 h-5" />} />
+        <StatCard title={t('netProfit')}     value={formatCurrency(netProfit)}     change={profitChange}   showChange={true}  color="blue"   delay={200} icon={<TrendingUp   className="w-5 h-5" />} />
+        <StatCard title={t('pending')}       value={String(pending)}               change={pendingChange}  showChange={false} color="purple" delay={300} icon={<Clock        className="w-5 h-5" />} />
       </div>
     </div>
   )
