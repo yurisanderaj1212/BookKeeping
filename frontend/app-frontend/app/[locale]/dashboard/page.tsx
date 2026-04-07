@@ -28,23 +28,22 @@ function buildPeriodLabel(
   periodEnd: string,
   locale: string
 ): string {
-  const loc = locale === 'en' ? 'en-US' : 'es-ES'
+  const loc   = locale === 'en' ? 'en-US' : 'es-ES'
   const start = new Date(periodStart + 'T00:00:00')
   const end   = new Date(periodEnd   + 'T00:00:00')
 
   switch (periodType) {
     case 'week': {
-      const fmtDay  = new Intl.DateTimeFormat(loc, { day: 'numeric' })
-      const fmtFull = new Intl.DateTimeFormat(loc, { day: 'numeric', month: 'short', year: 'numeric' })
-      const prefix  = locale === 'en' ? 'Week of' : 'Semana del'
-      return `${prefix} ${fmtDay.format(start)} – ${fmtFull.format(end)}`
+      const month = start.toLocaleDateString(loc, { month: 'long' })
+      const day1  = start.getDate()
+      const day2  = end.getDate()
+      const year  = start.getFullYear()
+      return `${month} ${day1}-${day2}, ${year}`
     }
     case 'month':
       return new Intl.DateTimeFormat(loc, { month: 'long', year: 'numeric' }).format(start)
     case 'year':
-      return locale === 'en'
-        ? `Year ${start.getFullYear()}`
-        : `Año ${start.getFullYear()}`
+      return locale === 'en' ? `Year ${start.getFullYear()}` : `Año ${start.getFullYear()}`
     default: {
       const fmt = new Intl.DateTimeFormat(loc, { day: 'numeric', month: 'short', year: 'numeric' })
       return `${fmt.format(start)} – ${fmt.format(end)}`
