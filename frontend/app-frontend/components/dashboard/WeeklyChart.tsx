@@ -34,20 +34,31 @@ export default function WeeklyChart({ data }: WeeklyChartProps) {
 
   const CustomTooltip = ({ active, payload, label }: any) => {
     if (!active || !payload?.length) return null
+    const incomeEntry  = payload.find((e: any) => e.dataKey === 'income')
+    const profitEntry  = payload.find((e: any) => e.dataKey === 'profit')
+    const incomeVal    = incomeEntry?.value ?? 0
+    const profitVal    = profitEntry?.value ?? 0
+    const profitMargin = incomeVal > 0 && profitVal > 0
+      ? ((profitVal / incomeVal) * 100).toFixed(1)
+      : null
+
     return (
       <div className="bg-white p-2.5 border border-gray-200 rounded-lg shadow-lg text-xs">
         <p className="font-semibold text-gray-900 mb-1.5">{label}</p>
         {payload.map((entry: any, index: number) => {
-          const isLoss = entry.dataKey === 'profit' && entry.value < 0
-          const name = entry.dataKey === 'income' ? t('income')
+          const isLoss  = entry.dataKey === 'profit' && entry.value < 0
+          const name    = entry.dataKey === 'income'   ? t('income')
             : entry.dataKey === 'expenses' ? t('expenses')
             : isLoss ? t('loss') : t('profit')
-          const color = entry.dataKey === 'profit'
+          const color   = entry.dataKey === 'profit'
             ? (isLoss ? '#f97316' : '#60a5fa')
             : entry.color
           return (
             <p key={index} style={{ color }}>
               {name}: {formatCurrency(entry.value)}
+              {entry.dataKey === 'profit' && profitMargin && (
+                <span style={{ marginLeft: 4, opacity: 0.8 }}>({profitMargin}%)</span>
+              )}
             </p>
           )
         })}

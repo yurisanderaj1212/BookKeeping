@@ -26,7 +26,8 @@ export default function MonthlyChart({ data }: MonthlyChartProps) {
     new Intl.NumberFormat(locale === 'en' ? 'en-US' : 'es-ES', { style: 'currency', currency: 'USD' }).format(amount)
 
   const formatYAxis = (v: number) => {
-    if (v >= 1000) return `${(v / 1000).toFixed(0)}k`
+    const abs = Math.abs(v)
+    if (abs >= 1000) return `${v < 0 ? '-' : ''}${(abs / 1000).toFixed(0)}k`
     return `${v}`
   }
 
@@ -71,9 +72,10 @@ export default function MonthlyChart({ data }: MonthlyChartProps) {
   // Responsive config
   const chartHeight  = isMobile ? 220 : 280
   const margin       = isMobile
-    ? { top: 8, right: 8, left: -10, bottom: 0 }
+    ? { top: 8, right: 8, left: 0, bottom: 0 }
     : { top: 16, right: 20, left: 0, bottom: 0 }
   const tickFontSize = isMobile ? 10 : 12
+  const yAxisWidth   = isMobile ? 42 : 48
   const barGap       = isMobile ? 2 : 4
   const barCatGap    = isMobile ? '15%' : '25%'
 
@@ -112,7 +114,7 @@ export default function MonthlyChart({ data }: MonthlyChartProps) {
             tickLine={false}
             tick={{ fontSize: tickFontSize, fill: '#6b7280' }}
             tickFormatter={formatYAxis}
-            width={isMobile ? 32 : 40}
+            width={yAxisWidth}
           />
           <Tooltip content={<CustomTooltip />} cursor={{ fill: 'rgba(0,0,0,0.04)' }} />
           <Legend
