@@ -200,9 +200,9 @@
     "sessionExpired": "Session expired. Please sign in again.",
     "statsError": "Could not load dashboard statistics.",
     "statsCards": {
-      "totalIncome": "Total Income",
-      "totalExpenses": "Total Expenses",
-      "netProfit": "Revenue",
+      "totalIncome": "Revenue",
+      "totalExpenses": "Expenses",
+      "netProfit": "Profit",
       "pending": "Pending Items",
       "showingData": "Showing data for:"
     },

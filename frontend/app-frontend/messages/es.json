@@ -200,9 +200,9 @@
     "sessionExpired": "Sesión expirada. Por favor inicia sesión nuevamente.",
     "statsError": "No se pudieron cargar las estadísticas del dashboard.",
     "statsCards": {
-      "totalIncome": "Ingresos totales",
-      "totalExpenses": "Gastos totales",
-      "netProfit": "Ingresos",
+      "totalIncome": "Ingresos",
+      "totalExpenses": "Gastos",
+      "netProfit": "Ganancias",
       "pending": "Asuntos pendientes",
       "showingData": "Mostrando datos de:"
     },
