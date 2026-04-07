@@ -119,26 +119,33 @@ export async function getSummary(params: DashboardQueryParams = {}): Promise<Das
 
 export async function getWeeklyChartData(): Promise<ChartDataPoint[]> {
   const supabase = getSupabase()
-  const now = new Date()
+  const now   = new Date()
+  const year  = now.getFullYear()
+  const month = now.getMonth()
 
-  // Find the Sunday that starts the current week
-  const currentSunday = new Date(now)
-  currentSunday.setDate(now.getDate() - now.getDay()) // go back to Sunday
-  currentSunday.setHours(0, 0, 0, 0)
+  // First and last day of current month
+  const firstOfMonth = new Date(year, month, 1)
+  const lastOfMonth  = new Date(year, month + 1, 0)
 
-  // Build 5 weeks going back from current week
+  // Find the Sunday on or before the first day of the month
+  const firstSunday = new Date(firstOfMonth)
+  firstSunday.setDate(firstOfMonth.getDate() - firstOfMonth.getDay())
+
+  // Build weeks (Sun-Sat) that START within or overlap the current month
   const weeks: { start: Date; end: Date }[] = []
-  for (let i = 4; i >= 0; i--) {
-    const start = new Date(currentSunday)
-    start.setDate(currentSunday.getDate() - i * 7)
-    const end = new Date(start)
-    end.setDate(start.getDate() + 6)
+  const cursor = new Date(firstSunday)
+  while (cursor <= lastOfMonth) {
+    const start = new Date(cursor)
+    const end   = new Date(cursor)
+    end.setDate(cursor.getDate() + 6)
     weeks.push({ start, end })
+    cursor.setDate(cursor.getDate() + 7)
   }
 
-  // Fetch all transactions covering the full range
-  const rangeStart = weeks[0].start.toISOString().split('T')[0]
-  const rangeEnd   = weeks[4].end.toISOString().split('T')[0]
+  // Fetch transactions for the full range
+  const fmt        = (d: Date) => d.toISOString().split('T')[0]
+  const rangeStart = fmt(weeks[0].start)
+  const rangeEnd   = fmt(weeks[weeks.length - 1].end)
 
   const { data } = await supabase
     .from('transactions').select('type, amount, date')
@@ -146,8 +153,6 @@ export async function getWeeklyChartData(): Promise<ChartDataPoint[]> {
     .or('is_from_plaid.eq.false,is_business_transaction.eq.true')
 
   const rows = data ?? []
-
-  const fmt = (d: Date) => d.toISOString().split('T')[0]
 
   return weeks.map(({ start, end }) => {
     const startStr = fmt(start)
@@ -158,14 +163,14 @@ export async function getWeeklyChartData(): Promise<ChartDataPoint[]> {
       if (r.type === 1) income += r.amount
       else expenses += r.amount
     }
-    // Label: "Mar 29 - Apr 5" style if crosses months, else "29-5"
+    // Label: show day range. If week crosses months show "Mar 29-4", else "6-12"
     const startDay = start.getDate()
     const endDay   = end.getDate()
-    const startMon = start.getMonth()
-    const endMon   = end.getMonth()
-    const label = startMon !== endMon
-      ? `${start.toLocaleDateString(undefined, { month: 'short', day: 'numeric' })}-${endDay}`
-      : `${startDay}-${endDay}`
+    const label = start.getMonth() !== month
+      ? `${start.toLocaleDateString(undefined, { month: 'short' })} ${startDay}-${endDay}`
+      : end.getMonth() !== month
+        ? `${startDay}-${end.toLocaleDateString(undefined, { month: 'short' })} ${endDay}`
+        : `${startDay}-${endDay}`
     return { label, income, expenses, startDate: startStr, endDate: endStr }
   })
 }
