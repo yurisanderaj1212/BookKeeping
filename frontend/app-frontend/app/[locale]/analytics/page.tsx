@@ -1,4 +1,4 @@
-﻿'use client'
+'use client'
 
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
@@ -40,13 +40,13 @@ export default function ReportsPage() {
   const [transactionStats, setTransactionStats] = useState({ totalTransactions: 0, pendingCount: 0 })
 
   useEffect(() => {
-    getTransactionSummary({ period: selectedPeriod })
+    getTransactionSummary({ period: selectedPeriod, year: parseInt(selectedYear), month: parseInt(selectedMonth) })
       .then((data: any) => setTransactionStats({
         totalTransactions: data.totalTransactions ?? 0,
         pendingCount: data.pendingCount ?? 0
       }))
       .catch(() => {})
-  }, [selectedPeriod])
+  }, [selectedPeriod, selectedYear, selectedMonth])
 
   if (!isAuthenticated && !isLoading) return null
 
