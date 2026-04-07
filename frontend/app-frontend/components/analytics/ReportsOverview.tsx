@@ -1,4 +1,4 @@
-﻿'use client'
+'use client'
 
 import { useState, useEffect } from 'react'
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts'
@@ -163,10 +163,10 @@ export default function ReportsOverview({ period, year, month }: ReportsOverview
   }
 
   const cards = [
-    { label: t('totalIncome'),   value: periodData.totalIncome,   icon: DollarSign, bg: 'bg-green-100',  iconColor: 'text-green-600'  },
-    { label: t('totalExpenses'), value: periodData.totalExpenses, icon: CreditCard, bg: 'bg-red-100',    iconColor: 'text-red-600'    },
-    { label: t('profit'),        value: periodData.netProfit,     icon: TrendingUp, bg: 'bg-blue-100',   iconColor: 'text-blue-600'   },
-    { label: t('margin'),        value: null,                     icon: BarChart3,  bg: 'bg-purple-100', iconColor: 'text-purple-600', pct: periodData.profitMargin },
+    { label: t('totalIncome'),   value: periodData.totalIncome,   icon: DollarSign, bg: 'bg-green-100',  iconColor: 'text-green-600 dark:text-green-400'  },
+    { label: t('totalExpenses'), value: periodData.totalExpenses, icon: CreditCard, bg: 'bg-red-100',    iconColor: 'text-red-600 dark:text-red-400'    },
+    { label: t('profit'),        value: periodData.netProfit,     icon: TrendingUp, bg: 'bg-blue-100',   iconColor: 'text-blue-600 dark:text-blue-400'   },
+    { label: t('margin'),        value: null,                     icon: BarChart3,  bg: 'bg-purple-100', iconColor: 'text-purple-600 dark:text-purple-400', pct: periodData.profitMargin },
   ]
 
   return (

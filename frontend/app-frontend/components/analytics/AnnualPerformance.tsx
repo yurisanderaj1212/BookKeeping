@@ -1,4 +1,4 @@
-﻿'use client'
+'use client'
 
 import { useState, useEffect } from 'react'
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts'
@@ -91,50 +91,50 @@ export default function AnnualPerformance({ year }: AnnualPerformanceProps) {
 
       {/* Annual Summary Cards — 2x2 on mobile */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4 mb-6">
-        <div className="bg-green-50 p-3 sm:p-4 rounded-lg">
+        <div className="bg-green-50 dark:bg-green-900/20 p-3 sm:p-4 rounded-lg">
           <div className="flex items-center gap-1.5 mb-1.5">
-            <TrendingUp className="w-3.5 h-3.5 text-green-600" />
-            <span className="text-xs font-medium text-green-600">{t('annualIncome')}</span>
+            <TrendingUp className="w-3.5 h-3.5 text-green-600 dark:text-green-400" />
+            <span className="text-xs font-medium text-green-600 dark:text-green-400">{t('annualIncome')}</span>
           </div>
-          <p className="text-base sm:text-xl font-bold text-green-700">{formatCurrency(totalAnnualIncome)}</p>
-          <p className="text-xs text-green-600 mt-0.5 hidden sm:block">
+          <p className="text-base sm:text-xl font-bold text-green-700 dark:text-green-300">{formatCurrency(totalAnnualIncome)}</p>
+          <p className="text-xs text-green-600 dark:text-green-400 mt-0.5 hidden sm:block">
             {t('average')}: {formatCurrency(avgMonthlyIncome)}{t('perMonth')}
           </p>
         </div>
 
-        <div className="bg-red-50 p-3 sm:p-4 rounded-lg">
+        <div className="bg-red-50 dark:bg-red-900/20 p-3 sm:p-4 rounded-lg">
           <div className="flex items-center gap-1.5 mb-1.5">
-            <BarChart3 className="w-3.5 h-3.5 text-red-600" />
-            <span className="text-xs font-medium text-red-600">{t('annualExpenses')}</span>
+            <BarChart3 className="w-3.5 h-3.5 text-red-600 dark:text-red-400" />
+            <span className="text-xs font-medium text-red-600 dark:text-red-400">{t('annualExpenses')}</span>
           </div>
-          <p className="text-base sm:text-xl font-bold text-red-700">{formatCurrency(totalAnnualExpenses)}</p>
-          <p className="text-xs text-red-600 mt-0.5 hidden sm:block">
+          <p className="text-base sm:text-xl font-bold text-red-700 dark:text-red-300">{formatCurrency(totalAnnualExpenses)}</p>
+          <p className="text-xs text-red-600 dark:text-red-400 mt-0.5 hidden sm:block">
             {t('average')}: {formatCurrency(avgMonthlyExpenses)}{t('perMonth')}
           </p>
         </div>
 
-        <div className={`${totalAnnualProfit >= 0 ? 'bg-blue-50' : 'bg-orange-50'} p-3 sm:p-4 rounded-lg`}>
+        <div className={`${totalAnnualProfit >= 0 ? 'bg-blue-50 dark:bg-blue-900/20' : 'bg-orange-50 dark:bg-orange-900/20'} p-3 sm:p-4 rounded-lg`}>
           <div className="flex items-center gap-1.5 mb-1.5">
-            <TrendingUp className={`w-3.5 h-3.5 ${totalAnnualProfit >= 0 ? 'text-blue-600' : 'text-orange-600'}`} />
-            <span className={`text-xs font-medium ${totalAnnualProfit >= 0 ? 'text-blue-600' : 'text-orange-600'}`}>
+            <TrendingUp className={`w-3.5 h-3.5 ${totalAnnualProfit >= 0 ? 'text-blue-600 dark:text-blue-400' : 'text-orange-600 dark:text-orange-400'}`} />
+            <span className={`text-xs font-medium ${totalAnnualProfit >= 0 ? 'text-blue-600 dark:text-blue-400' : 'text-orange-600 dark:text-orange-400'}`}>
               {t('annualProfit')}
             </span>
           </div>
-          <p className={`text-base sm:text-xl font-bold ${totalAnnualProfit >= 0 ? 'text-blue-700' : 'text-orange-700'}`}>
+          <p className={`text-base sm:text-xl font-bold ${totalAnnualProfit >= 0 ? 'text-blue-700 dark:text-blue-300' : 'text-orange-700 dark:text-orange-300'}`}>
             {formatCurrency(totalAnnualProfit)}
           </p>
-          <p className={`text-xs mt-0.5 hidden sm:block ${totalAnnualProfit >= 0 ? 'text-blue-600' : 'text-orange-600'}`}>
+          <p className={`text-xs mt-0.5 hidden sm:block ${totalAnnualProfit >= 0 ? 'text-blue-600 dark:text-blue-400' : 'text-orange-600 dark:text-orange-400'}`}>
             {t('margin')}: {totalAnnualIncome > 0 ? ((totalAnnualProfit / totalAnnualIncome) * 100).toFixed(1) : 0}%
           </p>
         </div>
 
-        <div className="bg-purple-50 p-3 sm:p-4 rounded-lg">
+        <div className="bg-purple-50 dark:bg-purple-900/20 p-3 sm:p-4 rounded-lg">
           <div className="flex items-center gap-1.5 mb-1.5">
-            <TrendingUp className="w-3.5 h-3.5 text-purple-600" />
-            <span className="text-xs font-medium text-purple-600">{t('bestMonth')}</span>
+            <TrendingUp className="w-3.5 h-3.5 text-purple-600 dark:text-purple-400" />
+            <span className="text-xs font-medium text-purple-600 dark:text-purple-400">{t('bestMonth')}</span>
           </div>
-          <p className="text-sm sm:text-lg font-bold text-purple-700 truncate">{bestMonth.month}</p>
-          <p className="text-xs text-purple-600 mt-0.5">{formatCurrency(bestMonth.beneficio)}</p>
+          <p className="text-sm sm:text-lg font-bold text-purple-700 dark:text-purple-300 truncate">{bestMonth.month}</p>
+          <p className="text-xs text-purple-600 dark:text-purple-400 mt-0.5">{formatCurrency(bestMonth.beneficio)}</p>
         </div>
       </div>
 
@@ -179,17 +179,17 @@ export default function AnnualPerformance({ year }: AnnualPerformanceProps) {
             </thead>
             <tbody className="bg-white dark:bg-gray-900 divide-y divide-gray-100">
               {annualData.map((monthData, index) => (
-                <tr key={index} className="hover:bg-gray-50 dark:bg-gray-800 dark:hover:bg-gray-800">
+                <tr key={index} className="hover:bg-gray-50 dark:hover:bg-gray-800 dark:bg-gray-800 dark:hover:bg-gray-800">
                   <td className="px-3 py-2 text-xs font-medium text-gray-900 dark:text-gray-100 whitespace-nowrap">{monthData.monthShort ?? monthData.month}</td>
-                  <td className="px-3 py-2 text-right text-xs text-green-600 font-semibold whitespace-nowrap">{formatCurrency(monthData.ingresos)}</td>
-                  <td className="px-3 py-2 text-right text-xs text-red-600 font-semibold whitespace-nowrap">{formatCurrency(monthData.gastos)}</td>
-                  <td className={`px-3 py-2 text-right text-xs font-semibold whitespace-nowrap ${monthData.beneficio >= 0 ? 'text-blue-600' : 'text-orange-600'}`}>
+                  <td className="px-3 py-2 text-right text-xs text-green-600 dark:text-green-400 font-semibold whitespace-nowrap">{formatCurrency(monthData.ingresos)}</td>
+                  <td className="px-3 py-2 text-right text-xs text-red-600 dark:text-red-400 font-semibold whitespace-nowrap">{formatCurrency(monthData.gastos)}</td>
+                  <td className={`px-3 py-2 text-right text-xs font-semibold whitespace-nowrap ${monthData.beneficio >= 0 ? 'text-blue-600 dark:text-blue-400' : 'text-orange-600 dark:text-orange-400'}`}>
                     {formatCurrency(monthData.beneficio)}
                   </td>
                   <td className="px-3 py-2 text-center">
                     <div className={`w-2.5 h-2.5 rounded-full mx-auto ${
-                      monthData.beneficio >= avgMonthlyIncome * 0.1 ? 'bg-green-500' :
-                      monthData.beneficio >= 0 ? 'bg-yellow-500' : 'bg-red-500'
+                      monthData.beneficio >= avgMonthlyIncome * 0.1 ? 'bg-green-50 dark:bg-green-900/200' :
+                      monthData.beneficio >= 0 ? 'bg-yellow-50 dark:bg-yellow-900/200' : 'bg-red-50 dark:bg-red-900/200'
                     }`} />
                   </td>
                 </tr>

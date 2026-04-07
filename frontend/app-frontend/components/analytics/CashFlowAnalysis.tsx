@@ -1,4 +1,4 @@
-﻿'use client'
+'use client'
 
 import { useState, useEffect } from 'react'
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts'
@@ -116,7 +116,7 @@ export default function CashFlowAnalysis({ period, year, month }: CashFlowAnalys
               <button
                 onClick={() => setViewType('daily')}
                 className={`px-3 py-1 text-sm font-medium rounded-md transition-colors duration-200 ${
-                  viewType === 'daily' ? 'bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 shadow-sm' : 'text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:text-gray-300'
+                  viewType === 'daily' ? 'bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 shadow-sm' : 'text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200'
                 }`}
               >
                 {t('btnDaily')}
@@ -124,7 +124,7 @@ export default function CashFlowAnalysis({ period, year, month }: CashFlowAnalys
               <button
                 onClick={() => setViewType('weekly')}
                 className={`px-3 py-1 text-sm font-medium rounded-md transition-colors duration-200 ${
-                  viewType === 'weekly' ? 'bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 shadow-sm' : 'text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:text-gray-300'
+                  viewType === 'weekly' ? 'bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 shadow-sm' : 'text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200'
                 }`}
               >
                 {t('btnWeekly')}
@@ -134,37 +134,37 @@ export default function CashFlowAnalysis({ period, year, month }: CashFlowAnalys
         </div>
 
         <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-6">
-          <div className="bg-green-50 p-3 sm:p-4 rounded-lg">
+          <div className="bg-green-50 dark:bg-green-900/20 p-3 sm:p-4 rounded-lg">
             <div className="flex items-center space-x-2 mb-2">
-              <TrendingUp className="w-4 h-4 text-green-600" />
-              <span className="text-xs font-medium text-green-600">{t('cardInflow')}</span>
+              <TrendingUp className="w-4 h-4 text-green-600 dark:text-green-400" />
+              <span className="text-xs font-medium text-green-600 dark:text-green-400">{t('cardInflow')}</span>
             </div>
-            <p className="text-base sm:text-xl font-bold text-green-700">{formatCurrency(totalInflow)}</p>
+            <p className="text-base sm:text-xl font-bold text-green-700 dark:text-green-300">{formatCurrency(totalInflow)}</p>
           </div>
-          <div className="bg-red-50 p-3 sm:p-4 rounded-lg">
+          <div className="bg-red-50 dark:bg-red-900/20 p-3 sm:p-4 rounded-lg">
             <div className="flex items-center space-x-2 mb-2">
-              <TrendingDown className="w-4 h-4 text-red-600" />
-              <span className="text-xs font-medium text-red-600">{t('cardOutflow')}</span>
+              <TrendingDown className="w-4 h-4 text-red-600 dark:text-red-400" />
+              <span className="text-xs font-medium text-red-600 dark:text-red-400">{t('cardOutflow')}</span>
             </div>
-            <p className="text-base sm:text-xl font-bold text-red-700">{formatCurrency(totalOutflow)}</p>
+            <p className="text-base sm:text-xl font-bold text-red-700 dark:text-red-300">{formatCurrency(totalOutflow)}</p>
           </div>
-          <div className={`${netCashFlow >= 0 ? 'bg-blue-50' : 'bg-orange-50'} p-3 sm:p-4 rounded-lg`}>
+          <div className={`${netCashFlow >= 0 ? 'bg-blue-50 dark:bg-blue-900/20' : 'bg-orange-50 dark:bg-orange-900/20'} p-3 sm:p-4 rounded-lg`}>
             <div className="flex items-center space-x-2 mb-2">
-              <DollarSign className={`w-4 h-4 ${netCashFlow >= 0 ? 'text-blue-600' : 'text-orange-600'}`} />
-              <span className={`text-xs font-medium ${netCashFlow >= 0 ? 'text-blue-600' : 'text-orange-600'}`}>
+              <DollarSign className={`w-4 h-4 ${netCashFlow >= 0 ? 'text-blue-600 dark:text-blue-400' : 'text-orange-600 dark:text-orange-400'}`} />
+              <span className={`text-xs font-medium ${netCashFlow >= 0 ? 'text-blue-600 dark:text-blue-400' : 'text-orange-600 dark:text-orange-400'}`}>
                 {t('cardNet')}
               </span>
             </div>
-            <p className={`text-base sm:text-xl font-bold ${netCashFlow >= 0 ? 'text-blue-700' : 'text-orange-700'}`}>
+            <p className={`text-base sm:text-xl font-bold ${netCashFlow >= 0 ? 'text-blue-700 dark:text-blue-300' : 'text-orange-700 dark:text-orange-300'}`}>
               {formatCurrency(netCashFlow)}
             </p>
           </div>
-          <div className="bg-purple-50 p-3 sm:p-4 rounded-lg">
+          <div className="bg-purple-50 dark:bg-purple-900/20 p-3 sm:p-4 rounded-lg">
             <div className="flex items-center space-x-2 mb-2">
-              <Calendar className="w-4 h-4 text-purple-600" />
-              <span className="text-xs font-medium text-purple-600">{t('cardFinalBalance')}</span>
+              <Calendar className="w-4 h-4 text-purple-600 dark:text-purple-400" />
+              <span className="text-xs font-medium text-purple-600 dark:text-purple-400">{t('cardFinalBalance')}</span>
             </div>
-            <p className="text-base sm:text-xl font-bold text-purple-700">{formatCurrency(finalBalance)}</p>
+            <p className="text-base sm:text-xl font-bold text-purple-700 dark:text-purple-300">{formatCurrency(finalBalance)}</p>
           </div>
         </div>
 
@@ -226,7 +226,7 @@ export default function CashFlowAnalysis({ period, year, month }: CashFlowAnalys
             </thead>
             <tbody className="bg-white dark:bg-gray-900 divide-y divide-gray-200 dark:divide-gray-700">
               {summaryData.map((item, index) => (
-                <tr key={index} className="hover:bg-gray-50 dark:bg-gray-800 dark:hover:bg-gray-800">
+                <tr key={index} className="hover:bg-gray-50 dark:hover:bg-gray-800">
                   <td className="px-4 py-4">
                     <div className="flex items-center space-x-3">
                       <div className={`w-3 h-3 rounded-full ${item.tipo === 'income' ? 'bg-green-500' : 'bg-red-500'}`} />
@@ -234,7 +234,7 @@ export default function CashFlowAnalysis({ period, year, month }: CashFlowAnalys
                     </div>
                   </td>
                   <td className="px-4 py-4 text-right">
-                    <span className={`font-bold ${item.tipo === 'income' ? 'text-green-700' : 'text-red-700'}`}>
+                    <span className={`font-bold ${item.tipo === 'income' ? 'text-green-700 dark:text-green-300' : 'text-red-700 dark:text-red-300'}`}>
                       {item.tipo === 'income' ? '+' : item.monto < 0 ? '' : '-'}{formatCurrency(Math.abs(item.monto))}
                     </span>
                   </td>

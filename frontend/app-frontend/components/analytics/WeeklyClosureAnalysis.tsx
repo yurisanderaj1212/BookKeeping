@@ -1,4 +1,4 @@
-﻿'use client'
+'use client'
 
 import { useState, useEffect } from 'react'
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts'
@@ -99,16 +99,16 @@ export default function WeeklyClosureAnalysis({ year, month }: WeeklyClosureAnal
       {/* Summary Cards */}
       <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-4">
         {[
-          { icon: CheckCircle, bg: 'bg-green-100', iconColor: 'text-green-600', badgeBg: 'bg-green-100', badgeText: 'text-green-600',
+          { icon: CheckCircle, bg: 'bg-green-100', iconColor: 'text-green-600 dark:text-green-400', badgeBg: 'bg-green-100', badgeText: 'text-green-600 dark:text-green-400',
             badge: closures.length > 0 ? `${((closed.length / closures.length) * 100).toFixed(0)}%` : '0%',
             label: t('closedWeeks'), value: closed.length },
-          { icon: Clock, bg: 'bg-yellow-100', iconColor: 'text-yellow-600', badgeBg: 'bg-yellow-100', badgeText: 'text-yellow-600',
+          { icon: Clock, bg: 'bg-yellow-100', iconColor: 'text-yellow-600 dark:text-yellow-400', badgeBg: 'bg-yellow-100', badgeText: 'text-yellow-600 dark:text-yellow-400',
             badge: open.length > 0 ? t('pending') : t('upToDate'),
             label: t('pendingWeeks'), value: open.length },
-          { icon: TrendingUp, bg: 'bg-blue-100', iconColor: 'text-blue-600', badgeBg: 'bg-green-100', badgeText: 'text-green-600',
+          { icon: TrendingUp, bg: 'bg-blue-100', iconColor: 'text-blue-600 dark:text-blue-400', badgeBg: 'bg-green-100', badgeText: 'text-green-600 dark:text-green-400',
             badge: t('closed'),
             label: t('closedIncome'), value: formatCurrency(totalClosedIncome), isCurrency: true },
-          { icon: TrendingUp, bg: 'bg-purple-100', iconColor: 'text-purple-600', badgeBg: 'bg-blue-100', badgeText: 'text-blue-600',
+          { icon: TrendingUp, bg: 'bg-purple-100', iconColor: 'text-purple-600 dark:text-purple-400', badgeBg: 'bg-blue-100', badgeText: 'text-blue-600 dark:text-blue-400',
             badge: t('average'),
             label: t('avgWeeklyProfit'), value: formatCurrency(avgWeeklyProfit), isCurrency: true },
         ].map((card, i) => {
@@ -170,7 +170,7 @@ export default function WeeklyClosureAnalysis({ year, month }: WeeklyClosureAnal
                 {closures.map(row => {
                   const status = getStatus(row)
                   return (
-                    <tr key={row.id} className="hover:bg-gray-50 dark:bg-gray-800 dark:hover:bg-gray-800">
+                    <tr key={row.id} className="hover:bg-gray-50 dark:hover:bg-gray-800 dark:bg-gray-800 dark:hover:bg-gray-800">
                       <td className="px-4 py-3 font-medium text-gray-900 dark:text-gray-100">{t('week')} {row.week_number}</td>
                       <td className="px-4 py-3">
                         <span className={`inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-medium ${
@@ -180,9 +180,9 @@ export default function WeeklyClosureAnalysis({ year, month }: WeeklyClosureAnal
                           {status === 'closed' ? t('statusClosed') : t('statusOpen')}
                         </span>
                       </td>
-                      <td className="px-4 py-3 text-green-600 font-semibold">{formatCurrency(row.total_income)}</td>
-                      <td className="px-4 py-3 text-red-600 font-semibold">{formatCurrency(row.total_expenses)}</td>
-                      <td className={`px-4 py-3 font-semibold ${row.net_profit >= 0 ? 'text-blue-600' : 'text-orange-600'}`}>
+                      <td className="px-4 py-3 text-green-600 dark:text-green-400 font-semibold">{formatCurrency(row.total_income)}</td>
+                      <td className="px-4 py-3 text-red-600 dark:text-red-400 font-semibold">{formatCurrency(row.total_expenses)}</td>
+                      <td className={`px-4 py-3 font-semibold ${row.net_profit >= 0 ? 'text-blue-600 dark:text-blue-400' : 'text-orange-600 dark:text-orange-400'}`}>
                         {formatCurrency(row.net_profit)}
                       </td>
                     </tr>

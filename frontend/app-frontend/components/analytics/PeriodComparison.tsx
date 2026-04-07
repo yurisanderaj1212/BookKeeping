@@ -1,4 +1,4 @@
-﻿'use client'
+'use client'
 
 import { useState, useEffect } from 'react'
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts'
@@ -114,7 +114,7 @@ export default function PeriodComparison({ period, year, month }: PeriodComparis
   const ComparisonCard = ({ title, actual, anterior, cambio, isCount = false }: any) => {
     const isPositive = cambio >= 0
     const Icon = isPositive ? ArrowUpRight : ArrowDownRight
-    const colorClass = isPositive ? 'text-green-600' : 'text-red-600'
+    const colorClass = isPositive ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'
     const bgClass    = isPositive ? 'bg-green-100'   : 'bg-red-100'
     return (
       <div className="bg-white dark:bg-gray-900 rounded-lg border border-gray-200 dark:border-gray-700 p-6">

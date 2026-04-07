@@ -1,4 +1,4 @@
-﻿'use client'
+'use client'
 
 import { useState, useEffect } from 'react'
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts'
@@ -71,10 +71,10 @@ export default function PerformanceMetrics({ period, year, month }: PerformanceM
 
   const getStatusColor = (status: string) => {
     switch (status) {
-      case 'excellent': return 'text-green-600 bg-green-100'
-      case 'good':      return 'text-blue-600 bg-blue-100'
-      case 'warning':   return 'text-yellow-600 bg-yellow-100'
-      default:          return 'text-red-600 bg-red-100'
+      case 'excellent': return 'text-green-600 dark:text-green-400 bg-green-100'
+      case 'good':      return 'text-blue-600 dark:text-blue-400 bg-blue-100'
+      case 'warning':   return 'text-yellow-600 dark:text-yellow-400 bg-yellow-100'
+      default:          return 'text-red-600 dark:text-red-400 bg-red-100'
     }
   }
 
@@ -127,8 +127,8 @@ export default function PerformanceMetrics({ period, year, month }: PerformanceM
                   </div>
                   <div className="w-full bg-gray-200 rounded-full h-2 mt-2">
                     <div className={`h-2 rounded-full transition-all duration-300 ${
-                      metric.status === 'excellent' ? 'bg-green-500' : metric.status === 'good' ? 'bg-blue-500' :
-                      metric.status === 'warning' ? 'bg-yellow-500' : 'bg-red-500'
+                      metric.status === 'excellent' ? 'bg-green-50 dark:bg-green-900/200' : metric.status === 'good' ? 'bg-blue-50 dark:bg-blue-900/200' :
+                      metric.status === 'warning' ? 'bg-yellow-50 dark:bg-yellow-900/200' : 'bg-red-50 dark:bg-red-900/200'
                     }`} style={{ width: `${Math.min((metric.value / metric.target) * 100, 100)}%` }} />
                   </div>
                 </div>
@@ -168,8 +168,8 @@ export default function PerformanceMetrics({ period, year, month }: PerformanceM
               <div className="flex items-center justify-between mb-2">
                 <span className="text-sm font-medium text-gray-700 dark:text-gray-300">{t('overallScore')}</span>
                 <div className="flex items-center gap-1">
-                  <Target className="w-4 h-4 text-blue-600" />
-                  <span className="text-lg font-bold text-blue-700">
+                  <Target className="w-4 h-4 text-blue-600 dark:text-blue-400" />
+                  <span className="text-lg font-bold text-blue-700 dark:text-blue-300">
                     {((performanceData.reduce((s, m) => s + Math.min(m.value / m.target, 1), 0) / performanceData.length) * 100).toFixed(0)}%
                   </span>
                 </div>
@@ -181,26 +181,26 @@ export default function PerformanceMetrics({ period, year, month }: PerformanceM
             </div>
             <div className="space-y-2">
               <h5 className="text-sm font-medium text-gray-700 dark:text-gray-300">{t('keyInsights')}</h5>
-              <div className="flex items-center gap-3 p-3 bg-green-50 rounded-lg">
-                <CheckCircle className="w-4 h-4 text-green-600 shrink-0" />
+              <div className="flex items-center gap-3 p-3 bg-green-50 dark:bg-green-900/20 rounded-lg">
+                <CheckCircle className="w-4 h-4 text-green-600 dark:text-green-400 shrink-0" />
                 <div>
                   <p className="text-sm font-medium text-green-800">{t('positiveProfit')}</p>
-                  <p className="text-xs text-green-600">{t('generatingProfit', { amount: formatCurrency(netProfit) })}</p>
+                  <p className="text-xs text-green-600 dark:text-green-400">{t('generatingProfit', { amount: formatCurrency(netProfit) })}</p>
                 </div>
               </div>
-              <div className="flex items-center gap-3 p-3 bg-blue-50 rounded-lg">
-                <Clock className="w-4 h-4 text-blue-600 shrink-0" />
+              <div className="flex items-center gap-3 p-3 bg-blue-50 dark:bg-blue-900/20 rounded-lg">
+                <Clock className="w-4 h-4 text-blue-600 dark:text-blue-400 shrink-0" />
                 <div>
                   <p className="text-sm font-medium text-blue-800">{t('activeTransactions')}</p>
-                  <p className="text-xs text-blue-600">{t('transactionsProcessed', { count: String(rows.length) })}</p>
+                  <p className="text-xs text-blue-600 dark:text-blue-400">{t('transactionsProcessed', { count: String(rows.length) })}</p>
                 </div>
               </div>
               {pendingCount > 0 && (
-                <div className="flex items-center gap-3 p-3 bg-yellow-50 rounded-lg">
-                  <AlertCircle className="w-4 h-4 text-yellow-600 shrink-0" />
+                <div className="flex items-center gap-3 p-3 bg-yellow-50 dark:bg-yellow-900/20 rounded-lg">
+                  <AlertCircle className="w-4 h-4 text-yellow-600 dark:text-yellow-400 shrink-0" />
                   <div>
                     <p className="text-sm font-medium text-yellow-800">{t('pendingTransactionsAlert')}</p>
-                    <p className="text-xs text-yellow-600">{t('pendingRequireAttention', { count: String(pendingCount) })}</p>
+                    <p className="text-xs text-yellow-600 dark:text-yellow-400">{t('pendingRequireAttention', { count: String(pendingCount) })}</p>
                   </div>
                 </div>
               )}

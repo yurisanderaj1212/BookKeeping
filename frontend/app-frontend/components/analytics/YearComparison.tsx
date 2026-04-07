@@ -1,4 +1,4 @@
-﻿'use client'
+'use client'
 
 import { useState, useEffect } from 'react'
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, LineChart, Line } from 'recharts'
@@ -111,7 +111,7 @@ export default function YearComparison({ year }: YearComparisonProps) {
   }) => {
     const isPositive = growth >= 0
     const Icon = isPositive ? ArrowUpRight : ArrowDownRight
-    const colorClass = isPositive ? 'text-green-600' : 'text-red-600'
+    const colorClass = isPositive ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'
     const bgClass = isPositive ? 'bg-green-100' : 'bg-red-100'
 
     return (
@@ -277,7 +277,7 @@ export default function YearComparison({ year }: YearComparisonProps) {
             </thead>
             <tbody className="bg-white dark:bg-gray-900 divide-y divide-gray-200 dark:divide-gray-700">
               {yearComparisonData.map((yearData, index) => (
-                <tr key={index} className={`hover:bg-gray-50 dark:bg-gray-800 dark:hover:bg-gray-800 ${yearData.year === year ? 'bg-blue-50' : ''}`}>
+                <tr key={index} className={`hover:bg-gray-50 dark:hover:bg-gray-800 dark:bg-gray-800 dark:hover:bg-gray-800 ${yearData.year === year ? 'bg-blue-50 dark:bg-blue-900/20' : ''}`}>
                   <td className="px-4 py-3">
                     <div className="flex items-center space-x-2">
                       <span className="font-medium text-gray-900 dark:text-gray-100">{yearData.year}</span>
@@ -288,14 +288,14 @@ export default function YearComparison({ year }: YearComparisonProps) {
                       )}
                     </div>
                   </td>
-                  <td className="px-4 py-3 text-right text-green-600 font-semibold">
+                  <td className="px-4 py-3 text-right text-green-600 dark:text-green-400 font-semibold">
                     {formatCurrency(yearData.ingresos)}
                   </td>
-                  <td className="px-4 py-3 text-right text-red-600 font-semibold">
+                  <td className="px-4 py-3 text-right text-red-600 dark:text-red-400 font-semibold">
                     {formatCurrency(yearData.gastos)}
                   </td>
                   <td className={`px-4 py-3 text-right font-semibold ${
-                    yearData.beneficio >= 0 ? 'text-blue-600' : 'text-orange-600'
+                    yearData.beneficio >= 0 ? 'text-blue-600 dark:text-blue-400' : 'text-orange-600 dark:text-orange-400'
                   }`}>
                     {formatCurrency(yearData.beneficio)}
                   </td>
@@ -320,28 +320,28 @@ export default function YearComparison({ year }: YearComparisonProps) {
 
       {/* Performance Insights */}
       <div className="mt-6 grid grid-cols-1 md:grid-cols-2 gap-4">
-        <div className="bg-green-50 rounded-lg p-4">
+        <div className="bg-green-50 dark:bg-green-900/20 rounded-lg p-4">
           <div className="flex items-center space-x-2 mb-2">
-            <TrendingUp className="w-4 h-4 text-green-600" />
+            <TrendingUp className="w-4 h-4 text-green-600 dark:text-green-400" />
             <span className="text-sm font-medium text-green-800">{t('bestYearLabel')}</span>
           </div>
-          <p className="text-lg font-bold text-green-700">{bestYear?.year ?? '—'}</p>
-          <p className="text-xs text-green-600">
+          <p className="text-lg font-bold text-green-700 dark:text-green-300">{bestYear?.year ?? '—'}</p>
+          <p className="text-xs text-green-600 dark:text-green-400">
             Beneficio: {formatCurrency(bestYear?.beneficio ?? 0)}
           </p>
         </div>
 
-        <div className="bg-blue-50 rounded-lg p-4">
+        <div className="bg-blue-50 dark:bg-blue-900/20 rounded-lg p-4">
           <div className="flex items-center space-x-2 mb-2">
-            <Calendar className="w-4 h-4 text-blue-600" />
+            <Calendar className="w-4 h-4 text-blue-600 dark:text-blue-400" />
             <span className="text-sm font-medium text-blue-800">{t('avgGrowthLabel')}</span>
           </div>
-          <p className="text-lg font-bold text-blue-700">
+          <p className="text-lg font-bold text-blue-700 dark:text-blue-300">
             {yearComparisonData.length > 1 ? 
               (((yearComparisonData[yearComparisonData.length - 1].beneficio / yearComparisonData[0].beneficio) ** (1 / (yearComparisonData.length - 1)) - 1) * 100).toFixed(1) 
               : 0}%
           </p>
-          <p className="text-xs text-blue-600">{t('annualCompound')}</p>
+          <p className="text-xs text-blue-600 dark:text-blue-400">{t('annualCompound')}</p>
         </div>
       </div>
     </div>

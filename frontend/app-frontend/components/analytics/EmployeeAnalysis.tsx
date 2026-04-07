@@ -1,4 +1,4 @@
-﻿'use client'
+'use client'
 
 import { useState, useEffect } from 'react'
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell } from 'recharts'
@@ -93,7 +93,7 @@ export default function EmployeeAnalysis({ period }: EmployeeAnalysisProps) {
               <p className="text-base sm:text-xl font-bold text-gray-900 dark:text-gray-100">{active.length}</p>
               <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">{inactive.length} {tEmp('statusInactive').toLowerCase()}</p>
             </div>
-            <div className="p-3 bg-blue-100 rounded-lg"><Users className="w-6 h-6 text-blue-600" /></div>
+            <div className="p-3 bg-blue-100 rounded-lg"><Users className="w-6 h-6 text-blue-600 dark:text-blue-400" /></div>
           </div>
         </div>
 
@@ -104,7 +104,7 @@ export default function EmployeeAnalysis({ period }: EmployeeAnalysisProps) {
               <p className="text-base sm:text-xl font-bold text-gray-900 dark:text-gray-100">{formatSalary(periodPayroll)}</p>
               <p className="text-xs text-gray-500 dark:text-gray-400 mt-1 capitalize">{getPeriodLabel()}</p>
             </div>
-            <div className="p-3 bg-green-100 rounded-lg"><DollarSign className="w-6 h-6 text-green-600" /></div>
+            <div className="p-3 bg-green-100 rounded-lg"><DollarSign className="w-6 h-6 text-green-600 dark:text-green-400" /></div>
           </div>
         </div>
 
@@ -115,7 +115,7 @@ export default function EmployeeAnalysis({ period }: EmployeeAnalysisProps) {
               <p className="text-base sm:text-xl font-bold text-gray-900 dark:text-gray-100">{formatSalary(avgPerEmployee)}</p>
               <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">{t('perEmployee')}</p>
             </div>
-            <div className="p-3 bg-yellow-100 rounded-lg"><TrendingUp className="w-6 h-6 text-yellow-600" /></div>
+            <div className="p-3 bg-yellow-100 rounded-lg"><TrendingUp className="w-6 h-6 text-yellow-600 dark:text-yellow-400" /></div>
           </div>
         </div>
       </div>
@@ -178,7 +178,7 @@ export default function EmployeeAnalysis({ period }: EmployeeAnalysisProps) {
               </thead>
               <tbody className="bg-white dark:bg-gray-900 divide-y divide-gray-200 dark:divide-gray-700">
                 {positionCosts.map((item, i) => (
-                  <tr key={i} className="hover:bg-gray-50 dark:bg-gray-800 dark:hover:bg-gray-800">
+                  <tr key={i} className="hover:bg-gray-50 dark:hover:bg-gray-800 dark:bg-gray-800 dark:hover:bg-gray-800">
                     <td className="px-6 py-4 text-sm font-medium text-gray-900 dark:text-gray-100">{item.position}</td>
                     <td className="px-6 py-4 text-sm text-gray-500 dark:text-gray-400">{item.count}</td>
                     <td className="px-6 py-4 text-sm text-gray-500 dark:text-gray-400">{formatSalary(item.cost)}</td>

@@ -1,4 +1,4 @@
-﻿'use client'
+'use client'
 
 import { useState, useEffect } from 'react'
 import { ArrowUpRight, ArrowDownRight, TrendingUp } from 'lucide-react'
@@ -124,15 +124,15 @@ export default function TopTransactions({ period, year, month }: TopTransactions
             </thead>
             <tbody className="bg-white dark:bg-gray-900 divide-y divide-gray-200 dark:divide-gray-700">
               {top10.map((tx, i) => (
-                <tr key={tx.id} className="hover:bg-gray-50 dark:bg-gray-800 dark:hover:bg-gray-800">
+                <tr key={tx.id} className="hover:bg-gray-50 dark:hover:bg-gray-800 dark:bg-gray-800 dark:hover:bg-gray-800">
                   <td className="px-4 py-3 text-center">
                     <div className={`w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold mx-auto ${i < 3 ? 'bg-yellow-100 text-yellow-800' : 'bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400'}`}>{i+1}</div>
                   </td>
                   <td className="px-4 py-3">
                     <div className="flex items-center gap-2">
                       {tx.type === 1
-                        ? <ArrowUpRight className="w-4 h-4 text-green-600 shrink-0" />
-                        : <ArrowDownRight className="w-4 h-4 text-red-600 shrink-0" />}
+                        ? <ArrowUpRight className="w-4 h-4 text-green-600 dark:text-green-400 shrink-0" />
+                        : <ArrowDownRight className="w-4 h-4 text-red-600 dark:text-red-400 shrink-0" />}
                       <div className="min-w-0">
                         <p className="text-sm font-medium text-gray-900 dark:text-gray-100 truncate">{tx.description}</p>
                         {tx.category_name && (
@@ -143,7 +143,7 @@ export default function TopTransactions({ period, year, month }: TopTransactions
                   </td>
                   <td className="px-4 py-3 text-center text-sm text-gray-600 dark:text-gray-400">{formatDate(tx.date)}</td>
                   <td className="px-4 py-3 text-right">
-                    <span className={`text-sm font-bold ${tx.type === 1 ? 'text-green-700' : 'text-red-700'}`}>
+                    <span className={`text-sm font-bold ${tx.type === 1 ? 'text-green-700 dark:text-green-300' : 'text-red-700 dark:text-red-300'}`}>
                       {tx.type === 1 ? '+' : '-'}{formatCurrency(tx.amount)}
                     </span>
                   </td>
