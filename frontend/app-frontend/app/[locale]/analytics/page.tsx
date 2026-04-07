@@ -1,4 +1,4 @@
-'use client'
+﻿'use client'
 
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
@@ -94,14 +94,14 @@ export default function ReportsPage() {
               <div className="flex items-center gap-2 min-w-0">
                 <MobileMenuButton />
                 <div className="min-w-0">
-                <h1 className="text-xl sm:text-2xl font-bold text-gray-900 truncate">{t('title')}</h1>
-                <p className="text-sm text-gray-500 mt-0.5 hidden sm:block">{t('subtitle')}</p>
+                <h1 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-gray-100 truncate">{t('title')}</h1>
+                <p className="text-sm text-gray-500 dark:text-gray-400 mt-0.5 hidden sm:block">{t('subtitle')}</p>
               </div>
               </div>
               <div className="flex items-center gap-2 shrink-0">
                 <button 
                   onClick={handleExportReport}
-                  className="bg-white border border-gray-300 text-gray-700 px-3 py-2 rounded-lg hover:bg-gray-50 transition-colors flex items-center gap-1.5"
+                  className="bg-white dark:bg-gray-900 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 px-3 py-2 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors flex items-center gap-1.5"
                 >
                   <Download className="w-4 h-4" />
                   <span className="hidden sm:inline text-sm">{t('exportBtn')}</span>
@@ -115,19 +115,19 @@ export default function ReportsPage() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6" data-tour="analytics-main">
           
           {/* Period Filter Bar */}
-          <div className="bg-white rounded-lg border border-gray-200 p-3 sm:p-4 shadow-sm mb-4 sm:mb-6">
+          <div className="bg-white dark:bg-gray-900 rounded-lg border border-gray-200 dark:border-gray-700 p-3 sm:p-4 shadow-sm mb-4 sm:mb-6">
             <div className="flex items-center gap-2 mb-2">
               <Calendar className="w-4 h-4 text-primary-600 shrink-0" />
               <div>
-                <h3 className="text-sm font-medium text-gray-900">{t('period')}</h3>
-                <p className="text-xs text-gray-500">{getPeriodLabel()}</p>
+                <h3 className="text-sm font-medium text-gray-900 dark:text-gray-100">{t('period')}</h3>
+                <p className="text-xs text-gray-500 dark:text-gray-400">{getPeriodLabel()}</p>
               </div>
             </div>
             <div className="flex items-center gap-2 flex-wrap">
               <select
                 value={selectedPeriod}
                 onChange={(e) => setSelectedPeriod(e.target.value as 'week' | 'month' | 'year')}
-                className="flex-1 min-w-[90px] px-2 py-1.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 text-sm bg-white"
+                className="flex-1 min-w-[90px] px-2 py-1.5 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary-500 text-sm bg-white dark:bg-gray-900"
               >
                 <option value="week">{t('thisWeek')}</option>
                 <option value="month">{t('thisMonth')}</option>
@@ -136,7 +136,7 @@ export default function ReportsPage() {
               <select
                 value={selectedYear}
                 onChange={(e) => setSelectedYear(e.target.value)}
-                className="px-2 py-1.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 text-sm bg-white"
+                className="px-2 py-1.5 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary-500 text-sm bg-white dark:bg-gray-900"
               >
                 {Array.from({ length: 4 }, (_, i) => new Date().getFullYear() - i).map(y => (
                   <option key={y} value={String(y)}>{y}</option>
@@ -146,7 +146,7 @@ export default function ReportsPage() {
                 <select
                   value={selectedMonth}
                   onChange={(e) => setSelectedMonth(e.target.value)}
-                  className="flex-1 min-w-[90px] px-2 py-1.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 text-sm bg-white"
+                  className="flex-1 min-w-[90px] px-2 py-1.5 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary-500 text-sm bg-white dark:bg-gray-900"
                 >
                   {Array.from({ length: 12 }, (_, i) => (
                     <option key={i + 1} value={String(i + 1).padStart(2, '0')}>
@@ -159,7 +159,7 @@ export default function ReportsPage() {
                 <select
                   value={selectedWeek}
                   onChange={(e) => setSelectedWeek(e.target.value)}
-                  className="flex-1 min-w-[80px] px-2 py-1.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 text-sm bg-white"
+                  className="flex-1 min-w-[80px] px-2 py-1.5 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary-500 text-sm bg-white dark:bg-gray-900"
                 >
                   {getWeeksInMonth().map((week) => (
                     <option key={week.value} value={week.value}>{week.label}</option>
@@ -171,29 +171,29 @@ export default function ReportsPage() {
 
           {/* Summary Stats — 2x2 on mobile, 3-col on md+ */}
           <div className="grid grid-cols-2 md:grid-cols-3 gap-3 sm:gap-4 mb-4 sm:mb-6">
-            <div className="bg-white rounded-lg border border-gray-200 p-3 sm:p-4">
+            <div className="bg-white dark:bg-gray-900 rounded-lg border border-gray-200 dark:border-gray-700 p-3 sm:p-4">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-xs text-gray-600">{t('totalTransactions')}</p>
-                  <p className="text-xl sm:text-2xl font-bold text-gray-900">{transactionStats.totalTransactions}</p>
+                  <p className="text-xs text-gray-600 dark:text-gray-400">{t('totalTransactions')}</p>
+                  <p className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-gray-100">{transactionStats.totalTransactions}</p>
                 </div>
                 <BarChart3 className="w-6 h-6 sm:w-8 sm:h-8 text-primary-600" />
               </div>
             </div>
-            <div className="bg-white rounded-lg border border-gray-200 p-3 sm:p-4">
+            <div className="bg-white dark:bg-gray-900 rounded-lg border border-gray-200 dark:border-gray-700 p-3 sm:p-4">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-xs text-gray-600">{t('pendingTransactions')}</p>
-                  <p className="text-xl sm:text-2xl font-bold text-gray-900">{transactionStats.pendingCount}</p>
+                  <p className="text-xs text-gray-600 dark:text-gray-400">{t('pendingTransactions')}</p>
+                  <p className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-gray-100">{transactionStats.pendingCount}</p>
                 </div>
                 <TrendingUp className="w-6 h-6 sm:w-8 sm:h-8 text-orange-600" />
               </div>
             </div>
-            <div className="col-span-2 md:col-span-1 bg-white rounded-lg border border-gray-200 p-3 sm:p-4">
+            <div className="col-span-2 md:col-span-1 bg-white dark:bg-gray-900 rounded-lg border border-gray-200 dark:border-gray-700 p-3 sm:p-4">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-xs text-gray-600">{t('selectedPeriod')}</p>
-                  <p className="text-base sm:text-lg font-bold text-gray-900">
+                  <p className="text-xs text-gray-600 dark:text-gray-400">{t('selectedPeriod')}</p>
+                  <p className="text-base sm:text-lg font-bold text-gray-900 dark:text-gray-100">
                     {selectedPeriod === 'week' ? t('weekly') :
                      selectedPeriod === 'month' ? t('monthly') : t('annual')}
                   </p>

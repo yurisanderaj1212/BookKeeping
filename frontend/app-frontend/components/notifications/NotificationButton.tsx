@@ -1,4 +1,4 @@
-'use client'
+﻿'use client'
 
 import { useState } from 'react'
 import { Bell } from 'lucide-react'
@@ -18,7 +18,7 @@ export default function NotificationButton() {
     <>
       <button
         onClick={handleOpen}
-        className="relative p-2 text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-full transition-colors duration-200"
+        className="relative p-2 text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:text-gray-100 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-full transition-colors duration-200"
         title="Notificaciones"
         data-tour="notification-btn"
       >

@@ -1,4 +1,4 @@
-'use client'
+﻿'use client'
 
 import { useState, useEffect } from 'react'
 import { X, AlertCircle } from 'lucide-react'
@@ -150,7 +150,7 @@ export default function TransactionForm({ isOpen, onClose, onSave, transaction, 
           <h2 className="text-base font-semibold text-gray-900 dark:text-gray-100">
             {mode === 'create' ? t('new') : tCommon('edit')}
           </h2>
-          <button onClick={onClose} className="text-gray-400 hover:text-gray-600 transition-colors">
+          <button onClick={onClose} className="text-gray-400 hover:text-gray-600 dark:text-gray-400 transition-colors">
             <X className="w-5 h-5" />
           </button>
         </div>
@@ -168,13 +168,13 @@ export default function TransactionForm({ isOpen, onClose, onSave, transaction, 
             <div>
               <Label required>{t('date')}</Label>
               <input type="date" value={formData.date} onChange={e => handleChange('date', e.target.value)}
-                className={`w-full px-2 py-1.5 border rounded-lg focus:ring-2 focus:ring-primary-500 text-sm ${errors.date ? 'border-red-400 bg-red-50' : 'border-gray-300'}`} />
+                className={`w-full px-2 py-1.5 border rounded-lg focus:ring-2 focus:ring-primary-500 text-sm ${errors.date ? 'border-red-400 bg-red-50' : 'border-gray-300 dark:border-gray-600'}`} />
               <FieldError message={errors.date} />
             </div>
             <div>
               <Label required>{t('amount')}</Label>
               <input type="number" step="0.01" min="0" value={formData.amount} onChange={e => handleChange('amount', e.target.value)}
-                className={`w-full px-2 py-1.5 border rounded-lg focus:ring-2 focus:ring-primary-500 text-sm ${errors.amount ? 'border-red-400 bg-red-50' : 'border-gray-300'}`}
+                className={`w-full px-2 py-1.5 border rounded-lg focus:ring-2 focus:ring-primary-500 text-sm ${errors.amount ? 'border-red-400 bg-red-50' : 'border-gray-300 dark:border-gray-600'}`}
                 placeholder="0.00" />
               <FieldError message={errors.amount} />
             </div>
@@ -183,7 +183,7 @@ export default function TransactionForm({ isOpen, onClose, onSave, transaction, 
           <div>
             <Label>{t('description')}</Label>
             <input type="text" value={formData.description} onChange={e => handleChange('description', e.target.value)}
-              className={`w-full px-2 py-1.5 border rounded-lg focus:ring-2 focus:ring-primary-500 text-sm ${errors.description ? 'border-red-400 bg-red-50' : 'border-gray-300'}`}
+              className={`w-full px-2 py-1.5 border rounded-lg focus:ring-2 focus:ring-primary-500 text-sm ${errors.description ? 'border-red-400 bg-red-50' : 'border-gray-300 dark:border-gray-600'}`}
               placeholder={t('description')} />
             <FieldError message={errors.description} />
           </div>
@@ -193,7 +193,7 @@ export default function TransactionForm({ isOpen, onClose, onSave, transaction, 
               <Label>{t('account')} <span className="text-gray-400 font-normal">({tCommon('no')})</span></Label>
               <select value={formData.accountId} onChange={e => handleChange('accountId', e.target.value)}
                 disabled={loadingAccounts}
-                className={`w-full px-2 py-1.5 border rounded-lg focus:ring-2 focus:ring-primary-500 text-sm ${loadingAccounts ? 'opacity-50 cursor-not-allowed' : 'border-gray-300'}`}>
+                className={`w-full px-2 py-1.5 border rounded-lg focus:ring-2 focus:ring-primary-500 text-sm ${loadingAccounts ? 'opacity-50 cursor-not-allowed' : 'border-gray-300 dark:border-gray-600'}`}>
                 <option value="">{loadingAccounts ? tCommon('loading') : t('noAccount')}</option>
                 {accounts.map(a => {
                   const isCash = a.sub_type === 1002
@@ -208,7 +208,7 @@ export default function TransactionForm({ isOpen, onClose, onSave, transaction, 
               <Label required>{t('category')}</Label>
               <select value={formData.category} onChange={e => handleChange('category', e.target.value)}
                 disabled={loadingCategories}
-                className={`w-full px-2 py-1.5 border rounded-lg focus:ring-2 focus:ring-primary-500 text-sm ${errors.category ? 'border-red-400 bg-red-50' : 'border-gray-300'} ${loadingCategories ? 'opacity-50 cursor-not-allowed' : ''}`}>
+                className={`w-full px-2 py-1.5 border rounded-lg focus:ring-2 focus:ring-primary-500 text-sm ${errors.category ? 'border-red-400 bg-red-50' : 'border-gray-300 dark:border-gray-600'} ${loadingCategories ? 'opacity-50 cursor-not-allowed' : ''}`}>
                 <option value="">{loadingCategories ? tCommon('loading') : tCommon('all')}</option>
                 {cats.map(c => <option key={c.value} value={c.value}>{translateCategoryName(c.label, tCategories)}</option>)}
               </select>
@@ -233,11 +233,11 @@ export default function TransactionForm({ isOpen, onClose, onSave, transaction, 
             <Label>{t('status')}</Label>
             <div className="grid grid-cols-2 gap-2">
               <button type="button" onClick={() => handleChange('status', 'pending')}
-                className={`px-2 py-1.5 rounded-lg border text-xs transition-all ${formData.status === 'pending' ? 'border-yellow-500 bg-yellow-50 text-yellow-700' : 'border-gray-200 hover:border-gray-300'}`}>
+                className={`px-2 py-1.5 rounded-lg border text-xs transition-all ${formData.status === 'pending' ? 'border-yellow-500 bg-yellow-50 text-yellow-700' : 'border-gray-200 dark:border-gray-700 hover:border-gray-300 dark:border-gray-600'}`}>
                 {t('pending')}
               </button>
               <button type="button" onClick={() => handleChange('status', 'completed')}
-                className={`px-2 py-1.5 rounded-lg border text-xs transition-all ${formData.status === 'completed' ? 'border-green-500 bg-green-50 text-green-700' : 'border-gray-200 hover:border-gray-300'}`}>
+                className={`px-2 py-1.5 rounded-lg border text-xs transition-all ${formData.status === 'completed' ? 'border-green-500 bg-green-50 text-green-700' : 'border-gray-200 dark:border-gray-700 hover:border-gray-300 dark:border-gray-600'}`}>
                 {t('completed')}
               </button>
             </div>
@@ -250,8 +250,8 @@ export default function TransactionForm({ isOpen, onClose, onSave, transaction, 
               placeholder="..." />
           </div>
 
-          <div className="flex items-center justify-end space-x-2 pt-3 border-t border-gray-200">
-            <button type="button" onClick={onClose} className="px-3 py-1.5 text-sm text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200">
+          <div className="flex items-center justify-end space-x-2 pt-3 border-t border-gray-200 dark:border-gray-700">
+            <button type="button" onClick={onClose} className="px-3 py-1.5 text-sm text-gray-700 dark:text-gray-300 bg-gray-100 dark:bg-gray-700 rounded-lg hover:bg-gray-200">
               {tCommon('cancel')}
             </button>
             <button type="submit" disabled={loadingCategories}

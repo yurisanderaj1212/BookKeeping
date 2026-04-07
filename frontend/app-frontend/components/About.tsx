@@ -1,4 +1,4 @@
-'use client'
+﻿'use client'
 
 import { useTranslations } from 'next-intl'
 
@@ -37,7 +37,7 @@ export default function About() {
 
         {/* Mission */}
         <div className="mx-auto mt-16 max-w-4xl">
-          <div className="bg-white rounded-2xl p-8 shadow-soft">
+          <div className="bg-white dark:bg-gray-900 rounded-2xl p-8 shadow-soft">
             <h3 className="text-2xl font-bold text-navy-800 mb-6 text-center">{t('missionTitle')}</h3>
             <p className="text-lg text-slate-600 text-center leading-relaxed">{t('missionText')}</p>
           </div>
@@ -47,7 +47,7 @@ export default function About() {
         <div className="mx-auto mt-16 max-w-2xl sm:mt-20 lg:mt-24 lg:max-w-none">
           <dl className="grid grid-cols-1 gap-8 lg:grid-cols-4">
             {stats.map(s => (
-              <div key={s.labelKey} className="bg-white rounded-xl p-6 text-center shadow-soft">
+              <div key={s.labelKey} className="bg-white dark:bg-gray-900 rounded-xl p-6 text-center shadow-soft">
                 <dt className="text-sm font-medium text-slate-600">{t(s.labelKey as any)}</dt>
                 <dd className="mt-2 text-3xl font-bold text-primary-600">{s.value}</dd>
               </div>
@@ -62,7 +62,7 @@ export default function About() {
           </div>
           <div className="grid grid-cols-1 gap-8 lg:grid-cols-3">
             {values.map(v => (
-              <div key={v.titleKey} className="bg-white rounded-xl p-6 shadow-soft">
+              <div key={v.titleKey} className="bg-white dark:bg-gray-900 rounded-xl p-6 shadow-soft">
                 <div className="h-12 w-12 bg-primary-100 rounded-lg flex items-center justify-center mb-4">{v.icon}</div>
                 <h4 className="text-lg font-semibold text-navy-800 mb-2">{t(v.titleKey as any)}</h4>
                 <p className="text-slate-600">{t(v.descKey as any)}</p>

@@ -1,4 +1,4 @@
-'use client'
+﻿'use client'
 
 import { useState, useEffect } from 'react'
 import { Plus, Wallet, Landmark, DollarSign } from 'lucide-react'
@@ -135,8 +135,8 @@ export default function AccountsPage() {
               <div className="flex items-center gap-2 min-w-0">
                 <MobileMenuButton />
                 <div className="min-w-0">
-                <h1 className="text-xl sm:text-2xl font-bold text-gray-900 truncate">{t('title')}</h1>
-                <p className="text-sm text-gray-500 mt-0.5 hidden sm:block">{t('subtitle')}</p>
+                <h1 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-gray-100 truncate">{t('title')}</h1>
+                <p className="text-sm text-gray-500 dark:text-gray-400 mt-0.5 hidden sm:block">{t('subtitle')}</p>
               </div>
               </div>
               <PlaidLinkButton
@@ -184,11 +184,11 @@ export default function AccountsPage() {
 
           {/* Summary Cards — 2x2 on mobile */}
           <div className="grid grid-cols-2 md:grid-cols-3 gap-3 sm:gap-4 mb-4 sm:mb-6" data-tour="accounts-summary">
-            <div className="bg-white rounded-lg border border-gray-200 p-3 sm:p-4">
+            <div className="bg-white dark:bg-gray-900 rounded-lg border border-gray-200 dark:border-gray-700 p-3 sm:p-4">
               <div className="flex items-center justify-between gap-2">
                 <div className="min-w-0">
-                  <p className="text-xs text-gray-500 mb-0.5">{t('totalBalance')}</p>
-                  <p className="text-base sm:text-2xl font-bold text-gray-900 break-all">
+                  <p className="text-xs text-gray-500 dark:text-gray-400 mb-0.5">{t('totalBalance')}</p>
+                  <p className="text-base sm:text-2xl font-bold text-gray-900 dark:text-gray-100 break-all">
                     ${totalBalance.toLocaleString(locale === 'en' ? 'en-US' : 'es-ES', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                   </p>
                 </div>
@@ -198,11 +198,11 @@ export default function AccountsPage() {
               </div>
             </div>
 
-            <div className="bg-white rounded-lg border border-gray-200 p-3 sm:p-4">
+            <div className="bg-white dark:bg-gray-900 rounded-lg border border-gray-200 dark:border-gray-700 p-3 sm:p-4">
               <div className="flex items-center justify-between gap-2">
                 <div className="min-w-0">
-                  <p className="text-xs text-gray-500 mb-0.5">{t('activeAccounts')}</p>
-                  <p className="text-base sm:text-2xl font-bold text-gray-900">{activeAccounts}</p>
+                  <p className="text-xs text-gray-500 dark:text-gray-400 mb-0.5">{t('activeAccounts')}</p>
+                  <p className="text-base sm:text-2xl font-bold text-gray-900 dark:text-gray-100">{activeAccounts}</p>
                 </div>
                 <div className="w-9 h-9 sm:w-12 sm:h-12 shrink-0 bg-blue-100 rounded-lg flex items-center justify-center">
                   <Wallet className="w-5 h-5 sm:w-6 sm:h-6 text-blue-600" />
@@ -211,11 +211,11 @@ export default function AccountsPage() {
             </div>
 
             {/* 3rd card — full width on mobile */}
-            <div className="col-span-2 md:col-span-1 bg-white rounded-lg border border-gray-200 p-3 sm:p-4">
+            <div className="col-span-2 md:col-span-1 bg-white dark:bg-gray-900 rounded-lg border border-gray-200 dark:border-gray-700 p-3 sm:p-4">
               <div className="flex items-center justify-between gap-2">
                 <div className="min-w-0">
-                  <p className="text-xs text-gray-500 mb-0.5">{t('totalAccounts')}</p>
-                  <p className="text-base sm:text-2xl font-bold text-gray-900">{accounts.length}</p>
+                  <p className="text-xs text-gray-500 dark:text-gray-400 mb-0.5">{t('totalAccounts')}</p>
+                  <p className="text-base sm:text-2xl font-bold text-gray-900 dark:text-gray-100">{accounts.length}</p>
                 </div>
                 <div className="w-9 h-9 sm:w-12 sm:h-12 shrink-0 bg-purple-100 rounded-lg flex items-center justify-center">
                   <Landmark className="w-5 h-5 sm:w-6 sm:h-6 text-purple-600" />
@@ -226,9 +226,9 @@ export default function AccountsPage() {
 
           {/* Accounts List */}
           {loading ? (
-            <div className="bg-white rounded-lg border border-gray-200 overflow-hidden" data-tour="account-list">
+            <div className="bg-white dark:bg-gray-900 rounded-lg border border-gray-200 dark:border-gray-700 overflow-hidden" data-tour="account-list">
               {[1,2,3].map(i => (
-                <div key={i} className="p-6 border-b border-gray-100 flex items-center space-x-4 animate-pulse">
+                <div key={i} className="p-6 border-b border-gray-100 dark:border-gray-800 flex items-center space-x-4 animate-pulse">
                   <div className="w-12 h-12 bg-gray-200 rounded-lg shrink-0" />
                   <div className="flex-1 space-y-2">
                     <div className="h-4 bg-gray-200 rounded w-1/3" />
@@ -239,12 +239,12 @@ export default function AccountsPage() {
               ))}
             </div>
           ) : accounts.length === 0 ? (
-            <div className="text-center py-12 bg-white rounded-lg border border-gray-200" data-tour="account-list">
+            <div className="text-center py-12 bg-white dark:bg-gray-900 rounded-lg border border-gray-200 dark:border-gray-700" data-tour="account-list">
               <Wallet className="w-16 h-16 text-gray-400 mx-auto mb-4" />
-              <h3 className="text-lg font-medium text-gray-900 mb-2">
+              <h3 className="text-lg font-medium text-gray-900 dark:text-gray-100 mb-2">
                 {t('noAccounts')}
               </h3>
-              <p className="text-gray-600 mb-6">
+              <p className="text-gray-600 dark:text-gray-400 mb-6">
                 {t('noAccountsDesc')}
               </p>
               <PlaidLinkButton
@@ -289,15 +289,15 @@ export default function AccountsPage() {
       {/* Modal de confirmación de desactivación */}
       {confirmDeleteId !== null && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-xl shadow-xl p-6 max-w-sm w-full mx-4">
-            <h3 className="text-lg font-semibold text-gray-900 mb-2">{t('deactivate')}</h3>
-            <p className="text-sm text-gray-600 mb-6">
+          <div className="bg-white dark:bg-gray-900 rounded-xl shadow-xl p-6 max-w-sm w-full mx-4">
+            <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-2">{t('deactivate')}</h3>
+            <p className="text-sm text-gray-600 dark:text-gray-400 mb-6">
               {t('deactivateConfirm')}
             </p>
             <div className="flex justify-end gap-3">
               <button
                 onClick={() => setConfirmDeleteId(null)}
-                className="px-4 py-2 text-sm text-gray-700 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
+                className="px-4 py-2 text-sm text-gray-700 dark:text-gray-300 border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
               >
                 {tCommon('cancel')}
               </button>

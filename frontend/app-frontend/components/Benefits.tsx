@@ -1,4 +1,4 @@
-'use client'
+﻿'use client'
 
 import { useTranslations } from 'next-intl'
 
@@ -23,7 +23,7 @@ export default function Benefits() {
         <div className="mx-auto mt-16 max-w-2xl sm:mt-20 lg:mt-24 lg:max-w-none">
           <dl className="grid max-w-xl grid-cols-1 gap-8 lg:max-w-none lg:grid-cols-2 xl:grid-cols-3">
             {benefits.map(b => (
-              <div key={b.titleKey} className="bg-white rounded-xl p-8 shadow-soft hover:shadow-medium transition-shadow duration-300">
+              <div key={b.titleKey} className="bg-white dark:bg-gray-900 rounded-xl p-8 shadow-soft hover:shadow-medium transition-shadow duration-300">
                 <dt className="flex items-center gap-x-3 text-lg font-semibold leading-7 text-navy-800">
                   <div className="h-10 w-10 flex items-center justify-center rounded-lg bg-primary-100 text-primary-600">{b.icon}</div>
                   {t(b.titleKey as any)}

@@ -1,4 +1,4 @@
-'use client'
+﻿'use client'
 
 import { useState, useEffect } from 'react'
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, LineChart, Line } from 'recharts'
@@ -80,7 +80,7 @@ export default function YearComparison({ year }: YearComparisonProps) {
   const CustomTooltip = ({ active, payload, label }: any) => {
     if (active && payload && payload.length) {
       return (
-        <div className="bg-white dark:bg-gray-900 p-3 border border-gray-200 rounded-lg shadow-lg">
+        <div className="bg-white dark:bg-gray-900 p-3 border border-gray-200 dark:border-gray-700 rounded-lg shadow-lg">
           <p className="font-medium text-gray-900 dark:text-gray-100 mb-2">{t('yearLabel', { year: label })}</p>
           {payload.map((entry: any, index: number) => (
             <p key={index} className="text-sm" style={{ color: entry.color }}>
@@ -117,7 +117,7 @@ export default function YearComparison({ year }: YearComparisonProps) {
     return (
       <div className="bg-white dark:bg-gray-900 rounded-lg border border-gray-200 dark:border-gray-700 p-4">
         <div className="flex items-center justify-between mb-3">
-          <h4 className="text-sm font-medium text-gray-600">{title}</h4>
+          <h4 className="text-sm font-medium text-gray-600 dark:text-gray-400">{title}</h4>
           <div className={`${bgClass} p-1 rounded-full`}>
             <Icon className={`w-4 h-4 ${colorClass}`} />
           </div>
@@ -125,19 +125,19 @@ export default function YearComparison({ year }: YearComparisonProps) {
         
         <div className="space-y-2">
           <div className="flex items-center justify-between">
-            <span className="text-xs text-gray-500">{year}</span>
-            <span className="text-lg font-bold text-gray-900">
+            <span className="text-xs text-gray-500 dark:text-gray-400">{year}</span>
+            <span className="text-lg font-bold text-gray-900 dark:text-gray-100">
               {isPercentage ? `${current.toFixed(1)}%` : formatCurrency(current)}
             </span>
           </div>
           <div className="flex items-center justify-between">
-            <span className="text-xs text-gray-500">{parseInt(year) - 1}</span>
-            <span className="text-sm text-gray-600">
+            <span className="text-xs text-gray-500 dark:text-gray-400">{parseInt(year) - 1}</span>
+            <span className="text-sm text-gray-600 dark:text-gray-400">
               {isPercentage ? `${previous.toFixed(1)}%` : formatCurrency(previous)}
             </span>
           </div>
-          <div className="flex items-center justify-between pt-2 border-t border-gray-100">
-            <span className="text-xs text-gray-500">{t('growth')}</span>
+          <div className="flex items-center justify-between pt-2 border-t border-gray-100 dark:border-gray-800">
+            <span className="text-xs text-gray-500 dark:text-gray-400">{t('growth')}</span>
             <span className={`text-sm font-medium ${colorClass}`}>
               {isPositive ? '+' : ''}{growth.toFixed(1)}%
             </span>
@@ -151,19 +151,19 @@ export default function YearComparison({ year }: YearComparisonProps) {
     <div className="bg-white dark:bg-gray-900 rounded-lg border border-gray-200 dark:border-gray-700 p-6 mb-8">
       <div className="flex items-center justify-between mb-6">
         <div>
-          <h3 className="text-lg font-semibold text-gray-900">{t('yearComparison')}</h3>
+          <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">{t('yearComparison')}</h3>
           <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
             {t('annualPerformanceAnalysis')}
           </p>
         </div>
         <div className="flex items-center space-x-3">
-          <div className="flex bg-gray-100 rounded-lg p-1">
+          <div className="flex bg-gray-100 dark:bg-gray-700 rounded-lg p-1">
             <button
               onClick={() => setChartType('bar')}
               className={`px-3 py-1 text-sm font-medium rounded-md transition-colors duration-200 ${
                 chartType === 'bar'
-                  ? 'bg-white text-gray-900 shadow-sm'
-                  : 'text-gray-500 hover:text-gray-700'
+                  ? 'bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 shadow-sm'
+                  : 'text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:text-gray-300'
               }`}
             >
               Barras
@@ -172,8 +172,8 @@ export default function YearComparison({ year }: YearComparisonProps) {
               onClick={() => setChartType('line')}
               className={`px-3 py-1 text-sm font-medium rounded-md transition-colors duration-200 ${
                 chartType === 'line'
-                  ? 'bg-white text-gray-900 shadow-sm'
-                  : 'text-gray-500 hover:text-gray-700'
+                  ? 'bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 shadow-sm'
+                  : 'text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:text-gray-300'
               }`}
             >
               Tendencia
@@ -255,32 +255,32 @@ export default function YearComparison({ year }: YearComparisonProps) {
           <table className="w-full table-fixed">
             <thead className="bg-gray-50 dark:bg-gray-800">
               <tr>
-                <th className="w-[15%] px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th className="w-[15%] px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
                   Año
                 </th>
-                <th className="w-[20%] px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th className="w-[20%] px-4 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
                   Ingresos
                 </th>
-                <th className="w-[20%] px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th className="w-[20%] px-4 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
                   Gastos
                 </th>
-                <th className="w-[20%] px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th className="w-[20%] px-4 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
                   Beneficio
                 </th>
-                <th className="w-[15%] px-4 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th className="w-[15%] px-4 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
                   Margen
                 </th>
-                <th className="w-[10%] px-4 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th className="w-[10%] px-4 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
                   Ranking
                 </th>
               </tr>
             </thead>
             <tbody className="bg-white dark:bg-gray-900 divide-y divide-gray-200 dark:divide-gray-700">
               {yearComparisonData.map((yearData, index) => (
-                <tr key={index} className={`hover:bg-gray-50 ${yearData.year === year ? 'bg-blue-50' : ''}`}>
+                <tr key={index} className={`hover:bg-gray-50 dark:hover:bg-gray-800 ${yearData.year === year ? 'bg-blue-50' : ''}`}>
                   <td className="px-4 py-3">
                     <div className="flex items-center space-x-2">
-                      <span className="font-medium text-gray-900">{yearData.year}</span>
+                      <span className="font-medium text-gray-900 dark:text-gray-100">{yearData.year}</span>
                       {yearData.year === year && (
                         <span className="bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded-full">
                           {t('current')}
@@ -299,14 +299,14 @@ export default function YearComparison({ year }: YearComparisonProps) {
                   }`}>
                     {formatCurrency(yearData.beneficio)}
                   </td>
-                  <td className="px-4 py-3 text-center font-medium text-gray-700">
+                  <td className="px-4 py-3 text-center font-medium text-gray-700 dark:text-gray-300">
                     {yearData.margen.toFixed(1)}%
                   </td>
                   <td className="px-4 py-3 text-center">
                     <div className={`w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold mx-auto ${
                       yearData.year === bestYear?.year ? 'bg-green-100 text-green-800' :
                       yearData.year === worstYear?.year ? 'bg-red-100 text-red-800' :
-                      'bg-gray-100 text-gray-600'
+                      'bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400'
                     }`}>
                       {index + 1}
                     </div>

@@ -1,4 +1,4 @@
-'use client'
+﻿'use client'
 
 import { useState, useEffect, useCallback, useRef } from 'react'
 import { useRouter } from 'next/navigation'
@@ -51,7 +51,7 @@ function BillingRedirect() {
   const t = useTranslations('settings')
   useEffect(() => { router.push('/settings/billing') }, [router])
   return (
-    <div className="flex items-center justify-center py-16 text-gray-500 text-sm">
+    <div className="flex items-center justify-center py-16 text-gray-500 dark:text-gray-400 text-sm">
       {t('redirectingBilling')}
     </div>
   )
@@ -133,8 +133,8 @@ const ProfileTab = ({
           />
         </div>
         <div>
-          <h4 className="font-medium text-gray-900">{firstName} {lastName}</h4>
-          <p className="text-sm text-gray-500">{jobTitle || t('noPosition')}</p>
+          <h4 className="font-medium text-gray-900 dark:text-gray-100">{firstName} {lastName}</h4>
+          <p className="text-sm text-gray-500 dark:text-gray-400">{jobTitle || t('noPosition')}</p>
           <div className="flex items-center gap-3 mt-1">
             <button
               type="button"
@@ -160,19 +160,19 @@ const ProfileTab = ({
         <div>
           <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">{t('firstName')}</label>
           <input type="text" value={firstName} onChange={e => setFirstName(e.target.value)}
-            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500" />
+            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500" />
         </div>
         <div>
           <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">{t('lastName')}</label>
           <input type="text" value={lastName} onChange={e => setLastName(e.target.value)}
-            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500" />
+            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500" />
         </div>
         <div>
           <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">{t('email')}</label>
           <div className="relative">
             <Mail className="absolute left-3 top-2.5 w-4 h-4 text-gray-400" />
             <input type="email" value={email} readOnly
-              className="w-full pl-10 pr-3 py-2 border border-gray-200 rounded-lg bg-gray-50 text-gray-500 cursor-not-allowed" />
+              className="w-full pl-10 pr-3 py-2 border border-gray-200 dark:border-gray-700 rounded-lg bg-gray-50 dark:bg-gray-800 text-gray-500 dark:text-gray-400 cursor-not-allowed" />
           </div>
           <p className="text-xs text-gray-400 mt-1">{t('emailReadOnly')}</p>
         </div>
@@ -181,14 +181,14 @@ const ProfileTab = ({
           <div className="relative">
             <Phone className="absolute left-3 top-2.5 w-4 h-4 text-gray-400" />
             <input type="tel" value={phone} onChange={e => setPhone(e.target.value)}
-              className="w-full pl-10 pr-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+              className="w-full pl-10 pr-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
               placeholder="(555) 123-4567" />
           </div>
         </div>
         <div className="md:col-span-2">
           <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">{t('jobTitle')}</label>
           <input type="text" value={jobTitle} onChange={e => setJobTitle(e.target.value)}
-            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
             placeholder={t('jobTitlePlaceholder')} />
         </div>
       </div>
@@ -226,12 +226,12 @@ const CompanyTab = ({
           <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">{t('companyName')}</label>
           <input type="text" value={prefs.companyName}
             onChange={e => setPrefs({ ...prefs, companyName: e.target.value })}
-            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500" />
+            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500" />
         </div>
         <div>
           <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">{t('businessType')}</label>
           <select value={prefs.businessType} onChange={e => setPrefs({ ...prefs, businessType: e.target.value })}
-            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500">
+            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500">
             <option value="Servicios Profesionales">{t('businessTypes.professional')}</option>
             <option value="Retail">{t('businessTypes.retail')}</option>
             <option value="Manufactura">{t('businessTypes.other')}</option>
@@ -245,7 +245,7 @@ const CompanyTab = ({
         <div>
           <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">{t('taxId')}</label>
           <input type="text" value={prefs.taxId} onChange={e => setPrefs({ ...prefs, taxId: e.target.value })}
-            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
             placeholder="12-3456789" />
         </div>
         <div>
@@ -253,7 +253,7 @@ const CompanyTab = ({
           <div className="relative">
             <Calendar className="absolute left-3 top-2.5 w-4 h-4 text-gray-400" />
             <select value={prefs.fiscalYearStart} onChange={e => setPrefs({ ...prefs, fiscalYearStart: e.target.value })}
-              className="w-full pl-10 pr-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500">
+              className="w-full pl-10 pr-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500">
               <option value="01-01">{t('fiscalYearOptions.jan')}</option>
               <option value="04-01">{t('fiscalYearOptions.apr')}</option>
               <option value="07-01">{t('fiscalYearOptions.jul')}</option>
@@ -264,17 +264,17 @@ const CompanyTab = ({
         <div>
           <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">{t('companyPhone')}</label>
           <input type="tel" value={prefs.companyPhone} onChange={e => setPrefs({ ...prefs, companyPhone: e.target.value })}
-            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500" />
+            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500" />
         </div>
         <div>
           <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">{t('companyEmail')}</label>
           <input type="email" value={prefs.companyEmail} onChange={e => setPrefs({ ...prefs, companyEmail: e.target.value })}
-            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500" />
+            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500" />
         </div>
         <div className="md:col-span-2">
           <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">{t('website')}</label>
           <input type="url" value={prefs.companyWebsite} onChange={e => setPrefs({ ...prefs, companyWebsite: e.target.value })}
-            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
             placeholder={t('websitePlaceholder')} />
         </div>
       </div>
@@ -312,9 +312,9 @@ const SecurityTab = ({
           <div className="relative">
             <input type={form.showCurrent ? 'text' : 'password'} value={form.currentPassword}
               onChange={e => setForm({ ...form, currentPassword: e.target.value })}
-              className="w-full px-3 py-2 pr-10 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500" />
+              className="w-full px-3 py-2 pr-10 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500" />
             <button type="button" onClick={() => setForm({ ...form, showCurrent: !form.showCurrent })}
-              className="absolute right-3 top-2.5 text-gray-400 hover:text-gray-600">
+              className="absolute right-3 top-2.5 text-gray-400 hover:text-gray-600 dark:text-gray-400">
               {form.showCurrent ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
             </button>
           </div>
@@ -324,9 +324,9 @@ const SecurityTab = ({
           <div className="relative">
             <input type={form.showNew ? 'text' : 'password'} value={form.newPassword}
               onChange={e => setForm({ ...form, newPassword: e.target.value })}
-              className="w-full px-3 py-2 pr-10 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500" />
+              className="w-full px-3 py-2 pr-10 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500" />
             <button type="button" onClick={() => setForm({ ...form, showNew: !form.showNew })}
-              className="absolute right-3 top-2.5 text-gray-400 hover:text-gray-600">
+              className="absolute right-3 top-2.5 text-gray-400 hover:text-gray-600 dark:text-gray-400">
               {form.showNew ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
             </button>
           </div>
@@ -337,9 +337,9 @@ const SecurityTab = ({
           <div className="relative">
             <input type={form.showConfirm ? 'text' : 'password'} value={form.confirmPassword}
               onChange={e => setForm({ ...form, confirmPassword: e.target.value })}
-              className="w-full px-3 py-2 pr-10 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500" />
+              className="w-full px-3 py-2 pr-10 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500" />
             <button type="button" onClick={() => setForm({ ...form, showConfirm: !form.showConfirm })}
-              className="absolute right-3 top-2.5 text-gray-400 hover:text-gray-600">
+              className="absolute right-3 top-2.5 text-gray-400 hover:text-gray-600 dark:text-gray-400">
               {form.showConfirm ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
             </button>
           </div>
@@ -353,22 +353,22 @@ const SecurityTab = ({
     <div className="bg-white dark:bg-gray-900 rounded-lg border border-gray-200 dark:border-gray-700 p-6">
       <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">{t('sessionOptions')}</h3>
       <div className="space-y-4">
-        <div className="flex items-center justify-between p-4 border border-gray-200 rounded-lg">
+        <div className="flex items-center justify-between p-4 border border-gray-200 dark:border-gray-700 rounded-lg">
           <div>
-            <h4 className="font-medium text-gray-900">{t('loginAlerts')}</h4>
-            <p className="text-sm text-gray-500 mt-1">{t('loginAlertsDesc')}</p>
+            <h4 className="font-medium text-gray-900 dark:text-gray-100">{t('loginAlerts')}</h4>
+            <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">{t('loginAlertsDesc')}</p>
           </div>
           <label className="relative inline-flex items-center cursor-pointer">
             <input type="checkbox" checked={form.loginAlerts}
               onChange={e => setForm({ ...form, loginAlerts: e.target.checked })} className="sr-only peer" />
-            <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-primary-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary-600"></div>
+            <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-primary-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white dark:bg-gray-900 after:border-gray-300 dark:border-gray-600 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary-600"></div>
           </label>
         </div>
-        <div className="p-4 border border-gray-200 rounded-lg">
-          <h4 className="font-medium text-gray-900 mb-2">{t('sessionTimeout')}</h4>
-          <p className="text-sm text-gray-500 mb-3">{t('sessionTimeoutDesc')}</p>
+        <div className="p-4 border border-gray-200 dark:border-gray-700 rounded-lg">
+          <h4 className="font-medium text-gray-900 dark:text-gray-100 mb-2">{t('sessionTimeout')}</h4>
+          <p className="text-sm text-gray-500 dark:text-gray-400 mb-3">{t('sessionTimeoutDesc')}</p>
           <select value={form.sessionTimeout} onChange={e => setForm({ ...form, sessionTimeout: parseInt(e.target.value) })}
-            className="w-full md:w-auto px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500">
+            className="w-full md:w-auto px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500">
             <option value={15}>{t('timeoutOptions.15min')}</option>
             <option value={30}>{t('timeoutOptions.30min')}</option>
             <option value={60}>{t('timeoutOptions.1h')}</option>
@@ -572,16 +572,16 @@ export default function SettingsPage() {
                   { key: 'lowBalanceAlerts' },
                   { key: 'expenseThresholds' },
                 ] as { key: keyof typeof notifPrefs }[]).map(item => (
-                  <div key={item.key} className="flex items-center justify-between p-4 border border-gray-200 rounded-lg">
+                  <div key={item.key} className="flex items-center justify-between p-4 border border-gray-200 dark:border-gray-700 rounded-lg">
                     <div className="flex-1">
-                      <h4 className="font-medium text-gray-900">{t(`notifItems.${item.key}` as any)}</h4>
-                      <p className="text-sm text-gray-500 mt-1">{t(`notifItems.${item.key}Desc` as any)}</p>
+                      <h4 className="font-medium text-gray-900 dark:text-gray-100">{t(`notifItems.${item.key}` as any)}</h4>
+                      <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">{t(`notifItems.${item.key}Desc` as any)}</p>
                     </div>
                     <label className="relative inline-flex items-center cursor-pointer">
                       <input type="checkbox" checked={notifPrefs[item.key]}
                         onChange={e => setNotifPrefs(p => ({ ...p, [item.key]: e.target.checked }))}
                         className="sr-only peer" />
-                      <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-primary-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary-600"></div>
+                      <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-primary-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white dark:bg-gray-900 after:border-gray-300 dark:border-gray-600 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary-600"></div>
                     </label>
                   </div>
                 ))}
@@ -611,7 +611,7 @@ export default function SettingsPage() {
                   <div className="relative">
                     <Globe className="absolute left-3 top-2.5 w-4 h-4 text-gray-400" />
                     <select value={prefs.language} onChange={e => setPrefs({ ...prefs, language: e.target.value })}
-                      className="w-full pl-10 pr-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500">
+                      className="w-full pl-10 pr-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500">
                       <option value="es">{t('languageEs')}</option>
                       <option value="en">{t('languageEn')}</option>
                     </select>
@@ -622,7 +622,7 @@ export default function SettingsPage() {
                   <div className="relative">
                     <DollarSign className="absolute left-3 top-2.5 w-4 h-4 text-gray-400" />
                     <select value={prefs.currency} onChange={e => setPrefs({ ...prefs, currency: e.target.value })}
-                      className="w-full pl-10 pr-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500">
+                      className="w-full pl-10 pr-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500">
                       {(['USD', 'EUR', 'MXN', 'CAD'] as const).map(code => (
                         <option key={code} value={code}>{t(`currencyOptions.${code}` as any)}</option>
                       ))}
@@ -632,7 +632,7 @@ export default function SettingsPage() {
                 <div>
                   <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">{t('dateFormat')}</label>
                   <select value={prefs.dateFormat} onChange={e => setPrefs({ ...prefs, dateFormat: e.target.value })}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500">
+                    className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500">
                     <option value="MM/DD/YYYY">MM/DD/YYYY (US)</option>
                     <option value="DD/MM/YYYY">DD/MM/YYYY (EU)</option>
                     <option value="YYYY-MM-DD">YYYY-MM-DD (ISO)</option>
@@ -641,7 +641,7 @@ export default function SettingsPage() {
                 <div>
                   <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">{t('timezone')}</label>
                   <select value={prefs.timezone} onChange={e => setPrefs({ ...prefs, timezone: e.target.value })}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500">
+                    className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500">
                     <option value="America/New_York">Eastern Time (ET)</option>
                     <option value="America/Chicago">Central Time (CT)</option>
                     <option value="America/Denver">Mountain Time (MT)</option>
@@ -654,17 +654,17 @@ export default function SettingsPage() {
 
             <div className="bg-white dark:bg-gray-900 rounded-lg border border-gray-200 dark:border-gray-700 p-6">
               <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-1">{t('themeTitle')}</h3>
-              <p className="text-sm text-gray-500 mb-4">{t('themeDescription')}</p>
+              <p className="text-sm text-gray-500 dark:text-gray-400 mb-4">{t('themeDescription')}</p>
               <ThemeToggle />
             </div>
 
             <div className="bg-white dark:bg-gray-900 rounded-lg border border-gray-200 dark:border-gray-700 p-6">
               <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">{t('dataManagement')}</h3>
               <div className="space-y-4">
-                <div className="flex items-center justify-between p-4 border border-gray-200 rounded-lg">
+                <div className="flex items-center justify-between p-4 border border-gray-200 dark:border-gray-700 rounded-lg">
                   <div>
-                    <h4 className="font-medium text-gray-900">{t('exportData')}</h4>
-                    <p className="text-sm text-gray-500 mt-1">{t('exportDataDesc')}</p>
+                    <h4 className="font-medium text-gray-900 dark:text-gray-100">{t('exportData')}</h4>
+                    <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">{t('exportDataDesc')}</p>
                   </div>
                   <button disabled title={t('exportComingSoon')}
                     className="bg-blue-300 text-white px-4 py-2 rounded-lg cursor-not-allowed flex items-center space-x-2 opacity-60">
@@ -709,8 +709,8 @@ export default function SettingsPage() {
               <div className="flex items-center gap-2 min-w-0">
                 <MobileMenuButton />
                 <div className="min-w-0">
-                  <h1 className="text-base sm:text-xl font-bold text-gray-900 truncate">{t('title')}</h1>
-                  <p className="text-xs text-gray-500 hidden sm:block">{t('subtitle')}</p>
+                  <h1 className="text-base sm:text-xl font-bold text-gray-900 dark:text-gray-100 truncate">{t('title')}</h1>
+                  <p className="text-xs text-gray-500 dark:text-gray-400 hidden sm:block">{t('subtitle')}</p>
                 </div>
               </div>
               <button
@@ -742,7 +742,7 @@ export default function SettingsPage() {
                       className={`flex items-center gap-2 px-3 py-2.5 rounded-xl transition-all text-left lg:w-full border ${
                         activeTab === tab.id
                           ? 'bg-primary-50 text-primary-600 border-primary-200 shadow-sm'
-                          : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900 border-gray-100 bg-white'
+                          : 'text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800 hover:text-gray-900 dark:text-gray-100 border-gray-100 dark:border-gray-800 bg-white dark:bg-gray-900'
                       }`}>
                       <Icon className={`w-4 h-4 shrink-0 ${activeTab === tab.id ? 'text-primary-600' : 'text-gray-400'}`} />
                       <span className="font-medium text-xs sm:text-sm truncate">{tab.label}</span>

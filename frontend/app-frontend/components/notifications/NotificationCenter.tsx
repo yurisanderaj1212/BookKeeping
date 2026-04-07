@@ -1,4 +1,4 @@
-'use client'
+﻿'use client'
 
 import { useState, useRef, useCallback, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
@@ -87,20 +87,20 @@ export default function NotificationCenter({ isOpen, onClose, onRefresh }: Props
       <div className="absolute inset-0 sm:hidden pointer-events-auto" onClick={onClose} />
       <div
         ref={ref}
-        className="absolute right-0 sm:right-4 top-0 sm:top-20 w-full sm:w-96 max-h-screen sm:max-h-[80vh] bg-white sm:rounded-lg shadow-xl border-0 sm:border border-gray-200 flex flex-col pointer-events-auto"
+        className="absolute right-0 sm:right-4 top-0 sm:top-20 w-full sm:w-96 max-h-screen sm:max-h-[80vh] bg-white dark:bg-gray-900 sm:rounded-lg shadow-xl border-0 sm:border border-gray-200 dark:border-gray-700 flex flex-col pointer-events-auto"
         style={{ maxHeight: '100dvh' }}
       >
         {/* Header */}
         <div className="flex items-center justify-between p-4 border-b border-gray-200 dark:border-gray-700 shrink-0">
           <div className="flex items-center gap-2">
             <Bell className="w-5 h-5 text-primary-600" />
-            <h3 className="font-semibold text-gray-900">{t('title')}</h3>
+            <h3 className="font-semibold text-gray-900 dark:text-gray-100">{t('title')}</h3>
             {unread > 0 && (
               <span className="bg-red-500 text-white text-xs px-2 py-0.5 rounded-full">{unread}</span>
             )}
           </div>
-          <button onClick={onClose} className="p-2 hover:bg-gray-100 rounded-full transition-colors">
-            <X className="w-5 h-5 text-gray-500" />
+          <button onClick={onClose} className="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-full transition-colors">
+            <X className="w-5 h-5 text-gray-500 dark:text-gray-400" />
           </button>
         </div>
 
@@ -110,7 +110,7 @@ export default function NotificationCenter({ isOpen, onClose, onRefresh }: Props
             <select
               value={filter}
               onChange={e => setFilter(e.target.value as any)}
-              className="flex-1 min-w-[120px] text-sm border border-gray-300 rounded-lg px-2 py-1.5 focus:ring-2 focus:ring-primary-500 bg-white"
+              className="flex-1 min-w-[120px] text-sm border border-gray-300 dark:border-gray-600 rounded-lg px-2 py-1.5 focus:ring-2 focus:ring-primary-500 bg-white dark:bg-gray-900"
             >
               <option value="all">{t('all')} ({total})</option>
               <option value="unread">{t('unread')} ({unread})</option>
@@ -119,7 +119,7 @@ export default function NotificationCenter({ isOpen, onClose, onRefresh }: Props
             <select
               value={typeFilter}
               onChange={e => setTypeFilter(e.target.value)}
-              className="flex-1 min-w-[120px] text-sm border border-gray-300 rounded-lg px-2 py-1.5 focus:ring-2 focus:ring-primary-500 bg-white"
+              className="flex-1 min-w-[120px] text-sm border border-gray-300 dark:border-gray-600 rounded-lg px-2 py-1.5 focus:ring-2 focus:ring-primary-500 bg-white dark:bg-gray-900"
             >
               <option value="all">{t('allTypes')}</option>
               <option value="transaction">{t('typeTransaction')}</option>
@@ -140,7 +140,7 @@ export default function NotificationCenter({ isOpen, onClose, onRefresh }: Props
         {/* List */}
         <div className="flex-1 overflow-y-auto">
           {filtered.length === 0 ? (
-            <div className="p-8 text-center text-gray-500">
+            <div className="p-8 text-center text-gray-500 dark:text-gray-400">
               <Bell className="w-12 h-12 mx-auto mb-3 text-gray-300" />
               <p className="text-sm">{t('empty')}</p>
             </div>
@@ -152,7 +152,7 @@ export default function NotificationCenter({ isOpen, onClose, onRefresh }: Props
                   <div
                     key={n.id}
                     onClick={() => handleClick(n)}
-                    className={`p-4 hover:bg-gray-50 cursor-pointer transition-colors ${!n.isRead ? 'bg-blue-50 border-l-4 border-l-primary-500' : ''}`}
+                    className={`p-4 hover:bg-gray-50 dark:hover:bg-gray-800 cursor-pointer transition-colors ${!n.isRead ? 'bg-blue-50 border-l-4 border-l-primary-500' : ''}`}
                   >
                     <div className="flex items-start gap-3">
                       <div className={`p-2 rounded-full shrink-0 ${getNotificationColor(n.priority)}`}>
@@ -161,7 +161,7 @@ export default function NotificationCenter({ isOpen, onClose, onRefresh }: Props
                       <div className="flex-1 min-w-0">
                         <div className="flex items-start justify-between gap-2">
                           <div className="flex-1 min-w-0">
-                            <p className={`text-sm font-medium truncate ${!n.isRead ? 'text-gray-900' : 'text-gray-700'}`}>
+                            <p className={`text-sm font-medium truncate ${!n.isRead ? 'text-gray-900 dark:text-gray-100' : 'text-gray-700 dark:text-gray-300'}`}>
                               {n.title}
                             </p>
                             <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5 line-clamp-2">{n.message}</p>
@@ -170,11 +170,11 @@ export default function NotificationCenter({ isOpen, onClose, onRefresh }: Props
                           <div className="flex items-center gap-1 shrink-0">
                             {!n.isRead && (
                               <button onClick={e => handleMarkRead(e, n.id)} className="p-1 hover:bg-gray-200 rounded-full" title="Marcar como leída">
-                                <Check className="w-3 h-3 text-gray-500" />
+                                <Check className="w-3 h-3 text-gray-500 dark:text-gray-400" />
                               </button>
                             )}
                             <button onClick={e => handleDelete(e, n.id)} className="p-1 hover:bg-gray-200 rounded-full" title="Eliminar">
-                              <Trash2 className="w-3 h-3 text-gray-500" />
+                              <Trash2 className="w-3 h-3 text-gray-500 dark:text-gray-400" />
                             </button>
                           </div>
                         </div>
@@ -188,7 +188,7 @@ export default function NotificationCenter({ isOpen, onClose, onRefresh }: Props
         </div>
 
         {/* Footer */}
-        <div className="p-3 border-t border-gray-200 dark:border-gray-700 bg-gray-50">
+        <div className="p-3 border-t border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800">
           <button
             onClick={() => { router.push(`/${locale}/notifications`); onClose() }}
             className="w-full text-sm text-primary-600 hover:text-primary-700 font-medium"

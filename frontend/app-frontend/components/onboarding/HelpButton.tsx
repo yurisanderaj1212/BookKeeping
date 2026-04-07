@@ -1,4 +1,4 @@
-'use client'
+﻿'use client'
 
 import { useState } from 'react'
 import { HelpCircle, Play, X } from 'lucide-react'
@@ -36,18 +36,18 @@ export default function HelpButton({ onStartTour }: HelpButtonProps) {
           />
 
           {/* Tooltip */}
-          <div className="absolute right-0 top-12 bg-white rounded-lg shadow-lg border border-gray-200 p-4 w-64 z-50">
+          <div className="absolute right-0 top-12 bg-white dark:bg-gray-900 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 p-4 w-64 z-50">
             <div className="flex items-center justify-between mb-3">
-              <h4 className="font-medium text-gray-900">{t('title')}</h4>
+              <h4 className="font-medium text-gray-900 dark:text-gray-100">{t('title')}</h4>
               <button
                 onClick={() => setShowTooltip(false)}
-                className="text-gray-400 hover:text-gray-600"
+                className="text-gray-400 hover:text-gray-600 dark:text-gray-400"
               >
                 <X className="w-4 h-4" />
               </button>
             </div>
 
-            <p className="text-sm text-gray-600 mb-4">{t('description')}</p>
+            <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">{t('description')}</p>
 
             <button
               onClick={handleStartTour}

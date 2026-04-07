@@ -1,4 +1,4 @@
-import { forwardRef } from 'react'
+﻿import { forwardRef } from 'react'
 
 interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   variant?: 'primary' | 'secondary' | 'outline' | 'ghost'
@@ -25,7 +25,7 @@ const Button = forwardRef<HTMLButtonElement, ButtonProps>(
     const variants = {
       primary: 'bg-primary-500 text-white hover:bg-primary-600 focus:ring-primary-500 shadow-sm hover:shadow-md',
       secondary: 'bg-slate-100 text-slate-700 hover:bg-slate-200 focus:ring-slate-500',
-      outline: 'border border-slate-300 bg-white text-slate-700 hover:bg-slate-50 focus:ring-primary-500',
+      outline: 'border border-slate-300 bg-white dark:bg-gray-900 text-slate-700 hover:bg-slate-50 focus:ring-primary-500',
       ghost: 'text-slate-700 hover:bg-slate-100 focus:ring-slate-500'
     }
     

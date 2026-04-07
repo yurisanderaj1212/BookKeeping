@@ -1,4 +1,4 @@
-'use client'
+﻿'use client'
 
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
@@ -44,22 +44,22 @@ export default function EmployeeSummaryPage() {
               <div className="flex items-center space-x-4">
                 <button
                   onClick={() => router.back()}
-                  className="text-gray-400 hover:text-gray-600 transition-colors duration-200"
+                  className="text-gray-400 hover:text-gray-600 dark:text-gray-400 transition-colors duration-200"
                 >
                   <ArrowLeft className="w-5 h-5" />
                 </button>
                 <div>
-                  <h1 className="text-2xl font-bold text-gray-900">
+                  <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">
                     {t('pageTitle')}
                   </h1>
-                  <p className="text-sm text-gray-500 mt-1">
+                  <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
                     {t('pageSubtitle')}
                   </p>
                 </div>
               </div>
               <button 
                 onClick={handleExport}
-                className="bg-gray-100 text-gray-700 px-4 py-2 rounded-lg hover:bg-gray-200 transition-colors duration-200 flex items-center space-x-2"
+                className="bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 px-4 py-2 rounded-lg hover:bg-gray-200 transition-colors duration-200 flex items-center space-x-2"
               >
                 <Download className="w-4 h-4" />
                 {tCommon("export")}
@@ -70,9 +70,9 @@ export default function EmployeeSummaryPage() {
 
         {/* Period Filter */}
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
-          <div className="bg-white rounded-lg p-4 shadow-sm border border-gray-200 mb-6">
+          <div className="bg-white dark:bg-gray-900 rounded-lg p-4 shadow-sm border border-gray-200 dark:border-gray-700 mb-6">
             <div className="flex items-center justify-between">
-              <h3 className="text-sm font-medium text-gray-700">{t('analysisPeriod')}</h3>
+              <h3 className="text-sm font-medium text-gray-700 dark:text-gray-300">{t('analysisPeriod')}</h3>
               <div className="flex items-center space-x-2">
                 {(['week', 'month', 'year'] as const).map((p) => (
                   <button
@@ -81,7 +81,7 @@ export default function EmployeeSummaryPage() {
                     className={`px-3 py-1.5 text-sm rounded-lg transition-colors duration-200 ${
                       period === p
                         ? 'bg-primary-100 text-primary-700 font-medium'
-                        : 'text-gray-600 hover:bg-gray-100'
+                        : 'text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700'
                     }`}
                   >
                     {p === 'week' ? tReports('weekly') : p === 'month' ? tReports('monthly') : tReports('annual')}

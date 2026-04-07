@@ -1,4 +1,4 @@
-'use client'
+﻿'use client'
 
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
@@ -214,8 +214,8 @@ export default function DashboardPage() {
               <div className="flex items-center gap-2 min-w-0">
                 <MobileMenuButton />
                 <div className="min-w-0">
-                <h1 className="text-xl sm:text-2xl font-bold text-gray-900 truncate">{t('title')}</h1>
-                <p className="text-sm text-gray-500 mt-0.5 hidden sm:block">{t('welcome')}</p>
+                <h1 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-gray-100 truncate">{t('title')}</h1>
+                <p className="text-sm text-gray-500 dark:text-gray-400 mt-0.5 hidden sm:block">{t('welcome')}</p>
               </div>
               </div>
               <div className="flex items-center gap-2 shrink-0">
@@ -230,7 +230,7 @@ export default function DashboardPage() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
 
         {/* Quick Actions - Compact version right after header */}
-        <div className="bg-white rounded-lg border border-gray-200 p-4 shadow-sm mb-6" data-tour="quick-actions">
+        <div className="bg-white dark:bg-gray-900 rounded-lg border border-gray-200 dark:border-gray-700 p-4 shadow-sm mb-6" data-tour="quick-actions">
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2 sm:gap-3">
             {quickActions.map((action, index) => {
               const Icon = action.icon
@@ -238,7 +238,7 @@ export default function DashboardPage() {
                 <button
                   key={action.id}
                   onClick={() => handleQuickAction(action.id)}
-                  className="bg-white border border-primary-200 hover:border-primary-300 hover:bg-primary-50 p-3 rounded-lg transition-all duration-200 hover:scale-105 hover:shadow-md group"
+                  className="bg-white dark:bg-gray-900 border border-primary-200 hover:border-primary-300 hover:bg-primary-50 p-3 rounded-lg transition-all duration-200 hover:scale-105 hover:shadow-md group"
                   style={{ 
                     animationDelay: `${index * 100}ms`,
                     animation: 'fadeInScale 0.5s ease-out forwards'
@@ -249,8 +249,8 @@ export default function DashboardPage() {
                       <Icon className="w-4 h-4 text-primary-600" />
                     </div>
                     <div className="text-left flex-1 min-w-0">
-                      <h4 className="font-medium text-xs text-gray-900 truncate">{action.title}</h4>
-                      <p className="text-xs text-gray-500 truncate leading-tight">{action.description}</p>
+                      <h4 className="font-medium text-xs text-gray-900 dark:text-gray-100 truncate">{action.title}</h4>
+                      <p className="text-xs text-gray-500 dark:text-gray-400 truncate leading-tight">{action.description}</p>
                     </div>
                   </div>
                 </button>
@@ -291,7 +291,7 @@ export default function DashboardPage() {
           {loadingSummary ? (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
               {[1, 2, 3, 4].map((i) => (
-                <div key={i} className="bg-white rounded-lg border border-gray-200 p-6 animate-pulse">
+                <div key={i} className="bg-white dark:bg-gray-900 rounded-lg border border-gray-200 dark:border-gray-700 p-6 animate-pulse">
                   <div className="flex items-start justify-between mb-4">
                     <div className="w-10 h-10 bg-gray-200 rounded-lg"></div>
                     <div className="w-16 h-6 bg-gray-200 rounded"></div>
@@ -328,25 +328,25 @@ export default function DashboardPage() {
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
           <div className="min-w-0">
             {loadingCharts ? (
-              <div className="bg-white rounded-lg border border-gray-200 p-6 animate-pulse">
+              <div className="bg-white dark:bg-gray-900 rounded-lg border border-gray-200 dark:border-gray-700 p-6 animate-pulse">
                 <div className="w-32 h-6 bg-gray-200 rounded mb-4"></div>
                 <div className="h-64 bg-gray-200 rounded"></div>
               </div>
             ) : weeklyChartData.length > 0 ? (
               <WeeklyChart data={weeklyChartData} />
             ) : (
-              <div className="bg-white rounded-lg border border-gray-200 p-6 flex flex-col items-center justify-center h-64 text-center">
-                <div className="w-12 h-12 bg-gray-100 rounded-full flex items-center justify-center mb-3">
+              <div className="bg-white dark:bg-gray-900 rounded-lg border border-gray-200 dark:border-gray-700 p-6 flex flex-col items-center justify-center h-64 text-center">
+                <div className="w-12 h-12 bg-gray-100 dark:bg-gray-700 rounded-full flex items-center justify-center mb-3">
                   <BarChart3 className="w-6 h-6 text-gray-400" />
                 </div>
-                <p className="text-sm font-medium text-gray-500">{t('weeklyChart.title')}</p>
+                <p className="text-sm font-medium text-gray-500 dark:text-gray-400">{t('weeklyChart.title')}</p>
                 <p className="text-xs text-gray-400 mt-1">{t('recentTransactions.emptyDesc')}</p>
               </div>
             )}
           </div>
           <div className="min-w-0">
             {loadingCharts ? (
-              <div className="bg-white rounded-lg border border-gray-200 p-6 animate-pulse">
+              <div className="bg-white dark:bg-gray-900 rounded-lg border border-gray-200 dark:border-gray-700 p-6 animate-pulse">
                 <div className="w-32 h-6 bg-gray-200 rounded mb-4"></div>
                 <div className="h-64 bg-gray-200 rounded"></div>
               </div>
@@ -357,11 +357,11 @@ export default function DashboardPage() {
                 expenses: d.expenses
               }))} />
             ) : (
-              <div className="bg-white rounded-lg border border-gray-200 p-6 flex flex-col items-center justify-center h-64 text-center">
-                <div className="w-12 h-12 bg-gray-100 rounded-full flex items-center justify-center mb-3">
+              <div className="bg-white dark:bg-gray-900 rounded-lg border border-gray-200 dark:border-gray-700 p-6 flex flex-col items-center justify-center h-64 text-center">
+                <div className="w-12 h-12 bg-gray-100 dark:bg-gray-700 rounded-full flex items-center justify-center mb-3">
                   <BarChart3 className="w-6 h-6 text-gray-400" />
                 </div>
-                <p className="text-sm font-medium text-gray-500">{t('monthlyChart.title')}</p>
+                <p className="text-sm font-medium text-gray-500 dark:text-gray-400">{t('monthlyChart.title')}</p>
                 <p className="text-xs text-gray-400 mt-1">{t('recentTransactions.emptyDesc')}</p>
               </div>
             )}
@@ -371,7 +371,7 @@ export default function DashboardPage() {
         {/* Category Breakdown — full width */}
         <div className="mb-6 min-w-0">
             {loadingCategories ? (
-              <div className="bg-white rounded-lg border border-gray-200 p-6 animate-pulse h-[400px]">
+              <div className="bg-white dark:bg-gray-900 rounded-lg border border-gray-200 dark:border-gray-700 p-6 animate-pulse h-[400px]">
                 <div className="w-48 h-6 bg-gray-200 rounded mb-4"></div>
                 <div className="w-full h-64 bg-gray-200 rounded mb-4"></div>
                 <div className="space-y-3">

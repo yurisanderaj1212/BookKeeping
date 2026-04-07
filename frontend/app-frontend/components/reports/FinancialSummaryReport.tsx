@@ -1,4 +1,4 @@
-'use client'
+﻿'use client'
 
 import { useState, useEffect } from 'react'
 import { TrendingUp, TrendingDown, DollarSign, Calendar } from 'lucide-react'
@@ -66,10 +66,10 @@ export default function FinancialSummaryReport({ period, year, month }: Financia
       <div className="border-b border-gray-200 dark:border-gray-700 p-6">
         <div className="flex items-center justify-between">
           <div>
-            <h2 className="text-xl font-bold text-gray-900">{t('title')}</h2>
-            <p className="text-sm text-gray-600 mt-1">{getPeriodLabel()}</p>
+            <h2 className="text-xl font-bold text-gray-900 dark:text-gray-100">{t('title')}</h2>
+            <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">{getPeriodLabel()}</p>
           </div>
-          <div className="text-right text-sm text-gray-500">
+          <div className="text-right text-sm text-gray-500 dark:text-gray-400">
             <p>Chill Numbers</p>
             <p>{t('generatedOn')} {new Date().toLocaleDateString()}</p>
           </div>
@@ -118,13 +118,13 @@ export default function FinancialSummaryReport({ period, year, month }: Financia
             </p>
           </div>
 
-          <div className="bg-gray-50 p-3 sm:p-4 rounded-lg">
+          <div className="bg-gray-50 dark:bg-gray-800 p-3 sm:p-4 rounded-lg">
             <div className="flex items-center justify-between mb-1.5">
-              <Calendar className="w-4 h-4 text-gray-600" />
+              <Calendar className="w-4 h-4 text-gray-600 dark:text-gray-400" />
             </div>
-            <p className="text-xs text-gray-600 font-medium">{t('totalTransactions')}</p>
-            <p className="text-lg sm:text-2xl font-bold text-gray-700">{transactionCount}</p>
-            <p className="text-xs text-gray-600 mt-0.5">{t('inPeriod')}</p>
+            <p className="text-xs text-gray-600 dark:text-gray-400 font-medium">{t('totalTransactions')}</p>
+            <p className="text-lg sm:text-2xl font-bold text-gray-700 dark:text-gray-300">{transactionCount}</p>
+            <p className="text-xs text-gray-600 dark:text-gray-400 mt-0.5">{t('inPeriod')}</p>
           </div>
         </div>
       </div>
@@ -139,8 +139,8 @@ export default function FinancialSummaryReport({ period, year, month }: Financia
               {incomeBreakdown.length > 0 ? incomeBreakdown.slice(0, 5).map((cat: any, i: number) => (
                 <div key={i} className="flex items-center justify-between p-3 bg-green-50 rounded-lg">
                   <div>
-                    <p className="font-medium text-gray-900">{translateCategoryName(cat.categoryName, tCategories)}</p>
-                    <p className="text-sm text-gray-600">{cat.transactionCount} {t('transactions')}</p>
+                    <p className="font-medium text-gray-900 dark:text-gray-100">{translateCategoryName(cat.categoryName, tCategories)}</p>
+                    <p className="text-sm text-gray-600 dark:text-gray-400">{cat.transactionCount} {t('transactions')}</p>
                   </div>
                   <div className="text-right">
                     <p className="font-bold text-green-700">{formatCurrency(cat.amount)}</p>
@@ -148,7 +148,7 @@ export default function FinancialSummaryReport({ period, year, month }: Financia
                   </div>
                 </div>
               )) : (
-                <p className="text-gray-500 text-center py-4">{t('noIncome')}</p>
+                <p className="text-gray-500 dark:text-gray-400 text-center py-4">{t('noIncome')}</p>
               )}
             </div>
           </div>
@@ -160,8 +160,8 @@ export default function FinancialSummaryReport({ period, year, month }: Financia
               {expenseBreakdown.length > 0 ? expenseBreakdown.slice(0, 5).map((cat: any, i: number) => (
                 <div key={i} className="flex items-center justify-between p-3 bg-red-50 rounded-lg">
                   <div>
-                    <p className="font-medium text-gray-900">{translateCategoryName(cat.categoryName, tCategories)}</p>
-                    <p className="text-sm text-gray-600">{cat.transactionCount} {t('transactions')}</p>
+                    <p className="font-medium text-gray-900 dark:text-gray-100">{translateCategoryName(cat.categoryName, tCategories)}</p>
+                    <p className="text-sm text-gray-600 dark:text-gray-400">{cat.transactionCount} {t('transactions')}</p>
                   </div>
                   <div className="text-right">
                     <p className="font-bold text-red-700">{formatCurrency(cat.amount)}</p>
@@ -169,7 +169,7 @@ export default function FinancialSummaryReport({ period, year, month }: Financia
                   </div>
                 </div>
               )) : (
-                <p className="text-gray-500 text-center py-4">{t('noExpenses')}</p>
+                <p className="text-gray-500 dark:text-gray-400 text-center py-4">{t('noExpenses')}</p>
               )}
             </div>
           </div>
@@ -177,8 +177,8 @@ export default function FinancialSummaryReport({ period, year, month }: Financia
       </div>
 
       {/* Footer */}
-      <div className="border-t border-gray-200 dark:border-gray-700 p-4 bg-gray-50 rounded-b-lg">
-        <div className="flex items-center justify-between text-xs text-gray-500">
+      <div className="border-t border-gray-200 dark:border-gray-700 p-4 bg-gray-50 dark:bg-gray-800 rounded-b-lg">
+        <div className="flex items-center justify-between text-xs text-gray-500 dark:text-gray-400">
           <span>{t('reportNote')}</span>
           <span>{t('page')} 1 {t('of')} 1</span>
         </div>

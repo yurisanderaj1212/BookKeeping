@@ -1,4 +1,4 @@
-'use client'
+﻿'use client'
 
 import Link from 'next/link'
 import { useTranslations } from 'next-intl'
@@ -14,7 +14,7 @@ export default function CTA() {
           <p className="mx-auto mt-6 max-w-xl text-lg leading-8 text-primary-100">{t('cta.subtitle')}</p>
           <div className="mt-10 flex items-center justify-center gap-x-6">
             <Link href="/auth/register"
-              className="bg-white px-8 py-3 text-lg font-semibold text-primary-600 shadow-sm hover:bg-primary-50 rounded-lg transition-all duration-200 hover:shadow-medium">
+              className="bg-white dark:bg-gray-900 px-8 py-3 text-lg font-semibold text-primary-600 shadow-sm hover:bg-primary-50 rounded-lg transition-all duration-200 hover:shadow-medium">
               {t('cta.btn')}
             </Link>
           </div>

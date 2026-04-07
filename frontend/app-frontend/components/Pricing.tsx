@@ -1,4 +1,4 @@
-'use client'
+﻿'use client'
 
 import Link from 'next/link'
 import { useTranslations } from 'next-intl'
@@ -28,7 +28,7 @@ export default function Pricing() {
   ]
 
   return (
-    <div id="pricing" className="py-24 bg-white">
+    <div id="pricing" className="py-24 bg-white dark:bg-gray-900">
       <div className="mx-auto max-w-7xl px-6 lg:px-8">
         <div className="mx-auto max-w-2xl text-center">
           <h2 className="text-3xl font-bold tracking-tight text-navy-800 sm:text-4xl">{t('title')}</h2>
@@ -40,7 +40,7 @@ export default function Pricing() {
             <div key={plan.nameKey} className={`${
               plan.popular
                 ? 'relative bg-linear-to-br from-primary-400 via-primary-500 to-cyan-500 text-white shadow-strong ring-2 ring-primary-400 lg:z-10 scale-105'
-                : 'bg-white/60 shadow-soft'
+                : 'bg-white dark:bg-gray-900/60 shadow-soft'
             } rounded-3xl p-8 lg:mx-0 lg:flex lg:max-w-none lg:flex-col lg:justify-center lg:py-16`}>
               {plan.popular && (
                 <div className="absolute -top-5 left-0 right-0 mx-auto w-24 rounded-full bg-linear-to-r from-yellow-400 to-orange-500 px-3 py-2 text-sm font-medium text-white text-center shadow-lg">
@@ -73,7 +73,7 @@ export default function Pricing() {
                 </ul>
                 <Link href={plan.ctaLink} className={`${
                   plan.popular
-                    ? 'bg-white text-primary-600 shadow-sm hover:bg-blue-50'
+                    ? 'bg-white dark:bg-gray-900 text-primary-600 shadow-sm hover:bg-blue-50'
                     : 'bg-primary-50 text-primary-600 hover:bg-primary-100'
                 } mt-8 block w-full rounded-lg px-3 py-2 text-center text-sm font-semibold transition-all duration-200`}>
                   {t(plan.ctaKey as any)}

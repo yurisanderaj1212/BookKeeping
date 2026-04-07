@@ -1,4 +1,4 @@
-'use client'
+﻿'use client'
 
 import Link from 'next/link'
 import { useEffect, useState } from 'react'
@@ -48,7 +48,7 @@ export default function Hero() {
 
       {/* ── Fixed Navigation ── */}
       <nav className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
-        isScrolled ? 'bg-white/95 backdrop-blur-md shadow-lg' : 'bg-transparent'
+        isScrolled ? 'bg-white dark:bg-gray-900/95 backdrop-blur-md shadow-lg' : 'bg-transparent'
       }`}>
         <div className="flex items-center justify-between px-5 py-4 lg:px-8">
 
@@ -74,7 +74,7 @@ export default function Hero() {
               title={locale === 'es' ? 'Switch to English' : 'Cambiar a Español'}
               className={`flex items-center gap-1.5 text-sm font-semibold px-3 py-1.5 rounded-lg border transition-all duration-200 ${
                 isScrolled
-                  ? 'border-gray-300 text-slate-600 hover:border-primary-400 hover:text-primary-600'
+                  ? 'border-gray-300 dark:border-gray-600 text-slate-600 hover:border-primary-400 hover:text-primary-600'
                   : 'border-white/30 text-white/90 hover:border-white hover:text-white'
               }`}>
               <Globe className="w-3.5 h-3.5" />
@@ -85,7 +85,7 @@ export default function Hero() {
               className={`px-5 py-2 rounded-lg font-semibold text-sm border transition-all duration-200 ${
                 isScrolled
                   ? 'border-primary-500 text-primary-600 hover:bg-primary-50'
-                  : 'border-white/60 text-white hover:border-white hover:bg-white/10'
+                  : 'border-white/60 text-white hover:border-white hover:bg-white dark:bg-gray-900/10'
               }`}>
               {t('hero.loginBtn')}
             </Link>
@@ -100,7 +100,7 @@ export default function Hero() {
             <button onClick={switchLocale}
               className={`flex items-center gap-1 text-xs font-bold px-2.5 py-1.5 rounded-lg border transition-all ${
                 isScrolled
-                  ? 'border-gray-300 text-slate-600'
+                  ? 'border-gray-300 dark:border-gray-600 text-slate-600'
                   : 'border-white/40 text-white'
               }`}>
               <Globe className="w-3.5 h-3.5" />
@@ -110,7 +110,7 @@ export default function Hero() {
               onClick={() => setMobileOpen(v => !v)}
               aria-label="Toggle menu"
               className={`p-2 rounded-lg transition-colors ${
-                isScrolled ? 'text-slate-700 hover:bg-gray-100' : 'text-white hover:bg-white/10'
+                isScrolled ? 'text-slate-700 hover:bg-gray-100 dark:hover:bg-gray-700' : 'text-white hover:bg-white dark:bg-gray-900/10'
               }`}>
               {mobileOpen
                 ? <X className="w-6 h-6" />
@@ -122,24 +122,24 @@ export default function Hero() {
         {/* ── Mobile dropdown menu ── */}
         {mobileOpen && (
           <div className={`md:hidden border-t transition-all ${
-            isScrolled ? 'bg-white border-gray-100' : 'bg-blue-900/95 backdrop-blur-md border-white/10'
+            isScrolled ? 'bg-white dark:bg-gray-900 border-gray-100 dark:border-gray-800' : 'bg-blue-900/95 backdrop-blur-md border-white/10'
           }`}>
             <div className="px-5 py-4 flex flex-col gap-1">
               <button onClick={() => scrollTo('features')}
                 className={`text-left px-3 py-3 rounded-lg text-sm font-medium transition-colors ${
-                  isScrolled ? 'text-slate-700 hover:bg-gray-50' : 'text-white/90 hover:bg-white/10'
+                  isScrolled ? 'text-slate-700 hover:bg-gray-50 dark:hover:bg-gray-800' : 'text-white/90 hover:bg-white dark:bg-gray-900/10'
                 }`}>
                 {tn('features')}
               </button>
               <button onClick={() => scrollTo('benefits')}
                 className={`text-left px-3 py-3 rounded-lg text-sm font-medium transition-colors ${
-                  isScrolled ? 'text-slate-700 hover:bg-gray-50' : 'text-white/90 hover:bg-white/10'
+                  isScrolled ? 'text-slate-700 hover:bg-gray-50 dark:hover:bg-gray-800' : 'text-white/90 hover:bg-white dark:bg-gray-900/10'
                 }`}>
                 {tn('benefits')}
               </button>
               <button onClick={() => scrollTo('pricing')}
                 className={`text-left px-3 py-3 rounded-lg text-sm font-medium transition-colors ${
-                  isScrolled ? 'text-slate-700 hover:bg-gray-50' : 'text-white/90 hover:bg-white/10'
+                  isScrolled ? 'text-slate-700 hover:bg-gray-50 dark:hover:bg-gray-800' : 'text-white/90 hover:bg-white dark:bg-gray-900/10'
                 }`}>
                 {tn('pricing')}
               </button>
@@ -150,7 +150,7 @@ export default function Hero() {
                 className={`px-3 py-3 rounded-lg text-sm font-semibold text-center border transition-all ${
                   isScrolled
                     ? 'border-primary-500 text-primary-600 hover:bg-primary-50'
-                    : 'border-white/40 text-white hover:bg-white/10'
+                    : 'border-white/40 text-white hover:bg-white dark:bg-gray-900/10'
                 }`}>
                 {t('hero.loginBtn')}
               </Link>
@@ -180,7 +180,7 @@ export default function Hero() {
               {t('hero.cta')}
             </Link>
             <button onClick={() => scrollTo('features')}
-              className="w-full sm:w-auto text-base font-semibold leading-6 text-blue-100 hover:text-white transition-colors cursor-pointer py-3.5 px-4 rounded-lg hover:bg-white/10">
+              className="w-full sm:w-auto text-base font-semibold leading-6 text-blue-100 hover:text-white transition-colors cursor-pointer py-3.5 px-4 rounded-lg hover:bg-white dark:bg-gray-900/10">
               {t('hero.learnMore')} <span aria-hidden="true">→</span>
             </button>
           </div>

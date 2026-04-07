@@ -1,4 +1,4 @@
-'use client'
+﻿'use client'
 
 import { useState, useEffect, Suspense } from 'react'
 import { useSearchParams } from 'next/navigation'
@@ -75,7 +75,7 @@ function SubscribeContent() {
           {/* Plans */}
           <div className="grid sm:grid-cols-2 gap-4 sm:gap-5">
             {/* Monthly */}
-            <div className="bg-white/5 border border-white/10 rounded-2xl p-5 sm:p-7 flex flex-col">
+            <div className="bg-white dark:bg-gray-900/5 border border-white/10 rounded-2xl p-5 sm:p-7 flex flex-col">
               <p className="text-slate-400 text-sm font-medium mb-1">{t('monthly')}</p>
               <div className="flex items-end gap-1 mb-1">
                 <span className="text-2xl sm:text-3xl font-bold">$9.99</span>
@@ -92,7 +92,7 @@ function SubscribeContent() {
               <button
                 onClick={() => handleSelect('monthly')}
                 disabled={loading !== null}
-                className="w-full bg-white/10 hover:bg-white/20 border border-white/20 disabled:opacity-60 disabled:cursor-not-allowed rounded-xl py-3 font-semibold transition-colors text-sm"
+                className="w-full bg-white dark:bg-gray-900/10 hover:bg-white dark:bg-gray-900/20 border border-white/20 disabled:opacity-60 disabled:cursor-not-allowed rounded-xl py-3 font-semibold transition-colors text-sm"
               >
                 {loading === 'monthly' ? t('redirecting') : t('planMonthlyBtn')}
               </button>

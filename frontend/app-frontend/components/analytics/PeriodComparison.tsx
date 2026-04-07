@@ -1,4 +1,4 @@
-'use client'
+﻿'use client'
 
 import { useState, useEffect } from 'react'
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts'
@@ -119,20 +119,20 @@ export default function PeriodComparison({ period, year, month }: PeriodComparis
     return (
       <div className="bg-white dark:bg-gray-900 rounded-lg border border-gray-200 dark:border-gray-700 p-6">
         <div className="flex items-center justify-between mb-4">
-          <h4 className="text-sm font-medium text-gray-600">{title}</h4>
+          <h4 className="text-sm font-medium text-gray-600 dark:text-gray-400">{title}</h4>
           <div className={`${bgClass} p-1 rounded-full`}><Icon className={`w-4 h-4 ${colorClass}`} /></div>
         </div>
         <div className="space-y-2">
           <div className="flex items-center justify-between">
-            <span className="text-xs text-gray-500">{t('currentLabel')}</span>
-            <span className="text-lg font-bold text-gray-900">{isCount ? actual : formatCurrency(actual)}</span>
+            <span className="text-xs text-gray-500 dark:text-gray-400">{t('currentLabel')}</span>
+            <span className="text-lg font-bold text-gray-900 dark:text-gray-100">{isCount ? actual : formatCurrency(actual)}</span>
           </div>
           <div className="flex items-center justify-between">
-            <span className="text-xs text-gray-500">{t('previousLabel')}</span>
-            <span className="text-sm text-gray-600">{isCount ? anterior : formatCurrency(anterior)}</span>
+            <span className="text-xs text-gray-500 dark:text-gray-400">{t('previousLabel')}</span>
+            <span className="text-sm text-gray-600 dark:text-gray-400">{isCount ? anterior : formatCurrency(anterior)}</span>
           </div>
-          <div className="flex items-center justify-between pt-2 border-t border-gray-100">
-            <span className="text-xs text-gray-500">{t('changeLabel')}</span>
+          <div className="flex items-center justify-between pt-2 border-t border-gray-100 dark:border-gray-800">
+            <span className="text-xs text-gray-500 dark:text-gray-400">{t('changeLabel')}</span>
             <span className={`text-sm font-medium ${colorClass}`}>{isPositive ? '+' : ''}{cambio.toFixed(1)}%</span>
           </div>
         </div>
@@ -144,17 +144,17 @@ export default function PeriodComparison({ period, year, month }: PeriodComparis
     <div className="bg-white dark:bg-gray-900 rounded-lg border border-gray-200 dark:border-gray-700 p-6 mb-8">
       <div className="flex items-center justify-between mb-6">
         <div>
-          <h3 className="text-lg font-semibold text-gray-900">{t('periodComparison')}</h3>
+          <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">{t('periodComparison')}</h3>
           <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">{t('comparisonWithPrev', { period: getPeriodLabel() })}</p>
         </div>
-        <div className="flex items-center gap-2 text-sm text-gray-500">
+        <div className="flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400">
           <Calendar className="w-4 h-4" />
         </div>
       </div>
 
       {loading ? (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-          {[1,2,3,4].map(i => <div key={i} className="h-32 bg-gray-100 rounded-lg animate-pulse" />)}
+          {[1,2,3,4].map(i => <div key={i} className="h-32 bg-gray-100 dark:bg-gray-700 rounded-lg animate-pulse" />)}
         </div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">

@@ -1,4 +1,4 @@
-'use client'
+﻿'use client'
 
 import { useState, useEffect, useCallback } from 'react'
 import { useRouter } from 'next/navigation'
@@ -38,7 +38,7 @@ function getPriorityBadge(priority: Notification['priority']): string {
     case 'urgent': return 'bg-red-100 text-red-800'
     case 'high': return 'bg-orange-100 text-orange-800'
     case 'medium': return 'bg-blue-100 text-blue-800'
-    default: return 'bg-gray-100 text-gray-800'
+    default: return 'bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-200'
   }
 }
 
@@ -174,11 +174,11 @@ export default function NotificationsPage() {
               <div className="flex items-center gap-2 min-w-0">
                 <MobileMenuButton />
                 <div className="min-w-0">
-                <h1 className="text-xl sm:text-2xl font-bold text-gray-900 flex items-center gap-2">
+                <h1 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-gray-100 flex items-center gap-2">
                   <Bell className="w-5 h-5 text-primary-600 shrink-0" />
                   <span className="truncate">{t('title')}</span>
                 </h1>
-                <p className="text-sm text-gray-500 mt-0.5 hidden sm:block">{t('subtitle')}</p>
+                <p className="text-sm text-gray-500 dark:text-gray-400 mt-0.5 hidden sm:block">{t('subtitle')}</p>
               </div>
               </div>
               <div className="flex items-center gap-2 shrink-0">
@@ -191,7 +191,7 @@ export default function NotificationsPage() {
                 )}
                 {stats && stats.read > 0 && (
                   <button onClick={handleDeleteAllRead}
-                    className="border border-gray-300 text-gray-600 px-3 py-2 rounded-lg hover:bg-gray-50 transition-colors flex items-center gap-1.5 text-sm">
+                    className="border border-gray-300 dark:border-gray-600 text-gray-600 dark:text-gray-400 px-3 py-2 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors flex items-center gap-1.5 text-sm">
                     <Trash2 className="w-4 h-4" />
                     <span className="hidden sm:inline">{t('clearRead')}</span>
                   </button>
@@ -211,11 +211,11 @@ export default function NotificationsPage() {
               { label: t('read'),   value: stats?.read ?? 0,                   icon: EyeOff,        color: 'text-green-400',  valueColor: 'text-green-600' },
               { label: t('urgent'), value: stats?.byPriority?.urgent ?? 0,     icon: AlertTriangle, color: 'text-orange-400', valueColor: 'text-orange-600' },
             ].map(({ label, value, icon: Icon, color, valueColor }) => (
-              <div key={label} className="bg-white rounded-lg border border-gray-200 p-4">
+              <div key={label} className="bg-white dark:bg-gray-900 rounded-lg border border-gray-200 dark:border-gray-700 p-4">
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="text-sm text-gray-600">{label}</p>
-                    <p className={`text-2xl font-bold ${valueColor ?? 'text-gray-900'}`}>{value}</p>
+                    <p className="text-sm text-gray-600 dark:text-gray-400">{label}</p>
+                    <p className={`text-2xl font-bold ${valueColor ?? 'text-gray-900 dark:text-gray-100'}`}>{value}</p>
                   </div>
                   <Icon className={`w-8 h-8 ${color}`} />
                 </div>
@@ -224,7 +224,7 @@ export default function NotificationsPage() {
           </div>
 
           {/* Search and Filters */}
-          <div className="bg-white rounded-lg border border-gray-200 p-4 mb-6">
+          <div className="bg-white dark:bg-gray-900 rounded-lg border border-gray-200 dark:border-gray-700 p-4 mb-6">
             <div className="flex flex-col lg:flex-row lg:items-center gap-4">
               <div className="relative flex-1 max-w-md">
                 <Search className="absolute left-3 top-2.5 w-4 h-4 text-gray-400" />
@@ -233,12 +233,12 @@ export default function NotificationsPage() {
                   placeholder={t('searchPlaceholder')}
                   value={searchTerm}
                   onChange={e => setSearchTerm(e.target.value)}
-                  className="w-full pl-10 pr-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 text-sm"
+                  className="w-full pl-10 pr-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 text-sm"
                 />
               </div>
               <button
                 onClick={() => setShowFilters(!showFilters)}
-                className="flex items-center space-x-2 px-3 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors text-sm"
+                className="flex items-center space-x-2 px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors text-sm"
               >
                 <Filter className="w-4 h-4" />
                 <span>{t('filters')}</span>
@@ -247,20 +247,20 @@ export default function NotificationsPage() {
             </div>
 
             {showFilters && (
-              <div className="mt-4 pt-4 border-t border-gray-200 grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div className="mt-4 pt-4 border-t border-gray-200 dark:border-gray-700 grid grid-cols-1 md:grid-cols-3 gap-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">{t('statusLabel')}</label>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">{t('statusLabel')}</label>
                   <select value={filter} onChange={e => setFilter(e.target.value as 'all' | 'unread' | 'read')}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 text-sm">
+                    className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary-500 text-sm">
                     <option value="all">{t('allStatus')} ({stats?.total ?? 0})</option>
                     <option value="unread">{t('unreadStatus')} ({stats?.unread ?? 0})</option>
                     <option value="read">{t('readStatus')} ({stats?.read ?? 0})</option>
                   </select>
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">{t('typeLabel')}</label>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">{t('typeLabel')}</label>
                   <select value={typeFilter} onChange={e => setTypeFilter(e.target.value)}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 text-sm">
+                    className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary-500 text-sm">
                     <option value="all">{t('allTypes')}</option>
                     <option value="transaction">{t('typeTransaction')} ({stats?.byType?.transaction ?? 0})</option>
                     <option value="report">{t('typeReport')} ({stats?.byType?.report ?? 0})</option>
@@ -271,9 +271,9 @@ export default function NotificationsPage() {
                   </select>
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">{t('priorityLabel')}</label>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">{t('priorityLabel')}</label>
                   <select value={priorityFilter} onChange={e => setPriorityFilter(e.target.value)}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 text-sm">
+                    className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary-500 text-sm">
                     <option value="all">{t('allPriorities')}</option>
                     <option value="urgent">{t('priorityUrgent')} ({stats?.byPriority?.urgent ?? 0})</option>
                     <option value="high">{t('priorityHigh')} ({stats?.byPriority?.high ?? 0})</option>
@@ -303,7 +303,7 @@ export default function NotificationsPage() {
           )}
 
           {/* Notifications List */}
-          <div className="bg-white rounded-lg border border-gray-200">
+          <div className="bg-white dark:bg-gray-900 rounded-lg border border-gray-200 dark:border-gray-700">
             {loading ? (
               <div className="p-8 space-y-4">
                 {[1, 2, 3, 4].map(i => (
@@ -320,8 +320,8 @@ export default function NotificationsPage() {
             ) : filteredNotifications.length === 0 ? (
               <div className="p-12 text-center">
                 <Bell className="w-16 h-16 mx-auto mb-4 text-gray-300" />
-                <h3 className="text-lg font-medium text-gray-900 mb-2">{t('empty')}</h3>
-                <p className="text-gray-500 text-sm">
+                <h3 className="text-lg font-medium text-gray-900 dark:text-gray-100 mb-2">{t('empty')}</h3>
+                <p className="text-gray-500 dark:text-gray-400 text-sm">
                   {searchTerm ? t('emptyFiltered') :
                    filter === 'unread' ? t('emptyFiltered') :
                    t('emptyDesc')}
@@ -329,14 +329,14 @@ export default function NotificationsPage() {
               </div>
             ) : (
               <>
-                <div className="px-6 py-3 border-b border-gray-200 bg-gray-50 flex items-center">
+                <div className="px-6 py-3 border-b border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 flex items-center">
                   <input
                     type="checkbox"
                     checked={selectedIds.length === filteredNotifications.length && filteredNotifications.length > 0}
                     onChange={handleSelectAll}
-                    className="h-4 w-4 text-primary-600 focus:ring-primary-500 border-gray-300 rounded"
+                    className="h-4 w-4 text-primary-600 focus:ring-primary-500 border-gray-300 dark:border-gray-600 rounded"
                   />
-                  <span className="ml-3 text-sm font-medium text-gray-700">{t('selectAll')}</span>
+                  <span className="ml-3 text-sm font-medium text-gray-700 dark:text-gray-300">{t('selectAll')}</span>
                 </div>
 
                 <div className="divide-y divide-gray-200">
@@ -349,7 +349,7 @@ export default function NotificationsPage() {
                     return (
                       <div
                         key={n.id}
-                        className={`p-6 transition-colors ${!n.isRead ? 'bg-blue-50 border-l-4 border-l-primary-500' : 'hover:bg-gray-50'} ${isSelected ? 'bg-primary-50' : ''}`}
+                        className={`p-6 transition-colors ${!n.isRead ? 'bg-blue-50 border-l-4 border-l-primary-500' : 'hover:bg-gray-50 dark:hover:bg-gray-800'} ${isSelected ? 'bg-primary-50' : ''}`}
                       >
                         <div className="flex items-start space-x-4">
                           <input
@@ -358,7 +358,7 @@ export default function NotificationsPage() {
                             onChange={() => setSelectedIds(prev =>
                               prev.includes(n.id) ? prev.filter(x => x !== n.id) : [...prev, n.id]
                             )}
-                            className="mt-1 h-4 w-4 text-primary-600 focus:ring-primary-500 border-gray-300 rounded"
+                            className="mt-1 h-4 w-4 text-primary-600 focus:ring-primary-500 border-gray-300 dark:border-gray-600 rounded"
                           />
                           <div className={`p-3 rounded-full ${colorClasses} shrink-0`}>
                             <Icon className="w-5 h-5" />
@@ -367,19 +367,19 @@ export default function NotificationsPage() {
                             <div className="flex items-start justify-between">
                               <div className="flex-1 cursor-pointer" onClick={() => handleNotificationClick(n)}>
                                 <div className="flex items-center flex-wrap gap-2 mb-1">
-                                  <h3 className={`text-sm font-medium ${!n.isRead ? 'text-gray-900' : 'text-gray-700'}`}>
+                                  <h3 className={`text-sm font-medium ${!n.isRead ? 'text-gray-900 dark:text-gray-100' : 'text-gray-700 dark:text-gray-300'}`}>
                                     {title}
                                   </h3>
                                   <span className={`px-2 py-0.5 text-xs rounded-full ${getPriorityBadge(n.priority)}`}>
                                     {getPriorityLabel(n.priority)}
                                   </span>
-                                  <span className="px-2 py-0.5 text-xs bg-gray-100 text-gray-600 rounded-full">
+                                  <span className="px-2 py-0.5 text-xs bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400 rounded-full">
                                     {getTypeLabel(n.type)}
                                   </span>
                                 </div>
-                                <p className="text-sm text-gray-600 mb-2">{message}</p>
+                                <p className="text-sm text-gray-600 dark:text-gray-400 mb-2">{message}</p>
                                 <div className="flex items-center justify-between">
-                                  <span className="text-xs text-gray-500 flex items-center space-x-1">
+                                  <span className="text-xs text-gray-500 dark:text-gray-400 flex items-center space-x-1">
                                     <Calendar className="w-3 h-3" />
                                     <span>{formatTimestamp(n.createdAt, locale)}</span>
                                   </span>
@@ -392,12 +392,12 @@ export default function NotificationsPage() {
                                 {!n.isRead && (
                                   <button onClick={() => handleMarkAsRead(n.id)}
                                     className="p-2 hover:bg-gray-200 rounded-full transition-colors" title={t('markRead')}>
-                                    <Check className="w-4 h-4 text-gray-500" />
+                                    <Check className="w-4 h-4 text-gray-500 dark:text-gray-400" />
                                   </button>
                                 )}
                                 <button onClick={() => handleDelete(n.id)}
                                   className="p-2 hover:bg-gray-200 rounded-full transition-colors" title={tCommon('delete')}>
-                                  <Trash2 className="w-4 h-4 text-gray-500" />
+                                  <Trash2 className="w-4 h-4 text-gray-500 dark:text-gray-400" />
                                 </button>
                               </div>
                             </div>

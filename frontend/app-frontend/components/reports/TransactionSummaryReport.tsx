@@ -1,4 +1,4 @@
-'use client'
+﻿'use client'
 
 import { useState, useEffect } from 'react'
 import { Calendar, TrendingUp, TrendingDown, Clock, CheckCircle } from 'lucide-react'
@@ -87,10 +87,10 @@ export default function TransactionSummaryReport({ period, year, month }: Transa
       <div className="border-b border-gray-200 dark:border-gray-700 p-6">
         <div className="flex items-center justify-between">
           <div>
-            <h2 className="text-xl font-bold text-gray-900">{t('title')}</h2>
-            <p className="text-sm text-gray-600 mt-1">{getPeriodLabel()}</p>
+            <h2 className="text-xl font-bold text-gray-900 dark:text-gray-100">{t('title')}</h2>
+            <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">{getPeriodLabel()}</p>
           </div>
-          <div className="text-right text-sm text-gray-500">
+          <div className="text-right text-sm text-gray-500 dark:text-gray-400">
             <p>Chill Numbers</p>
             <p>{t('generatedOn')} {new Date().toLocaleDateString()}</p>
           </div>
@@ -139,14 +139,14 @@ export default function TransactionSummaryReport({ period, year, month }: Transa
             <p className={`text-xs mt-0.5 ${netProfit >= 0 ? 'text-blue-600' : 'text-orange-600'}`}>{t('profitMargin')}</p>
           </div>
 
-          <div className="bg-gray-50 p-3 sm:p-4 rounded-lg">
+          <div className="bg-gray-50 dark:bg-gray-800 p-3 sm:p-4 rounded-lg">
             <div className="flex items-center justify-between mb-1.5">
-              <Calendar className="w-4 h-4 text-gray-600" />
-              <span className="text-xs bg-gray-100 text-gray-800 px-1.5 py-0.5 rounded-full">{totalTransactions}</span>
+              <Calendar className="w-4 h-4 text-gray-600 dark:text-gray-400" />
+              <span className="text-xs bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-200 px-1.5 py-0.5 rounded-full">{totalTransactions}</span>
             </div>
-            <p className="text-xs text-gray-600 font-medium">{t('totalTransactions')}</p>
-            <p className="text-lg sm:text-2xl font-bold text-gray-700">{totalTransactions}</p>
-            <p className="text-xs text-gray-600 mt-0.5">{t('inPeriod')}</p>
+            <p className="text-xs text-gray-600 dark:text-gray-400 font-medium">{t('totalTransactions')}</p>
+            <p className="text-lg sm:text-2xl font-bold text-gray-700 dark:text-gray-300">{totalTransactions}</p>
+            <p className="text-xs text-gray-600 dark:text-gray-400 mt-0.5">{t('inPeriod')}</p>
           </div>
         </div>
       </div>
@@ -158,14 +158,14 @@ export default function TransactionSummaryReport({ period, year, month }: Transa
           <div>
             <div className="flex items-center space-x-2 mb-4">
               <CheckCircle className="w-5 h-5 text-green-600" />
-              <h4 className="text-md font-semibold text-gray-900">Completadas</h4>
+              <h4 className="text-md font-semibold text-gray-900 dark:text-gray-100">Completadas</h4>
               <span className="bg-green-100 text-green-800 text-xs px-2 py-1 rounded-full">{completedCount}</span>
             </div>
             <div className="space-y-3">
               <div className="flex items-center justify-between p-3 bg-green-50 rounded-lg">
                 <div>
-                  <p className="font-medium text-gray-900">Ingresos</p>
-                  <p className="text-sm text-gray-600">{completedIncomeCount} transacciones</p>
+                  <p className="font-medium text-gray-900 dark:text-gray-100">Ingresos</p>
+                  <p className="text-sm text-gray-600 dark:text-gray-400">{completedIncomeCount} transacciones</p>
                 </div>
                 <div className="text-right">
                   <p className="font-bold text-green-700">{formatCurrency(completedIncome)}</p>
@@ -174,8 +174,8 @@ export default function TransactionSummaryReport({ period, year, month }: Transa
               </div>
               <div className="flex items-center justify-between p-3 bg-red-50 rounded-lg">
                 <div>
-                  <p className="font-medium text-gray-900">Gastos</p>
-                  <p className="text-sm text-gray-600">{completedExpensesCount} transacciones</p>
+                  <p className="font-medium text-gray-900 dark:text-gray-100">Gastos</p>
+                  <p className="text-sm text-gray-600 dark:text-gray-400">{completedExpensesCount} transacciones</p>
                 </div>
                 <div className="text-right">
                   <p className="font-bold text-red-700">{formatCurrency(completedExpenses)}</p>
@@ -189,14 +189,14 @@ export default function TransactionSummaryReport({ period, year, month }: Transa
           <div>
             <div className="flex items-center space-x-2 mb-4">
               <Clock className="w-5 h-5 text-yellow-600" />
-              <h4 className="text-md font-semibold text-gray-900">Pendientes</h4>
+              <h4 className="text-md font-semibold text-gray-900 dark:text-gray-100">Pendientes</h4>
               <span className="bg-yellow-100 text-yellow-800 text-xs px-2 py-1 rounded-full">{pendingCount}</span>
             </div>
             <div className="space-y-3">
               <div className="flex items-center justify-between p-3 bg-yellow-50 rounded-lg">
                 <div>
-                  <p className="font-medium text-gray-900">Ingresos</p>
-                  <p className="text-sm text-gray-600">{pendingIncomeCount} transacciones</p>
+                  <p className="font-medium text-gray-900 dark:text-gray-100">Ingresos</p>
+                  <p className="text-sm text-gray-600 dark:text-gray-400">{pendingIncomeCount} transacciones</p>
                 </div>
                 <div className="text-right">
                   <p className="font-bold text-yellow-700">{formatCurrency(pendingIncome)}</p>
@@ -204,8 +204,8 @@ export default function TransactionSummaryReport({ period, year, month }: Transa
               </div>
               <div className="flex items-center justify-between p-3 bg-orange-50 rounded-lg">
                 <div>
-                  <p className="font-medium text-gray-900">Gastos</p>
-                  <p className="text-sm text-gray-600">{pendingExpensesCount} transacciones</p>
+                  <p className="font-medium text-gray-900 dark:text-gray-100">Gastos</p>
+                  <p className="text-sm text-gray-600 dark:text-gray-400">{pendingExpensesCount} transacciones</p>
                 </div>
                 <div className="text-right">
                   <p className="font-bold text-orange-700">{formatCurrency(pendingExpenses)}</p>
@@ -224,18 +224,18 @@ export default function TransactionSummaryReport({ period, year, month }: Transa
             <table className="w-full text-sm">
               <thead className="bg-gray-50 dark:bg-gray-800">
                 <tr>
-                  <th className="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase">{t('colDate')}</th>
-                  <th className="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase">{t('colDescription')}</th>
-                  <th className="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase">{t('colCategory')}</th>
-                  <th className="px-3 py-2 text-right text-xs font-medium text-gray-500 uppercase">{t('colAmount')}</th>
+                  <th className="px-3 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">{t('colDate')}</th>
+                  <th className="px-3 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">{t('colDescription')}</th>
+                  <th className="px-3 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">{t('colCategory')}</th>
+                  <th className="px-3 py-2 text-right text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">{t('colAmount')}</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-100">
                 {recent.map((tx: any, i: number) => (
-                  <tr key={i} className="hover:bg-gray-50">
-                    <td className="px-3 py-2 text-gray-600">{new Date(tx.date + 'T00:00:00').toLocaleDateString()}</td>
-                    <td className="px-3 py-2 text-gray-900 max-w-[200px] truncate">{tx.description}</td>
-                    <td className="px-3 py-2 text-gray-600">{translateCategoryName(tx.categoryName, tCategories)}</td>
+                  <tr key={i} className="hover:bg-gray-50 dark:hover:bg-gray-800">
+                    <td className="px-3 py-2 text-gray-600 dark:text-gray-400">{new Date(tx.date + 'T00:00:00').toLocaleDateString()}</td>
+                    <td className="px-3 py-2 text-gray-900 dark:text-gray-100 max-w-[200px] truncate">{tx.description}</td>
+                    <td className="px-3 py-2 text-gray-600 dark:text-gray-400">{translateCategoryName(tx.categoryName, tCategories)}</td>
                     <td className={`px-3 py-2 text-right font-semibold ${tx.type === 1 ? 'text-green-600' : 'text-red-600'}`}>
                       {tx.type === 1 ? '+' : '-'}{formatCurrency(tx.amount)}
                     </td>
@@ -248,8 +248,8 @@ export default function TransactionSummaryReport({ period, year, month }: Transa
       )}
 
       {/* Footer */}
-      <div className="border-t border-gray-200 dark:border-gray-700 p-4 bg-gray-50 rounded-b-lg">
-        <div className="flex items-center justify-between text-xs text-gray-500">
+      <div className="border-t border-gray-200 dark:border-gray-700 p-4 bg-gray-50 dark:bg-gray-800 rounded-b-lg">
+        <div className="flex items-center justify-between text-xs text-gray-500 dark:text-gray-400">
           <span>{t('reportNote')}</span>
           <span>{t('page')} 1 {t('of')} 1</span>
         </div>

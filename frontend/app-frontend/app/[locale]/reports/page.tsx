@@ -1,4 +1,4 @@
-'use client'
+﻿'use client'
 
 import { useState, useEffect } from 'react'
 import { useRouter } from '@/i18n/routing'
@@ -120,16 +120,16 @@ export default function ReportsPage() {
   const ReportCard = ({ report }: { report: ReportTemplate }) => {
     const Icon = report.icon
     return (
-      <div className="bg-white rounded-lg border border-gray-200 p-6 hover:shadow-md transition-shadow duration-200">
+      <div className="bg-white dark:bg-gray-900 rounded-lg border border-gray-200 dark:border-gray-700 p-6 hover:shadow-md transition-shadow duration-200">
         <div className="flex items-center space-x-3 mb-3">
           <div className="bg-primary-100 p-2 rounded-lg shrink-0">
             <Icon className="w-5 h-5 text-primary-600" />
           </div>
-          <h3 className="font-semibold text-gray-900 text-lg">{t(report.nameKey as any)}</h3>
+          <h3 className="font-semibold text-gray-900 dark:text-gray-100 text-lg">{t(report.nameKey as any)}</h3>
         </div>
-        <p className="text-sm text-gray-600 mb-4 leading-relaxed">{t(report.descKey as any)}</p>
+        <p className="text-sm text-gray-600 dark:text-gray-400 mb-4 leading-relaxed">{t(report.descKey as any)}</p>
         <div className="mb-6">
-          <span className="inline-flex items-center text-sm text-gray-500 bg-gray-50 px-3 py-1 rounded-full">
+          <span className="inline-flex items-center text-sm text-gray-500 dark:text-gray-400 bg-gray-50 dark:bg-gray-800 px-3 py-1 rounded-full">
             <Clock className="w-3 h-3 mr-1" />
             {getFrequencyText()}
           </span>
@@ -159,8 +159,8 @@ export default function ReportsPage() {
               <div className="flex items-center gap-2 min-w-0">
                 <MobileMenuButton />
                 <div className="min-w-0">
-                <h1 className="text-xl sm:text-2xl font-bold text-gray-900 truncate">{t('title')}</h1>
-                <p className="text-sm text-gray-500 mt-0.5 hidden sm:block">{t('subtitle')}</p>
+                <h1 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-gray-100 truncate">{t('title')}</h1>
+                <p className="text-sm text-gray-500 dark:text-gray-400 mt-0.5 hidden sm:block">{t('subtitle')}</p>
               </div>
               </div>
             </div>
@@ -171,19 +171,19 @@ export default function ReportsPage() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
           
           {/* Period Filter Bar */}
-          <div className="bg-white rounded-lg border border-gray-200 p-3 sm:p-4 shadow-sm mb-4 sm:mb-6">
+          <div className="bg-white dark:bg-gray-900 rounded-lg border border-gray-200 dark:border-gray-700 p-3 sm:p-4 shadow-sm mb-4 sm:mb-6">
             <div className="flex items-center gap-2 mb-2 sm:mb-0">
               <Calendar className="w-4 h-4 text-primary-600 shrink-0" />
               <div>
-                <h3 className="text-sm font-medium text-gray-900">{t('period')}</h3>
-                <p className="text-xs text-gray-500">{getPeriodLabel()}</p>
+                <h3 className="text-sm font-medium text-gray-900 dark:text-gray-100">{t('period')}</h3>
+                <p className="text-xs text-gray-500 dark:text-gray-400">{getPeriodLabel()}</p>
               </div>
             </div>
             <div className="flex items-center gap-2 flex-wrap mt-2">
               <select
                 value={selectedPeriod}
                 onChange={(e) => setSelectedPeriod(e.target.value as 'week' | 'month' | 'year')}
-                className="flex-1 min-w-[100px] px-2 py-1.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 text-sm bg-white"
+                className="flex-1 min-w-[100px] px-2 py-1.5 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary-500 text-sm bg-white dark:bg-gray-900"
               >
                 <option value="week">{t('thisWeek')}</option>
                 <option value="month">{t('thisMonth')}</option>
@@ -192,7 +192,7 @@ export default function ReportsPage() {
               <select
                 value={selectedYear}
                 onChange={(e) => setSelectedYear(e.target.value)}
-                className="px-2 py-1.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 text-sm bg-white"
+                className="px-2 py-1.5 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary-500 text-sm bg-white dark:bg-gray-900"
               >
                 {Array.from({ length: 4 }, (_, i) => {
                   const y = new Date().getFullYear() - i
@@ -203,7 +203,7 @@ export default function ReportsPage() {
                 <select
                   value={selectedMonth}
                   onChange={(e) => setSelectedMonth(e.target.value)}
-                  className="flex-1 min-w-[100px] px-2 py-1.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 text-sm bg-white"
+                  className="flex-1 min-w-[100px] px-2 py-1.5 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary-500 text-sm bg-white dark:bg-gray-900"
                 >
                   {Array.from({ length: 12 }, (_, i) => (
                     <option key={i + 1} value={String(i + 1).padStart(2, '0')}>
@@ -217,30 +217,30 @@ export default function ReportsPage() {
 
           {/* Quick Stats — 2 top + 1 full-width bottom on mobile */}
           <div className="grid grid-cols-2 md:grid-cols-3 gap-3 sm:gap-4 mb-4 sm:mb-6">
-            <div className="bg-white rounded-lg border border-gray-200 p-3 sm:p-4">
+            <div className="bg-white dark:bg-gray-900 rounded-lg border border-gray-200 dark:border-gray-700 p-3 sm:p-4">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-xs text-gray-600">{t('availableReports')}</p>
-                  <p className="text-xl sm:text-2xl font-bold text-gray-900">3</p>
+                  <p className="text-xs text-gray-600 dark:text-gray-400">{t('availableReports')}</p>
+                  <p className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-gray-100">3</p>
                 </div>
                 <FileText className="w-6 h-6 sm:w-8 sm:h-8 text-primary-600" />
               </div>
             </div>
-            <div className="bg-white rounded-lg border border-gray-200 p-3 sm:p-4">
+            <div className="bg-white dark:bg-gray-900 rounded-lg border border-gray-200 dark:border-gray-700 p-3 sm:p-4">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-xs text-gray-600">{t('transactionsCount')}</p>
-                  <p className="text-xl sm:text-2xl font-bold text-gray-900">{totalTransactions}</p>
+                  <p className="text-xs text-gray-600 dark:text-gray-400">{t('transactionsCount')}</p>
+                  <p className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-gray-100">{totalTransactions}</p>
                 </div>
                 <BarChart3 className="w-6 h-6 sm:w-8 sm:h-8 text-blue-600" />
               </div>
             </div>
             {/* 3rd card — full width on mobile (col-span-2), normal on md+ */}
-            <div className="col-span-2 md:col-span-1 bg-white rounded-lg border border-gray-200 p-3 sm:p-4">
+            <div className="col-span-2 md:col-span-1 bg-white dark:bg-gray-900 rounded-lg border border-gray-200 dark:border-gray-700 p-3 sm:p-4">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-xs text-gray-600">{t('selectedPeriod')}</p>
-                  <p className="text-base sm:text-lg font-bold text-gray-900">
+                  <p className="text-xs text-gray-600 dark:text-gray-400">{t('selectedPeriod')}</p>
+                  <p className="text-base sm:text-lg font-bold text-gray-900 dark:text-gray-100">
                     {selectedPeriod === 'week' ? t('weekly') :
                      selectedPeriod === 'month' ? t('monthly') : t('annual')}
                   </p>

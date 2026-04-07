@@ -1,4 +1,4 @@
-'use client'
+﻿'use client'
 
 import { useEffect, useState } from 'react'
 import { X, ArrowLeft, ArrowRight, Check } from 'lucide-react'
@@ -213,7 +213,7 @@ export default function TourTooltipWithArrow({
   if (!isVisible) return null
 
   return (
-    <div style={tooltipStyle} className="bg-white rounded-xl shadow-2xl border border-gray-200 overflow-hidden">
+    <div style={tooltipStyle} className="bg-white dark:bg-gray-900 rounded-xl shadow-2xl border border-gray-200 dark:border-gray-700 overflow-hidden">
       {/* Arrow */}
       <div style={arrowStyle} />
       
@@ -224,13 +224,13 @@ export default function TourTooltipWithArrow({
             <span className="text-white text-sm font-bold">{currentStep + 1}</span>
           </div>
           <div className="min-w-0">
-            <h3 className="text-sm font-semibold text-gray-900 truncate">{title}</h3>
-            <p className="text-xs text-gray-500">Paso {currentStep + 1} de {totalSteps}</p>
+            <h3 className="text-sm font-semibold text-gray-900 dark:text-gray-100 truncate">{title}</h3>
+            <p className="text-xs text-gray-500 dark:text-gray-400">Paso {currentStep + 1} de {totalSteps}</p>
           </div>
         </div>
         <button
           onClick={onSkip}
-          className="text-gray-400 hover:text-gray-600 transition-colors shrink-0 ml-2"
+          className="text-gray-400 hover:text-gray-600 dark:text-gray-400 transition-colors shrink-0 ml-2"
         >
           <X className="w-4 h-4" />
         </button>
@@ -238,13 +238,13 @@ export default function TourTooltipWithArrow({
 
       {/* Content */}
       <div className="p-4">
-        <p className="text-gray-700 leading-relaxed mb-4 text-sm">
+        <p className="text-gray-700 dark:text-gray-300 leading-relaxed mb-4 text-sm">
           {description}
         </p>
 
         {/* Progress Bar */}
         <div className="mb-4">
-          <div className="flex justify-between text-xs text-gray-500 mb-1">
+          <div className="flex justify-between text-xs text-gray-500 dark:text-gray-400 mb-1">
             <span>Progreso</span>
             <span>{Math.round(((currentStep + 1) / totalSteps) * 100)}%</span>
           </div>
@@ -260,7 +260,7 @@ export default function TourTooltipWithArrow({
         <div className="flex items-center justify-between">
           <button
             onClick={onSkip}
-            className="text-gray-500 hover:text-gray-700 transition-colors text-xs font-medium"
+            className="text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:text-gray-300 transition-colors text-xs font-medium"
           >
             Saltar tour
           </button>
@@ -269,7 +269,7 @@ export default function TourTooltipWithArrow({
             {currentStep > 0 && (
               <button
                 onClick={onPrevious}
-                className="flex items-center space-x-1 px-3 py-1.5 text-gray-600 hover:text-gray-800 transition-colors text-xs"
+                className="flex items-center space-x-1 px-3 py-1.5 text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:text-gray-200 transition-colors text-xs"
               >
                 <ArrowLeft className="w-3 h-3" />
                 <span>Anterior</span>

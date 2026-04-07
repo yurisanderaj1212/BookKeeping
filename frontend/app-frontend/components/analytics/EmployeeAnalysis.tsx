@@ -1,4 +1,4 @@
-'use client'
+﻿'use client'
 
 import { useState, useEffect } from 'react'
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell } from 'recharts'
@@ -77,7 +77,7 @@ export default function EmployeeAnalysis({ period }: EmployeeAnalysisProps) {
   if (loading) {
     return (
       <div className="space-y-6">
-        {[1,2,3].map(i => <div key={i} className="h-32 bg-gray-100 rounded-lg animate-pulse" />)}
+        {[1,2,3].map(i => <div key={i} className="h-32 bg-gray-100 dark:bg-gray-700 rounded-lg animate-pulse" />)}
       </div>
     )
   }
@@ -86,33 +86,33 @@ export default function EmployeeAnalysis({ period }: EmployeeAnalysisProps) {
     <div className="space-y-6">
       {/* Overview Cards */}
       <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-        <div className="bg-white rounded-lg p-3 sm:p-4 shadow-sm border border-gray-200">
+        <div className="bg-white dark:bg-gray-900 rounded-lg p-3 sm:p-4 shadow-sm border border-gray-200 dark:border-gray-700">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-xs font-medium text-gray-500">{t('activeEmployees')}</p>
-              <p className="text-base sm:text-xl font-bold text-gray-900">{active.length}</p>
+              <p className="text-xs font-medium text-gray-500 dark:text-gray-400">{t('activeEmployees')}</p>
+              <p className="text-base sm:text-xl font-bold text-gray-900 dark:text-gray-100">{active.length}</p>
               <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">{inactive.length} {tEmp('statusInactive').toLowerCase()}</p>
             </div>
             <div className="p-3 bg-blue-100 rounded-lg"><Users className="w-6 h-6 text-blue-600" /></div>
           </div>
         </div>
 
-        <div className="bg-white rounded-lg p-3 sm:p-4 shadow-sm border border-gray-200">
+        <div className="bg-white dark:bg-gray-900 rounded-lg p-3 sm:p-4 shadow-sm border border-gray-200 dark:border-gray-700">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-xs font-medium text-gray-500">{t('payrollCost')}</p>
-              <p className="text-base sm:text-xl font-bold text-gray-900">{formatSalary(periodPayroll)}</p>
+              <p className="text-xs font-medium text-gray-500 dark:text-gray-400">{t('payrollCost')}</p>
+              <p className="text-base sm:text-xl font-bold text-gray-900 dark:text-gray-100">{formatSalary(periodPayroll)}</p>
               <p className="text-xs text-gray-500 dark:text-gray-400 mt-1 capitalize">{getPeriodLabel()}</p>
             </div>
             <div className="p-3 bg-green-100 rounded-lg"><DollarSign className="w-6 h-6 text-green-600" /></div>
           </div>
         </div>
 
-        <div className="col-span-2 md:col-span-1 bg-white rounded-lg p-3 sm:p-4 shadow-sm border border-gray-200">
+        <div className="col-span-2 md:col-span-1 bg-white dark:bg-gray-900 rounded-lg p-3 sm:p-4 shadow-sm border border-gray-200 dark:border-gray-700">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-xs font-medium text-gray-500">{t('avgCost')}</p>
-              <p className="text-base sm:text-xl font-bold text-gray-900">{formatSalary(avgPerEmployee)}</p>
+              <p className="text-xs font-medium text-gray-500 dark:text-gray-400">{t('avgCost')}</p>
+              <p className="text-base sm:text-xl font-bold text-gray-900 dark:text-gray-100">{formatSalary(avgPerEmployee)}</p>
               <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">{t('perEmployee')}</p>
             </div>
             <div className="p-3 bg-yellow-100 rounded-lg"><TrendingUp className="w-6 h-6 text-yellow-600" /></div>
@@ -123,7 +123,7 @@ export default function EmployeeAnalysis({ period }: EmployeeAnalysisProps) {
       {/* Charts */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Payroll type pie */}
-        <div className="bg-white rounded-lg p-6 shadow-sm border border-gray-200">
+        <div className="bg-white dark:bg-gray-900 rounded-lg p-6 shadow-sm border border-gray-200 dark:border-gray-700">
           <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">{t('payrollDistribution')}</h3>
           {payrollDist.length === 0 ? (
             <p className="text-sm text-gray-400 text-center py-8">{t('noData')}</p>
@@ -141,7 +141,7 @@ export default function EmployeeAnalysis({ period }: EmployeeAnalysisProps) {
         </div>
 
         {/* Cost by position bar */}
-        <div className="bg-white rounded-lg p-6 shadow-sm border border-gray-200">
+        <div className="bg-white dark:bg-gray-900 rounded-lg p-6 shadow-sm border border-gray-200 dark:border-gray-700">
           <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">{t('costByPosition')}</h3>
           {positionCosts.length === 0 ? (
             <p className="text-sm text-gray-400 text-center py-8">{t('noData')}</p>
@@ -160,9 +160,9 @@ export default function EmployeeAnalysis({ period }: EmployeeAnalysisProps) {
       </div>
 
       {/* Summary table */}
-      <div className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
+      <div className="bg-white dark:bg-gray-900 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden">
         <div className="px-6 py-4 border-b border-gray-200 dark:border-gray-700">
-          <h3 className="text-lg font-semibold text-gray-900">{t('employeeSummaryByPosition')}</h3>
+          <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">{t('employeeSummaryByPosition')}</h3>
         </div>
         {positionCosts.length === 0 ? (
           <p className="text-sm text-gray-400 text-center py-8">{t('noData')}</p>
@@ -172,18 +172,18 @@ export default function EmployeeAnalysis({ period }: EmployeeAnalysisProps) {
               <thead className="bg-gray-50 dark:bg-gray-800">
                 <tr>
                   {[t('position'), t('employees'), t('annualCost'), t('avgCost'), t('pctTotal')].map(h => (
-                    <th key={h} className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{h}</th>
+                    <th key={h} className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">{h}</th>
                   ))}
                 </tr>
               </thead>
               <tbody className="bg-white dark:bg-gray-900 divide-y divide-gray-200 dark:divide-gray-700">
                 {positionCosts.map((item, i) => (
-                  <tr key={i} className="hover:bg-gray-50">
-                    <td className="px-6 py-4 text-sm font-medium text-gray-900">{item.position}</td>
-                    <td className="px-6 py-4 text-sm text-gray-500">{item.count}</td>
-                    <td className="px-6 py-4 text-sm text-gray-500">{formatSalary(item.cost)}</td>
-                    <td className="px-6 py-4 text-sm text-gray-500">{formatSalary(item.cost / item.count)}</td>
-                    <td className="px-6 py-4 text-sm text-gray-500">
+                  <tr key={i} className="hover:bg-gray-50 dark:hover:bg-gray-800">
+                    <td className="px-6 py-4 text-sm font-medium text-gray-900 dark:text-gray-100">{item.position}</td>
+                    <td className="px-6 py-4 text-sm text-gray-500 dark:text-gray-400">{item.count}</td>
+                    <td className="px-6 py-4 text-sm text-gray-500 dark:text-gray-400">{formatSalary(item.cost)}</td>
+                    <td className="px-6 py-4 text-sm text-gray-500 dark:text-gray-400">{formatSalary(item.cost / item.count)}</td>
+                    <td className="px-6 py-4 text-sm text-gray-500 dark:text-gray-400">
                       {totalAnnualPayroll > 0 ? ((item.cost / totalAnnualPayroll) * 100).toFixed(1) : '0'}%
                     </td>
                   </tr>

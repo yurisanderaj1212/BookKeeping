@@ -1,4 +1,4 @@
-'use client'
+﻿'use client'
 
 import { useState, useEffect } from 'react'
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts'
@@ -66,7 +66,7 @@ export default function AnnualPerformance({ year }: AnnualPerformanceProps) {
   const CustomTooltip = ({ active, payload, label }: any) => {
     if (active && payload && payload.length) {
       return (
-        <div className="bg-white dark:bg-gray-900 p-3 border border-gray-200 rounded-lg shadow-lg">
+        <div className="bg-white dark:bg-gray-900 p-3 border border-gray-200 dark:border-gray-700 rounded-lg shadow-lg">
           <p className="font-medium text-gray-900 dark:text-gray-100 mb-2">{label}</p>
           {payload.map((entry: any, index: number) => (
             <p key={index} className="text-sm" style={{ color: entry.color }}>
@@ -84,7 +84,7 @@ export default function AnnualPerformance({ year }: AnnualPerformanceProps) {
     <div className="bg-white dark:bg-gray-900 rounded-lg border border-gray-200 dark:border-gray-700 p-6 mb-8">
       <div className="flex items-center justify-between mb-6">
         <div>
-          <h3 className="text-lg font-semibold text-gray-900">{t('annualPerformanceTitle', { year })}</h3>
+          <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">{t('annualPerformanceTitle', { year })}</h3>
           <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">{t('monthlyBreakdown')}</p>
         </div>
       </div>
@@ -170,17 +170,17 @@ export default function AnnualPerformance({ year }: AnnualPerformanceProps) {
           <table className="min-w-full sm:w-full">
             <thead className="bg-gray-50 dark:bg-gray-800">
               <tr>
-                <th className="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase whitespace-nowrap">{t('month')}</th>
-                <th className="px-3 py-2 text-right text-xs font-medium text-gray-500 uppercase whitespace-nowrap">{t('income')}</th>
-                <th className="px-3 py-2 text-right text-xs font-medium text-gray-500 uppercase whitespace-nowrap">{t('expenses')}</th>
-                <th className="px-3 py-2 text-right text-xs font-medium text-gray-500 uppercase whitespace-nowrap">{t('profit')}</th>
-                <th className="px-3 py-2 text-center text-xs font-medium text-gray-500 uppercase">●</th>
+                <th className="px-3 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase whitespace-nowrap">{t('month')}</th>
+                <th className="px-3 py-2 text-right text-xs font-medium text-gray-500 dark:text-gray-400 uppercase whitespace-nowrap">{t('income')}</th>
+                <th className="px-3 py-2 text-right text-xs font-medium text-gray-500 dark:text-gray-400 uppercase whitespace-nowrap">{t('expenses')}</th>
+                <th className="px-3 py-2 text-right text-xs font-medium text-gray-500 dark:text-gray-400 uppercase whitespace-nowrap">{t('profit')}</th>
+                <th className="px-3 py-2 text-center text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">●</th>
               </tr>
             </thead>
             <tbody className="bg-white dark:bg-gray-900 divide-y divide-gray-100">
               {annualData.map((monthData, index) => (
-                <tr key={index} className="hover:bg-gray-50">
-                  <td className="px-3 py-2 text-xs font-medium text-gray-900 whitespace-nowrap">{monthData.monthShort ?? monthData.month}</td>
+                <tr key={index} className="hover:bg-gray-50 dark:hover:bg-gray-800">
+                  <td className="px-3 py-2 text-xs font-medium text-gray-900 dark:text-gray-100 whitespace-nowrap">{monthData.monthShort ?? monthData.month}</td>
                   <td className="px-3 py-2 text-right text-xs text-green-600 font-semibold whitespace-nowrap">{formatCurrency(monthData.ingresos)}</td>
                   <td className="px-3 py-2 text-right text-xs text-red-600 font-semibold whitespace-nowrap">{formatCurrency(monthData.gastos)}</td>
                   <td className={`px-3 py-2 text-right text-xs font-semibold whitespace-nowrap ${monthData.beneficio >= 0 ? 'text-blue-600' : 'text-orange-600'}`}>

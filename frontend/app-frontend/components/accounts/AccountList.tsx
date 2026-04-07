@@ -1,4 +1,4 @@
-'use client'
+﻿'use client'
 
 import { Wallet, CreditCard, Landmark, DollarSign, Edit2, Trash2, TrendingUp, TrendingDown } from 'lucide-react'
 import { Account, AccountType, getAccountDisplayName } from '../../services/accountService'
@@ -43,7 +43,7 @@ export default function AccountList({ accounts, onEdit, onDelete }: AccountListP
       case AccountType.Equity:    return 'bg-purple-100 text-purple-600'
       case AccountType.Income:    return 'bg-green-100 text-green-600'
       case AccountType.Expense:   return 'bg-orange-100 text-orange-600'
-      default:                    return 'bg-gray-100 text-gray-600'
+      default:                    return 'bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400'
     }
   }
 
@@ -67,7 +67,7 @@ export default function AccountList({ accounts, onEdit, onDelete }: AccountListP
 
         return (
           <div key={type} className="bg-white dark:bg-gray-900 rounded-lg border border-gray-200 dark:border-gray-700 overflow-hidden">
-            <div className="bg-gray-50 dark:bg-gray-800 px-6 py-3 border-b border-gray-200 dark:border-gray-700 dark:border-gray-700">
+            <div className="bg-gray-50 dark:bg-gray-800 px-6 py-3 border-b border-gray-200 dark:border-gray-700">
               <div className="flex items-center space-x-2">
                 <div className={`w-8 h-8 rounded-lg flex items-center justify-center ${colorClass}`}>
                   <Icon className="w-4 h-4" />
@@ -91,7 +91,7 @@ export default function AccountList({ accounts, onEdit, onDelete }: AccountListP
                           <span className="text-xs text-red-600 bg-red-50 px-1.5 py-0.5 rounded shrink-0">{t('inactive')}</span>
                         )}
                       </div>
-                      <p className="text-xs text-gray-400 dark:text-gray-500 truncate">
+                      <p className="text-xs text-gray-400 dark:text-gray-500 dark:text-gray-400 truncate">
                         {getSubTypeLabel(account.subType)}
                         <span className="mx-1">·</span>
                         {t('createdOn')} {formatDate(account.createdAt)}

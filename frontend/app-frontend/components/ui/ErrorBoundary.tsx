@@ -1,4 +1,4 @@
-'use client'
+﻿'use client'
 
 import { Component, type ReactNode } from 'react'
 import { AlertTriangle, RefreshCw } from 'lucide-react'
@@ -33,7 +33,7 @@ export default class ErrorBoundary extends Component<Props, State> {
 
       return (
         <div className="min-h-screen bg-slate-50 flex items-center justify-center px-4">
-          <div className="bg-white rounded-2xl shadow-sm border border-slate-200 p-10 max-w-md w-full text-center">
+          <div className="bg-white dark:bg-gray-900 rounded-2xl shadow-sm border border-slate-200 p-10 max-w-md w-full text-center">
             <div className="w-14 h-14 bg-red-50 rounded-full flex items-center justify-center mx-auto mb-5">
               <AlertTriangle className="w-7 h-7 text-red-500" />
             </div>

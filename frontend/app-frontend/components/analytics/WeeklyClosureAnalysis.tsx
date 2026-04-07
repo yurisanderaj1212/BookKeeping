@@ -1,4 +1,4 @@
-'use client'
+﻿'use client'
 
 import { useState, useEffect } from 'react'
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts'
@@ -76,9 +76,9 @@ export default function WeeklyClosureAnalysis({ year, month }: WeeklyClosureAnal
     if (!active || !payload?.length) return null
     const d = payload[0]?.payload
     return (
-      <div className="bg-white dark:bg-gray-900 p-3 border border-gray-200 rounded-lg shadow-lg">
+      <div className="bg-white dark:bg-gray-900 p-3 border border-gray-200 dark:border-gray-700 rounded-lg shadow-lg">
         <p className="font-medium text-gray-900 dark:text-gray-100 mb-2">{d?.fullName}</p>
-        <p className="text-xs text-gray-500 mb-1">{t('status')}: {d?.status === 'closed' ? t('statusClosed') : t('statusOpen')}</p>
+        <p className="text-xs text-gray-500 dark:text-gray-400 mb-1">{t('status')}: {d?.status === 'closed' ? t('statusClosed') : t('statusOpen')}</p>
         {payload.map((entry: any, i: number) => (
           <p key={i} className="text-sm" style={{ color: entry.color }}>
             {entry.dataKey === 'ingresos' ? t('income') : entry.dataKey === 'gastos' ? t('expenses') : t('profit')}: {formatCurrency(entry.value)}
@@ -90,7 +90,7 @@ export default function WeeklyClosureAnalysis({ year, month }: WeeklyClosureAnal
 
   if (loading) return (
     <div className="space-y-4">
-      {[1,2].map(i => <div key={i} className="h-32 bg-gray-100 rounded-lg animate-pulse" />)}
+      {[1,2].map(i => <div key={i} className="h-32 bg-gray-100 dark:bg-gray-700 rounded-lg animate-pulse" />)}
     </div>
   )
 
@@ -119,8 +119,8 @@ export default function WeeklyClosureAnalysis({ year, month }: WeeklyClosureAnal
                 <div className={`${card.bg} p-2 rounded-lg`}><Icon className={`w-5 h-5 ${card.iconColor}`} /></div>
                 <div className={`${card.badgeBg} px-2 py-1 rounded text-xs font-medium ${card.badgeText}`}>{card.badge}</div>
               </div>
-              <p className="text-xs text-gray-500 mb-1">{card.label}</p>
-              <p className="text-base sm:text-xl font-bold text-gray-900">{card.isCurrency ? card.value : card.value}</p>
+              <p className="text-xs text-gray-500 dark:text-gray-400 mb-1">{card.label}</p>
+              <p className="text-base sm:text-xl font-bold text-gray-900 dark:text-gray-100">{card.isCurrency ? card.value : card.value}</p>
             </div>
           )
         })}
@@ -131,7 +131,7 @@ export default function WeeklyClosureAnalysis({ year, month }: WeeklyClosureAnal
         <div className="bg-white dark:bg-gray-900 rounded-lg border border-gray-200 dark:border-gray-700 p-6">
           <div className="flex items-center justify-between mb-6">
             <div>
-              <h3 className="text-lg font-semibold text-gray-900">{t('weeklyPerformance')}</h3>
+              <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">{t('weeklyPerformance')}</h3>
               <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">{t('weeklyClosureSubtitle')}</p>
             </div>
           </div>
@@ -154,7 +154,7 @@ export default function WeeklyClosureAnalysis({ year, month }: WeeklyClosureAnal
       {closures.length > 0 && (
         <div className="bg-white dark:bg-gray-900 rounded-lg border border-gray-200 dark:border-gray-700 p-6">
           <div className="mb-6">
-            <h3 className="text-lg font-semibold text-gray-900">{t('weeklyHistory')}</h3>
+            <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">{t('weeklyHistory')}</h3>
             <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">{t('weeklyHistorySubtitle')}</p>
           </div>
           <div className="overflow-x-auto">
@@ -162,7 +162,7 @@ export default function WeeklyClosureAnalysis({ year, month }: WeeklyClosureAnal
               <thead className="bg-gray-50 dark:bg-gray-800">
                 <tr>
                   {[t('week'), t('status'), t('income'), t('expenses'), t('profit')].map(h => (
-                    <th key={h} className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{h}</th>
+                    <th key={h} className="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">{h}</th>
                   ))}
                 </tr>
               </thead>
@@ -170,8 +170,8 @@ export default function WeeklyClosureAnalysis({ year, month }: WeeklyClosureAnal
                 {closures.map(row => {
                   const status = getStatus(row)
                   return (
-                    <tr key={row.id} className="hover:bg-gray-50">
-                      <td className="px-4 py-3 font-medium text-gray-900">{t('week')} {row.week_number}</td>
+                    <tr key={row.id} className="hover:bg-gray-50 dark:hover:bg-gray-800">
+                      <td className="px-4 py-3 font-medium text-gray-900 dark:text-gray-100">{t('week')} {row.week_number}</td>
                       <td className="px-4 py-3">
                         <span className={`inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-medium ${
                           status === 'closed' ? 'bg-green-100 text-green-800' : 'bg-blue-100 text-blue-800'

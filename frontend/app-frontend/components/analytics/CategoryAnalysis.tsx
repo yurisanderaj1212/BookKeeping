@@ -1,4 +1,4 @@
-'use client'
+﻿'use client'
 
 import { useState, useEffect } from 'react'
 import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip } from 'recharts'
@@ -68,15 +68,15 @@ export default function CategoryAnalysis({ period }: CategoryAnalysisProps) {
     if (active && payload && payload.length) {
       const data = payload[0].payload
       return (
-        <div className="bg-white dark:bg-gray-900 p-3 border border-gray-200 rounded-lg shadow-lg">
+        <div className="bg-white dark:bg-gray-900 p-3 border border-gray-200 dark:border-gray-700 rounded-lg shadow-lg">
           <p className="font-medium text-gray-900 dark:text-gray-100 mb-2">{data.name}</p>
-          <p className="text-sm text-gray-600">
+          <p className="text-sm text-gray-600 dark:text-gray-400">
             {t('amount')}: <span className="font-semibold">{formatCurrency(data.amount)}</span>
           </p>
-          <p className="text-sm text-gray-600">
+          <p className="text-sm text-gray-600 dark:text-gray-400">
             {t('percentage')}: <span className="font-semibold">{data.percentage.toFixed(1)}%</span>
           </p>
-          <p className="text-sm text-gray-600">
+          <p className="text-sm text-gray-600 dark:text-gray-400">
             {t('transactions')}: <span className="font-semibold">{data.transactions}</span>
           </p>
         </div>
@@ -86,22 +86,22 @@ export default function CategoryAnalysis({ period }: CategoryAnalysisProps) {
   }
 
   const CategoryCard = ({ category }: { category: any }) => (
-    <div className="bg-gray-50 dark:bg-gray-800 rounded-lg p-4 hover:bg-gray-100 transition-colors duration-200">
+    <div className="bg-gray-50 dark:bg-gray-800 rounded-lg p-4 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors duration-200">
       <div className="flex items-center justify-between mb-3">
         <div className="flex items-center space-x-3">
           <div className="w-4 h-4 rounded-full" style={{ backgroundColor: category.color }} />
-          <span className="font-medium text-gray-900">{category.name}</span>
+          <span className="font-medium text-gray-900 dark:text-gray-100">{category.name}</span>
         </div>
-        <span className="text-sm text-gray-500">{category.percentage.toFixed(1)}%</span>
+        <span className="text-sm text-gray-500 dark:text-gray-400">{category.percentage.toFixed(1)}%</span>
       </div>
       <div className="space-y-2">
         <div className="flex justify-between text-sm">
-          <span className="text-gray-500">{t('amount')}</span>
-          <span className="font-semibold text-gray-900">{formatCurrency(category.amount)}</span>
+          <span className="text-gray-500 dark:text-gray-400">{t('amount')}</span>
+          <span className="font-semibold text-gray-900 dark:text-gray-100">{formatCurrency(category.amount)}</span>
         </div>
         <div className="flex justify-between text-sm">
-          <span className="text-gray-500">{t('transactions')}</span>
-          <span className="text-gray-700">{category.transactions}</span>
+          <span className="text-gray-500 dark:text-gray-400">{t('transactions')}</span>
+          <span className="text-gray-700 dark:text-gray-300">{category.transactions}</span>
         </div>
       </div>
     </div>
@@ -114,7 +114,7 @@ export default function CategoryAnalysis({ period }: CategoryAnalysisProps) {
     <div className="bg-white dark:bg-gray-900 rounded-lg border border-gray-200 dark:border-gray-700 p-6">
       <div className="flex items-center justify-between mb-6">
         <div>
-          <h3 className="text-lg font-semibold text-gray-900">{t('title')}</h3>
+          <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">{t('title')}</h3>
           <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
             {activeTab === 'income' ? t('subtitleIncome') : t('subtitleExpense')}
           </p>
@@ -129,11 +129,11 @@ export default function CategoryAnalysis({ period }: CategoryAnalysisProps) {
       </div>
 
       {/* Tabs */}
-      <div className="flex space-x-1 mb-6 bg-gray-100 p-1 rounded-lg">
+      <div className="flex space-x-1 mb-6 bg-gray-100 dark:bg-gray-700 p-1 rounded-lg">
         <button
           onClick={() => setActiveTab('income')}
           className={`flex-1 py-2 px-4 text-sm font-medium rounded-md transition-colors duration-200 ${
-            activeTab === 'income' ? 'bg-white text-gray-900 shadow-sm' : 'text-gray-500 hover:text-gray-700'
+            activeTab === 'income' ? 'bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 shadow-sm' : 'text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:text-gray-300'
           }`}
         >
           {t('tabIncome')}
@@ -141,7 +141,7 @@ export default function CategoryAnalysis({ period }: CategoryAnalysisProps) {
         <button
           onClick={() => setActiveTab('expense')}
           className={`flex-1 py-2 px-4 text-sm font-medium rounded-md transition-colors duration-200 ${
-            activeTab === 'expense' ? 'bg-white text-gray-900 shadow-sm' : 'text-gray-500 hover:text-gray-700'
+            activeTab === 'expense' ? 'bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 shadow-sm' : 'text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:text-gray-300'
           }`}
         >
           {t('tabExpense')}
@@ -173,10 +173,10 @@ export default function CategoryAnalysis({ period }: CategoryAnalysisProps) {
           </div>
           <div className="mt-4 p-4 bg-gray-50 dark:bg-gray-800 rounded-lg">
             <div className="flex justify-between items-center">
-              <span className="text-sm text-gray-600">
+              <span className="text-sm text-gray-600 dark:text-gray-400">
                 {activeTab === 'income' ? t('totalIncome') : t('totalExpenses')}
               </span>
-              <span className="text-lg font-bold text-gray-900">{formatCurrency(totalAmount)}</span>
+              <span className="text-lg font-bold text-gray-900 dark:text-gray-100">{formatCurrency(totalAmount)}</span>
             </div>
           </div>
         </div>
@@ -190,7 +190,7 @@ export default function CategoryAnalysis({ period }: CategoryAnalysisProps) {
                 <CategoryCard key={index} category={category} />
               ))
             ) : (
-              <p className="text-sm text-gray-500">{t('noData')}</p>
+              <p className="text-sm text-gray-500 dark:text-gray-400">{t('noData')}</p>
             )}
           </div>
         </div>

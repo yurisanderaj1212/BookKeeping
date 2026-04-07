@@ -1,4 +1,4 @@
-'use client'
+﻿'use client'
 
 import { Suspense } from 'react'
 import { useLocale } from 'next-intl'
@@ -38,7 +38,7 @@ function LanguageSwitcherInner({ variant = 'compact', className = '' }: Language
                 className={`text-sm px-1 py-0.5 rounded transition-colors ${
                   locale === l.code
                     ? 'text-primary-600 font-semibold'
-                    : 'text-gray-500 hover:text-gray-800'
+                    : 'text-gray-500 dark:text-gray-400 hover:text-gray-800 dark:text-gray-200'
                 }`}
               >
                 {l.label}
@@ -62,7 +62,7 @@ function LanguageSwitcherInner({ variant = 'compact', className = '' }: Language
             className={`text-xs px-1.5 py-0.5 rounded transition-colors ${
               locale === l.code
                 ? 'bg-primary-100 text-primary-700 font-semibold'
-                : 'text-gray-400 hover:text-gray-600'
+                : 'text-gray-400 hover:text-gray-600 dark:text-gray-400'
             }`}
           >
             {l.short}

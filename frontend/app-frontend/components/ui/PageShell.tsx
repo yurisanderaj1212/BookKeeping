@@ -1,4 +1,4 @@
-'use client'
+﻿'use client'
 
 /**
  * PageShell — wrapper que muestra el layout completo inmediatamente
@@ -29,7 +29,7 @@ export function TableSkeleton({ rows = 5 }: { rows?: number }) {
   return (
     <div className="bg-white dark:bg-gray-900 rounded-lg border border-gray-200 dark:border-gray-700 overflow-hidden">
       {/* Header */}
-      <div className="px-6 py-4 border-b border-gray-100 flex space-x-4">
+      <div className="px-6 py-4 border-b border-gray-100 dark:border-gray-800 flex space-x-4">
         <Skeleton className="h-4 w-24" />
         <Skeleton className="h-4 w-32" />
         <Skeleton className="h-4 w-20" />

@@ -1,4 +1,4 @@
-'use client'
+﻿'use client'
 
 import { useState, useEffect } from 'react'
 import { Plus, Search, Filter, Download, Calendar, ChevronLeft, ChevronRight } from 'lucide-react'
@@ -283,10 +283,10 @@ export default function TransactionsPage() {
               <div className="flex items-center gap-2 min-w-0">
                 <MobileMenuButton />
                 <div className="min-w-0">
-                <h1 className="text-xl sm:text-2xl font-bold text-gray-900 truncate">
+                <h1 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-gray-100 truncate">
                   {t('title')}
                 </h1>
-                <p className="text-sm text-gray-500 mt-0.5 hidden sm:block">
+                <p className="text-sm text-gray-500 dark:text-gray-400 mt-0.5 hidden sm:block">
                   {t('subtitle')}
                 </p>
               </div>
@@ -294,7 +294,7 @@ export default function TransactionsPage() {
               <div className="flex items-center gap-2 shrink-0">
                 <button 
                   onClick={handleExport}
-                  className="bg-white border border-gray-300 text-gray-700 px-3 py-2 rounded-lg hover:bg-gray-50 transition-colors flex items-center gap-1.5"
+                  className="bg-white dark:bg-gray-900 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 px-3 py-2 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors flex items-center gap-1.5"
                 >
                   <Download className="w-4 h-4" />
                   <span className="hidden sm:inline text-sm">{tCommon('export')}</span>
@@ -342,7 +342,7 @@ export default function TransactionsPage() {
           </div>
         )}
         
-        <div className="bg-white rounded-lg border border-gray-200 p-3 sm:p-6 mb-4 sm:mb-6" data-tour="transaction-filters">
+        <div className="bg-white dark:bg-gray-900 rounded-lg border border-gray-200 dark:border-gray-700 p-3 sm:p-6 mb-4 sm:mb-6" data-tour="transaction-filters">
           <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-5 gap-2 sm:gap-3">
             {/* Search — full width on mobile */}
             <div className="relative col-span-2 lg:col-span-1">
@@ -355,7 +355,7 @@ export default function TransactionsPage() {
                   setSearchTerm(e.target.value)
                   setCurrentPage(1)
                 }}
-                className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                className="w-full pl-10 pr-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
               />
             </div>
 
@@ -369,7 +369,7 @@ export default function TransactionsPage() {
                   setCurrentPage(1)
                 }}
                 disabled={loadingCategories}
-                className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent appearance-none"
+                className="w-full pl-10 pr-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent appearance-none"
               >
                 <option value="all">{t('allCategories')}</option>
                 {categories
@@ -397,7 +397,7 @@ export default function TransactionsPage() {
                   setSelectedType(e.target.value)
                   setCurrentPage(1)
                 }}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
               >
                 <option value="all">{t('allTypes')}</option>
                 <option value="income">{t('incomes')}</option>
@@ -414,7 +414,7 @@ export default function TransactionsPage() {
                   setCurrentPage(1)
                 }}
                 disabled={loadingAccounts}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
               >
                 <option value="all">{t('allAccounts')}</option>
                 <option value="none">{t('noAccount')}</option>
@@ -435,7 +435,7 @@ export default function TransactionsPage() {
                   setDateRange(e.target.value)
                   setCurrentPage(1)
                 }}
-                className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent appearance-none"
+                className="w-full pl-10 pr-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent appearance-none"
               >
                 <option value="all">{t('allDates')}</option>
                 <option value="today">{t('today')}</option>
@@ -470,26 +470,26 @@ export default function TransactionsPage() {
 
         {/* Pagination Controls */}
         {pagination && pagination.totalPages > 1 && (
-          <div className="mt-6 flex items-center justify-between border-t border-gray-200 bg-white px-4 py-3 sm:px-6 rounded-lg">
+          <div className="mt-6 flex items-center justify-between border-t border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 px-4 py-3 sm:px-6 rounded-lg">
             <div className="flex flex-1 justify-between sm:hidden">
               <button
                 onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
                 disabled={!pagination.hasPreviousPage}
-                className="relative inline-flex items-center rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+                className="relative inline-flex items-center rounded-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800 disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 {tCommon('previous')}
               </button>
               <button
                 onClick={() => setCurrentPage(prev => prev + 1)}
                 disabled={!pagination.hasNextPage}
-                className="relative ml-3 inline-flex items-center rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+                className="relative ml-3 inline-flex items-center rounded-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800 disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 {tCommon('next')}
               </button>
             </div>
             <div className="hidden sm:flex sm:flex-1 sm:items-center sm:justify-between">
               <div>
-                <p className="text-sm text-gray-700">
+                <p className="text-sm text-gray-700 dark:text-gray-300">
                   {tCommon('showing')}{' '}
                   <span className="font-medium">{((pagination.currentPage - 1) * pagination.pageSize) + 1}</span>
                   {' '}-{' '}
@@ -508,7 +508,7 @@ export default function TransactionsPage() {
                     setPageSize(Number(e.target.value))
                     setCurrentPage(1) // Reset to first page when changing page size
                   }}
-                  className="border border-gray-300 rounded-md px-3 py-1 text-sm focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                  className="border border-gray-300 dark:border-gray-600 rounded-md px-3 py-1 text-sm focus:ring-2 focus:ring-primary-500 focus:border-transparent"
                 >
                   <option value="10">{t('perPage10')}</option>
                   <option value="20">{t('perPage20')}</option>
@@ -519,18 +519,18 @@ export default function TransactionsPage() {
                   <button
                     onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
                     disabled={!pagination.hasPreviousPage}
-                    className="relative inline-flex items-center rounded-l-md px-2 py-2 text-gray-400 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:z-20 focus:outline-offset-0 disabled:opacity-50 disabled:cursor-not-allowed"
+                    className="relative inline-flex items-center rounded-l-md px-2 py-2 text-gray-400 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800 focus:z-20 focus:outline-offset-0 disabled:opacity-50 disabled:cursor-not-allowed"
                   >
                     <span className="sr-only">Anterior</span>
                     <ChevronLeft className="h-5 w-5" aria-hidden="true" />
                   </button>
-                  <span className="relative inline-flex items-center px-4 py-2 text-sm font-semibold text-gray-900 ring-1 ring-inset ring-gray-300">
+                  <span className="relative inline-flex items-center px-4 py-2 text-sm font-semibold text-gray-900 dark:text-gray-100 ring-1 ring-inset ring-gray-300">
                     {tCommon('page')} {pagination.currentPage} {tCommon('of')} {pagination.totalPages}
                   </span>
                   <button
                     onClick={() => setCurrentPage(prev => prev + 1)}
                     disabled={!pagination.hasNextPage}
-                    className="relative inline-flex items-center rounded-r-md px-2 py-2 text-gray-400 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:z-20 focus:outline-offset-0 disabled:opacity-50 disabled:cursor-not-allowed"
+                    className="relative inline-flex items-center rounded-r-md px-2 py-2 text-gray-400 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800 focus:z-20 focus:outline-offset-0 disabled:opacity-50 disabled:cursor-not-allowed"
                   >
                     <span className="sr-only">Siguiente</span>
                     <ChevronRight className="h-5 w-5" aria-hidden="true" />

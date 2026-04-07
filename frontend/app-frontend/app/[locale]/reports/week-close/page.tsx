@@ -1,4 +1,4 @@
-'use client'
+﻿'use client'
 
 import { useState, useEffect, useCallback, Suspense } from 'react'
 import { useSearchParams } from 'next/navigation'
@@ -140,17 +140,17 @@ function WeekCloseContent() {
             <div className="flex items-center justify-between min-h-16 py-3 gap-3">
               <div className="flex items-center gap-2 min-w-0">
                 <MobileMenuButton />
-                <button onClick={() => router.push('/reports')} className="p-1.5 hover:bg-gray-100 rounded-lg transition-colors shrink-0">
-                  <ArrowLeft className="w-5 h-5 text-gray-600" />
+                <button onClick={() => router.push('/reports')} className="p-1.5 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors shrink-0">
+                  <ArrowLeft className="w-5 h-5 text-gray-600 dark:text-gray-400" />
                 </button>
                 <div className="min-w-0">
-                  <h1 className="text-base sm:text-xl font-bold text-gray-900 truncate">{t('pageTitle')}</h1>
-                  <p className="text-xs text-gray-500 hidden sm:block">{t('pageSubtitle')}</p>
+                  <h1 className="text-base sm:text-xl font-bold text-gray-900 dark:text-gray-100 truncate">{t('pageTitle')}</h1>
+                  <p className="text-xs text-gray-500 dark:text-gray-400 hidden sm:block">{t('pageSubtitle')}</p>
                 </div>
               </div>
               <button
                 onClick={() => showExportModal((fmt) => exportWeekClose(selectedYear, selectedMonth, fmt))}
-                className="bg-white border border-gray-300 text-gray-700 px-3 py-2 rounded-lg hover:bg-gray-50 transition-colors flex items-center gap-1.5 shrink-0 text-sm"
+                className="bg-white dark:bg-gray-900 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 px-3 py-2 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors flex items-center gap-1.5 shrink-0 text-sm"
               >
                 <Download className="w-4 h-4" />
                 <span className="hidden sm:inline">{tCommon("export")}</span>
@@ -161,20 +161,20 @@ function WeekCloseContent() {
 
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
           {/* Filtros */}
-          <div className="bg-white rounded-lg border border-gray-200 p-3 sm:p-4 mb-4 sm:mb-6">
+          <div className="bg-white dark:bg-gray-900 rounded-lg border border-gray-200 dark:border-gray-700 p-3 sm:p-4 mb-4 sm:mb-6">
             <div className="flex items-center gap-2 flex-wrap">
               <Calendar className="w-4 h-4 text-gray-400 shrink-0" />
               <select
                 value={selectedYear}
                 onChange={(e) => setSelectedYear(parseInt(e.target.value))}
-                className="px-2 py-1.5 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+                className="px-2 py-1.5 text-sm border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
               >
                 {yearOptions.map(y => <option key={y} value={y}>{y}</option>)}
               </select>
               <select
                 value={selectedMonth}
                 onChange={(e) => setSelectedMonth(parseInt(e.target.value))}
-                className="flex-1 min-w-[120px] px-2 py-1.5 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+                className="flex-1 min-w-[120px] px-2 py-1.5 text-sm border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
               >
                 {Array.from({ length: 12 }, (_, i) => (
                   <option key={i + 1} value={i + 1}>{tMonths(String(i + 1) as any)}</option>
@@ -191,42 +191,42 @@ function WeekCloseContent() {
           {/* Tarjetas resumen */}
           {summary && (
             <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 lg:gap-6 mb-6 sm:mb-8">
-              <div className="bg-white rounded-lg border border-gray-200 p-3 sm:p-4 lg:p-6">
+              <div className="bg-white dark:bg-gray-900 rounded-lg border border-gray-200 dark:border-gray-700 p-3 sm:p-4 lg:p-6">
                 <div className="flex items-center gap-2 sm:gap-3">
                   <div className="bg-green-100 p-1.5 sm:p-2 rounded-lg shrink-0"><TrendingUp className="w-4 h-4 sm:w-5 sm:h-5 text-green-600" /></div>
                   <div className="min-w-0">
-                    <p className="text-xs text-gray-600 truncate">{t('summaryIncome')}</p>
+                    <p className="text-xs text-gray-600 dark:text-gray-400 truncate">{t('summaryIncome')}</p>
                     <p className="text-sm sm:text-xl font-bold text-green-700 truncate">{formatCurrency(summary.totalIncome)}</p>
                   </div>
                 </div>
               </div>
-              <div className="bg-white rounded-lg border border-gray-200 p-3 sm:p-4 lg:p-6">
+              <div className="bg-white dark:bg-gray-900 rounded-lg border border-gray-200 dark:border-gray-700 p-3 sm:p-4 lg:p-6">
                 <div className="flex items-center gap-2 sm:gap-3">
                   <div className="bg-red-100 p-1.5 sm:p-2 rounded-lg shrink-0"><TrendingDown className="w-4 h-4 sm:w-5 sm:h-5 text-red-600" /></div>
                   <div className="min-w-0">
-                    <p className="text-xs text-gray-600 truncate">{t('summaryExpenses')}</p>
+                    <p className="text-xs text-gray-600 dark:text-gray-400 truncate">{t('summaryExpenses')}</p>
                     <p className="text-sm sm:text-xl font-bold text-red-700 truncate">{formatCurrency(summary.totalExpenses)}</p>
                   </div>
                 </div>
               </div>
-              <div className="bg-white rounded-lg border border-gray-200 p-3 sm:p-4 lg:p-6">
+              <div className="bg-white dark:bg-gray-900 rounded-lg border border-gray-200 dark:border-gray-700 p-3 sm:p-4 lg:p-6">
                 <div className="flex items-center gap-2 sm:gap-3">
                   <div className={`${summary.netProfit >= 0 ? 'bg-blue-100' : 'bg-orange-100'} p-1.5 sm:p-2 rounded-lg shrink-0`}>
                     <DollarSign className={`w-4 h-4 sm:w-5 sm:h-5 ${summary.netProfit >= 0 ? 'text-blue-600' : 'text-orange-600'}`} />
                   </div>
                   <div className="min-w-0">
-                    <p className="text-xs text-gray-600 truncate">{t('summaryProfit')}</p>
+                    <p className="text-xs text-gray-600 dark:text-gray-400 truncate">{t('summaryProfit')}</p>
                     <p className={`text-sm sm:text-xl font-bold truncate ${summary.netProfit >= 0 ? 'text-blue-700' : 'text-orange-700'}`}>
                       {formatCurrency(summary.netProfit)}
                     </p>
                   </div>
                 </div>
               </div>
-              <div className="bg-white rounded-lg border border-gray-200 p-3 sm:p-4 lg:p-6">
+              <div className="bg-white dark:bg-gray-900 rounded-lg border border-gray-200 dark:border-gray-700 p-3 sm:p-4 lg:p-6">
                 <div className="flex items-center gap-2 sm:gap-3">
                   <div className="bg-purple-100 p-1.5 sm:p-2 rounded-lg shrink-0"><CheckCircle className="w-4 h-4 sm:w-5 sm:h-5 text-purple-600" /></div>
                   <div className="min-w-0">
-                    <p className="text-xs text-gray-600 truncate">{t('summaryClosures')}</p>
+                    <p className="text-xs text-gray-600 dark:text-gray-400 truncate">{t('summaryClosures')}</p>
                     <p className="text-sm sm:text-lg font-bold text-purple-700 truncate">
                       {t('summaryClosed', { closed: summary.closedWeeks, total: summary.totalWeeks })}
                     </p>
@@ -240,51 +240,51 @@ function WeekCloseContent() {
           )}
 
           {/* Tabla de semanas */}
-          <div className="bg-white rounded-lg border border-gray-200">
-            <div className="p-4 lg:p-6 border-b border-gray-200">
-              <h3 className="text-lg font-semibold text-gray-900">
+          <div className="bg-white dark:bg-gray-900 rounded-lg border border-gray-200 dark:border-gray-700">
+            <div className="p-4 lg:p-6 border-b border-gray-200 dark:border-gray-700">
+              <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
                 {t('tableTitle', { month: tMonths(String(selectedMonth) as any), year: selectedYear })}
               </h3>
-              <p className="text-sm text-gray-500 mt-1">{t('tableSubtitle')}</p>
+              <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">{t('tableSubtitle')}</p>
             </div>
 
             {loadingData ? (
               <div className="p-12 text-center">
                 <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-primary-600 mx-auto"></div>
-                <p className="text-gray-500 mt-4">{t('tableLoading')}</p>
+                <p className="text-gray-500 dark:text-gray-400 mt-4">{t('tableLoading')}</p>
               </div>
             ) : weeks.length === 0 ? (
               <div className="p-12 text-center">
                 <Calendar className="w-12 h-12 text-gray-300 mx-auto mb-4" />
-                <p className="text-gray-500">{t('tableEmpty')}</p>
+                <p className="text-gray-500 dark:text-gray-400">{t('tableEmpty')}</p>
               </div>
             ) : (
               <>
                 {/* Desktop */}
                 <div className="hidden lg:block overflow-x-auto">
                   <table className="w-full">
-                    <thead className="bg-gray-50">
+                    <thead className="bg-gray-50 dark:bg-gray-800">
                       <tr>
-                        <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">{t('colWeek')}</th>
-                        <th className="px-4 py-3 text-center text-xs font-medium text-gray-500 uppercase">{t('colStatus')}</th>
-                        <th className="px-4 py-3 text-center text-xs font-medium text-gray-500 uppercase">{t('colTransactions')}</th>
-                        <th className="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase">{t('colIncome')}</th>
-                        <th className="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase">{t('colExpenses')}</th>
-                        <th className="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase">{t('colProfit')}</th>
-                        <th className="px-4 py-3 text-center text-xs font-medium text-gray-500 uppercase">{t('colActions')}</th>
+                        <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">{t('colWeek')}</th>
+                        <th className="px-4 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">{t('colStatus')}</th>
+                        <th className="px-4 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">{t('colTransactions')}</th>
+                        <th className="px-4 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">{t('colIncome')}</th>
+                        <th className="px-4 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">{t('colExpenses')}</th>
+                        <th className="px-4 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">{t('colProfit')}</th>
+                        <th className="px-4 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">{t('colActions')}</th>
                       </tr>
                     </thead>
                     <tbody className="divide-y divide-gray-100">
                       {weeks.map((week) => (
-                        <tr key={week.id} className="hover:bg-gray-50">
+                        <tr key={week.id} className="hover:bg-gray-50 dark:hover:bg-gray-800">
                           <td className="px-4 py-4">
                             <div className="flex items-center space-x-3">
                               <div className={`p-2 rounded-lg ${getStatusColor(week.status)}`}>
                                 {getStatusIcon(week.status)}
                               </div>
                               <div>
-                                <p className="font-medium text-gray-900">{t('weekLabel', { n: week.weekNumber })}</p>
-                                <p className="text-sm text-gray-500">
+                                <p className="font-medium text-gray-900 dark:text-gray-100">{t('weekLabel', { n: week.weekNumber })}</p>
+                                <p className="text-sm text-gray-500 dark:text-gray-400">
                                   {new Date(week.startDate + 'T00:00:00').toLocaleDateString()} —{' '}
                                   {new Date(week.endDate + 'T00:00:00').toLocaleDateString()}
                                 </p>
@@ -298,7 +298,7 @@ function WeekCloseContent() {
                             </span>
                           </td>
                           <td className="px-4 py-4 text-center">
-                            <span className="text-sm font-medium text-gray-900">{week.transactionCount}</span>
+                            <span className="text-sm font-medium text-gray-900 dark:text-gray-100">{week.transactionCount}</span>
                           </td>
                           <td className="px-4 py-4 text-right text-green-600 font-semibold">{formatCurrency(week.income)}</td>
                           <td className="px-4 py-4 text-right text-red-600 font-semibold">{formatCurrency(week.expenses)}</td>
@@ -349,8 +349,8 @@ function WeekCloseContent() {
                             {getStatusIcon(week.status)}
                           </div>
                           <div>
-                            <p className="font-medium text-gray-900">{t('weekLabel', { n: week.weekNumber })}</p>
-                            <p className="text-xs text-gray-500">
+                            <p className="font-medium text-gray-900 dark:text-gray-100">{t('weekLabel', { n: week.weekNumber })}</p>
+                            <p className="text-xs text-gray-500 dark:text-gray-400">
                               {new Date(week.startDate + 'T00:00:00').toLocaleDateString()} —{' '}
                               {new Date(week.endDate + 'T00:00:00').toLocaleDateString()}
                             </p>
@@ -362,15 +362,15 @@ function WeekCloseContent() {
                       </div>
                       <div className="grid grid-cols-3 gap-2 mb-3 text-center">
                         <div className="bg-green-50 rounded-lg p-2">
-                          <p className="text-xs text-gray-500">{t('mobileIncome')}</p>
+                          <p className="text-xs text-gray-500 dark:text-gray-400">{t('mobileIncome')}</p>
                           <p className="text-sm font-semibold text-green-600">{formatCurrency(week.income)}</p>
                         </div>
                         <div className="bg-red-50 rounded-lg p-2">
-                          <p className="text-xs text-gray-500">{t('mobileExpenses')}</p>
+                          <p className="text-xs text-gray-500 dark:text-gray-400">{t('mobileExpenses')}</p>
                           <p className="text-sm font-semibold text-red-600">{formatCurrency(week.expenses)}</p>
                         </div>
                         <div className={`${week.netProfit >= 0 ? 'bg-blue-50' : 'bg-orange-50'} rounded-lg p-2`}>
-                          <p className="text-xs text-gray-500">{t('mobileProfit')}</p>
+                          <p className="text-xs text-gray-500 dark:text-gray-400">{t('mobileProfit')}</p>
                           <p className={`text-sm font-semibold ${week.netProfit >= 0 ? 'text-blue-600' : 'text-orange-600'}`}>
                             {formatCurrency(week.netProfit)}
                           </p>
@@ -426,26 +426,26 @@ function WeekCloseContent() {
       {/* Modal — Detalles de semana */}
       {detailsWeek && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-xl shadow-xl w-full max-w-md">
-            <div className="flex items-center justify-between p-6 border-b border-gray-200">
-              <h3 className="text-lg font-semibold text-gray-900">
+          <div className="bg-white dark:bg-gray-900 rounded-xl shadow-xl w-full max-w-md">
+            <div className="flex items-center justify-between p-6 border-b border-gray-200 dark:border-gray-700">
+              <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
                 {t('detailsTitle', { n: detailsWeek.weekNumber })}
               </h3>
-              <button onClick={() => setDetailsWeek(null)} className="p-2 hover:bg-gray-100 rounded-lg transition-colors">
-                <X className="w-5 h-5 text-gray-500" />
+              <button onClick={() => setDetailsWeek(null)} className="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors">
+                <X className="w-5 h-5 text-gray-500 dark:text-gray-400" />
               </button>
             </div>
             <div className="p-6 space-y-4">
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <p className="text-xs text-gray-500 mb-1">{t('detailsPeriod')}</p>
-                  <p className="text-sm font-medium text-gray-900">
+                  <p className="text-xs text-gray-500 dark:text-gray-400 mb-1">{t('detailsPeriod')}</p>
+                  <p className="text-sm font-medium text-gray-900 dark:text-gray-100">
                     {new Date(detailsWeek.startDate + 'T00:00:00').toLocaleDateString()} —{' '}
                     {new Date(detailsWeek.endDate + 'T00:00:00').toLocaleDateString()}
                   </p>
                 </div>
                 <div>
-                  <p className="text-xs text-gray-500 mb-1">{t('detailsStatus')}</p>
+                  <p className="text-xs text-gray-500 dark:text-gray-400 mb-1">{t('detailsStatus')}</p>
                   <span className={`inline-flex items-center gap-1 px-2 py-1 text-xs font-medium rounded-full ${getStatusColor(detailsWeek.status)}`}>
                     {getStatusIcon(detailsWeek.status)}
                     {getStatusText(detailsWeek.status)}
@@ -454,44 +454,44 @@ function WeekCloseContent() {
               </div>
               <div className="grid grid-cols-3 gap-3">
                 <div className="bg-green-50 rounded-lg p-3 text-center">
-                  <p className="text-xs text-gray-500">{t('detailsIncome')}</p>
+                  <p className="text-xs text-gray-500 dark:text-gray-400">{t('detailsIncome')}</p>
                   <p className="text-sm font-bold text-green-700">{formatCurrency(detailsWeek.income)}</p>
                 </div>
                 <div className="bg-red-50 rounded-lg p-3 text-center">
-                  <p className="text-xs text-gray-500">{t('detailsExpenses')}</p>
+                  <p className="text-xs text-gray-500 dark:text-gray-400">{t('detailsExpenses')}</p>
                   <p className="text-sm font-bold text-red-700">{formatCurrency(detailsWeek.expenses)}</p>
                 </div>
                 <div className={`${detailsWeek.netProfit >= 0 ? 'bg-blue-50' : 'bg-orange-50'} rounded-lg p-3 text-center`}>
-                  <p className="text-xs text-gray-500">{t('detailsProfit')}</p>
+                  <p className="text-xs text-gray-500 dark:text-gray-400">{t('detailsProfit')}</p>
                   <p className={`text-sm font-bold ${detailsWeek.netProfit >= 0 ? 'text-blue-700' : 'text-orange-700'}`}>
                     {formatCurrency(detailsWeek.netProfit)}
                   </p>
                 </div>
               </div>
-              <div className="bg-gray-50 rounded-lg p-3">
-                <p className="text-xs text-gray-500 mb-1">{t('detailsTransactions')}</p>
-                <p className="text-lg font-bold text-gray-900">{detailsWeek.transactionCount}</p>
+              <div className="bg-gray-50 dark:bg-gray-800 rounded-lg p-3">
+                <p className="text-xs text-gray-500 dark:text-gray-400 mb-1">{t('detailsTransactions')}</p>
+                <p className="text-lg font-bold text-gray-900 dark:text-gray-100">{detailsWeek.transactionCount}</p>
               </div>
               {detailsWeek.status === 'closed' && detailsWeek.closedAt && (
                 <div className="bg-green-50 rounded-lg p-3">
-                  <p className="text-xs text-gray-500 mb-1">{t('detailsClosedAt')}</p>
-                  <p className="text-sm font-medium text-gray-900">
+                  <p className="text-xs text-gray-500 dark:text-gray-400 mb-1">{t('detailsClosedAt')}</p>
+                  <p className="text-sm font-medium text-gray-900 dark:text-gray-100">
                     {new Date(detailsWeek.closedAt).toLocaleString()}
                     {detailsWeek.closedBy && ` ${t('detailsClosedBy')} ${detailsWeek.closedBy}`}
                   </p>
                 </div>
               )}
               {detailsWeek.notes && (
-                <div className="bg-gray-50 rounded-lg p-3">
-                  <p className="text-xs text-gray-500 mb-1">{t('detailsNotes')}</p>
-                  <p className="text-sm text-gray-700">{detailsWeek.notes}</p>
+                <div className="bg-gray-50 dark:bg-gray-800 rounded-lg p-3">
+                  <p className="text-xs text-gray-500 dark:text-gray-400 mb-1">{t('detailsNotes')}</p>
+                  <p className="text-sm text-gray-700 dark:text-gray-300">{detailsWeek.notes}</p>
                 </div>
               )}
             </div>
-            <div className="p-6 border-t border-gray-200 flex justify-end">
+            <div className="p-6 border-t border-gray-200 dark:border-gray-700 flex justify-end">
               <button
                 onClick={() => setDetailsWeek(null)}
-                className="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors"
+                className="px-4 py-2 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-200 transition-colors"
               >
                 {t('btnCloseModal')}
               </button>
@@ -502,13 +502,13 @@ function WeekCloseContent() {
 
       {actionWeek && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-xl shadow-xl w-full max-w-md">
-            <div className="flex items-center justify-between p-6 border-b border-gray-200">
-              <h3 className="text-lg font-semibold text-gray-900">
+          <div className="bg-white dark:bg-gray-900 rounded-xl shadow-xl w-full max-w-md">
+            <div className="flex items-center justify-between p-6 border-b border-gray-200 dark:border-gray-700">
+              <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
                 {actionType === 'close' ? t('actionTitleClose', { n: actionWeek.weekNumber }) : t('actionTitleReopen', { n: actionWeek.weekNumber })}
               </h3>
-              <button onClick={() => setActionWeek(null)} className="p-2 hover:bg-gray-100 rounded-lg transition-colors">
-                <X className="w-5 h-5 text-gray-500" />
+              <button onClick={() => setActionWeek(null)} className="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors">
+                <X className="w-5 h-5 text-gray-500 dark:text-gray-400" />
               </button>
             </div>
             <div className="p-6 space-y-4">
@@ -521,7 +521,7 @@ function WeekCloseContent() {
                     <p className={`text-sm font-medium ${actionType === 'close' ? 'text-green-800' : 'text-yellow-800'}`}>
                       {actionType === 'close' ? t('actionWarningClose') : t('actionWarningReopen')}
                     </p>
-                    <p className="text-xs text-gray-600 mt-1">
+                    <p className="text-xs text-gray-600 dark:text-gray-400 mt-1">
                       {t('actionPeriod')} {new Date(actionWeek.startDate + 'T00:00:00').toLocaleDateString()} —{' '}
                       {new Date(actionWeek.endDate + 'T00:00:00').toLocaleDateString()}
                     </p>
@@ -529,7 +529,7 @@ function WeekCloseContent() {
                 </div>
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                   {t('actionNotesLabel')}
                 </label>
                 <textarea
@@ -537,15 +537,15 @@ function WeekCloseContent() {
                   onChange={(e) => setActionNotes(e.target.value)}
                   rows={3}
                   placeholder={t('actionNotesPlaceholder')}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 text-sm resize-none"
+                  className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 text-sm resize-none"
                 />
               </div>
             </div>
-            <div className="p-6 border-t border-gray-200 flex justify-end space-x-3">
+            <div className="p-6 border-t border-gray-200 dark:border-gray-700 flex justify-end space-x-3">
               <button
                 onClick={() => setActionWeek(null)}
                 disabled={actionLoading}
-                className="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors disabled:opacity-50"
+                className="px-4 py-2 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-200 transition-colors disabled:opacity-50"
               >
                 {t('btnCancel')}
               </button>

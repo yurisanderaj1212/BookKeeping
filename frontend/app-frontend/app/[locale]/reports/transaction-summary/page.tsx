@@ -1,4 +1,4 @@
-'use client'
+﻿'use client'
 
 import { useState, Suspense } from 'react'
 import { useSearchParams } from 'next/navigation'
@@ -57,12 +57,12 @@ function TransactionSummaryContent() {
             <div className="flex items-center justify-between min-h-16 py-3 gap-3">
               <div className="flex items-center gap-2 min-w-0">
                 <MobileMenuButton />
-                <button onClick={handleBack} className="p-1.5 hover:bg-gray-100 rounded-lg transition-colors shrink-0">
-                  <ArrowLeft className="w-5 h-5 text-gray-600" />
+                <button onClick={handleBack} className="p-1.5 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors shrink-0">
+                  <ArrowLeft className="w-5 h-5 text-gray-600 dark:text-gray-400" />
                 </button>
                 <div className="min-w-0">
-                  <h1 className="text-base sm:text-xl font-bold text-gray-900 truncate">{tReport('transactionSummary')}</h1>
-                  <p className="text-xs text-gray-500 hidden sm:block">{tReport('transactionSummaryDesc')}</p>
+                  <h1 className="text-base sm:text-xl font-bold text-gray-900 dark:text-gray-100 truncate">{tReport('transactionSummary')}</h1>
+                  <p className="text-xs text-gray-500 dark:text-gray-400 hidden sm:block">{tReport('transactionSummaryDesc')}</p>
                 </div>
               </div>
               <div className="flex items-center space-x-3">

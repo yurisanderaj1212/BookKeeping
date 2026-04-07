@@ -1,4 +1,4 @@
-'use client'
+﻿'use client'
 
 import { useState, useEffect } from 'react'
 import { ArrowUpRight, ArrowDownRight, TrendingUp } from 'lucide-react'
@@ -86,7 +86,7 @@ export default function TopTransactions({ period, year, month }: TopTransactions
 
   if (loading) return (
     <div className="space-y-4">
-      {[1,2,3].map(i => <div key={i} className="h-24 bg-gray-100 rounded-lg animate-pulse" />)}
+      {[1,2,3].map(i => <div key={i} className="h-24 bg-gray-100 dark:bg-gray-700 rounded-lg animate-pulse" />)}
     </div>
   )
 
@@ -103,10 +103,10 @@ export default function TopTransactions({ period, year, month }: TopTransactions
       <div className="bg-white dark:bg-gray-900 rounded-lg border border-gray-200 dark:border-gray-700 p-6">
         <div className="flex items-center justify-between mb-6">
           <div>
-            <h3 className="text-lg font-semibold text-gray-900">{t('title')}</h3>
+            <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">{t('title')}</h3>
             <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">{t('subtitle')}</p>
           </div>
-          <div className="flex items-center gap-2 text-sm text-gray-500">
+          <div className="flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400">
             <TrendingUp className="w-4 h-4" />
             <span>{t('sortedByAmount')}</span>
           </div>
@@ -115,18 +115,18 @@ export default function TopTransactions({ period, year, month }: TopTransactions
           <table className="w-full table-fixed">
             <thead className="bg-gray-50 dark:bg-gray-800">
               <tr>
-                <th className="w-[8%]  px-4 py-3 text-center text-xs font-medium text-gray-500 uppercase">{t('colRank')}</th>
-                <th className="w-[40%] px-4 py-3 text-left   text-xs font-medium text-gray-500 uppercase">{t('colDescription')}</th>
-                <th className="w-[15%] px-4 py-3 text-center text-xs font-medium text-gray-500 uppercase">{t('colDate')}</th>
-                <th className="w-[20%] px-4 py-3 text-right  text-xs font-medium text-gray-500 uppercase">{t('colAmount')}</th>
-                <th className="w-[17%] px-4 py-3 text-center text-xs font-medium text-gray-500 uppercase">{t('colStatus')}</th>
+                <th className="w-[8%]  px-4 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">{t('colRank')}</th>
+                <th className="w-[40%] px-4 py-3 text-left   text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">{t('colDescription')}</th>
+                <th className="w-[15%] px-4 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">{t('colDate')}</th>
+                <th className="w-[20%] px-4 py-3 text-right  text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">{t('colAmount')}</th>
+                <th className="w-[17%] px-4 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">{t('colStatus')}</th>
               </tr>
             </thead>
             <tbody className="bg-white dark:bg-gray-900 divide-y divide-gray-200 dark:divide-gray-700">
               {top10.map((tx, i) => (
-                <tr key={tx.id} className="hover:bg-gray-50">
+                <tr key={tx.id} className="hover:bg-gray-50 dark:hover:bg-gray-800">
                   <td className="px-4 py-3 text-center">
-                    <div className={`w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold mx-auto ${i < 3 ? 'bg-yellow-100 text-yellow-800' : 'bg-gray-100 text-gray-600'}`}>{i+1}</div>
+                    <div className={`w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold mx-auto ${i < 3 ? 'bg-yellow-100 text-yellow-800' : 'bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400'}`}>{i+1}</div>
                   </td>
                   <td className="px-4 py-3">
                     <div className="flex items-center gap-2">
@@ -134,14 +134,14 @@ export default function TopTransactions({ period, year, month }: TopTransactions
                         ? <ArrowUpRight className="w-4 h-4 text-green-600 shrink-0" />
                         : <ArrowDownRight className="w-4 h-4 text-red-600 shrink-0" />}
                       <div className="min-w-0">
-                        <p className="text-sm font-medium text-gray-900 truncate">{tx.description}</p>
+                        <p className="text-sm font-medium text-gray-900 dark:text-gray-100 truncate">{tx.description}</p>
                         {tx.category_name && (
-                          <p className="text-xs text-gray-500">{translateCategoryName(tx.category_name, tCategories)}</p>
+                          <p className="text-xs text-gray-500 dark:text-gray-400">{translateCategoryName(tx.category_name, tCategories)}</p>
                         )}
                       </div>
                     </div>
                   </td>
-                  <td className="px-4 py-3 text-center text-sm text-gray-600">{formatDate(tx.date)}</td>
+                  <td className="px-4 py-3 text-center text-sm text-gray-600 dark:text-gray-400">{formatDate(tx.date)}</td>
                   <td className="px-4 py-3 text-right">
                     <span className={`text-sm font-bold ${tx.type === 1 ? 'text-green-700' : 'text-red-700'}`}>
                       {tx.type === 1 ? '+' : '-'}{formatCurrency(tx.amount)}
@@ -163,7 +163,7 @@ export default function TopTransactions({ period, year, month }: TopTransactions
         ].map(({ label, data, color, icon: Icon, sign }) => (
           <div key={label} className="bg-white dark:bg-gray-900 rounded-lg border border-gray-200 dark:border-gray-700 p-6">
             <div className="flex items-center justify-between mb-4">
-              <h4 className="text-base font-semibold text-gray-900">{label}</h4>
+              <h4 className="text-base font-semibold text-gray-900 dark:text-gray-100">{label}</h4>
               <div className={`bg-${color}-100 p-1 rounded-full`}><Icon className={`w-4 h-4 text-${color}-600`} /></div>
             </div>
             <div className="space-y-3">
@@ -172,8 +172,8 @@ export default function TopTransactions({ period, year, month }: TopTransactions
                   <div className="flex items-center gap-3">
                     <div className={`w-6 h-6 bg-${color}-100 rounded-full flex items-center justify-center text-xs font-bold text-${color}-800`}>{i+1}</div>
                     <div className="min-w-0">
-                      <p className="text-sm font-medium text-gray-900 truncate">{tx.description}</p>
-                      <p className="text-xs text-gray-500">{formatDate(tx.date)}</p>
+                      <p className="text-sm font-medium text-gray-900 dark:text-gray-100 truncate">{tx.description}</p>
+                      <p className="text-xs text-gray-500 dark:text-gray-400">{formatDate(tx.date)}</p>
                     </div>
                   </div>
                   <span className={`text-sm font-bold text-${color}-700`}>{sign}{formatCurrency(tx.amount)}</span>
@@ -181,7 +181,7 @@ export default function TopTransactions({ period, year, month }: TopTransactions
               ))}
             </div>
             <div className="mt-4 pt-4 border-t border-gray-200 dark:border-gray-700 flex justify-between items-center">
-              <span className="text-sm text-gray-600">{t('totalTop5')}</span>
+              <span className="text-sm text-gray-600 dark:text-gray-400">{t('totalTop5')}</span>
               <span className={`text-lg font-bold text-${color}-700`}>
                 {sign}{formatCurrency(data.reduce((s, tx) => s + tx.amount, 0))}
               </span>

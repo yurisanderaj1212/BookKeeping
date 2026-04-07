@@ -1,4 +1,4 @@
-'use client'
+﻿'use client'
 
 import { useState, useEffect, useCallback, useRef } from 'react'
 import {
@@ -43,20 +43,20 @@ function ConfigModal({ tx, categories, accounts, onConfirm, onCancel, saving }: 
 
   return (
     <div className="fixed inset-0 z-60 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
-      <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md">
-        <div className="px-6 pt-6 pb-4 border-b border-gray-100">
+      <div className="bg-white dark:bg-gray-900 rounded-2xl shadow-2xl w-full max-w-md">
+        <div className="px-6 pt-6 pb-4 border-b border-gray-100 dark:border-gray-800">
           <div className="flex items-center gap-3 mb-1">
             <div className="w-9 h-9 bg-green-50 rounded-xl flex items-center justify-center">
               <CheckCircle className="w-5 h-5 text-green-500" />
             </div>
-            <h2 className="text-base font-semibold text-gray-900">{t('configTitle')}</h2>
+            <h2 className="text-base font-semibold text-gray-900 dark:text-gray-100">{t('configTitle')}</h2>
           </div>
-          <p className="text-xs text-gray-500 ml-12">{t('configSubtitle')}</p>
+          <p className="text-xs text-gray-500 dark:text-gray-400 ml-12">{t('configSubtitle')}</p>
         </div>
 
         <div className="mx-6 mt-4 mb-4 bg-gray-50 dark:bg-gray-800 rounded-xl px-4 py-3 flex items-center justify-between">
           <div>
-            <p className="text-sm font-medium text-gray-900 truncate max-w-[220px]">
+            <p className="text-sm font-medium text-gray-900 dark:text-gray-100 truncate max-w-[220px]">
               {tx.merchantName ?? tx.description ?? 'Transaction'}
             </p>
             <p className="text-xs text-gray-400 mt-0.5">
@@ -71,7 +71,7 @@ function ConfigModal({ tx, categories, accounts, onConfirm, onCancel, saving }: 
 
         <div className="px-6 space-y-4">
           <div>
-            <label className="flex items-center gap-1.5 text-xs font-medium text-gray-700 mb-1.5">
+            <label className="flex items-center gap-1.5 text-xs font-medium text-gray-700 dark:text-gray-300 mb-1.5">
               <FileText className="w-3.5 h-3.5" /> {t('configDescription')}
             </label>
             <input
@@ -79,18 +79,18 @@ function ConfigModal({ tx, categories, accounts, onConfirm, onCancel, saving }: 
               value={description}
               onChange={e => setDescription(e.target.value)}
               placeholder={t('configDescPlaceholder')}
-              className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
+              className="w-full px-3 py-2 text-sm border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
             />
           </div>
 
           <div>
-            <label className="flex items-center gap-1.5 text-xs font-medium text-gray-700 mb-1.5">
+            <label className="flex items-center gap-1.5 text-xs font-medium text-gray-700 dark:text-gray-300 mb-1.5">
               <Tag className="w-3.5 h-3.5" /> {t('configCategory')}
             </label>
             <select
               value={categoryId}
               onChange={e => setCategoryId(Number(e.target.value))}
-              className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
+              className="w-full px-3 py-2 text-sm border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
             >
               {(relevantCats.length > 0 ? relevantCats : categories).map(c => (
                 <option key={c.id} value={c.id}>{c.name}</option>
@@ -99,14 +99,14 @@ function ConfigModal({ tx, categories, accounts, onConfirm, onCancel, saving }: 
           </div>
 
           <div>
-            <label className="flex items-center gap-1.5 text-xs font-medium text-gray-700 mb-1.5">
+            <label className="flex items-center gap-1.5 text-xs font-medium text-gray-700 dark:text-gray-300 mb-1.5">
               <Landmark className="w-3.5 h-3.5" /> {t('configAccount')}
               <span className="text-gray-400 font-normal">{t('configAccountOptional')}</span>
             </label>
             <select
               value={accountId}
               onChange={e => setAccountId(e.target.value)}
-              className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
+              className="w-full px-3 py-2 text-sm border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
             >
               <option value="">{t('configNoAccount')}</option>
               {accounts.map(a => (
@@ -120,7 +120,7 @@ function ConfigModal({ tx, categories, accounts, onConfirm, onCancel, saving }: 
           <button
             onClick={onCancel}
             disabled={saving}
-            className="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors disabled:opacity-50"
+            className="px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 rounded-lg transition-colors disabled:opacity-50"
           >
             {t('configCancel')}
           </button>
@@ -154,21 +154,21 @@ function DiscardModal({ tx, onConfirm, onCancel, saving }: DiscardModalProps) {
   const isExpense = tx.type === 2
   return (
     <div className="fixed inset-0 z-70 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
-      <div className="bg-white rounded-2xl shadow-2xl w-full max-w-sm">
-        <div className="px-6 pt-6 pb-4 border-b border-gray-100">
+      <div className="bg-white dark:bg-gray-900 rounded-2xl shadow-2xl w-full max-w-sm">
+        <div className="px-6 pt-6 pb-4 border-b border-gray-100 dark:border-gray-800">
           <div className="flex items-center gap-3 mb-1">
             <div className="w-9 h-9 bg-red-50 rounded-xl flex items-center justify-center">
               <Trash2 className="w-5 h-5 text-red-500" />
             </div>
-            <h2 className="text-base font-semibold text-gray-900">{t('discardTitle')}</h2>
+            <h2 className="text-base font-semibold text-gray-900 dark:text-gray-100">{t('discardTitle')}</h2>
           </div>
-          <p className="text-xs text-gray-500 ml-12">{t('discardSubtitle')}</p>
+          <p className="text-xs text-gray-500 dark:text-gray-400 ml-12">{t('discardSubtitle')}</p>
         </div>
 
         {/* Transaction summary */}
         <div className="mx-6 mt-4 mb-4 bg-gray-50 dark:bg-gray-800 rounded-xl px-4 py-3 flex items-center justify-between">
           <div>
-            <p className="text-sm font-medium text-gray-900 truncate max-w-[180px]">
+            <p className="text-sm font-medium text-gray-900 dark:text-gray-100 truncate max-w-[180px]">
               {tx.merchantName ?? tx.description ?? 'Transaction'}
             </p>
             <p className="text-xs text-gray-400 mt-0.5">
@@ -180,13 +180,13 @@ function DiscardModal({ tx, onConfirm, onCancel, saving }: DiscardModalProps) {
           </span>
         </div>
 
-        <p className="px-6 pb-4 text-sm text-gray-600">{t('discardBody')}</p>
+        <p className="px-6 pb-4 text-sm text-gray-600 dark:text-gray-400">{t('discardBody')}</p>
 
-        <div className="px-6 py-4 border-t border-gray-100 flex gap-3 justify-end">
+        <div className="px-6 py-4 border-t border-gray-100 dark:border-gray-800 flex gap-3 justify-end">
           <button
             onClick={onCancel}
             disabled={saving}
-            className="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors disabled:opacity-50"
+            className="px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 rounded-lg transition-colors disabled:opacity-50"
           >
             {t('discardCancel')}
           </button>
@@ -219,12 +219,12 @@ function TxRow({ tx, onYes, onNo, disabled }: TxRowProps) {
   const t = useTranslations('plaid.reviewQueue')
   const isExpense = tx.type === 2
   return (
-    <div className="flex items-center gap-3 px-4 py-3 border-b border-gray-100 last:border-0 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors">
+    <div className="flex items-center gap-3 px-4 py-3 border-b border-gray-100 dark:border-gray-800 last:border-0 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors">
       <div className="w-8 h-8 bg-blue-50 rounded-lg flex items-center justify-center shrink-0">
         <Building2 className="w-4 h-4 text-blue-500" />
       </div>
       <div className="flex-1 min-w-0">
-        <p className="text-sm font-medium text-gray-900 truncate">
+        <p className="text-sm font-medium text-gray-900 dark:text-gray-100 truncate">
           {tx.merchantName ?? tx.description ?? 'Transaction'}
         </p>
         <p className="text-xs text-gray-400 mt-0.5">
@@ -240,7 +240,7 @@ function TxRow({ tx, onYes, onNo, disabled }: TxRowProps) {
           onClick={() => onNo(tx)}
           disabled={disabled}
           title={t('btnNoTitle')}
-          className="inline-flex items-center gap-1 px-2.5 py-1.5 text-xs font-semibold text-gray-600 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors disabled:opacity-40"
+          className="inline-flex items-center gap-1 px-2.5 py-1.5 text-xs font-semibold text-gray-600 dark:text-gray-400 bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 rounded-lg transition-colors disabled:opacity-40"
         >
           <XCircle className="w-3.5 h-3.5" /> {t('btnNo')}
         </button>
@@ -416,7 +416,7 @@ export default function PlaidReviewQueue({ onCountChange, onTransactionConfirmed
           {/* Drawer panel */}
           <div
             ref={drawerRef}
-            className="fixed right-0 top-0 bottom-0 z-50 w-full max-w-md bg-white shadow-2xl flex flex-col"
+            className="fixed right-0 top-0 bottom-0 z-50 w-full max-w-md bg-white dark:bg-gray-900 shadow-2xl flex flex-col"
             style={{ animation: 'slideInRight 0.2s ease-out' }}
           >
             {/* Header */}
@@ -426,8 +426,8 @@ export default function PlaidReviewQueue({ onCountChange, onTransactionConfirmed
                   <AlertCircle className="w-4 h-4 text-amber-500" />
                 </div>
                 <div>
-                  <h2 className="text-sm font-semibold text-gray-900">{t('drawerTitle')}</h2>
-                  <p className="text-xs text-gray-500">{t('drawerSubtitle')}</p>
+                  <h2 className="text-sm font-semibold text-gray-900 dark:text-gray-100">{t('drawerTitle')}</h2>
+                  <p className="text-xs text-gray-500 dark:text-gray-400">{t('drawerSubtitle')}</p>
                 </div>
               </div>
               <div className="flex items-center gap-2">
@@ -436,7 +436,7 @@ export default function PlaidReviewQueue({ onCountChange, onTransactionConfirmed
                 </span>
                 <button
                   onClick={() => setDrawerOpen(false)}
-                  className="p-1.5 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-lg transition-colors"
+                  className="p-1.5 text-gray-400 hover:text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors"
                 >
                   <X className="w-4 h-4" />
                 </button>
@@ -454,12 +454,12 @@ export default function PlaidReviewQueue({ onCountChange, onTransactionConfirmed
             <div className="flex-1 overflow-y-auto">
               {loading ? (
                 <div className="p-4 space-y-2">
-                  {[1,2,3,4].map(i => <div key={i} className="h-14 bg-gray-100 rounded-lg animate-pulse" />)}
+                  {[1,2,3,4].map(i => <div key={i} className="h-14 bg-gray-100 dark:bg-gray-700 rounded-lg animate-pulse" />)}
                 </div>
               ) : pending.length === 0 ? (
                 <div className="flex flex-col items-center justify-center h-full text-gray-400 p-8">
                   <CheckCircle className="w-12 h-12 mb-3 text-green-400" />
-                  <p className="text-sm font-medium text-gray-600">{t('drawerEmpty')}</p>
+                  <p className="text-sm font-medium text-gray-600 dark:text-gray-400">{t('drawerEmpty')}</p>
                 </div>
               ) : (
                 <div>
@@ -485,7 +485,7 @@ export default function PlaidReviewQueue({ onCountChange, onTransactionConfirmed
             </div>
 
             {/* Footer */}
-            <div className="px-5 py-3 border-t border-gray-100 bg-gray-50 shrink-0">
+            <div className="px-5 py-3 border-t border-gray-100 dark:border-gray-800 bg-gray-50 dark:bg-gray-800 shrink-0">
               <p className="text-xs text-gray-400 text-center">{t('drawerFooter')}</p>
             </div>
           </div>

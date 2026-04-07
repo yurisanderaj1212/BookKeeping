@@ -1,4 +1,4 @@
-'use client'
+﻿'use client'
 
 import { ArrowUpRight, ArrowDownRight, Eye } from 'lucide-react'
 import { useRouter } from 'next/navigation'
@@ -56,7 +56,7 @@ export default function RecentTransactions({ transactions }: RecentTransactionsP
     <div className="bg-white dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-gray-700 p-6 hover:shadow-lg transition-shadow duration-300 h-full flex flex-col">
       <div className="flex items-center justify-between mb-6">
         <div>
-          <h3 className="text-lg font-semibold text-gray-900">{t('title')}</h3>
+          <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">{t('title')}</h3>
           <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">{t('subtitle')}</p>
         </div>
         <button
@@ -72,7 +72,7 @@ export default function RecentTransactions({ transactions }: RecentTransactionsP
         {transactions.length === 0 ? (
           <div className="flex-1 flex items-center justify-center py-12">
             <div className="text-center">
-              <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
+              <div className="w-16 h-16 bg-gray-100 dark:bg-gray-700 rounded-full flex items-center justify-center mx-auto mb-4">
                 <ArrowUpRight className="w-8 h-8 text-gray-400" />
               </div>
               <p className="text-gray-500 dark:text-gray-400 text-sm">{t('empty')}</p>
@@ -84,7 +84,7 @@ export default function RecentTransactions({ transactions }: RecentTransactionsP
             {transactions.slice(0, 8).map((tx, index) => (
               <div
                 key={tx.id}
-                className="flex items-center justify-between p-2.5 hover:bg-gray-50 dark:bg-gray-800 rounded-lg transition-all duration-200 group cursor-pointer"
+                className="flex items-center justify-between p-2.5 hover:bg-gray-50 dark:hover:bg-gray-800 rounded-lg transition-all duration-200 group cursor-pointer"
                 style={{ animationDelay: `${index * 60}ms`, animation: 'slideInUp 0.4s ease-out forwards' }}
               >
                 <div className="flex items-center space-x-3">
@@ -97,13 +97,13 @@ export default function RecentTransactions({ transactions }: RecentTransactionsP
                     }
                   </div>
                   <div className="flex-1 min-w-0">
-                    <p className="text-sm font-medium text-gray-900 truncate">{tx.description}</p>
+                    <p className="text-sm font-medium text-gray-900 dark:text-gray-100 truncate">{tx.description}</p>
                     <div className="flex items-center space-x-2 mt-0.5">
-                      <span className="text-xs text-gray-500 truncate max-w-[120px]">
+                      <span className="text-xs text-gray-500 dark:text-gray-400 truncate max-w-[120px]">
                         {translateCategory(tx.categoryName)}
                       </span>
                       <span className="text-xs text-gray-300">•</span>
-                      <span className="text-xs text-gray-500">{formatDate(tx.date)}</span>
+                      <span className="text-xs text-gray-500 dark:text-gray-400">{formatDate(tx.date)}</span>
                     </div>
                   </div>
                 </div>

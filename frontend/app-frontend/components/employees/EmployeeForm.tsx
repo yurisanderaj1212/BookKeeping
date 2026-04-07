@@ -1,4 +1,4 @@
-'use client'
+﻿'use client'
 
 import { useState, useEffect } from 'react'
 import { X } from 'lucide-react'
@@ -86,22 +86,22 @@ export default function EmployeeForm({ isOpen, onClose, onSubmit, editingEmploye
 
   return (
     <div className="fixed inset-0 flex items-center justify-center z-50 p-4">
-      <div className="bg-white rounded-lg max-w-xl w-full shadow-xl border border-gray-200 max-h-[90vh] overflow-y-auto">
+      <div className="bg-white dark:bg-gray-900 rounded-lg max-w-xl w-full shadow-xl border border-gray-200 dark:border-gray-700 max-h-[90vh] overflow-y-auto">
         {/* Header */}
         <div className="flex items-center justify-between px-5 py-4 border-b border-gray-200 dark:border-gray-700">
           <div>
-            <h2 className="text-base font-semibold text-gray-900">
+            <h2 className="text-base font-semibold text-gray-900 dark:text-gray-100">
               {editingEmployee ? t('form.editTitle') : t('form.title')}
             </h2>
             <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">{t('form.subtitle')}</p>
           </div>
-          <button onClick={onClose} className="text-gray-400 hover:text-gray-600"><X className="w-5 h-5" /></button>
+          <button onClick={onClose} className="text-gray-400 hover:text-gray-600 dark:text-gray-400"><X className="w-5 h-5" /></button>
         </div>
 
         <form onSubmit={handleSubmit} className="px-5 py-4 space-y-4">
           {/* Personal — 2 columns */}
           <div>
-            <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">{t('form.personalInfo')}</p>
+            <p className="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-2">{t('form.personalInfo')}</p>
             <div className="grid grid-cols-2 gap-3">
               {([
                 { field: 'firstName' as const, label: t('form.firstName'), type: 'text',  required: true },
@@ -110,12 +110,12 @@ export default function EmployeeForm({ isOpen, onClose, onSubmit, editingEmploye
                 { field: 'phone'     as const, label: t('form.phone'),     type: 'tel',   required: false },
               ]).map(({ field, label, type, required }) => (
                 <div key={field}>
-                  <label className="block text-xs font-medium text-gray-700 mb-1">
+                  <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">
                     {label}{required && <span className="text-red-500 ml-0.5">*</span>}
                   </label>
                   <input type={type} value={formData[field] as string}
                     onChange={e => set(field, e.target.value)}
-                    className={`w-full px-3 py-1.5 text-sm border rounded-lg focus:ring-2 focus:ring-primary-500 ${errors[field] ? 'border-red-500' : 'border-gray-300'}`} />
+                    className={`w-full px-3 py-1.5 text-sm border rounded-lg focus:ring-2 focus:ring-primary-500 ${errors[field] ? 'border-red-500' : 'border-gray-300 dark:border-gray-600'}`} />
                   {errors[field] && <p className="text-red-500 text-xs mt-0.5">{errors[field]}</p>}
                 </div>
               ))}
@@ -124,36 +124,36 @@ export default function EmployeeForm({ isOpen, onClose, onSubmit, editingEmploye
 
           {/* Employment — compact */}
           <div>
-            <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">{t('form.employmentInfo')}</p>
+            <p className="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-2">{t('form.employmentInfo')}</p>
             <div className="grid grid-cols-2 gap-3">
               {/* Position — full width */}
               <div className="col-span-2">
-                <label className="block text-xs font-medium text-gray-700 mb-1">
+                <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">
                   {t('form.position')}<span className="text-red-500 ml-0.5">*</span>
                 </label>
                 <input type="text" value={formData.position} onChange={e => set('position', e.target.value)}
-                  className={`w-full px-3 py-1.5 text-sm border rounded-lg focus:ring-2 focus:ring-primary-500 ${errors.position ? 'border-red-500' : 'border-gray-300'}`} />
+                  className={`w-full px-3 py-1.5 text-sm border rounded-lg focus:ring-2 focus:ring-primary-500 ${errors.position ? 'border-red-500' : 'border-gray-300 dark:border-gray-600'}`} />
                 {errors.position && <p className="text-red-500 text-xs mt-0.5">{errors.position}</p>}
               </div>
 
               {/* Payroll type */}
               <div>
-                <label className="block text-xs font-medium text-gray-700 mb-1">
+                <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">
                   {t('form.payrollType')}<span className="text-red-500 ml-0.5">*</span>
                 </label>
                 <select value={formData.payrollType} onChange={e => set('payrollType', Number(e.target.value) as PayrollType)}
-                  className="w-full px-3 py-1.5 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500">
+                  className="w-full px-3 py-1.5 text-sm border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary-500">
                   {payrollTypes.map(v => <option key={v} value={v}>{t(`payrollTypes.${v}` as any)}</option>)}
                 </select>
               </div>
 
               {/* Status */}
               <div>
-                <label className="block text-xs font-medium text-gray-700 mb-1">
+                <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">
                   {t('form.status')}<span className="text-red-500 ml-0.5">*</span>
                 </label>
                 <select value={formData.status} onChange={e => set('status', Number(e.target.value) as EmployeeStatus)}
-                  className="w-full px-3 py-1.5 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500">
+                  className="w-full px-3 py-1.5 text-sm border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary-500">
                   <option value={EmployeeStatus.Active}>{t('statusActive')}</option>
                   <option value={EmployeeStatus.Inactive}>{t('statusInactive')}</option>
                 </select>
@@ -161,7 +161,7 @@ export default function EmployeeForm({ isOpen, onClose, onSubmit, editingEmploye
 
               {/* Salary — full width */}
               <div className="col-span-2">
-                <label className="block text-xs font-medium text-gray-700 mb-1">
+                <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">
                   {getSalaryLabel()}
                 </label>
                 <input
@@ -172,7 +172,7 @@ export default function EmployeeForm({ isOpen, onClose, onSubmit, editingEmploye
                     set(isHourly ? 'hourlyRate' : 'salary', val)
                   }}
                   placeholder="0.00"
-                  className={`w-full px-3 py-1.5 text-sm border rounded-lg focus:ring-2 focus:ring-primary-500 ${(errors.hourlyRate || errors.salary) ? 'border-red-500' : 'border-gray-300'}`}
+                  className={`w-full px-3 py-1.5 text-sm border rounded-lg focus:ring-2 focus:ring-primary-500 ${(errors.hourlyRate || errors.salary) ? 'border-red-500' : 'border-gray-300 dark:border-gray-600'}`}
                 />
                 {(errors.hourlyRate || errors.salary) && <p className="text-red-500 text-xs mt-0.5">{errors.hourlyRate || errors.salary}</p>}
               </div>
@@ -181,14 +181,14 @@ export default function EmployeeForm({ isOpen, onClose, onSubmit, editingEmploye
 
           {/* Notes */}
           <div>
-            <label className="block text-xs font-medium text-gray-700 mb-1">{t('form.notes')}</label>
+            <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">{t('form.notes')}</label>
             <textarea value={formData.notes} onChange={e => set('notes', e.target.value)} rows={2}
-              className="w-full px-3 py-1.5 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 resize-none" />
+              className="w-full px-3 py-1.5 text-sm border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary-500 resize-none" />
           </div>
 
           {/* Actions */}
           <div className="flex items-center justify-end space-x-3 pt-3 border-t border-gray-200 dark:border-gray-700">
-            <button type="button" onClick={onClose} className="px-4 py-1.5 text-sm text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200">{tCommon('cancel')}</button>
+            <button type="button" onClick={onClose} className="px-4 py-1.5 text-sm text-gray-700 dark:text-gray-300 bg-gray-100 dark:bg-gray-700 rounded-lg hover:bg-gray-200">{tCommon('cancel')}</button>
             <button type="submit" className="px-4 py-1.5 text-sm bg-primary-600 text-white rounded-lg hover:bg-primary-700">
               {editingEmployee ? t('form.saveChanges') : t('form.create')}
             </button>

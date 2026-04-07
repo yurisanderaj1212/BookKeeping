@@ -1,4 +1,4 @@
-'use client'
+﻿'use client'
 
 import { useState, useEffect } from 'react'
 import { Users, DollarSign, TrendingUp } from 'lucide-react'
@@ -74,9 +74,9 @@ export default function EmployeeOverview({ period }: EmployeeOverviewProps) {
   ]
 
   return (
-    <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+    <div className="bg-white dark:bg-gray-900 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6">
       <div className="flex items-center justify-between mb-4">
-        <h3 className="text-lg font-semibold text-gray-900">{t('title')}</h3>
+        <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">{t('title')}</h3>
         <Users className="w-5 h-5 text-primary-600" />
       </div>
 
@@ -95,7 +95,7 @@ export default function EmployeeOverview({ period }: EmployeeOverviewProps) {
                   {card.isCurrency ? formatCurrency(card.value as number) : card.value}
                 </p>
               )}
-              <p className="text-sm text-gray-600">{card.label}</p>
+              <p className="text-sm text-gray-600 dark:text-gray-400">{card.label}</p>
             </div>
           )
         })}
@@ -105,17 +105,17 @@ export default function EmployeeOverview({ period }: EmployeeOverviewProps) {
       <div className="mt-4 pt-4 border-t border-gray-200 dark:border-gray-700">
         <div className="grid grid-cols-2 gap-4 text-sm">
           <div>
-            <span className="text-gray-500">{t('uniquePositions')}</span>
+            <span className="text-gray-500 dark:text-gray-400">{t('uniquePositions')}</span>
             {loading
               ? <span className="ml-2 inline-block w-6 h-4 bg-gray-200 rounded animate-pulse" />
-              : <span className="ml-2 font-medium text-gray-900">{stats?.uniquePositions ?? 0}</span>
+              : <span className="ml-2 font-medium text-gray-900 dark:text-gray-100">{stats?.uniquePositions ?? 0}</span>
             }
           </div>
           <div>
-            <span className="text-gray-500">{t('payrollTypes')}</span>
+            <span className="text-gray-500 dark:text-gray-400">{t('payrollTypes')}</span>
             {loading
               ? <span className="ml-2 inline-block w-6 h-4 bg-gray-200 rounded animate-pulse" />
-              : <span className="ml-2 font-medium text-gray-900">{stats?.uniquePayrollTypes ?? 0}</span>
+              : <span className="ml-2 font-medium text-gray-900 dark:text-gray-100">{stats?.uniquePayrollTypes ?? 0}</span>
             }
           </div>
         </div>

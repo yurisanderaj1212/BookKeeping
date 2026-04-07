@@ -1,4 +1,4 @@
-'use client'
+﻿'use client'
 
 import { useState, useEffect } from 'react'
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts'
@@ -151,7 +151,7 @@ export default function ReportsOverview({ period, year, month }: ReportsOverview
   const CustomTooltip = ({ active, payload, label }: any) => {
     if (!active || !payload?.length) return null
     return (
-      <div className="bg-white dark:bg-gray-900 p-3 border border-gray-200 rounded-lg shadow-lg">
+      <div className="bg-white dark:bg-gray-900 p-3 border border-gray-200 dark:border-gray-700 rounded-lg shadow-lg">
         <p className="font-medium text-gray-900 dark:text-gray-100 mb-2">{label}</p>
         {payload.map((entry: any, i: number) => (
           <p key={i} className="text-sm" style={{ color: entry.color }}>
@@ -182,11 +182,11 @@ export default function ReportsOverview({ period, year, month }: ReportsOverview
                   <Icon className={`w-5 h-5 ${c.iconColor}`} />
                 </div>
               </div>
-              <p className="text-xs text-gray-500 mb-1">{c.label}</p>
+              <p className="text-xs text-gray-500 dark:text-gray-400 mb-1">{c.label}</p>
               {loading ? (
-                <div className="h-6 bg-gray-100 rounded animate-pulse" />
+                <div className="h-6 bg-gray-100 dark:bg-gray-700 rounded animate-pulse" />
               ) : (
-                <p className="text-base sm:text-xl font-bold text-gray-900">
+                <p className="text-base sm:text-xl font-bold text-gray-900 dark:text-gray-100">
                   {c.pct !== undefined ? `${c.pct.toFixed(1)}%` : formatCurrency(c.value ?? 0)}
                 </p>
               )}
@@ -198,7 +198,7 @@ export default function ReportsOverview({ period, year, month }: ReportsOverview
       {/* Chart */}
       <div className="bg-white dark:bg-gray-900 rounded-lg border border-gray-200 dark:border-gray-700 p-4 sm:p-6">
         <div className="mb-4">
-          <h3 className="text-base sm:text-lg font-semibold text-gray-900">{t('incomeVsExpenses')}</h3>
+          <h3 className="text-base sm:text-lg font-semibold text-gray-900 dark:text-gray-100">{t('incomeVsExpenses')}</h3>
           <p className="text-xs sm:text-sm text-gray-500 dark:text-gray-400 mt-0.5">
             {period === 'week' ? t('comparisonDaily') : period === 'month' ? t('comparisonWeekly') : t('comparisonMonthly')}
           </p>

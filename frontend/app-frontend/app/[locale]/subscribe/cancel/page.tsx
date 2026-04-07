@@ -1,4 +1,4 @@
-'use client'
+﻿'use client'
 
 import { useRouter } from 'next/navigation'
 import { XCircle, ArrowLeft, RotateCcw } from 'lucide-react'
@@ -26,7 +26,7 @@ export default function SubscribeCancelPage() {
           </button>
           <button
             onClick={() => router.push('/dashboard')}
-            className="inline-flex items-center justify-center gap-2 bg-white/10 hover:bg-white/20 border border-white/20 px-6 py-3 rounded-xl font-semibold transition-colors"
+            className="inline-flex items-center justify-center gap-2 bg-white dark:bg-gray-900/10 hover:bg-white dark:bg-gray-900/20 border border-white/20 px-6 py-3 rounded-xl font-semibold transition-colors"
           >
             <ArrowLeft className="w-4 h-4" />
             Volver al dashboard

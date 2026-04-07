@@ -1,4 +1,4 @@
-'use client'
+﻿'use client'
 
 import { useState, useEffect } from 'react'
 import { Edit, Trash2, TrendingUp, TrendingDown } from 'lucide-react'
@@ -40,7 +40,7 @@ export default function TransactionList({ transactions, onEdit, onDelete }: Tran
     const type = categoryMap[id]?.type
     if (type === 0) return 'bg-green-100 text-green-700'
     if (type === 1) return 'bg-red-100 text-red-700'
-    return 'bg-gray-100 text-gray-600'
+    return 'bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400'
   }
 
   const formatDate = (dateStr: string) => {
@@ -199,7 +199,7 @@ export default function TransactionList({ transactions, onEdit, onDelete }: Tran
             <p className="text-sm text-gray-700 dark:text-gray-300 mb-5">{t('deleteConfirmMsg', { name: '' })}</p>
             <div className="flex items-center justify-end gap-3">
               <button onClick={() => setShowDeleteConfirm(null)}
-                className="px-4 py-2 text-sm text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200">
+                className="px-4 py-2 text-sm text-gray-700 dark:text-gray-300 bg-gray-100 dark:bg-gray-700 rounded-lg hover:bg-gray-200">
                 {tCommon('cancel')}
               </button>
               <button onClick={() => { onDelete(showDeleteConfirm); setShowDeleteConfirm(null) }}

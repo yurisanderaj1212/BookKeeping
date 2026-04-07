@@ -1,4 +1,4 @@
-'use client'
+﻿'use client'
 
 import { useEffect, useState } from 'react'
 import { useTranslations } from 'next-intl'
@@ -24,7 +24,7 @@ export default function Features() {
   }, [slides])
 
   return (
-    <div id="features" className="py-24 bg-white">
+    <div id="features" className="py-24 bg-white dark:bg-gray-900">
       <div className="mx-auto max-w-7xl px-6 lg:px-8">
         <div className="mx-auto max-w-2xl text-center">
           <h2 className="text-3xl font-bold tracking-tight text-navy-800 sm:text-4xl">{t('title')}</h2>

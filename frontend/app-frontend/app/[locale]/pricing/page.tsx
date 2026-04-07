@@ -1,4 +1,4 @@
-'use client'
+﻿'use client'
 
 import { useState } from 'react'
 import Link from 'next/link'
@@ -78,7 +78,7 @@ export default function PricingPage() {
         {/* Cards */}
         <div className="grid md:grid-cols-3 gap-6">
           {/* Free Trial */}
-          <div className="bg-white/5 border border-white/10 rounded-2xl p-8 flex flex-col">
+          <div className="bg-white dark:bg-gray-900/5 border border-white/10 rounded-2xl p-8 flex flex-col">
             <div className="mb-6">
               <p className="text-slate-400 text-sm font-medium mb-1">Prueba gratuita</p>
               <div className="flex items-end gap-1">
@@ -97,14 +97,14 @@ export default function PricingPage() {
             </ul>
             <Link
               href="/auth/register"
-              className="block text-center bg-white/10 hover:bg-white/20 border border-white/20 rounded-xl py-3 font-semibold transition-colors"
+              className="block text-center bg-white dark:bg-gray-900/10 hover:bg-white dark:bg-gray-900/20 border border-white/20 rounded-xl py-3 font-semibold transition-colors"
             >
               Comenzar gratis
             </Link>
           </div>
 
           {/* Monthly */}
-          <div className="bg-white/5 border border-white/10 rounded-2xl p-8 flex flex-col">
+          <div className="bg-white dark:bg-gray-900/5 border border-white/10 rounded-2xl p-8 flex flex-col">
             <div className="mb-6">
               <p className="text-slate-400 text-sm font-medium mb-1">Plan mensual</p>
               <div className="flex items-end gap-1">

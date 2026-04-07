@@ -1,4 +1,4 @@
-'use client'
+﻿'use client'
 
 import Link from 'next/link'
 import AppLogo from '@/components/ui/AppLogo'
@@ -11,7 +11,7 @@ export default function PrivacyPage() {
   return (
     <div className="min-h-screen bg-slate-50">
       {/* Header */}
-      <header className="bg-white border-b border-slate-200">
+      <header className="bg-white dark:bg-gray-900 border-b border-slate-200">
         <div className="max-w-4xl mx-auto px-6 py-4 flex items-center justify-between">
           <Link href="/">
             <AppLogo size={32} variant="full" />
@@ -24,7 +24,7 @@ export default function PrivacyPage() {
 
       {/* Content */}
       <main className="max-w-4xl mx-auto px-6 py-12">
-        <div className="bg-white rounded-2xl shadow-sm border border-slate-200 p-8 md:p-12">
+        <div className="bg-white dark:bg-gray-900 rounded-2xl shadow-sm border border-slate-200 p-8 md:p-12">
           {/* Title */}
           <div className="mb-10 pb-8 border-b border-slate-100">
             <h1 className="text-3xl font-bold text-slate-900 mb-2">{t('privacyTitle')}</h1>

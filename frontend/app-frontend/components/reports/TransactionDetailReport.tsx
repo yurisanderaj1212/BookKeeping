@@ -1,4 +1,4 @@
-'use client'
+﻿'use client'
 
 import { useState } from 'react'
 import { ArrowUpRight, ArrowDownRight, Clock, CheckCircle, Filter } from 'lucide-react'
@@ -52,8 +52,8 @@ export default function TransactionDetailReport({ period, year, month }: Transac
   const expenseTotal = filteredTransactions.filter(t => t.type === 'expense').reduce((sum, t) => sum + t.amount, 0)
 
   const TransactionRow = ({ transaction }: { transaction: Transaction }) => (
-    <tr className="border-b border-gray-100 hover:bg-gray-50">
-      <td className="px-3 py-3 text-sm text-gray-900">
+    <tr className="border-b border-gray-100 dark:border-gray-800 hover:bg-gray-50 dark:hover:bg-gray-800">
+      <td className="px-3 py-3 text-sm text-gray-900 dark:text-gray-100">
         {new Date(transaction.date).toLocaleDateString('es-ES')}
       </td>
       <td className="px-3 py-3">
@@ -72,12 +72,12 @@ export default function TransactionDetailReport({ period, year, month }: Transac
           </span>
         </div>
       </td>
-      <td className="px-3 py-3 text-sm text-gray-900">
+      <td className="px-3 py-3 text-sm text-gray-900 dark:text-gray-100">
         <div className="truncate" title={transaction.description}>
           {transaction.description}
         </div>
       </td>
-      <td className="px-3 py-3 text-sm text-gray-600">
+      <td className="px-3 py-3 text-sm text-gray-600 dark:text-gray-400">
         <div className="truncate" title={getCategoryName(transaction.category)}>
           {getCategoryName(transaction.category)}
         </div>
@@ -103,7 +103,7 @@ export default function TransactionDetailReport({ period, year, month }: Transac
           {transaction.type === 'income' ? '+' : '-'}{formatCurrency(transaction.amount)}
         </span>
       </td>
-      <td className="px-3 py-3 text-sm text-gray-500">
+      <td className="px-3 py-3 text-sm text-gray-500 dark:text-gray-400">
         <div className="truncate" title={transaction.notes || ''}>
           {transaction.notes || '-'}
         </div>
@@ -117,10 +117,10 @@ export default function TransactionDetailReport({ period, year, month }: Transac
       <div className="border-b border-gray-200 dark:border-gray-700 p-6">
         <div className="flex items-center justify-between">
           <div>
-            <h2 className="text-xl font-bold text-gray-900">Detalle de Transacciones</h2>
-            <p className="text-sm text-gray-600 mt-1">{getPeriodLabel()}</p>
+            <h2 className="text-xl font-bold text-gray-900 dark:text-gray-100">Detalle de Transacciones</h2>
+            <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">{getPeriodLabel()}</p>
           </div>
-          <div className="text-right text-sm text-gray-500">
+          <div className="text-right text-sm text-gray-500 dark:text-gray-400">
             <p>Chill Numbers</p>
             <p>Generado el {new Date().toLocaleDateString('es-ES')}</p>
           </div>
@@ -135,7 +135,7 @@ export default function TransactionDetailReport({ period, year, month }: Transac
             <select
               value={filterType}
               onChange={(e) => setFilterType(e.target.value as 'all' | 'income' | 'expense')}
-              className="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 text-sm"
+              className="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 text-sm"
             >
               <option value="all">Todos los tipos</option>
               <option value="income">Solo ingresos</option>
@@ -147,7 +147,7 @@ export default function TransactionDetailReport({ period, year, month }: Transac
             <select
               value={filterStatus}
               onChange={(e) => setFilterStatus(e.target.value as 'all' | 'completed' | 'pending')}
-              className="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 text-sm"
+              className="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 text-sm"
             >
               <option value="all">Todos los estados</option>
               <option value="completed">Solo completadas</option>
@@ -158,9 +158,9 @@ export default function TransactionDetailReport({ period, year, month }: Transac
 
         {/* Summary Cards */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <div className="bg-gray-50 p-4 rounded-lg">
-            <p className="text-sm text-gray-600 font-medium">Total Transacciones</p>
-            <p className="text-xl font-bold text-gray-900">{filteredTransactions.length}</p>
+          <div className="bg-gray-50 dark:bg-gray-800 p-4 rounded-lg">
+            <p className="text-sm text-gray-600 dark:text-gray-400 font-medium">Total Transacciones</p>
+            <p className="text-xl font-bold text-gray-900 dark:text-gray-100">{filteredTransactions.length}</p>
           </div>
           <div className="bg-green-50 p-4 rounded-lg">
             <p className="text-sm text-green-600 font-medium">Total Ingresos</p>
@@ -179,25 +179,25 @@ export default function TransactionDetailReport({ period, year, month }: Transac
           <table className="w-full table-fixed">
             <thead className="bg-gray-50 dark:bg-gray-800">
               <tr>
-                <th className="w-[12%] px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th className="w-[12%] px-3 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
                   Fecha
                 </th>
-                <th className="w-[12%] px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th className="w-[12%] px-3 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
                   Tipo
                 </th>
-                <th className="w-[25%] px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th className="w-[25%] px-3 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
                   Descripción
                 </th>
-                <th className="w-[15%] px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th className="w-[15%] px-3 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
                   Categoría
                 </th>
-                <th className="w-[12%] px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th className="w-[12%] px-3 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
                   Estado
                 </th>
-                <th className="w-[12%] px-3 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th className="w-[12%] px-3 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
                   Monto
                 </th>
-                <th className="w-[12%] px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th className="w-[12%] px-3 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
                   Notas
                 </th>
               </tr>
@@ -209,7 +209,7 @@ export default function TransactionDetailReport({ period, year, month }: Transac
                 ))
               ) : (
                 <tr>
-                  <td colSpan={7} className="px-3 py-8 text-center text-gray-500">
+                  <td colSpan={7} className="px-3 py-8 text-center text-gray-500 dark:text-gray-400">
                     No se encontraron transacciones con los filtros aplicados
                   </td>
                 </tr>
@@ -220,8 +220,8 @@ export default function TransactionDetailReport({ period, year, month }: Transac
       </div>
 
       {/* Footer */}
-      <div className="border-t border-gray-200 dark:border-gray-700 p-4 bg-gray-50 rounded-b-lg">
-        <div className="flex items-center justify-between text-xs text-gray-500">
+      <div className="border-t border-gray-200 dark:border-gray-700 p-4 bg-gray-50 dark:bg-gray-800 rounded-b-lg">
+        <div className="flex items-center justify-between text-xs text-gray-500 dark:text-gray-400">
           <span>
             Mostrando {filteredTransactions.length} transacciones de {mockTransactions.length} totales
           </span>

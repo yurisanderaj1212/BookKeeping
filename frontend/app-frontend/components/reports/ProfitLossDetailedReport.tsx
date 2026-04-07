@@ -1,4 +1,4 @@
-'use client'
+﻿'use client'
 
 import { Calendar, TrendingUp, TrendingDown } from 'lucide-react'
 import { 
@@ -104,10 +104,10 @@ export default function ProfitLossDetailedReport({ period, year, month }: Profit
       <div className="border-b border-gray-200 dark:border-gray-700 p-6">
         <div className="flex items-center justify-between">
           <div>
-            <h2 className="text-xl font-bold text-gray-900">Informe de Pérdidas y Beneficios</h2>
-            <p className="text-sm text-gray-600 mt-1">{getPeriodLabel()}</p>
+            <h2 className="text-xl font-bold text-gray-900 dark:text-gray-100">Informe de Pérdidas y Beneficios</h2>
+            <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">{getPeriodLabel()}</p>
           </div>
-          <div className="text-right text-sm text-gray-500">
+          <div className="text-right text-sm text-gray-500 dark:text-gray-400">
             <p>Chill Numbers</p>
             <p>Generado el {new Date().toLocaleDateString('es-ES')}</p>
           </div>
@@ -149,19 +149,19 @@ export default function ProfitLossDetailedReport({ period, year, month }: Profit
           <table className="w-full">
             <thead>
               <tr className="border-b border-gray-200 dark:border-gray-700">
-                <th className="text-left py-3 px-4 font-semibold text-gray-700">
+                <th className="text-left py-3 px-4 font-semibold text-gray-700 dark:text-gray-300">
                   {period === 'year' ? 'Mes' : 'Período'}
                 </th>
-                <th className="text-right py-3 px-4 font-semibold text-gray-700">Ingresos</th>
-                <th className="text-right py-3 px-4 font-semibold text-gray-700">Gastos</th>
-                <th className="text-right py-3 px-4 font-semibold text-gray-700">Beneficio</th>
-                <th className="text-right py-3 px-4 font-semibold text-gray-700">Margen</th>
+                <th className="text-right py-3 px-4 font-semibold text-gray-700 dark:text-gray-300">Ingresos</th>
+                <th className="text-right py-3 px-4 font-semibold text-gray-700 dark:text-gray-300">Gastos</th>
+                <th className="text-right py-3 px-4 font-semibold text-gray-700 dark:text-gray-300">Beneficio</th>
+                <th className="text-right py-3 px-4 font-semibold text-gray-700 dark:text-gray-300">Margen</th>
               </tr>
             </thead>
             <tbody>
               {monthlyData.map((monthData, index) => (
-                <tr key={index} className="border-b border-gray-100 hover:bg-gray-50">
-                  <td className="py-3 px-4 font-medium text-gray-900">{monthData.month}</td>
+                <tr key={index} className="border-b border-gray-100 dark:border-gray-800 hover:bg-gray-50 dark:hover:bg-gray-800">
+                  <td className="py-3 px-4 font-medium text-gray-900 dark:text-gray-100">{monthData.month}</td>
                   <td className="py-3 px-4 text-right text-green-600 font-semibold">
                     {formatCurrency(monthData.ingresos)}
                   </td>
@@ -183,8 +183,8 @@ export default function ProfitLossDetailedReport({ period, year, month }: Profit
               
               {/* Total Row - only show if multiple periods */}
               {monthlyData.length > 1 && (
-                <tr className="border-t-2 border-gray-300 bg-gray-50 font-bold">
-                  <td className="py-4 px-4 text-gray-900">Total</td>
+                <tr className="border-t-2 border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-800 font-bold">
+                  <td className="py-4 px-4 text-gray-900 dark:text-gray-100">Total</td>
                   <td className="py-4 px-4 text-right text-green-700">
                     {formatCurrency(yearlyTotals.ingresos)}
                   </td>
@@ -209,8 +209,8 @@ export default function ProfitLossDetailedReport({ period, year, month }: Profit
       </div>
 
       {/* Footer */}
-      <div className="border-t border-gray-200 dark:border-gray-700 p-4 bg-gray-50 rounded-b-lg">
-        <div className="flex items-center justify-between text-xs text-gray-500">
+      <div className="border-t border-gray-200 dark:border-gray-700 p-4 bg-gray-50 dark:bg-gray-800 rounded-b-lg">
+        <div className="flex items-center justify-between text-xs text-gray-500 dark:text-gray-400">
           <span>
             Este informe muestra el análisis de pérdidas y beneficios para el período seleccionado.
           </span>

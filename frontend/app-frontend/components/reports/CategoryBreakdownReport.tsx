@@ -1,4 +1,4 @@
-'use client'
+﻿'use client'
 
 import { useState } from 'react'
 import { TrendingUp, TrendingDown, BarChart3, PieChart } from 'lucide-react'
@@ -79,7 +79,7 @@ export default function CategoryBreakdownReport({ period, year, month }: Categor
   const totalTransactions = currentData.reduce((sum, cat) => sum + cat.transactionCount, 0)
 
   const CategoryRow = ({ data, index }: { data: any, index: number }) => (
-    <tr className={`border-b border-gray-100 ${index % 2 === 0 ? 'bg-white' : 'bg-gray-50'}`}>
+    <tr className={`border-b border-gray-100 dark:border-gray-800 ${index % 2 === 0 ? 'bg-white dark:bg-gray-900' : 'bg-gray-50 dark:bg-gray-800'}`}>
       <td className="px-4 py-4">
         <div className="flex items-center space-x-3">
           <div 
@@ -87,13 +87,13 @@ export default function CategoryBreakdownReport({ period, year, month }: Categor
             style={{ backgroundColor: data.category.color }}
           />
           <div>
-            <p className="font-medium text-gray-900">{data.category.name}</p>
-            <p className="text-sm text-gray-500">{data.category.description}</p>
+            <p className="font-medium text-gray-900 dark:text-gray-100">{data.category.name}</p>
+            <p className="text-sm text-gray-500 dark:text-gray-400">{data.category.description}</p>
           </div>
         </div>
       </td>
       <td className="px-4 py-4 text-center">
-        <span className="text-lg font-bold text-gray-900">{data.transactionCount}</span>
+        <span className="text-lg font-bold text-gray-900 dark:text-gray-100">{data.transactionCount}</span>
       </td>
       <td className="px-4 py-4 text-center">
         <span className="text-green-600 font-medium">{data.completedTransactions}</span>
@@ -107,10 +107,10 @@ export default function CategoryBreakdownReport({ period, year, month }: Categor
         </span>
       </td>
       <td className="px-4 py-4 text-right">
-        <span className="text-gray-600 font-medium">{formatCurrency(data.avgTransaction)}</span>
+        <span className="text-gray-600 dark:text-gray-400 font-medium">{formatCurrency(data.avgTransaction)}</span>
       </td>
       <td className="px-4 py-4 text-center">
-        <span className="text-sm font-medium text-gray-700">
+        <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
           {data.percentage.toFixed(1)}%
         </span>
       </td>
@@ -123,10 +123,10 @@ export default function CategoryBreakdownReport({ period, year, month }: Categor
       <div className="border-b border-gray-200 dark:border-gray-700 p-6">
         <div className="flex items-center justify-between">
           <div>
-            <h2 className="text-xl font-bold text-gray-900">Desglose por Categorías</h2>
-            <p className="text-sm text-gray-600 mt-1">{getPeriodLabel()}</p>
+            <h2 className="text-xl font-bold text-gray-900 dark:text-gray-100">Desglose por Categorías</h2>
+            <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">{getPeriodLabel()}</p>
           </div>
-          <div className="text-right text-sm text-gray-500">
+          <div className="text-right text-sm text-gray-500 dark:text-gray-400">
             <p>Chill Numbers</p>
             <p>Generado el {new Date().toLocaleDateString('es-ES')}</p>
           </div>
@@ -141,7 +141,7 @@ export default function CategoryBreakdownReport({ period, year, month }: Categor
             className={`py-4 px-1 border-b-2 font-medium text-sm transition-colors duration-200 ${
               activeTab === 'income'
                 ? 'border-green-500 text-green-600'
-                : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                : 'border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:text-gray-300 hover:border-gray-300 dark:border-gray-600'
             }`}
           >
             <div className="flex items-center space-x-2">
@@ -157,7 +157,7 @@ export default function CategoryBreakdownReport({ period, year, month }: Categor
             className={`py-4 px-1 border-b-2 font-medium text-sm transition-colors duration-200 ${
               activeTab === 'expense'
                 ? 'border-red-500 text-red-600'
-                : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                : 'border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:text-gray-300 hover:border-gray-300 dark:border-gray-600'
             }`}
           >
             <div className="flex items-center space-x-2">
@@ -190,12 +190,12 @@ export default function CategoryBreakdownReport({ period, year, month }: Categor
             </p>
           </div>
 
-          <div className="bg-gray-50 p-4 rounded-lg">
+          <div className="bg-gray-50 dark:bg-gray-800 p-4 rounded-lg">
             <div className="flex items-center space-x-2 mb-2">
-              <BarChart3 className="w-5 h-5 text-gray-600" />
-              <span className="text-sm font-medium text-gray-600">Categorías Activas</span>
+              <BarChart3 className="w-5 h-5 text-gray-600 dark:text-gray-400" />
+              <span className="text-sm font-medium text-gray-600 dark:text-gray-400">Categorías Activas</span>
             </div>
-            <p className="text-2xl font-bold text-gray-700">{currentData.length}</p>
+            <p className="text-2xl font-bold text-gray-700 dark:text-gray-300">{currentData.length}</p>
           </div>
 
           <div className="bg-blue-50 p-4 rounded-lg">
@@ -223,25 +223,25 @@ export default function CategoryBreakdownReport({ period, year, month }: Categor
         <table className="w-full">
           <thead className="bg-gray-50 dark:bg-gray-800">
             <tr>
-              <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+              <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
                 Categoría
               </th>
-              <th className="px-4 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
+              <th className="px-4 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
                 Transacciones
               </th>
-              <th className="px-4 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
+              <th className="px-4 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
                 Completadas
               </th>
-              <th className="px-4 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
+              <th className="px-4 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
                 Pendientes
               </th>
-              <th className="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+              <th className="px-4 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
                 Monto Total
               </th>
-              <th className="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+              <th className="px-4 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
                 Promedio
               </th>
-              <th className="px-4 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
+              <th className="px-4 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
                 Porcentaje
               </th>
             </tr>
@@ -253,7 +253,7 @@ export default function CategoryBreakdownReport({ period, year, month }: Categor
               ))
             ) : (
               <tr>
-                <td colSpan={7} className="px-4 py-8 text-center text-gray-500">
+                <td colSpan={7} className="px-4 py-8 text-center text-gray-500 dark:text-gray-400">
                   No hay datos de categorías para mostrar en este período
                 </td>
               </tr>
@@ -263,8 +263,8 @@ export default function CategoryBreakdownReport({ period, year, month }: Categor
       </div>
 
       {/* Footer */}
-      <div className="border-t border-gray-200 dark:border-gray-700 p-4 bg-gray-50 rounded-b-lg">
-        <div className="flex items-center justify-between text-xs text-gray-500">
+      <div className="border-t border-gray-200 dark:border-gray-700 p-4 bg-gray-50 dark:bg-gray-800 rounded-b-lg">
+        <div className="flex items-center justify-between text-xs text-gray-500 dark:text-gray-400">
           <span>
             Mostrando {currentData.length} categorías con actividad en el período seleccionado
           </span>

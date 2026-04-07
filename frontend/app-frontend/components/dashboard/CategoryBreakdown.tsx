@@ -1,4 +1,4 @@
-'use client'
+﻿'use client'
 
 import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip } from 'recharts'
 import { PieChart as PieIcon } from 'lucide-react'
@@ -24,9 +24,9 @@ const CustomTooltip = ({ active, payload, formatCurrency }: any) => {
   if (!active || !payload?.length) return null
   const d = payload[0].payload
   return (
-    <div className="bg-white p-3 border border-gray-200 rounded-lg shadow-lg text-sm">
+    <div className="bg-white dark:bg-gray-900 p-3 border border-gray-200 dark:border-gray-700 rounded-lg shadow-lg text-sm">
       <p className="font-medium text-gray-900 dark:text-gray-100 mb-1">{d.name}</p>
-      <p className="text-gray-600">{formatCurrency(d.value)} · {d.percentage}%</p>
+      <p className="text-gray-600 dark:text-gray-400">{formatCurrency(d.value)} · {d.percentage}%</p>
     </div>
   )
 }
@@ -52,10 +52,10 @@ function ChartCard({ title, data, emptyText, emptyDesc, formatCurrency }: ChartC
       {data.length === 0 ? (
         <div className="flex items-center justify-center py-10">
           <div className="text-center">
-            <div className="w-12 h-12 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-3">
+            <div className="w-12 h-12 bg-gray-100 dark:bg-gray-700 rounded-full flex items-center justify-center mx-auto mb-3">
               <PieIcon className="w-6 h-6 text-gray-400" />
             </div>
-            <p className="text-gray-500 text-xs">{emptyText}</p>
+            <p className="text-gray-500 dark:text-gray-400 text-xs">{emptyText}</p>
             <p className="text-gray-400 text-xs mt-0.5">{emptyDesc}</p>
           </div>
         </div>

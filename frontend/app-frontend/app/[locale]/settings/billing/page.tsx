@@ -1,4 +1,4 @@
-'use client'
+﻿'use client'
 
 import { useState, useEffect, useCallback } from 'react'
 import { useRouter } from 'next/navigation'
@@ -120,13 +120,13 @@ export default function BillingPage() {
         )}
 
         {loading && !info ? (
-          <div className="bg-white/5 border border-white/10 rounded-2xl p-8 text-center text-slate-400 text-sm">
+          <div className="bg-white dark:bg-gray-900/5 border border-white/10 rounded-2xl p-8 text-center text-slate-400 text-sm">
             {t('loading')}
           </div>
         ) : info ? (
           <div className="space-y-4">
             {/* Current plan card */}
-            <div className="bg-white/5 border border-white/10 rounded-2xl p-6">
+            <div className="bg-white dark:bg-gray-900/5 border border-white/10 rounded-2xl p-6">
               <div className="flex items-start justify-between mb-4">
                 <div>
                   <p className="text-xs text-slate-400 uppercase tracking-wider mb-1">{t('currentPlan')}</p>
@@ -171,7 +171,7 @@ export default function BillingPage() {
 
             {/* Manage subscription */}
             {(info.status === 'Active' || info.status === 'PastDue') && info.stripeCustomerId && (
-              <div className="bg-white/5 border border-white/10 rounded-2xl p-6">
+              <div className="bg-white dark:bg-gray-900/5 border border-white/10 rounded-2xl p-6">
                 <p className="text-sm font-semibold mb-1">{t('manageTitle')}</p>
                 <p className="text-slate-400 text-xs mb-4">{t('manageDesc')}</p>
                 <button
@@ -187,14 +187,14 @@ export default function BillingPage() {
 
             {/* Upgrade / activate */}
             {(info.status === 'Trial' || info.status === 'Expired' || info.status === 'Canceled') && (
-              <div className="bg-white/5 border border-white/10 rounded-2xl p-6">
+              <div className="bg-white dark:bg-gray-900/5 border border-white/10 rounded-2xl p-6">
                 <p className="text-sm font-semibold mb-1">{t('activateTitle')}</p>
                 <p className="text-slate-400 text-xs mb-4">{t('activateDesc')}</p>
                 <div className="flex flex-col sm:flex-row gap-3">
                   <button
                     onClick={() => handleUpgrade('monthly')}
                     disabled={upgradeLoading !== null}
-                    className="flex-1 bg-white/10 hover:bg-white/20 border border-white/20 disabled:opacity-60 disabled:cursor-not-allowed rounded-xl py-2.5 text-sm font-semibold transition-colors"
+                    className="flex-1 bg-white dark:bg-gray-900/10 hover:bg-white dark:bg-gray-900/20 border border-white/20 disabled:opacity-60 disabled:cursor-not-allowed rounded-xl py-2.5 text-sm font-semibold transition-colors"
                   >
                     {upgradeLoading === 'monthly' ? t('redirecting') : t('planMonthlyBtn')}
                   </button>

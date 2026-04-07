@@ -1,4 +1,4 @@
-interface SocialButtonProps {
+﻿interface SocialButtonProps {
   provider: 'google' | 'microsoft' | 'apple'
   onClick: () => void
   children: React.ReactNode
@@ -37,7 +37,7 @@ const SocialButton = ({ provider, onClick, children }: SocialButtonProps) => {
   return (
     <button
       onClick={onClick}
-      className="w-full flex justify-center items-center px-4 py-3 border border-slate-300 rounded-lg shadow-sm bg-white text-sm font-medium text-slate-700 hover:bg-slate-50 hover:border-slate-400 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-all duration-200"
+      className="w-full flex justify-center items-center px-4 py-3 border border-slate-300 rounded-lg shadow-sm bg-white dark:bg-gray-900 text-sm font-medium text-slate-700 hover:bg-slate-50 hover:border-slate-400 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-all duration-200"
     >
       <span className="mr-3">{getIcon()}</span>
       {children}

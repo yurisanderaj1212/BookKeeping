@@ -1,4 +1,4 @@
-'use client'
+﻿'use client'
 
 import { useState, useEffect, useCallback } from 'react'
 import { Building2, RefreshCw, Trash2, AlertCircle } from 'lucide-react'
@@ -62,7 +62,7 @@ export default function ConnectedBanks({ refreshKey }: { refreshKey?: number }) 
     <div className="bg-white dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-gray-700 p-6">
       <div className="flex items-center justify-between mb-5">
         <div>
-          <h3 className="text-base font-semibold text-gray-900">{t('title')}</h3>
+          <h3 className="text-base font-semibold text-gray-900 dark:text-gray-100">{t('title')}</h3>
           <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">{t('subtitle')}</p>
         </div>
         <PlaidLinkButton
@@ -80,7 +80,7 @@ export default function ConnectedBanks({ refreshKey }: { refreshKey?: number }) 
       {loading ? (
         <div className="space-y-3">
           {[1, 2].map(i => (
-            <div key={i} className="h-16 bg-gray-100 rounded-lg animate-pulse" />
+            <div key={i} className="h-16 bg-gray-100 dark:bg-gray-700 rounded-lg animate-pulse" />
           ))}
         </div>
       ) : items.length === 0 ? (
@@ -92,13 +92,13 @@ export default function ConnectedBanks({ refreshKey }: { refreshKey?: number }) 
       ) : (
         <div className="space-y-3">
           {items.map(item => (
-            <div key={item.id} className="flex items-center justify-between p-4 border border-gray-200 rounded-lg hover:border-gray-300 transition-colors">
+            <div key={item.id} className="flex items-center justify-between p-4 border border-gray-200 dark:border-gray-700 rounded-lg hover:border-gray-300 dark:border-gray-600 transition-colors">
               <div className="flex items-center gap-3">
                 <div className="w-9 h-9 bg-blue-50 rounded-lg flex items-center justify-center">
                   <Building2 className="w-5 h-5 text-blue-500" />
                 </div>
                 <div>
-                  <p className="text-sm font-medium text-gray-900">
+                  <p className="text-sm font-medium text-gray-900 dark:text-gray-100">
                     {item.institutionName ?? 'Banco conectado'}
                   </p>
                   <p className="text-xs text-gray-400">

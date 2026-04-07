@@ -1,4 +1,4 @@
-'use client'
+﻿'use client'
 
 import { useEffect, useState } from 'react'
 import { ArrowUp, ArrowDown, ArrowLeft, ArrowRight } from 'lucide-react'
@@ -66,9 +66,9 @@ export default function TourTooltip({ target, position, title, description, isVi
 
   return (
     <div style={tooltipStyle} className="max-w-xs">
-      <div className="bg-white rounded-lg shadow-lg border border-gray-200 p-4 relative">
+      <div className="bg-white dark:bg-gray-900 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 p-4 relative">
         {/* Arrow */}
-        <div className={`absolute w-3 h-3 bg-white border transform rotate-45 ${
+        <div className={`absolute w-3 h-3 bg-white dark:bg-gray-900 border transform rotate-45 ${
           position === 'top' ? 'bottom-[-6px] left-1/2 -translate-x-1/2 border-r-0 border-t-0' :
           position === 'bottom' ? 'top-[-6px] left-1/2 -translate-x-1/2 border-l-0 border-b-0' :
           position === 'left' ? 'right-[-6px] top-1/2 -translate-y-1/2 border-t-0 border-l-0' :
@@ -78,8 +78,8 @@ export default function TourTooltip({ target, position, title, description, isVi
         <div className="flex items-start space-x-2">
           <ArrowIcon className="w-4 h-4 text-primary-600 mt-0.5 shrink-0" />
           <div>
-            <h4 className="font-medium text-gray-900 text-sm mb-1">{title}</h4>
-            <p className="text-xs text-gray-600 leading-relaxed">{description}</p>
+            <h4 className="font-medium text-gray-900 dark:text-gray-100 text-sm mb-1">{title}</h4>
+            <p className="text-xs text-gray-600 dark:text-gray-400 leading-relaxed">{description}</p>
           </div>
         </div>
       </div>
