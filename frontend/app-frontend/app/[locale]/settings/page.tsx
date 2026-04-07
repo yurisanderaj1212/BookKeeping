@@ -744,8 +744,8 @@ export default function SettingsPage() {
                           ? 'bg-primary-50 dark:bg-primary-900/20 text-primary-600 dark:text-primary-400 border-primary-200 dark:border-primary-800'
                           : 'text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-700 hover:text-gray-900 dark:hover:text-gray-100 border-transparent bg-transparent'
                       }`}>
-                      <Icon className={`w-4 h-4 shrink-0 ${activeTab === tab.id ? 'text-primary-600' : 'text-gray-400'}`} />
-                      <span className="font-medium text-xs sm:text-sm truncate">{tab.label}</span>
+                      <Icon className={`w-4 h-4 shrink-0 ${activeTab === tab.id ? 'text-primary-600 dark:text-primary-400' : 'text-gray-400 dark:text-gray-500'}`} />
+                      <span className="font-medium text-xs sm:text-sm truncate text-inherit">{tab.label}</span>
                     </button>
                   )
                 })}
