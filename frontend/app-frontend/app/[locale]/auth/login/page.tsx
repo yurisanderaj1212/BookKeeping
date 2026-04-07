@@ -131,9 +131,24 @@ function LoginForm() {
     }
   }
 
-  const handleSocialLogin = (provider: string) => {
-    // TODO: Implement social login
-    showError(tc('error'), t('socialNotAvailable', { provider }))
+  const handleSocialLogin = async (provider: string) => {
+    if (provider !== 'google') {
+      showError(tc('error'), t('socialNotAvailable', { provider }))
+      return
+    }
+    try {
+      const { getSupabase } = await import('@/lib/supabaseClient')
+      const supabase = getSupabase()
+      const { error } = await supabase.auth.signInWithOAuth({
+        provider: 'google',
+        options: {
+          redirectTo: `${window.location.origin}/auth/callback`,
+        },
+      })
+      if (error) showError(tc('error'), error.message)
+    } catch {
+      showError(tc('error'), tc('connectionError'))
+    }
   }
 
   return (

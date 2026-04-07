@@ -246,9 +246,24 @@ export default function RegisterPage() {
     }
   }
 
-  const handleSocialRegister = (provider: string) => {
-    // TODO: Implement social registration
-    showError(tErr('unknown'), t('socialNotAvailable', { provider }))
+  const handleSocialRegister = async (provider: string) => {
+    if (provider !== 'google') {
+      showError(tErr('unknown'), t('socialNotAvailable', { provider }))
+      return
+    }
+    try {
+      const { getSupabase } = await import('@/lib/supabaseClient')
+      const supabase = getSupabase()
+      const { error } = await supabase.auth.signInWithOAuth({
+        provider: 'google',
+        options: {
+          redirectTo: `${window.location.origin}/auth/callback`,
+        },
+      })
+      if (error) showError(tErr('unknown'), error.message)
+    } catch {
+      showError(tErr('unknown'), tErr('connectionError'))
+    }
   }
 
   return (
