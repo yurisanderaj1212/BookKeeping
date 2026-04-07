@@ -112,10 +112,15 @@ export default function WeeklyChart({ data }: WeeklyChartProps) {
           />
           <Tooltip content={<CustomTooltip />} cursor={{ fill: 'rgba(0,0,0,0.04)' }} />
           <Legend
-            reversed
             wrapperStyle={{ paddingTop: isMobile ? '10px' : '16px', fontSize: isMobile ? 11 : 12 }}
             iconType="circle"
             iconSize={isMobile ? 8 : 10}
+            formatter={(value) => value}
+            payload={[
+              { value: t('income'),   type: 'circle', color: '#20B2AA' },
+              { value: t('expenses'), type: 'circle', color: '#FF6B6B' },
+              { value: t('profit'),   type: 'circle', color: '#60a5fa' },
+            ]}
           />
           <Bar dataKey="income"   name={t('income')}   fill="#20B2AA" radius={[3,3,0,0]} animationDuration={800} />
           <Bar dataKey="expenses" name={t('expenses')} fill="#FF6B6B" radius={[3,3,0,0]} animationDuration={800} animationBegin={150} />
