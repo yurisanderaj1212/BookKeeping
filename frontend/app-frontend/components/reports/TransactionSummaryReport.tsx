@@ -232,7 +232,7 @@ export default function TransactionSummaryReport({ period, year, month }: Transa
               </thead>
               <tbody className="divide-y divide-gray-100">
                 {recent.map((tx: any, i: number) => (
-                  <tr key={i} className="hover:bg-gray-50 dark:hover:bg-gray-800">
+                  <tr key={i} className="hover:bg-gray-50 dark:bg-gray-800 dark:hover:bg-gray-800">
                     <td className="px-3 py-2 text-gray-600 dark:text-gray-400">{new Date(tx.date + 'T00:00:00').toLocaleDateString()}</td>
                     <td className="px-3 py-2 text-gray-900 dark:text-gray-100 max-w-[200px] truncate">{tx.description}</td>
                     <td className="px-3 py-2 text-gray-600 dark:text-gray-400">{translateCategoryName(tx.categoryName, tCategories)}</td>

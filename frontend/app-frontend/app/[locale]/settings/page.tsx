@@ -231,7 +231,7 @@ const CompanyTab = ({
         <div>
           <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">{t('businessType')}</label>
           <select value={prefs.businessType} onChange={e => setPrefs({ ...prefs, businessType: e.target.value })}
-            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500">
+            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-100 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500">
             <option value="Servicios Profesionales">{t('businessTypes.professional')}</option>
             <option value="Retail">{t('businessTypes.retail')}</option>
             <option value="Manufactura">{t('businessTypes.other')}</option>
@@ -253,7 +253,7 @@ const CompanyTab = ({
           <div className="relative">
             <Calendar className="absolute left-3 top-2.5 w-4 h-4 text-gray-400" />
             <select value={prefs.fiscalYearStart} onChange={e => setPrefs({ ...prefs, fiscalYearStart: e.target.value })}
-              className="w-full pl-10 pr-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500">
+              className="w-full pl-10 pr-3 py-2 border border-gray-300 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-100 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500">
               <option value="01-01">{t('fiscalYearOptions.jan')}</option>
               <option value="04-01">{t('fiscalYearOptions.apr')}</option>
               <option value="07-01">{t('fiscalYearOptions.jul')}</option>
@@ -368,7 +368,7 @@ const SecurityTab = ({
           <h4 className="font-medium text-gray-900 dark:text-gray-100 mb-2">{t('sessionTimeout')}</h4>
           <p className="text-sm text-gray-500 dark:text-gray-400 mb-3">{t('sessionTimeoutDesc')}</p>
           <select value={form.sessionTimeout} onChange={e => setForm({ ...form, sessionTimeout: parseInt(e.target.value) })}
-            className="w-full md:w-auto px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500">
+            className="w-full md:w-auto px-3 py-2 border border-gray-300 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-100 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500">
             <option value={15}>{t('timeoutOptions.15min')}</option>
             <option value={30}>{t('timeoutOptions.30min')}</option>
             <option value={60}>{t('timeoutOptions.1h')}</option>
@@ -611,7 +611,7 @@ export default function SettingsPage() {
                   <div className="relative">
                     <Globe className="absolute left-3 top-2.5 w-4 h-4 text-gray-400" />
                     <select value={prefs.language} onChange={e => setPrefs({ ...prefs, language: e.target.value })}
-                      className="w-full pl-10 pr-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500">
+                      className="w-full pl-10 pr-3 py-2 border border-gray-300 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-100 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500">
                       <option value="es">{t('languageEs')}</option>
                       <option value="en">{t('languageEn')}</option>
                     </select>
@@ -622,7 +622,7 @@ export default function SettingsPage() {
                   <div className="relative">
                     <DollarSign className="absolute left-3 top-2.5 w-4 h-4 text-gray-400" />
                     <select value={prefs.currency} onChange={e => setPrefs({ ...prefs, currency: e.target.value })}
-                      className="w-full pl-10 pr-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500">
+                      className="w-full pl-10 pr-3 py-2 border border-gray-300 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-100 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500">
                       {(['USD', 'EUR', 'MXN', 'CAD'] as const).map(code => (
                         <option key={code} value={code}>{t(`currencyOptions.${code}` as any)}</option>
                       ))}
@@ -632,7 +632,7 @@ export default function SettingsPage() {
                 <div>
                   <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">{t('dateFormat')}</label>
                   <select value={prefs.dateFormat} onChange={e => setPrefs({ ...prefs, dateFormat: e.target.value })}
-                    className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500">
+                    className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-100 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500">
                     <option value="MM/DD/YYYY">MM/DD/YYYY (US)</option>
                     <option value="DD/MM/YYYY">DD/MM/YYYY (EU)</option>
                     <option value="YYYY-MM-DD">YYYY-MM-DD (ISO)</option>
@@ -641,7 +641,7 @@ export default function SettingsPage() {
                 <div>
                   <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">{t('timezone')}</label>
                   <select value={prefs.timezone} onChange={e => setPrefs({ ...prefs, timezone: e.target.value })}
-                    className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500">
+                    className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-100 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500">
                     <option value="America/New_York">Eastern Time (ET)</option>
                     <option value="America/Chicago">Central Time (CT)</option>
                     <option value="America/Denver">Mountain Time (MT)</option>
@@ -742,7 +742,7 @@ export default function SettingsPage() {
                       className={`flex items-center gap-2 px-3 py-2.5 rounded-xl transition-all text-left lg:w-full border ${
                         activeTab === tab.id
                           ? 'bg-primary-50 text-primary-600 border-primary-200 shadow-sm'
-                          : 'text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800 hover:text-gray-900 dark:text-gray-100 border-gray-100 dark:border-gray-800 bg-white dark:bg-gray-900'
+                          : 'text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-700 hover:text-gray-900 dark:hover:text-gray-100 border-gray-100 dark:border-gray-800 bg-white dark:bg-gray-900'
                       }`}>
                       <Icon className={`w-4 h-4 shrink-0 ${activeTab === tab.id ? 'text-primary-600' : 'text-gray-400'}`} />
                       <span className="font-medium text-xs sm:text-sm truncate">{tab.label}</span>

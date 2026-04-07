@@ -153,11 +153,11 @@ export default function Sidebar({ onLogout }: SidebarProps) {
                     className={`flex items-center space-x-3 px-3 py-2.5 rounded-lg transition-all duration-200 group ${
                       isActive
                         ? 'bg-primary-50 dark:bg-primary-900/30 text-primary-600 shadow-sm'
-                        : 'text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800 hover:text-gray-900 dark:hover:text-gray-100'
+                        : 'text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:bg-gray-800 dark:hover:bg-gray-800 hover:text-gray-900 dark:hover:text-gray-100'
                     }`}
                     title={isCollapsed ? t(item.label) : undefined}
                   >
-                    <Icon className={`w-5 h-5 shrink-0 ${isActive ? 'text-primary-600' : 'text-gray-400 dark:text-gray-500 dark:text-gray-400 group-hover:text-gray-600 dark:group-hover:text-gray-300'}`} />
+                    <Icon className={`w-5 h-5 shrink-0 ${isActive ? 'text-primary-600' : 'text-gray-400 dark:text-gray-500 group-hover:text-gray-600 dark:group-hover:text-gray-300'}`} />
                     {!isCollapsed && (
                       <span className="font-medium text-sm">{t(item.label)}</span>
                     )}
@@ -171,7 +171,7 @@ export default function Sidebar({ onLogout }: SidebarProps) {
         {/* ── System section ── */}
         <div className="border-t border-gray-200 dark:border-gray-700 pt-3 shrink-0">
           {!isCollapsed && (
-            <p className="px-3 text-xs font-semibold text-gray-400 dark:text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-2">
+            <p className="px-3 text-xs font-semibold text-gray-400 dark:text-gray-500 uppercase tracking-wider mb-2">
               {t('common.system')}
             </p>
           )}
@@ -187,13 +187,13 @@ export default function Sidebar({ onLogout }: SidebarProps) {
                     className={`flex items-center space-x-3 px-3 py-2.5 rounded-lg transition-all duration-200 group ${
                       isActive
                         ? 'bg-primary-50 dark:bg-primary-900/30 text-primary-600 shadow-sm'
-                        : 'text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800 hover:text-gray-900 dark:hover:text-gray-100'
+                        : 'text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:bg-gray-800 dark:hover:bg-gray-800 hover:text-gray-900 dark:hover:text-gray-100'
                     }`}
                     title={isCollapsed ? t(item.label) : undefined}
                     data-tour={item.id === 'settings' ? 'settings-link' : undefined}
                   >
                     <div className="relative">
-                      <Icon className={`w-5 h-5 shrink-0 ${isActive ? 'text-primary-600' : 'text-gray-400 dark:text-gray-500 dark:text-gray-400 group-hover:text-gray-600 dark:group-hover:text-gray-300'}`} />
+                      <Icon className={`w-5 h-5 shrink-0 ${isActive ? 'text-primary-600' : 'text-gray-400 dark:text-gray-500 group-hover:text-gray-600 dark:group-hover:text-gray-300'}`} />
                       {badge > 0 && (
                         <span className="absolute -top-1.5 -right-1.5 bg-red-500 text-white text-[9px] font-bold rounded-full min-w-[14px] h-[14px] flex items-center justify-center px-0.5">
                           {badge > 99 ? '99+' : badge}

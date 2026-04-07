@@ -1,4 +1,4 @@
-﻿'use client'
+'use client'
 
 import { useState, useEffect } from 'react'
 import { X, AlertCircle } from 'lucide-react'
@@ -193,7 +193,7 @@ export default function TransactionForm({ isOpen, onClose, onSave, transaction, 
               <Label>{t('account')} <span className="text-gray-400 font-normal">({tCommon('no')})</span></Label>
               <select value={formData.accountId} onChange={e => handleChange('accountId', e.target.value)}
                 disabled={loadingAccounts}
-                className={`w-full px-2 py-1.5 border rounded-lg focus:ring-2 focus:ring-primary-500 text-sm ${loadingAccounts ? 'opacity-50 cursor-not-allowed' : 'border-gray-300 dark:border-gray-600'}`}>
+                className={`w-full px-2 py-1.5 border rounded-lg focus:ring-2 focus:ring-primary-500 text-sm dark:border-gray-600 dark:bg-gray-800 dark:text-gray-100 ${loadingAccounts ? 'opacity-50 cursor-not-allowed' : 'border-gray-300'}`}>
                 <option value="">{loadingAccounts ? tCommon('loading') : t('noAccount')}</option>
                 {accounts.map(a => {
                   const isCash = a.sub_type === 1002
@@ -208,7 +208,7 @@ export default function TransactionForm({ isOpen, onClose, onSave, transaction, 
               <Label required>{t('category')}</Label>
               <select value={formData.category} onChange={e => handleChange('category', e.target.value)}
                 disabled={loadingCategories}
-                className={`w-full px-2 py-1.5 border rounded-lg focus:ring-2 focus:ring-primary-500 text-sm ${errors.category ? 'border-red-400 bg-red-50' : 'border-gray-300 dark:border-gray-600'} ${loadingCategories ? 'opacity-50 cursor-not-allowed' : ''}`}>
+                className={`w-full px-2 py-1.5 border rounded-lg focus:ring-2 focus:ring-primary-500 text-sm ${errors.category ? 'border-red-400 bg-red-50' : 'border-gray-300 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-100'} ${loadingCategories ? 'opacity-50 cursor-not-allowed' : ''}`}>
                 <option value="">{loadingCategories ? tCommon('loading') : tCommon('all')}</option>
                 {cats.map(c => <option key={c.value} value={c.value}>{translateCategoryName(c.label, tCategories)}</option>)}
               </select>
@@ -233,11 +233,11 @@ export default function TransactionForm({ isOpen, onClose, onSave, transaction, 
             <Label>{t('status')}</Label>
             <div className="grid grid-cols-2 gap-2">
               <button type="button" onClick={() => handleChange('status', 'pending')}
-                className={`px-2 py-1.5 rounded-lg border text-xs transition-all ${formData.status === 'pending' ? 'border-yellow-500 bg-yellow-50 text-yellow-700' : 'border-gray-200 dark:border-gray-700 hover:border-gray-300 dark:border-gray-600'}`}>
+                className={`px-2 py-1.5 rounded-lg border text-xs transition-all ${formData.status === 'pending' ? 'border-yellow-500 bg-yellow-50 text-yellow-700' : 'border-gray-200 dark:border-gray-700 hover:border-gray-300'}`}>
                 {t('pending')}
               </button>
               <button type="button" onClick={() => handleChange('status', 'completed')}
-                className={`px-2 py-1.5 rounded-lg border text-xs transition-all ${formData.status === 'completed' ? 'border-green-500 bg-green-50 text-green-700' : 'border-gray-200 dark:border-gray-700 hover:border-gray-300 dark:border-gray-600'}`}>
+                className={`px-2 py-1.5 rounded-lg border text-xs transition-all ${formData.status === 'completed' ? 'border-green-500 bg-green-50 text-green-700' : 'border-gray-200 dark:border-gray-700 hover:border-gray-300'}`}>
                 {t('completed')}
               </button>
             </div>

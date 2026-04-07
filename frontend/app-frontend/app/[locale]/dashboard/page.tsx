@@ -1,4 +1,4 @@
-﻿'use client'
+'use client'
 
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
@@ -230,7 +230,7 @@ export default function DashboardPage() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
 
         {/* Quick Actions - Compact version right after header */}
-        <div className="bg-white dark:bg-gray-900 rounded-lg border border-gray-200 dark:border-gray-700 p-4 shadow-sm mb-6" data-tour="quick-actions">
+        <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-4 shadow-sm mb-6" data-tour="quick-actions" >
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2 sm:gap-3">
             {quickActions.map((action, index) => {
               const Icon = action.icon
@@ -238,7 +238,7 @@ export default function DashboardPage() {
                 <button
                   key={action.id}
                   onClick={() => handleQuickAction(action.id)}
-                  className="bg-white dark:bg-gray-900 border border-primary-200 hover:border-primary-300 hover:bg-primary-50 p-3 rounded-lg transition-all duration-200 hover:scale-105 hover:shadow-md group"
+                  className="bg-white dark:bg-gray-800 border border-primary-200 dark:border-primary-800 hover:border-primary-300 dark:hover:border-primary-600 hover:bg-primary-50 dark:hover:bg-primary-900/20 p-3 rounded-lg transition-all duration-200 hover:scale-105 hover:shadow-md group"
                   style={{ 
                     animationDelay: `${index * 100}ms`,
                     animation: 'fadeInScale 0.5s ease-out forwards'

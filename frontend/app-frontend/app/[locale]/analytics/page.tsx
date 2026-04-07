@@ -101,7 +101,7 @@ export default function ReportsPage() {
               <div className="flex items-center gap-2 shrink-0">
                 <button 
                   onClick={handleExportReport}
-                  className="bg-white dark:bg-gray-900 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 px-3 py-2 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors flex items-center gap-1.5"
+                  className="bg-white dark:bg-gray-900 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 px-3 py-2 rounded-lg hover:bg-gray-50 dark:bg-gray-800 dark:hover:bg-gray-800 transition-colors flex items-center gap-1.5"
                 >
                   <Download className="w-4 h-4" />
                   <span className="hidden sm:inline text-sm">{t('exportBtn')}</span>
@@ -127,7 +127,7 @@ export default function ReportsPage() {
               <select
                 value={selectedPeriod}
                 onChange={(e) => setSelectedPeriod(e.target.value as 'week' | 'month' | 'year')}
-                className="flex-1 min-w-[90px] px-2 py-1.5 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary-500 text-sm bg-white dark:bg-gray-900"
+                className="flex-1 min-w-[90px] px-2 py-1.5 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary-500 text-sm bg-white dark:bg-gray-800 dark:text-gray-100"
               >
                 <option value="week">{t('thisWeek')}</option>
                 <option value="month">{t('thisMonth')}</option>
@@ -136,7 +136,7 @@ export default function ReportsPage() {
               <select
                 value={selectedYear}
                 onChange={(e) => setSelectedYear(e.target.value)}
-                className="px-2 py-1.5 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary-500 text-sm bg-white dark:bg-gray-900"
+                className="px-2 py-1.5 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary-500 text-sm bg-white dark:bg-gray-800 dark:text-gray-100"
               >
                 {Array.from({ length: 4 }, (_, i) => new Date().getFullYear() - i).map(y => (
                   <option key={y} value={String(y)}>{y}</option>
@@ -146,7 +146,7 @@ export default function ReportsPage() {
                 <select
                   value={selectedMonth}
                   onChange={(e) => setSelectedMonth(e.target.value)}
-                  className="flex-1 min-w-[90px] px-2 py-1.5 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary-500 text-sm bg-white dark:bg-gray-900"
+                  className="flex-1 min-w-[90px] px-2 py-1.5 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary-500 text-sm bg-white dark:bg-gray-800 dark:text-gray-100"
                 >
                   {Array.from({ length: 12 }, (_, i) => (
                     <option key={i + 1} value={String(i + 1).padStart(2, '0')}>
@@ -159,7 +159,7 @@ export default function ReportsPage() {
                 <select
                   value={selectedWeek}
                   onChange={(e) => setSelectedWeek(e.target.value)}
-                  className="flex-1 min-w-[80px] px-2 py-1.5 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary-500 text-sm bg-white dark:bg-gray-900"
+                  className="flex-1 min-w-[80px] px-2 py-1.5 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary-500 text-sm bg-white dark:bg-gray-800 dark:text-gray-100"
                 >
                   {getWeeksInMonth().map((week) => (
                     <option key={week.value} value={week.value}>{week.label}</option>

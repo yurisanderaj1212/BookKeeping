@@ -145,14 +145,14 @@ export default function NotificationCenter({ isOpen, onClose, onRefresh }: Props
               <p className="text-sm">{t('empty')}</p>
             </div>
           ) : (
-            <div className="divide-y divide-gray-100">
+            <div className="divide-y divide-gray-100 dark:divide-gray-800">
               {filtered.map(n => {
                 const Icon = getIcon(n.type)
                 return (
                   <div
                     key={n.id}
                     onClick={() => handleClick(n)}
-                    className={`p-4 hover:bg-gray-50 dark:hover:bg-gray-800 cursor-pointer transition-colors ${!n.isRead ? 'bg-blue-50 border-l-4 border-l-primary-500' : ''}`}
+                    className={`p-4 hover:bg-gray-50 dark:bg-gray-800 dark:hover:bg-gray-800 cursor-pointer transition-colors ${!n.isRead ? 'bg-blue-50 dark:bg-blue-950/30 border-l-4 border-l-primary-500' : 'dark:bg-gray-900'}`}
                   >
                     <div className="flex items-start gap-3">
                       <div className={`p-2 rounded-full shrink-0 ${getNotificationColor(n.priority)}`}>
@@ -169,11 +169,11 @@ export default function NotificationCenter({ isOpen, onClose, onRefresh }: Props
                           </div>
                           <div className="flex items-center gap-1 shrink-0">
                             {!n.isRead && (
-                              <button onClick={e => handleMarkRead(e, n.id)} className="p-1 hover:bg-gray-200 rounded-full" title="Marcar como leída">
+                              <button onClick={e => handleMarkRead(e, n.id)} className="p-1 hover:bg-gray-200 dark:hover:bg-gray-700 rounded-full" title="Marcar como leída">
                                 <Check className="w-3 h-3 text-gray-500 dark:text-gray-400" />
                               </button>
                             )}
-                            <button onClick={e => handleDelete(e, n.id)} className="p-1 hover:bg-gray-200 rounded-full" title="Eliminar">
+                            <button onClick={e => handleDelete(e, n.id)} className="p-1 hover:bg-gray-200 dark:hover:bg-gray-700 rounded-full" title="Eliminar">
                               <Trash2 className="w-3 h-3 text-gray-500 dark:text-gray-400" />
                             </button>
                           </div>

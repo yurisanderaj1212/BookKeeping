@@ -71,7 +71,7 @@ export default function TransactionList({ transactions, onEdit, onDelete }: Tran
       {/* ── Mobile card list (hidden on md+) ── */}
       <div className="md:hidden divide-y divide-gray-100 dark:divide-gray-700">
         {transactions.map(tx => (
-          <div key={tx.id} className="px-3 py-3 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors">
+          <div key={tx.id} className="px-3 py-3 hover:bg-gray-50 dark:bg-gray-800 dark:hover:bg-gray-800 transition-colors">
             <div className="flex items-center gap-2.5">
               <div className={`w-8 h-8 rounded-full flex items-center justify-center shrink-0 ${
                 tx.type === 'income' ? 'bg-green-100' : 'bg-red-100'
@@ -129,7 +129,7 @@ export default function TransactionList({ transactions, onEdit, onDelete }: Tran
           </thead>
           <tbody className="bg-white dark:bg-gray-900 divide-y divide-gray-200 dark:divide-gray-700">
             {transactions.map(tx => (
-              <tr key={tx.id} className="hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors">
+              <tr key={tx.id} className="hover:bg-gray-50 dark:bg-gray-800 dark:hover:bg-gray-800 transition-colors">
                 <td className="px-4 py-4 text-center">
                   <p className="text-sm font-medium text-gray-900 dark:text-gray-100">{tx.date}</p>
                 </td>

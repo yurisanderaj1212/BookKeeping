@@ -75,12 +75,14 @@
 :root {
   --background: #ffffff;
   --foreground: #171717;
+  color-scheme: light;
 }
 
 /* Dark mode via class strategy — controlled by JS, not OS media query */
 .dark {
   --background: #0a0a0a;
   --foreground: #ededed;
+  color-scheme: dark;
 }
 
 html {
@@ -109,9 +111,21 @@ input, textarea, select {
   -webkit-text-fill-color: #111827;
 }
 
-.dark input, .dark textarea, .dark select {
+/* Dark mode inputs, selects, textareas */
+.dark input,
+.dark textarea,
+.dark select {
   color: #f3f4f6;
   -webkit-text-fill-color: #f3f4f6;
+  background-color: #1f2937;
+  border-color: #4b5563;
+  color-scheme: dark;
+}
+
+/* Force select dropdown options to be dark in dark mode */
+.dark select option {
+  background-color: #1f2937;
+  color: #f3f4f6;
 }
 
 .dark input::placeholder, .dark textarea::placeholder {

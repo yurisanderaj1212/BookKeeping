@@ -52,7 +52,7 @@ export default function TransactionDetailReport({ period, year, month }: Transac
   const expenseTotal = filteredTransactions.filter(t => t.type === 'expense').reduce((sum, t) => sum + t.amount, 0)
 
   const TransactionRow = ({ transaction }: { transaction: Transaction }) => (
-    <tr className="border-b border-gray-100 dark:border-gray-800 hover:bg-gray-50 dark:hover:bg-gray-800">
+    <tr className="border-b border-gray-100 dark:border-gray-800 hover:bg-gray-50 dark:bg-gray-800 dark:hover:bg-gray-800">
       <td className="px-3 py-3 text-sm text-gray-900 dark:text-gray-100">
         {new Date(transaction.date).toLocaleDateString('es-ES')}
       </td>

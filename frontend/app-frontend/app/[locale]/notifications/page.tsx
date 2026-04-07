@@ -191,7 +191,7 @@ export default function NotificationsPage() {
                 )}
                 {stats && stats.read > 0 && (
                   <button onClick={handleDeleteAllRead}
-                    className="border border-gray-300 dark:border-gray-600 text-gray-600 dark:text-gray-400 px-3 py-2 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors flex items-center gap-1.5 text-sm">
+                    className="border border-gray-300 dark:border-gray-600 text-gray-600 dark:text-gray-400 px-3 py-2 rounded-lg hover:bg-gray-50 dark:bg-gray-800 dark:hover:bg-gray-800 transition-colors flex items-center gap-1.5 text-sm">
                     <Trash2 className="w-4 h-4" />
                     <span className="hidden sm:inline">{t('clearRead')}</span>
                   </button>
@@ -238,7 +238,7 @@ export default function NotificationsPage() {
               </div>
               <button
                 onClick={() => setShowFilters(!showFilters)}
-                className="flex items-center space-x-2 px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors text-sm"
+                className="flex items-center space-x-2 px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:bg-gray-800 dark:hover:bg-gray-800 transition-colors text-sm"
               >
                 <Filter className="w-4 h-4" />
                 <span>{t('filters')}</span>
@@ -349,7 +349,7 @@ export default function NotificationsPage() {
                     return (
                       <div
                         key={n.id}
-                        className={`p-6 transition-colors ${!n.isRead ? 'bg-blue-50 border-l-4 border-l-primary-500' : 'hover:bg-gray-50 dark:hover:bg-gray-800'} ${isSelected ? 'bg-primary-50' : ''}`}
+                        className={`p-6 transition-colors ${!n.isRead ? 'bg-blue-50 border-l-4 border-l-primary-500' : 'hover:bg-gray-50 dark:bg-gray-800 dark:hover:bg-gray-800'} ${isSelected ? 'bg-primary-50' : ''}`}
                       >
                         <div className="flex items-start space-x-4">
                           <input

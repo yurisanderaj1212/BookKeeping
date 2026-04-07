@@ -297,7 +297,7 @@ export default function AccountsPage() {
             <div className="flex justify-end gap-3">
               <button
                 onClick={() => setConfirmDeleteId(null)}
-                className="px-4 py-2 text-sm text-gray-700 dark:text-gray-300 border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
+                className="px-4 py-2 text-sm text-gray-700 dark:text-gray-300 border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:bg-gray-800 dark:hover:bg-gray-800 transition-colors"
               >
                 {tCommon('cancel')}
               </button>

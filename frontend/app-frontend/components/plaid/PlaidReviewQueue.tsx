@@ -79,7 +79,7 @@ function ConfigModal({ tx, categories, accounts, onConfirm, onCancel, saving }: 
               value={description}
               onChange={e => setDescription(e.target.value)}
               placeholder={t('configDescPlaceholder')}
-              className="w-full px-3 py-2 text-sm border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
+              className="w-full px-3 py-2 text-sm border border-gray-300 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-100 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
             />
           </div>
 
@@ -90,7 +90,7 @@ function ConfigModal({ tx, categories, accounts, onConfirm, onCancel, saving }: 
             <select
               value={categoryId}
               onChange={e => setCategoryId(Number(e.target.value))}
-              className="w-full px-3 py-2 text-sm border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
+              className="w-full px-3 py-2 text-sm border border-gray-300 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-100 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
             >
               {(relevantCats.length > 0 ? relevantCats : categories).map(c => (
                 <option key={c.id} value={c.id}>{c.name}</option>
@@ -106,7 +106,7 @@ function ConfigModal({ tx, categories, accounts, onConfirm, onCancel, saving }: 
             <select
               value={accountId}
               onChange={e => setAccountId(e.target.value)}
-              className="w-full px-3 py-2 text-sm border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
+              className="w-full px-3 py-2 text-sm border border-gray-300 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-100 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
             >
               <option value="">{t('configNoAccount')}</option>
               {accounts.map(a => (
@@ -219,7 +219,7 @@ function TxRow({ tx, onYes, onNo, disabled }: TxRowProps) {
   const t = useTranslations('plaid.reviewQueue')
   const isExpense = tx.type === 2
   return (
-    <div className="flex items-center gap-3 px-4 py-3 border-b border-gray-100 dark:border-gray-800 last:border-0 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors">
+    <div className="flex items-center gap-3 px-4 py-3 border-b border-gray-100 dark:border-gray-800 last:border-0 hover:bg-gray-50 dark:bg-gray-800 dark:hover:bg-gray-800 transition-colors">
       <div className="w-8 h-8 bg-blue-50 rounded-lg flex items-center justify-center shrink-0">
         <Building2 className="w-4 h-4 text-blue-500" />
       </div>

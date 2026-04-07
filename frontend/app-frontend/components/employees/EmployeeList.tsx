@@ -65,7 +65,7 @@ export default function EmployeeList({ employees, onEdit, onDelete }: EmployeeLi
             </thead>
             <tbody className="bg-white dark:bg-gray-900 divide-y divide-gray-200 dark:divide-gray-700">
               {employees.map(emp => (
-                <tr key={emp.id} className="hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors duration-200">
+                <tr key={emp.id} className="hover:bg-gray-50 dark:bg-gray-800 dark:hover:bg-gray-800 transition-colors duration-200">
                   <td className="px-6 py-4">
                     <div className="flex items-center">
                       <div className="shrink-0 h-10 w-10">

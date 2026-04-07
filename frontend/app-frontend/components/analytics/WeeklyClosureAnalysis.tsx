@@ -170,7 +170,7 @@ export default function WeeklyClosureAnalysis({ year, month }: WeeklyClosureAnal
                 {closures.map(row => {
                   const status = getStatus(row)
                   return (
-                    <tr key={row.id} className="hover:bg-gray-50 dark:hover:bg-gray-800">
+                    <tr key={row.id} className="hover:bg-gray-50 dark:bg-gray-800 dark:hover:bg-gray-800">
                       <td className="px-4 py-3 font-medium text-gray-900 dark:text-gray-100">{t('week')} {row.week_number}</td>
                       <td className="px-4 py-3">
                         <span className={`inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-medium ${

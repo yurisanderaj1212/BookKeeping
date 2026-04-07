@@ -124,7 +124,7 @@ export default function TopTransactions({ period, year, month }: TopTransactions
             </thead>
             <tbody className="bg-white dark:bg-gray-900 divide-y divide-gray-200 dark:divide-gray-700">
               {top10.map((tx, i) => (
-                <tr key={tx.id} className="hover:bg-gray-50 dark:hover:bg-gray-800">
+                <tr key={tx.id} className="hover:bg-gray-50 dark:bg-gray-800 dark:hover:bg-gray-800">
                   <td className="px-4 py-3 text-center">
                     <div className={`w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold mx-auto ${i < 3 ? 'bg-yellow-100 text-yellow-800' : 'bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400'}`}>{i+1}</div>
                   </td>

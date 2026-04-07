@@ -178,7 +178,7 @@ export default function EmployeeAnalysis({ period }: EmployeeAnalysisProps) {
               </thead>
               <tbody className="bg-white dark:bg-gray-900 divide-y divide-gray-200 dark:divide-gray-700">
                 {positionCosts.map((item, i) => (
-                  <tr key={i} className="hover:bg-gray-50 dark:hover:bg-gray-800">
+                  <tr key={i} className="hover:bg-gray-50 dark:bg-gray-800 dark:hover:bg-gray-800">
                     <td className="px-6 py-4 text-sm font-medium text-gray-900 dark:text-gray-100">{item.position}</td>
                     <td className="px-6 py-4 text-sm text-gray-500 dark:text-gray-400">{item.count}</td>
                     <td className="px-6 py-4 text-sm text-gray-500 dark:text-gray-400">{formatSalary(item.cost)}</td>

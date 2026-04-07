@@ -304,7 +304,7 @@ export default function EmployeeSummaryReport({ period }: EmployeeSummaryReportP
               </thead>
               <tbody className="bg-white dark:bg-gray-900 divide-y divide-gray-200 dark:divide-gray-700">
                 {payrollData.map((item, index) => (
-                  <tr key={index} className="hover:bg-gray-50 dark:hover:bg-gray-800">
+                  <tr key={index} className="hover:bg-gray-50 dark:bg-gray-800 dark:hover:bg-gray-800">
                     <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-gray-100">
                       {item.type}
                     </td>
@@ -345,7 +345,7 @@ export default function EmployeeSummaryReport({ period }: EmployeeSummaryReportP
               </thead>
               <tbody className="bg-white dark:bg-gray-900 divide-y divide-gray-200 dark:divide-gray-700">
                 {positionData.map((item, index) => (
-                  <tr key={index} className="hover:bg-gray-50 dark:hover:bg-gray-800">
+                  <tr key={index} className="hover:bg-gray-50 dark:bg-gray-800 dark:hover:bg-gray-800">
                     <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-gray-100">
                       {item.position}
                     </td>
@@ -417,7 +417,7 @@ export default function EmployeeSummaryReport({ period }: EmployeeSummaryReportP
                 }
 
                 return (
-                  <tr key={employee.id} className="hover:bg-gray-50 dark:hover:bg-gray-800">
+                  <tr key={employee.id} className="hover:bg-gray-50 dark:bg-gray-800 dark:hover:bg-gray-800">
                     <td className="px-6 py-4 whitespace-nowrap">
                       <div className="text-sm font-medium text-gray-900 dark:text-gray-100">
                         {employee.firstName} {employee.lastName}

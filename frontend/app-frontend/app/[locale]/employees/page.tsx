@@ -279,7 +279,7 @@ export default function EmployeesPage() {
                 <button
                   onClick={() => { setCurrentPage(p => p - 1); loadEmployees(currentPage - 1) }}
                   disabled={currentPage <= 1 || loading}
-                  className="px-3 py-1.5 text-sm border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+                  className="px-3 py-1.5 text-sm border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:bg-gray-800 dark:hover:bg-gray-800 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
                 >
                   {tCommon('previous')}
                 </button>
@@ -293,7 +293,7 @@ export default function EmployeesPage() {
                       className={`px-3 py-1.5 text-sm rounded-lg transition-colors ${
                         page === currentPage
                           ? 'bg-primary-600 text-white'
-                          : 'border border-gray-300 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-800'
+                          : 'border border-gray-300 dark:border-gray-600 hover:bg-gray-50 dark:bg-gray-800 dark:hover:bg-gray-800'
                       }`}
                     >
                       {page}
@@ -303,7 +303,7 @@ export default function EmployeesPage() {
                 <button
                   onClick={() => { setCurrentPage(p => p + 1); loadEmployees(currentPage + 1) }}
                   disabled={currentPage >= pagination.totalPages || loading}
-                  className="px-3 py-1.5 text-sm border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+                  className="px-3 py-1.5 text-sm border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:bg-gray-800 dark:hover:bg-gray-800 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
                 >
                   {tCommon('next')}
                 </button>

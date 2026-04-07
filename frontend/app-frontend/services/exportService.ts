@@ -1059,16 +1059,24 @@ export async function exportAnalyticsData(format: 'excel' | 'pdf') {
 // ─── Export format modal ──────────────────────────────────────────────────────
 export const showExportModal = (onExport: (format: 'excel' | 'pdf') => void) => {
   const l = getL()
+  const isDark = document.documentElement.classList.contains('dark')
+  const bg = isDark ? '#1f2937' : '#fff'
+  const text = isDark ? '#f3f4f6' : '#2d3748'
+  const subtext = isDark ? '#9ca3af' : '#718096'
+  const cancelBg = isDark ? '#374151' : '#edf2f7'
+  const cancelText = isDark ? '#d1d5db' : '#4a5568'
+  const border = isDark ? '1px solid #374151' : 'none'
+
   const modal = document.createElement('div')
-  modal.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,.5);display:flex;align-items:center;justify-content:center;z-index:9999'
-  modal.innerHTML = `<div style="background:#fff;border-radius:12px;padding:28px;max-width:380px;width:90%;box-shadow:0 20px 60px rgba(0,0,0,.2)">
-    <h3 style="margin:0 0 6px;font-size:17px;font-weight:700;color:#2d3748">${l.exportTitle}</h3>
-    <p style="margin:0 0 20px;font-size:13px;color:#718096">${l.exportSubtitle}</p>
+  modal.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,.6);display:flex;align-items:center;justify-content:center;z-index:9999'
+  modal.innerHTML = `<div style="background:${bg};border-radius:12px;padding:28px;max-width:380px;width:90%;box-shadow:0 20px 60px rgba(0,0,0,.3);border:${border}">
+    <h3 style="margin:0 0 6px;font-size:17px;font-weight:700;color:${text}">${l.exportTitle}</h3>
+    <p style="margin:0 0 20px;font-size:13px;color:${subtext}">${l.exportSubtitle}</p>
     <div style="display:flex;gap:10px">
       <button id="exp-excel" style="flex:1;background:#1a7f4b;color:#fff;border:none;border-radius:8px;padding:11px;font-size:13px;font-weight:600;cursor:pointer">📊 ${l.excelBtn}</button>
       <button id="exp-pdf" style="flex:1;background:#c53030;color:#fff;border:none;border-radius:8px;padding:11px;font-size:13px;font-weight:600;cursor:pointer">📄 PDF</button>
     </div>
-    <button id="exp-cancel" style="width:100%;margin-top:10px;background:#edf2f7;color:#4a5568;border:none;border-radius:8px;padding:9px;font-size:13px;cursor:pointer">${l.cancelBtn}</button>
+    <button id="exp-cancel" style="width:100%;margin-top:10px;background:${cancelBg};color:${cancelText};border:none;border-radius:8px;padding:9px;font-size:13px;cursor:pointer">${l.cancelBtn}</button>
   </div>`
   document.body.appendChild(modal)
   const close = () => document.body.removeChild(modal)

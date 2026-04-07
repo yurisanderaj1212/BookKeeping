@@ -179,7 +179,7 @@ export default function AnnualPerformance({ year }: AnnualPerformanceProps) {
             </thead>
             <tbody className="bg-white dark:bg-gray-900 divide-y divide-gray-100">
               {annualData.map((monthData, index) => (
-                <tr key={index} className="hover:bg-gray-50 dark:hover:bg-gray-800">
+                <tr key={index} className="hover:bg-gray-50 dark:bg-gray-800 dark:hover:bg-gray-800">
                   <td className="px-3 py-2 text-xs font-medium text-gray-900 dark:text-gray-100 whitespace-nowrap">{monthData.monthShort ?? monthData.month}</td>
                   <td className="px-3 py-2 text-right text-xs text-green-600 font-semibold whitespace-nowrap">{formatCurrency(monthData.ingresos)}</td>
                   <td className="px-3 py-2 text-right text-xs text-red-600 font-semibold whitespace-nowrap">{formatCurrency(monthData.gastos)}</td>

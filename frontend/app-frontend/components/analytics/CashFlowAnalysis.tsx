@@ -226,7 +226,7 @@ export default function CashFlowAnalysis({ period, year, month }: CashFlowAnalys
             </thead>
             <tbody className="bg-white dark:bg-gray-900 divide-y divide-gray-200 dark:divide-gray-700">
               {summaryData.map((item, index) => (
-                <tr key={index} className="hover:bg-gray-50 dark:hover:bg-gray-800">
+                <tr key={index} className="hover:bg-gray-50 dark:bg-gray-800 dark:hover:bg-gray-800">
                   <td className="px-4 py-4">
                     <div className="flex items-center space-x-3">
                       <div className={`w-3 h-3 rounded-full ${item.tipo === 'income' ? 'bg-green-500' : 'bg-red-500'}`} />

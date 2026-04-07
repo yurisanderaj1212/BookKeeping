@@ -127,19 +127,19 @@ export default function Hero() {
             <div className="px-5 py-4 flex flex-col gap-1">
               <button onClick={() => scrollTo('features')}
                 className={`text-left px-3 py-3 rounded-lg text-sm font-medium transition-colors ${
-                  isScrolled ? 'text-slate-700 hover:bg-gray-50 dark:hover:bg-gray-800' : 'text-white/90 hover:bg-white dark:bg-gray-900/10'
+                  isScrolled ? 'text-slate-700 hover:bg-gray-50 dark:bg-gray-800 dark:hover:bg-gray-800' : 'text-white/90 hover:bg-white dark:bg-gray-900/10'
                 }`}>
                 {tn('features')}
               </button>
               <button onClick={() => scrollTo('benefits')}
                 className={`text-left px-3 py-3 rounded-lg text-sm font-medium transition-colors ${
-                  isScrolled ? 'text-slate-700 hover:bg-gray-50 dark:hover:bg-gray-800' : 'text-white/90 hover:bg-white dark:bg-gray-900/10'
+                  isScrolled ? 'text-slate-700 hover:bg-gray-50 dark:bg-gray-800 dark:hover:bg-gray-800' : 'text-white/90 hover:bg-white dark:bg-gray-900/10'
                 }`}>
                 {tn('benefits')}
               </button>
               <button onClick={() => scrollTo('pricing')}
                 className={`text-left px-3 py-3 rounded-lg text-sm font-medium transition-colors ${
-                  isScrolled ? 'text-slate-700 hover:bg-gray-50 dark:hover:bg-gray-800' : 'text-white/90 hover:bg-white dark:bg-gray-900/10'
+                  isScrolled ? 'text-slate-700 hover:bg-gray-50 dark:bg-gray-800 dark:hover:bg-gray-800' : 'text-white/90 hover:bg-white dark:bg-gray-900/10'
                 }`}>
                 {tn('pricing')}
               </button>

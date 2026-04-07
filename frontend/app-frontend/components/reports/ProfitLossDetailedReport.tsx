@@ -160,7 +160,7 @@ export default function ProfitLossDetailedReport({ period, year, month }: Profit
             </thead>
             <tbody>
               {monthlyData.map((monthData, index) => (
-                <tr key={index} className="border-b border-gray-100 dark:border-gray-800 hover:bg-gray-50 dark:hover:bg-gray-800">
+                <tr key={index} className="border-b border-gray-100 dark:border-gray-800 hover:bg-gray-50 dark:bg-gray-800 dark:hover:bg-gray-800">
                   <td className="py-3 px-4 font-medium text-gray-900 dark:text-gray-100">{monthData.month}</td>
                   <td className="py-3 px-4 text-right text-green-600 font-semibold">
                     {formatCurrency(monthData.ingresos)}

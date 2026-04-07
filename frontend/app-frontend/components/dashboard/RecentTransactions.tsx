@@ -84,7 +84,7 @@ export default function RecentTransactions({ transactions }: RecentTransactionsP
             {transactions.slice(0, 8).map((tx, index) => (
               <div
                 key={tx.id}
-                className="flex items-center justify-between p-2.5 hover:bg-gray-50 dark:hover:bg-gray-800 rounded-lg transition-all duration-200 group cursor-pointer"
+                className="flex items-center justify-between p-2.5 hover:bg-gray-50 dark:bg-gray-800 dark:hover:bg-gray-800 rounded-lg transition-all duration-200 group cursor-pointer"
                 style={{ animationDelay: `${index * 60}ms`, animation: 'slideInUp 0.4s ease-out forwards' }}
               >
                 <div className="flex items-center space-x-3">

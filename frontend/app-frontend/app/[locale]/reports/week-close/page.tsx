@@ -150,7 +150,7 @@ function WeekCloseContent() {
               </div>
               <button
                 onClick={() => showExportModal((fmt) => exportWeekClose(selectedYear, selectedMonth, fmt))}
-                className="bg-white dark:bg-gray-900 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 px-3 py-2 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors flex items-center gap-1.5 shrink-0 text-sm"
+                className="bg-white dark:bg-gray-900 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 px-3 py-2 rounded-lg hover:bg-gray-50 dark:bg-gray-800 dark:hover:bg-gray-800 transition-colors flex items-center gap-1.5 shrink-0 text-sm"
               >
                 <Download className="w-4 h-4" />
                 <span className="hidden sm:inline">{tCommon("export")}</span>
@@ -276,7 +276,7 @@ function WeekCloseContent() {
                     </thead>
                     <tbody className="divide-y divide-gray-100">
                       {weeks.map((week) => (
-                        <tr key={week.id} className="hover:bg-gray-50 dark:hover:bg-gray-800">
+                        <tr key={week.id} className="hover:bg-gray-50 dark:bg-gray-800 dark:hover:bg-gray-800">
                           <td className="px-4 py-4">
                             <div className="flex items-center space-x-3">
                               <div className={`p-2 rounded-lg ${getStatusColor(week.status)}`}>

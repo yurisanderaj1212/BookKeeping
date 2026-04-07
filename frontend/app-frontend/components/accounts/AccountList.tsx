@@ -77,9 +77,9 @@ export default function AccountList({ accounts, onEdit, onDelete }: AccountListP
               </div>
             </div>
 
-            <div className="divide-y divide-gray-200 dark:divide-gray-700 dark:divide-gray-700">
+            <div className="divide-y divide-gray-200 dark:divide-gray-700">
               {accountsInGroup.map((account) => (
-                <div key={account.id} className="px-4 sm:px-6 py-3 sm:py-4 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors">
+                <div key={account.id} className="px-4 sm:px-6 py-3 sm:py-4 hover:bg-gray-50 dark:bg-gray-800 dark:hover:bg-gray-800 transition-colors">
                   <div className="flex items-start justify-between gap-3">
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-2 flex-wrap mb-1">
@@ -91,7 +91,7 @@ export default function AccountList({ accounts, onEdit, onDelete }: AccountListP
                           <span className="text-xs text-red-600 bg-red-50 px-1.5 py-0.5 rounded shrink-0">{t('inactive')}</span>
                         )}
                       </div>
-                      <p className="text-xs text-gray-400 dark:text-gray-500 dark:text-gray-400 truncate">
+                      <p className="text-xs text-gray-400 dark:text-gray-500 truncate">
                         {getSubTypeLabel(account.subType)}
                         <span className="mx-1">·</span>
                         {t('createdOn')} {formatDate(account.createdAt)}

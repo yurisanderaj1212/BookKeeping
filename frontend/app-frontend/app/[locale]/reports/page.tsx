@@ -183,7 +183,7 @@ export default function ReportsPage() {
               <select
                 value={selectedPeriod}
                 onChange={(e) => setSelectedPeriod(e.target.value as 'week' | 'month' | 'year')}
-                className="flex-1 min-w-[100px] px-2 py-1.5 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary-500 text-sm bg-white dark:bg-gray-900"
+                className="flex-1 min-w-[100px] px-2 py-1.5 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary-500 text-sm bg-white dark:bg-gray-800 dark:text-gray-100"
               >
                 <option value="week">{t('thisWeek')}</option>
                 <option value="month">{t('thisMonth')}</option>
@@ -192,7 +192,7 @@ export default function ReportsPage() {
               <select
                 value={selectedYear}
                 onChange={(e) => setSelectedYear(e.target.value)}
-                className="px-2 py-1.5 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary-500 text-sm bg-white dark:bg-gray-900"
+                className="px-2 py-1.5 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary-500 text-sm bg-white dark:bg-gray-800 dark:text-gray-100"
               >
                 {Array.from({ length: 4 }, (_, i) => {
                   const y = new Date().getFullYear() - i
@@ -203,7 +203,7 @@ export default function ReportsPage() {
                 <select
                   value={selectedMonth}
                   onChange={(e) => setSelectedMonth(e.target.value)}
-                  className="flex-1 min-w-[100px] px-2 py-1.5 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary-500 text-sm bg-white dark:bg-gray-900"
+                  className="flex-1 min-w-[100px] px-2 py-1.5 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary-500 text-sm bg-white dark:bg-gray-800 dark:text-gray-100"
                 >
                   {Array.from({ length: 12 }, (_, i) => (
                     <option key={i + 1} value={String(i + 1).padStart(2, '0')}>

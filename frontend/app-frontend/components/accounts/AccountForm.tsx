@@ -191,7 +191,7 @@ export default function AccountForm({ isOpen, onClose, onSave, account }: Accoun
           <div className="bg-gray-50 dark:bg-gray-800 px-5 py-3 flex justify-end space-x-2 rounded-b-lg sticky bottom-0">
             <button
               type="button" onClick={onClose} disabled={loading}
-              className="px-4 py-1.5 text-sm border border-gray-300 dark:border-gray-600 rounded-lg text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
+              className="px-4 py-1.5 text-sm border border-gray-300 dark:border-gray-600 rounded-lg text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:bg-gray-800 dark:hover:bg-gray-800 transition-colors"
             >
               {t('form.cancel')}
             </button>
