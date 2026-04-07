@@ -27,8 +27,15 @@ export default function ReportsPage() {
   const tReports = useTranslations('reports')
   const [selectedPeriod, setSelectedPeriod] = useState<'week' | 'month' | 'year'>('week')
   const [selectedYear, setSelectedYear] = useState(String(new Date().getFullYear()))
-  const [selectedMonth, setSelectedMonth] = useState('01')
-  const [selectedWeek, setSelectedWeek] = useState('1')
+  const [selectedMonth, setSelectedMonth] = useState(String(new Date().getMonth() + 1).padStart(2, '0'))
+  const [selectedWeek, setSelectedWeek] = useState(() => {
+    const now = new Date()
+    const firstDay = new Date(now.getFullYear(), now.getMonth(), 1)
+    const firstSunday = new Date(firstDay)
+    firstSunday.setDate(firstDay.getDate() - firstDay.getDay())
+    const diffDays = Math.floor((now.getTime() - firstSunday.getTime()) / 86400000)
+    return String(Math.floor(diffDays / 7) + 1)
+  })
   const {
     isOnboardingOpen,
     currentStep: onboardingStep,

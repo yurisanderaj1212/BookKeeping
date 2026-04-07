@@ -11,6 +11,7 @@ interface ReportsOverviewProps {
   period: string
   year: string
   month: string
+  week?: string
 }
 
 interface PeriodData {
@@ -26,28 +27,40 @@ interface ChartPoint {
   gastos: number
 }
 
-function getPeriodDates(period: string, year: string, month: string): { start: string; end: string } {
-  const now = new Date()
+function getPeriodDates(period: string, year: string, month: string, week?: string): { start: string; end: string } {
+  const localDate = (d: Date) => {
+    const y = d.getFullYear()
+    const m = String(d.getMonth() + 1).padStart(2, '0')
+    const day = String(d.getDate()).padStart(2, '0')
+    return `${y}-${m}-${day}`
+  }
   if (period === 'week') {
-    const day = now.getDay()
-    const start = new Date(now)
-    start.setDate(now.getDate() - day)
+    const y = parseInt(year)
+    const m = parseInt(month)
+    const weekNum = parseInt(week ?? '1')
+    // Find the Sunday on or before the 1st of the month
+    const firstDay = new Date(y, m - 1, 1)
+    const firstSunday = new Date(firstDay)
+    firstSunday.setDate(firstDay.getDate() - firstDay.getDay())
+    // Advance to the selected week
+    const start = new Date(firstSunday)
+    start.setDate(firstSunday.getDate() + (weekNum - 1) * 7)
     const end = new Date(start)
     end.setDate(start.getDate() + 6)
-    return { start: start.toISOString().split('T')[0], end: end.toISOString().split('T')[0] }
+    return { start: localDate(start), end: localDate(end) }
   }
   if (period === 'month') {
     const m = parseInt(month)
     const y = parseInt(year)
     return {
       start: `${y}-${String(m).padStart(2, '0')}-01`,
-      end: new Date(y, m, 0).toISOString().split('T')[0],
+      end: localDate(new Date(y, m, 0)),
     }
   }
   return { start: `${year}-01-01`, end: `${year}-12-31` }
 }
 
-export default function ReportsOverview({ period, year, month }: ReportsOverviewProps) {
+export default function ReportsOverview({ period, year, month, week }: ReportsOverviewProps) {
   const t = useTranslations('analytics.components')
   const locale = useLocale()
   const [periodData, setPeriodData] = useState<PeriodData>({ totalIncome: 0, totalExpenses: 0, netProfit: 0, profitMargin: 0 })
@@ -60,7 +73,7 @@ export default function ReportsOverview({ period, year, month }: ReportsOverview
       setLoading(true)
       try {
         const supabase = getSupabase()
-        const { start, end } = getPeriodDates(period, year, month)
+        const { start, end } = getPeriodDates(period, year, month, week)
 
         // Fetch all transactions for the period
         const { data } = await supabase
@@ -81,14 +94,17 @@ export default function ReportsOverview({ period, year, month }: ReportsOverview
 
         // Build chart data
         if (period === 'week') {
-          // 7 days
           const points: ChartPoint[] = []
-          const startDate = new Date(start)
+          const startDate = new Date(start + 'T00:00:00')
           for (let i = 0; i < 7; i++) {
             const d = new Date(startDate)
             d.setDate(startDate.getDate() + i)
-            const dateStr = d.toISOString().split('T')[0]
-            const dayRows = rows.filter(r => r.date === dateStr)
+            const y = d.getFullYear()
+            const m = String(d.getMonth() + 1).padStart(2, '0')
+            const day = String(d.getDate()).padStart(2, '0')
+            const dateStr = `${y}-${m}-${day}`
+            // Normalize transaction dates to YYYY-MM-DD (strip time if present)
+            const dayRows = rows.filter(r => (r.date ?? '').substring(0, 10) === dateStr)
             points.push({
               name: d.toLocaleDateString(locale, { weekday: 'short' }),
               ingresos: dayRows.filter(r => r.type === 1).reduce((s, r) => s + r.amount, 0),
@@ -146,7 +162,7 @@ export default function ReportsOverview({ period, year, month }: ReportsOverview
     }
     load()
     return () => { cancelled = true }
-  }, [period, year, month])
+  }, [period, year, month, week])
 
   const CustomTooltip = ({ active, payload, label }: any) => {
     if (!active || !payload?.length) return null
