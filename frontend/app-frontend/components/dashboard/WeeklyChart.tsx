@@ -27,7 +27,8 @@ export default function WeeklyChart({ data }: WeeklyChartProps) {
     new Intl.NumberFormat(locale === 'en' ? 'en-US' : 'es-ES', { style: 'currency', currency: 'USD' }).format(amount)
 
   const formatYAxis = (v: number) => {
-    if (v >= 1000) return `${(v / 1000).toFixed(0)}k`
+    const abs = Math.abs(v)
+    if (abs >= 1000) return `${v < 0 ? '-' : ''}${(abs / 1000).toFixed(0)}k`
     return `${v}`
   }
 
@@ -37,13 +38,16 @@ export default function WeeklyChart({ data }: WeeklyChartProps) {
       <div className="bg-white p-2.5 border border-gray-200 rounded-lg shadow-lg text-xs">
         <p className="font-semibold text-gray-900 mb-1.5">{label}</p>
         {payload.map((entry: any, index: number) => {
-          const value = entry.dataKey === 'profit' ? entry.value : entry.value
+          const isLoss = entry.dataKey === 'profit' && entry.value < 0
           const name = entry.dataKey === 'income' ? t('income')
             : entry.dataKey === 'expenses' ? t('expenses')
-            : entry.value >= 0 ? t('profit') : t('loss')
+            : isLoss ? t('loss') : t('profit')
+          const color = entry.dataKey === 'profit'
+            ? (isLoss ? '#f97316' : '#60a5fa')
+            : entry.color
           return (
-            <p key={index} style={{ color: entry.color }}>
-              {name}: {formatCurrency(value)}
+            <p key={index} style={{ color }}>
+              {name}: {formatCurrency(entry.value)}
             </p>
           )
         })}
@@ -68,9 +72,10 @@ export default function WeeklyChart({ data }: WeeklyChartProps) {
   // Responsive config
   const chartHeight  = isMobile ? 220 : 280
   const margin       = isMobile
-    ? { top: 8, right: 8, left: -10, bottom: 0 }
+    ? { top: 8, right: 8, left: 0, bottom: 0 }
     : { top: 16, right: 20, left: 0, bottom: 0 }
   const tickFontSize = isMobile ? 10 : 12
+  const yAxisWidth   = isMobile ? 42 : 48
   const barGap       = isMobile ? 2 : 4
   const barCatGap    = isMobile ? '15%' : '25%'
 
@@ -111,7 +116,7 @@ export default function WeeklyChart({ data }: WeeklyChartProps) {
             tickLine={false}
             tick={{ fontSize: tickFontSize, fill: '#6b7280' }}
             tickFormatter={formatYAxis}
-            width={isMobile ? 32 : 40}
+            width={yAxisWidth}
             domain={[minNegative, 'auto']}
           />
           <Tooltip content={<CustomTooltip />} cursor={{ fill: 'rgba(0,0,0,0.04)' }} />
