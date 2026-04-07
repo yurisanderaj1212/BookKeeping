@@ -232,6 +232,7 @@
     },
     "categoryBreakdown": {
       "title": "Income by Category",
+      "subtitle": "Distribution by category",
       "subtitle": "Distribution of income sources",
       "viewAll": "View All",
       "amount": "Amount:",

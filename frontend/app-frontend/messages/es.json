@@ -232,6 +232,7 @@
     },
     "categoryBreakdown": {
       "title": "Ingresos por Categoría",
+      "subtitle": "Distribución por categoría",
       "subtitle": "Distribución de fuentes de ingresos",
       "viewAll": "Ver Todas",
       "amount": "Monto:",
