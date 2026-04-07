@@ -169,7 +169,7 @@ export default function Sidebar({ onLogout }: SidebarProps) {
         </div>
 
         {/* ── System section ── */}
-        <div className="border-t border-gray-200 dark:border-gray-700 pt-3 shrink-0">
+        <div className="border-t border-gray-200 dark:border-gray-700 dark:border-gray-700 pt-3 shrink-0">
           {!isCollapsed && (
             <p className="px-3 text-xs font-semibold text-gray-400 dark:text-gray-500 uppercase tracking-wider mb-2">
               {t('common.system')}

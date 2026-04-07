@@ -54,14 +54,14 @@ export default function WelcomeModal({ isOpen, onClose, onStartTour, userName }:
         {/* Content */}
         <div className="px-5 py-4">
           <div className="text-center mb-4">
-            <h3 className="text-base font-semibold text-gray-900 mb-1.5">{t('heading')}</h3>
+            <h3 className="text-base font-semibold text-gray-900 dark:text-gray-100 mb-1.5">{t('heading')}</h3>
             <p className="text-gray-500 text-xs leading-relaxed">{t('description')}</p>
           </div>
 
           {/* Features grid — compact */}
           <div className="grid grid-cols-4 gap-2 mb-4">
             {features.map(f => (
-              <div key={f.label} className="text-center p-2 bg-gray-50 rounded-lg">
+              <div key={f.label} className="text-center p-2 bg-gray-50 dark:bg-gray-800 rounded-lg">
                 <div className="text-lg mb-1">{f.emoji}</div>
                 <p className="text-xs font-medium text-gray-600 leading-tight">{f.label}</p>
               </div>

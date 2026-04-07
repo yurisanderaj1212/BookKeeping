@@ -68,8 +68,8 @@ export default function CategoryAnalysis({ period }: CategoryAnalysisProps) {
     if (active && payload && payload.length) {
       const data = payload[0].payload
       return (
-        <div className="bg-white p-3 border border-gray-200 rounded-lg shadow-lg">
-          <p className="font-medium text-gray-900 mb-2">{data.name}</p>
+        <div className="bg-white dark:bg-gray-900 p-3 border border-gray-200 rounded-lg shadow-lg">
+          <p className="font-medium text-gray-900 dark:text-gray-100 mb-2">{data.name}</p>
           <p className="text-sm text-gray-600">
             {t('amount')}: <span className="font-semibold">{formatCurrency(data.amount)}</span>
           </p>
@@ -86,7 +86,7 @@ export default function CategoryAnalysis({ period }: CategoryAnalysisProps) {
   }
 
   const CategoryCard = ({ category }: { category: any }) => (
-    <div className="bg-gray-50 rounded-lg p-4 hover:bg-gray-100 transition-colors duration-200">
+    <div className="bg-gray-50 dark:bg-gray-800 rounded-lg p-4 hover:bg-gray-100 transition-colors duration-200">
       <div className="flex items-center justify-between mb-3">
         <div className="flex items-center space-x-3">
           <div className="w-4 h-4 rounded-full" style={{ backgroundColor: category.color }} />
@@ -111,11 +111,11 @@ export default function CategoryAnalysis({ period }: CategoryAnalysisProps) {
   const totalAmount = currentData.reduce((sum, cat) => sum + cat.amount, 0)
 
   return (
-    <div className="bg-white rounded-lg border border-gray-200 p-6">
+    <div className="bg-white dark:bg-gray-900 rounded-lg border border-gray-200 dark:border-gray-700 p-6">
       <div className="flex items-center justify-between mb-6">
         <div>
           <h3 className="text-lg font-semibold text-gray-900">{t('title')}</h3>
-          <p className="text-sm text-gray-500 mt-1">
+          <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
             {activeTab === 'income' ? t('subtitleIncome') : t('subtitleExpense')}
           </p>
         </div>
@@ -151,7 +151,7 @@ export default function CategoryAnalysis({ period }: CategoryAnalysisProps) {
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
         {/* Pie Chart */}
         <div>
-          <h4 className="text-md font-medium text-gray-900 mb-4">
+          <h4 className="text-md font-medium text-gray-900 dark:text-gray-100 mb-4">
             {activeTab === 'income' ? t('distributionIncome') : t('distributionExpense')}
           </h4>
           <div id="category-analysis-chart-container" className="w-full flex items-center justify-center" style={{ height: 320 }}>
@@ -171,7 +171,7 @@ export default function CategoryAnalysis({ period }: CategoryAnalysisProps) {
               <div className="text-gray-400">{t('noData')}</div>
             )}
           </div>
-          <div className="mt-4 p-4 bg-gray-50 rounded-lg">
+          <div className="mt-4 p-4 bg-gray-50 dark:bg-gray-800 rounded-lg">
             <div className="flex justify-between items-center">
               <span className="text-sm text-gray-600">
                 {activeTab === 'income' ? t('totalIncome') : t('totalExpenses')}
@@ -183,7 +183,7 @@ export default function CategoryAnalysis({ period }: CategoryAnalysisProps) {
 
         {/* Category Details */}
         <div>
-          <h4 className="text-md font-medium text-gray-900 mb-4">{t('detailsTitle')}</h4>
+          <h4 className="text-md font-medium text-gray-900 dark:text-gray-100 mb-4">{t('detailsTitle')}</h4>
           <div className="space-y-4 max-h-80 overflow-y-auto">
             {currentData.length > 0 ? (
               currentData.map((category, index) => (

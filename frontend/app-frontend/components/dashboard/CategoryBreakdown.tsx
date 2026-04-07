@@ -25,7 +25,7 @@ const CustomTooltip = ({ active, payload, formatCurrency }: any) => {
   const d = payload[0].payload
   return (
     <div className="bg-white p-3 border border-gray-200 rounded-lg shadow-lg text-sm">
-      <p className="font-medium text-gray-900 mb-1">{d.name}</p>
+      <p className="font-medium text-gray-900 dark:text-gray-100 mb-1">{d.name}</p>
       <p className="text-gray-600">{formatCurrency(d.value)} · {d.percentage}%</p>
     </div>
   )

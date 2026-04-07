@@ -35,7 +35,7 @@ export default async function LocaleLayout({
     <NextIntlClientProvider locale={locale} messages={messages}>
       <NotificationProvider>
         <ErrorBoundary>
-          <div className="locale-root">
+          <div className="locale-root min-h-screen bg-gray-50 dark:bg-gray-950">
             {children}
             <GlobalToastContainer />
           </div>

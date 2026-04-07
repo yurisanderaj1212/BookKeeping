@@ -70,7 +70,7 @@ export default function AccountForm({ isOpen, onClose, onSave, account }: Accoun
   return (
     <div className="fixed inset-0 z-9999 overflow-y-auto flex items-center justify-center p-4" aria-labelledby="modal-title" role="dialog" aria-modal="true">
       <div className="relative bg-white rounded-lg shadow-2xl w-full max-w-2xl max-h-[90vh] overflow-y-auto">
-        <div className="bg-white px-5 py-3 border-b border-gray-200 rounded-t-lg sticky top-0 z-10">
+        <div className="bg-white px-5 py-3 border-b border-gray-200 dark:border-gray-700 rounded-t-lg sticky top-0 z-10">
           <div className="flex items-center justify-between">
             <h3 className="text-base font-medium text-gray-900">
               {account ? t('form.editTitle') : t('form.title')}
@@ -188,10 +188,10 @@ export default function AccountForm({ isOpen, onClose, onSave, account }: Accoun
             </div>
           </div>
 
-          <div className="bg-gray-50 px-5 py-3 flex justify-end space-x-2 rounded-b-lg sticky bottom-0">
+          <div className="bg-gray-50 dark:bg-gray-800 px-5 py-3 flex justify-end space-x-2 rounded-b-lg sticky bottom-0">
             <button
               type="button" onClick={onClose} disabled={loading}
-              className="px-4 py-1.5 text-sm border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition-colors"
+              className="px-4 py-1.5 text-sm border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
             >
               {t('form.cancel')}
             </button>

@@ -67,7 +67,7 @@ export default function AccountList({ accounts, onEdit, onDelete }: AccountListP
 
         return (
           <div key={type} className="bg-white dark:bg-gray-900 rounded-lg border border-gray-200 dark:border-gray-700 overflow-hidden">
-            <div className="bg-gray-50 dark:bg-gray-800 px-6 py-3 border-b border-gray-200 dark:border-gray-700">
+            <div className="bg-gray-50 dark:bg-gray-800 px-6 py-3 border-b border-gray-200 dark:border-gray-700 dark:border-gray-700">
               <div className="flex items-center space-x-2">
                 <div className={`w-8 h-8 rounded-lg flex items-center justify-center ${colorClass}`}>
                   <Icon className="w-4 h-4" />
@@ -77,7 +77,7 @@ export default function AccountList({ accounts, onEdit, onDelete }: AccountListP
               </div>
             </div>
 
-            <div className="divide-y divide-gray-200 dark:divide-gray-700">
+            <div className="divide-y divide-gray-200 dark:divide-gray-700 dark:divide-gray-700">
               {accountsInGroup.map((account) => (
                 <div key={account.id} className="px-4 sm:px-6 py-3 sm:py-4 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors">
                   <div className="flex items-start justify-between gap-3">

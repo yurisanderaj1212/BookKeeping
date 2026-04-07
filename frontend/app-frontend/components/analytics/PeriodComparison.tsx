@@ -117,7 +117,7 @@ export default function PeriodComparison({ period, year, month }: PeriodComparis
     const colorClass = isPositive ? 'text-green-600' : 'text-red-600'
     const bgClass    = isPositive ? 'bg-green-100'   : 'bg-red-100'
     return (
-      <div className="bg-white rounded-lg border border-gray-200 p-6">
+      <div className="bg-white dark:bg-gray-900 rounded-lg border border-gray-200 dark:border-gray-700 p-6">
         <div className="flex items-center justify-between mb-4">
           <h4 className="text-sm font-medium text-gray-600">{title}</h4>
           <div className={`${bgClass} p-1 rounded-full`}><Icon className={`w-4 h-4 ${colorClass}`} /></div>
@@ -141,11 +141,11 @@ export default function PeriodComparison({ period, year, month }: PeriodComparis
   }
 
   return (
-    <div className="bg-white rounded-lg border border-gray-200 p-6 mb-8">
+    <div className="bg-white dark:bg-gray-900 rounded-lg border border-gray-200 dark:border-gray-700 p-6 mb-8">
       <div className="flex items-center justify-between mb-6">
         <div>
           <h3 className="text-lg font-semibold text-gray-900">{t('periodComparison')}</h3>
-          <p className="text-sm text-gray-500 mt-1">{t('comparisonWithPrev', { period: getPeriodLabel() })}</p>
+          <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">{t('comparisonWithPrev', { period: getPeriodLabel() })}</p>
         </div>
         <div className="flex items-center gap-2 text-sm text-gray-500">
           <Calendar className="w-4 h-4" />
@@ -163,9 +163,9 @@ export default function PeriodComparison({ period, year, month }: PeriodComparis
       )}
 
       <div className="w-full">
-        <h4 className="text-md font-medium text-gray-900 mb-4">{t('visualComparison')}</h4>
+        <h4 className="text-md font-medium text-gray-900 dark:text-gray-100 mb-4">{t('visualComparison')}</h4>
         {loading ? (
-          <div className="h-64 bg-gray-50 rounded-lg flex items-center justify-center">
+          <div className="h-64 bg-gray-50 dark:bg-gray-800 rounded-lg flex items-center justify-center">
             <div className="text-gray-400">{t('loading')}</div>
           </div>
         ) : (

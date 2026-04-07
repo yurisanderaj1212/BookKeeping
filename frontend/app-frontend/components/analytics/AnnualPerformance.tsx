@@ -66,8 +66,8 @@ export default function AnnualPerformance({ year }: AnnualPerformanceProps) {
   const CustomTooltip = ({ active, payload, label }: any) => {
     if (active && payload && payload.length) {
       return (
-        <div className="bg-white p-3 border border-gray-200 rounded-lg shadow-lg">
-          <p className="font-medium text-gray-900 mb-2">{label}</p>
+        <div className="bg-white dark:bg-gray-900 p-3 border border-gray-200 rounded-lg shadow-lg">
+          <p className="font-medium text-gray-900 dark:text-gray-100 mb-2">{label}</p>
           {payload.map((entry: any, index: number) => (
             <p key={index} className="text-sm" style={{ color: entry.color }}>
               {entry.dataKey === 'ingresos' ? t('income') :
@@ -81,11 +81,11 @@ export default function AnnualPerformance({ year }: AnnualPerformanceProps) {
   }
 
   return (
-    <div className="bg-white rounded-lg border border-gray-200 p-6 mb-8">
+    <div className="bg-white dark:bg-gray-900 rounded-lg border border-gray-200 dark:border-gray-700 p-6 mb-8">
       <div className="flex items-center justify-between mb-6">
         <div>
           <h3 className="text-lg font-semibold text-gray-900">{t('annualPerformanceTitle', { year })}</h3>
-          <p className="text-sm text-gray-500 mt-1">{t('monthlyBreakdown')}</p>
+          <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">{t('monthlyBreakdown')}</p>
         </div>
       </div>
 
@@ -141,7 +141,7 @@ export default function AnnualPerformance({ year }: AnnualPerformanceProps) {
       {/* Annual Performance Chart — responsive height */}
       <div className="w-full mb-6" style={{ height: 280 }}>
         {loading ? (
-          <div className="w-full h-full flex items-center justify-center bg-gray-50 rounded-lg">
+          <div className="w-full h-full flex items-center justify-center bg-gray-50 dark:bg-gray-800 rounded-lg">
             <div className="text-gray-400">{t('loadingChart')}</div>
           </div>
         ) : (
@@ -165,10 +165,10 @@ export default function AnnualPerformance({ year }: AnnualPerformanceProps) {
 
       {/* Monthly Breakdown Table — scrollable on mobile */}
       <div className="mt-4">
-        <h4 className="text-sm font-semibold text-gray-900 mb-3">{t('monthlyBreakdownTitle')}</h4>
+        <h4 className="text-sm font-semibold text-gray-900 dark:text-gray-100 mb-3">{t('monthlyBreakdownTitle')}</h4>
         <div className="overflow-x-auto -mx-4 sm:mx-0">
           <table className="min-w-full sm:w-full">
-            <thead className="bg-gray-50">
+            <thead className="bg-gray-50 dark:bg-gray-800">
               <tr>
                 <th className="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase whitespace-nowrap">{t('month')}</th>
                 <th className="px-3 py-2 text-right text-xs font-medium text-gray-500 uppercase whitespace-nowrap">{t('income')}</th>
@@ -177,7 +177,7 @@ export default function AnnualPerformance({ year }: AnnualPerformanceProps) {
                 <th className="px-3 py-2 text-center text-xs font-medium text-gray-500 uppercase">●</th>
               </tr>
             </thead>
-            <tbody className="bg-white divide-y divide-gray-100">
+            <tbody className="bg-white dark:bg-gray-900 divide-y divide-gray-100">
               {annualData.map((monthData, index) => (
                 <tr key={index} className="hover:bg-gray-50">
                   <td className="px-3 py-2 text-xs font-medium text-gray-900 whitespace-nowrap">{monthData.monthShort ?? monthData.month}</td>

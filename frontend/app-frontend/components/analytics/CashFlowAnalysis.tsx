@@ -86,8 +86,8 @@ export default function CashFlowAnalysis({ period, year, month }: CashFlowAnalys
   const CustomTooltip = ({ active, payload, label }: any) => {
     if (!active || !payload?.length) return null
     return (
-      <div className="bg-white p-3 border border-gray-200 rounded-lg shadow-lg">
-        <p className="font-medium text-gray-900 mb-2">{label}</p>
+      <div className="bg-white dark:bg-gray-900 p-3 border border-gray-200 rounded-lg shadow-lg">
+        <p className="font-medium text-gray-900 dark:text-gray-100 mb-2">{label}</p>
         {payload.map((entry: any, i: number) => (
           <p key={i} className="text-sm" style={{ color: entry.color }}>
             {entry.dataKey === 'flujoNeto' ? t('tooltipNet') : t('tooltipAccum')}: {formatCurrency(entry.value)}
@@ -105,11 +105,11 @@ export default function CashFlowAnalysis({ period, year, month }: CashFlowAnalys
 
   return (
     <div className="space-y-6 mb-8">
-      <div className="bg-white rounded-lg border border-gray-200 p-6">
+      <div className="bg-white dark:bg-gray-900 rounded-lg border border-gray-200 dark:border-gray-700 p-6">
         <div className="flex items-center justify-between mb-6">
           <div>
             <h3 className="text-lg font-semibold text-gray-900">{t('title')}</h3>
-            <p className="text-sm text-gray-500 mt-1">{t('subtitle')}</p>
+            <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">{t('subtitle')}</p>
           </div>
           <div className="flex items-center space-x-3">
             <div className="flex bg-gray-100 rounded-lg p-1">
@@ -170,11 +170,11 @@ export default function CashFlowAnalysis({ period, year, month }: CashFlowAnalys
 
         {/* Cash Flow Chart */}
         <div className="w-full" style={{ height: isMobile ? 220 : 280 }}>
-          <h4 className="text-md font-medium text-gray-900 mb-4">
+          <h4 className="text-md font-medium text-gray-900 dark:text-gray-100 mb-4">
             {viewType === 'daily' ? t('chartTitleDaily') : t('chartTitleWeekly')}
           </h4>
           {loading ? (
-            <div className="w-full h-full flex items-center justify-center bg-gray-50 rounded-lg">
+            <div className="w-full h-full flex items-center justify-center bg-gray-50 dark:bg-gray-800 rounded-lg">
               <div className="text-gray-400">{t('loading')}</div>
             </div>
           ) : (
@@ -204,11 +204,11 @@ export default function CashFlowAnalysis({ period, year, month }: CashFlowAnalys
       </div>
 
       {/* Cash Flow Summary Table */}
-      <div className="bg-white rounded-lg border border-gray-200 p-6">
-        <h4 className="text-md font-semibold text-gray-900 mb-4">{t('summaryTitle')}</h4>
+      <div className="bg-white dark:bg-gray-900 rounded-lg border border-gray-200 dark:border-gray-700 p-6">
+        <h4 className="text-md font-semibold text-gray-900 dark:text-gray-100 mb-4">{t('summaryTitle')}</h4>
         <div className="overflow-hidden">
           <table className="w-full table-fixed">
-            <thead className="bg-gray-50">
+            <thead className="bg-gray-50 dark:bg-gray-800">
               <tr>
                 <th className="w-[40%] px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                   {t('colConcept')}
@@ -224,7 +224,7 @@ export default function CashFlowAnalysis({ period, year, month }: CashFlowAnalys
                 </th>
               </tr>
             </thead>
-            <tbody className="bg-white divide-y divide-gray-200">
+            <tbody className="bg-white dark:bg-gray-900 divide-y divide-gray-200 dark:divide-gray-700">
               {summaryData.map((item, index) => (
                 <tr key={index} className="hover:bg-gray-50">
                   <td className="px-4 py-4">

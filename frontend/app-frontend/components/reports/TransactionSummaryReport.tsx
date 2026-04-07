@@ -43,9 +43,9 @@ export default function TransactionSummaryReport({ period, year, month }: Transa
 
   if (loading) {
     return (
-      <div className="bg-white rounded-lg border border-gray-200 shadow-sm p-12 text-center">
+      <div className="bg-white dark:bg-gray-900 rounded-lg border border-gray-200 dark:border-gray-700 shadow-sm p-12 text-center">
         <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-primary-600 mx-auto mb-4" />
-        <p className="text-gray-500 text-sm">{t('loadError')}</p>
+        <p className="text-gray-500 dark:text-gray-400 text-sm">{t('loadError')}</p>
       </div>
     )
   }
@@ -82,9 +82,9 @@ export default function TransactionSummaryReport({ period, year, month }: Transa
   const recent = transactions.slice(0, 10)
 
   return (
-    <div className="bg-white rounded-lg border border-gray-200 shadow-sm">
+    <div className="bg-white dark:bg-gray-900 rounded-lg border border-gray-200 dark:border-gray-700 shadow-sm">
       {/* Header */}
-      <div className="border-b border-gray-200 p-6">
+      <div className="border-b border-gray-200 dark:border-gray-700 p-6">
         <div className="flex items-center justify-between">
           <div>
             <h2 className="text-xl font-bold text-gray-900">{t('title')}</h2>
@@ -98,8 +98,8 @@ export default function TransactionSummaryReport({ period, year, month }: Transa
       </div>
 
       {/* KPI Cards */}
-      <div className="p-4 sm:p-6 border-b border-gray-200">
-        <h3 className="text-base sm:text-lg font-semibold text-gray-900 mb-3">{t('generalSummary')}</h3>
+      <div className="p-4 sm:p-6 border-b border-gray-200 dark:border-gray-700">
+        <h3 className="text-base sm:text-lg font-semibold text-gray-900 dark:text-gray-100 mb-3">{t('generalSummary')}</h3>
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
           <div className="bg-green-50 p-3 sm:p-4 rounded-lg">
             <div className="flex items-center justify-between mb-1.5">
@@ -152,7 +152,7 @@ export default function TransactionSummaryReport({ period, year, month }: Transa
       </div>
 
       {/* Completed vs Pending */}
-      <div className="p-6 border-b border-gray-200">
+      <div className="p-6 border-b border-gray-200 dark:border-gray-700">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
           {/* Completed */}
           <div>
@@ -218,11 +218,11 @@ export default function TransactionSummaryReport({ period, year, month }: Transa
 
       {/* Recent transactions */}
       {recent.length > 0 && (
-        <div className="p-6 border-b border-gray-200">
-          <h3 className="text-lg font-semibold text-gray-900 mb-4">{t('recentTransactions')}</h3>
+        <div className="p-6 border-b border-gray-200 dark:border-gray-700">
+          <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">{t('recentTransactions')}</h3>
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
-              <thead className="bg-gray-50">
+              <thead className="bg-gray-50 dark:bg-gray-800">
                 <tr>
                   <th className="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase">{t('colDate')}</th>
                   <th className="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase">{t('colDescription')}</th>
@@ -248,7 +248,7 @@ export default function TransactionSummaryReport({ period, year, month }: Transa
       )}
 
       {/* Footer */}
-      <div className="border-t border-gray-200 p-4 bg-gray-50 rounded-b-lg">
+      <div className="border-t border-gray-200 dark:border-gray-700 p-4 bg-gray-50 rounded-b-lg">
         <div className="flex items-center justify-between text-xs text-gray-500">
           <span>{t('reportNote')}</span>
           <span>{t('page')} 1 {t('of')} 1</span>

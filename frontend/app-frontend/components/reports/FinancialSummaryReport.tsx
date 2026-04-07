@@ -43,9 +43,9 @@ export default function FinancialSummaryReport({ period, year, month }: Financia
 
   if (loading) {
     return (
-      <div className="bg-white rounded-lg border border-gray-200 shadow-sm p-12 text-center">
+      <div className="bg-white dark:bg-gray-900 rounded-lg border border-gray-200 dark:border-gray-700 shadow-sm p-12 text-center">
         <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-primary-600 mx-auto mb-4" />
-        <p className="text-gray-500 text-sm">{t('loadError')}</p>
+        <p className="text-gray-500 dark:text-gray-400 text-sm">{t('loadError')}</p>
       </div>
     )
   }
@@ -61,9 +61,9 @@ export default function FinancialSummaryReport({ period, year, month }: Financia
   const { totalIncome, totalExpenses, netProfit, profitMargin, incomeCount, expenseCount, transactionCount, incomeBreakdown, expenseBreakdown } = data
 
   return (
-    <div className="bg-white rounded-lg border border-gray-200 shadow-sm">
+    <div className="bg-white dark:bg-gray-900 rounded-lg border border-gray-200 dark:border-gray-700 shadow-sm">
       {/* Header */}
-      <div className="border-b border-gray-200 p-6">
+      <div className="border-b border-gray-200 dark:border-gray-700 p-6">
         <div className="flex items-center justify-between">
           <div>
             <h2 className="text-xl font-bold text-gray-900">{t('title')}</h2>
@@ -77,8 +77,8 @@ export default function FinancialSummaryReport({ period, year, month }: Financia
       </div>
 
       {/* KPI Cards */}
-      <div className="p-4 sm:p-6 border-b border-gray-200">
-        <h3 className="text-base sm:text-lg font-semibold text-gray-900 mb-3">{t('executiveSummary')}</h3>
+      <div className="p-4 sm:p-6 border-b border-gray-200 dark:border-gray-700">
+        <h3 className="text-base sm:text-lg font-semibold text-gray-900 dark:text-gray-100 mb-3">{t('executiveSummary')}</h3>
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
           <div className="bg-green-50 p-3 sm:p-4 rounded-lg">
             <div className="flex items-center justify-between mb-1.5">
@@ -134,7 +134,7 @@ export default function FinancialSummaryReport({ period, year, month }: Financia
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
           {/* Income */}
           <div>
-            <h4 className="text-md font-semibold text-gray-900 mb-4">{t('incomeBreakdown')}</h4>
+            <h4 className="text-md font-semibold text-gray-900 dark:text-gray-100 mb-4">{t('incomeBreakdown')}</h4>
             <div className="space-y-3">
               {incomeBreakdown.length > 0 ? incomeBreakdown.slice(0, 5).map((cat: any, i: number) => (
                 <div key={i} className="flex items-center justify-between p-3 bg-green-50 rounded-lg">
@@ -155,7 +155,7 @@ export default function FinancialSummaryReport({ period, year, month }: Financia
 
           {/* Expenses */}
           <div>
-            <h4 className="text-md font-semibold text-gray-900 mb-4">{t('expenseBreakdown')}</h4>
+            <h4 className="text-md font-semibold text-gray-900 dark:text-gray-100 mb-4">{t('expenseBreakdown')}</h4>
             <div className="space-y-3">
               {expenseBreakdown.length > 0 ? expenseBreakdown.slice(0, 5).map((cat: any, i: number) => (
                 <div key={i} className="flex items-center justify-between p-3 bg-red-50 rounded-lg">
@@ -177,7 +177,7 @@ export default function FinancialSummaryReport({ period, year, month }: Financia
       </div>
 
       {/* Footer */}
-      <div className="border-t border-gray-200 p-4 bg-gray-50 rounded-b-lg">
+      <div className="border-t border-gray-200 dark:border-gray-700 p-4 bg-gray-50 rounded-b-lg">
         <div className="flex items-center justify-between text-xs text-gray-500">
           <span>{t('reportNote')}</span>
           <span>{t('page')} 1 {t('of')} 1</span>

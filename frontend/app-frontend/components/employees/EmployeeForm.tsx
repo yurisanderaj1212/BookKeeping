@@ -88,12 +88,12 @@ export default function EmployeeForm({ isOpen, onClose, onSubmit, editingEmploye
     <div className="fixed inset-0 flex items-center justify-center z-50 p-4">
       <div className="bg-white rounded-lg max-w-xl w-full shadow-xl border border-gray-200 max-h-[90vh] overflow-y-auto">
         {/* Header */}
-        <div className="flex items-center justify-between px-5 py-4 border-b border-gray-200">
+        <div className="flex items-center justify-between px-5 py-4 border-b border-gray-200 dark:border-gray-700">
           <div>
             <h2 className="text-base font-semibold text-gray-900">
               {editingEmployee ? t('form.editTitle') : t('form.title')}
             </h2>
-            <p className="text-xs text-gray-500 mt-0.5">{t('form.subtitle')}</p>
+            <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">{t('form.subtitle')}</p>
           </div>
           <button onClick={onClose} className="text-gray-400 hover:text-gray-600"><X className="w-5 h-5" /></button>
         </div>
@@ -187,7 +187,7 @@ export default function EmployeeForm({ isOpen, onClose, onSubmit, editingEmploye
           </div>
 
           {/* Actions */}
-          <div className="flex items-center justify-end space-x-3 pt-3 border-t border-gray-200">
+          <div className="flex items-center justify-end space-x-3 pt-3 border-t border-gray-200 dark:border-gray-700">
             <button type="button" onClick={onClose} className="px-4 py-1.5 text-sm text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200">{tCommon('cancel')}</button>
             <button type="submit" className="px-4 py-1.5 text-sm bg-primary-600 text-white rounded-lg hover:bg-primary-700">
               {editingEmployee ? t('form.saveChanges') : t('form.create')}

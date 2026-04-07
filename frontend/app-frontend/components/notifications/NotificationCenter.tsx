@@ -91,7 +91,7 @@ export default function NotificationCenter({ isOpen, onClose, onRefresh }: Props
         style={{ maxHeight: '100dvh' }}
       >
         {/* Header */}
-        <div className="flex items-center justify-between p-4 border-b border-gray-200 shrink-0">
+        <div className="flex items-center justify-between p-4 border-b border-gray-200 dark:border-gray-700 shrink-0">
           <div className="flex items-center gap-2">
             <Bell className="w-5 h-5 text-primary-600" />
             <h3 className="font-semibold text-gray-900">{t('title')}</h3>
@@ -105,7 +105,7 @@ export default function NotificationCenter({ isOpen, onClose, onRefresh }: Props
         </div>
 
         {/* Filters */}
-        <div className="p-3 border-b border-gray-200 shrink-0">
+        <div className="p-3 border-b border-gray-200 dark:border-gray-700 shrink-0">
           <div className="flex items-center gap-2 flex-wrap">
             <select
               value={filter}
@@ -164,7 +164,7 @@ export default function NotificationCenter({ isOpen, onClose, onRefresh }: Props
                             <p className={`text-sm font-medium truncate ${!n.isRead ? 'text-gray-900' : 'text-gray-700'}`}>
                               {n.title}
                             </p>
-                            <p className="text-xs text-gray-500 mt-0.5 line-clamp-2">{n.message}</p>
+                            <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5 line-clamp-2">{n.message}</p>
                             <p className="text-xs text-gray-400 mt-1">{formatTimestamp(n.createdAt, locale)}</p>
                           </div>
                           <div className="flex items-center gap-1 shrink-0">
@@ -188,7 +188,7 @@ export default function NotificationCenter({ isOpen, onClose, onRefresh }: Props
         </div>
 
         {/* Footer */}
-        <div className="p-3 border-t border-gray-200 bg-gray-50">
+        <div className="p-3 border-t border-gray-200 dark:border-gray-700 bg-gray-50">
           <button
             onClick={() => { router.push(`/${locale}/notifications`); onClose() }}
             className="w-full text-sm text-primary-600 hover:text-primary-700 font-medium"

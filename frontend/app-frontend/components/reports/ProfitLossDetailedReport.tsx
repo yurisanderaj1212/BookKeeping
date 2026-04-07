@@ -99,9 +99,9 @@ export default function ProfitLossDetailedReport({ period, year, month }: Profit
   const yearlyMargin = yearlyTotals.ingresos > 0 ? ((yearlyTotals.beneficio / yearlyTotals.ingresos) * 100) : 0
 
   return (
-    <div className="bg-white rounded-lg border border-gray-200 shadow-sm">
+    <div className="bg-white dark:bg-gray-900 rounded-lg border border-gray-200 dark:border-gray-700 shadow-sm">
       {/* Report Header */}
-      <div className="border-b border-gray-200 p-6">
+      <div className="border-b border-gray-200 dark:border-gray-700 p-6">
         <div className="flex items-center justify-between">
           <div>
             <h2 className="text-xl font-bold text-gray-900">Informe de Pérdidas y Beneficios</h2>
@@ -115,7 +115,7 @@ export default function ProfitLossDetailedReport({ period, year, month }: Profit
       </div>
 
       {/* Summary Cards */}
-      <div className="p-6 border-b border-gray-200">
+      <div className="p-6 border-b border-gray-200 dark:border-gray-700">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
           <div className="bg-green-50 p-4 rounded-lg text-center">
             <div className="text-green-600 text-sm font-medium mb-1">Ingresos totales</div>
@@ -148,7 +148,7 @@ export default function ProfitLossDetailedReport({ period, year, month }: Profit
         <div className="overflow-x-auto">
           <table className="w-full">
             <thead>
-              <tr className="border-b border-gray-200">
+              <tr className="border-b border-gray-200 dark:border-gray-700">
                 <th className="text-left py-3 px-4 font-semibold text-gray-700">
                   {period === 'year' ? 'Mes' : 'Período'}
                 </th>
@@ -209,7 +209,7 @@ export default function ProfitLossDetailedReport({ period, year, month }: Profit
       </div>
 
       {/* Footer */}
-      <div className="border-t border-gray-200 p-4 bg-gray-50 rounded-b-lg">
+      <div className="border-t border-gray-200 dark:border-gray-700 p-4 bg-gray-50 rounded-b-lg">
         <div className="flex items-center justify-between text-xs text-gray-500">
           <span>
             Este informe muestra el análisis de pérdidas y beneficios para el período seleccionado.

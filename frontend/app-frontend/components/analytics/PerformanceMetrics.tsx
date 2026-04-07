@@ -90,11 +90,11 @@ export default function PerformanceMetrics({ period, year, month }: PerformanceM
   return (
     <div className="space-y-6 mb-8">
       {/* KPI Cards */}
-      <div className="bg-white rounded-lg border border-gray-200 p-6">
+      <div className="bg-white dark:bg-gray-900 rounded-lg border border-gray-200 dark:border-gray-700 p-6">
         <div className="flex items-center justify-between mb-6">
           <div>
             <h3 className="text-lg font-semibold text-gray-900">{t('performanceTitle')}</h3>
-            <p className="text-sm text-gray-500 mt-1">{t('performanceSubtitle')}</p>
+            <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">{t('performanceSubtitle')}</p>
           </div>
           <div className="flex items-center gap-2 text-sm text-gray-500">
             <Target className="w-4 h-4" />
@@ -109,7 +109,7 @@ export default function PerformanceMetrics({ period, year, month }: PerformanceM
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
             {performanceData.map((metric, i) => (
-              <div key={i} className="bg-gray-50 rounded-lg p-4">
+              <div key={i} className="bg-gray-50 dark:bg-gray-800 rounded-lg p-4">
                 <div className="flex items-center justify-between mb-3">
                   <h4 className="text-sm font-medium text-gray-700">{metric.metric}</h4>
                   <div className={`p-1 rounded-full ${getStatusColor(metric.status)}`}>
@@ -140,10 +140,10 @@ export default function PerformanceMetrics({ period, year, month }: PerformanceM
 
       {/* Transaction Analysis + Summary */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <div className="bg-white rounded-lg border border-gray-200 p-6">
-          <h4 className="text-md font-semibold text-gray-900 mb-4">{t('transactionAnalysis')}</h4>
+        <div className="bg-white dark:bg-gray-900 rounded-lg border border-gray-200 dark:border-gray-700 p-6">
+          <h4 className="text-md font-semibold text-gray-900 dark:text-gray-100 mb-4">{t('transactionAnalysis')}</h4>
           {loading ? (
-            <div className="h-64 bg-gray-50 rounded-lg flex items-center justify-center">
+            <div className="h-64 bg-gray-50 dark:bg-gray-800 rounded-lg flex items-center justify-center">
               <div className="text-gray-400 text-sm">{t('loading')}</div>
             </div>
           ) : (
@@ -161,8 +161,8 @@ export default function PerformanceMetrics({ period, year, month }: PerformanceM
           )}
         </div>
 
-        <div className="bg-white rounded-lg border border-gray-200 p-6">
-          <h4 className="text-md font-semibold text-gray-900 mb-4">{t('performanceSummary')}</h4>
+        <div className="bg-white dark:bg-gray-900 rounded-lg border border-gray-200 dark:border-gray-700 p-6">
+          <h4 className="text-md font-semibold text-gray-900 dark:text-gray-100 mb-4">{t('performanceSummary')}</h4>
           <div className="space-y-4">
             <div className="bg-linear-to-r from-blue-50 to-purple-50 rounded-lg p-4">
               <div className="flex items-center justify-between mb-2">

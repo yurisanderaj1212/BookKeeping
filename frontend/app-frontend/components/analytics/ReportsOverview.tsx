@@ -151,8 +151,8 @@ export default function ReportsOverview({ period, year, month }: ReportsOverview
   const CustomTooltip = ({ active, payload, label }: any) => {
     if (!active || !payload?.length) return null
     return (
-      <div className="bg-white p-3 border border-gray-200 rounded-lg shadow-lg">
-        <p className="font-medium text-gray-900 mb-2">{label}</p>
+      <div className="bg-white dark:bg-gray-900 p-3 border border-gray-200 rounded-lg shadow-lg">
+        <p className="font-medium text-gray-900 dark:text-gray-100 mb-2">{label}</p>
         {payload.map((entry: any, i: number) => (
           <p key={i} className="text-sm" style={{ color: entry.color }}>
             {entry.dataKey === 'ingresos' ? t('income') : t('expenses')}: {formatCurrency(entry.value)}
@@ -176,7 +176,7 @@ export default function ReportsOverview({ period, year, month }: ReportsOverview
         {cards.map((c, i) => {
           const Icon = c.icon
           return (
-            <div key={i} className="bg-white rounded-lg border border-gray-200 p-3 sm:p-4">
+            <div key={i} className="bg-white dark:bg-gray-900 rounded-lg border border-gray-200 dark:border-gray-700 p-3 sm:p-4">
               <div className="flex items-start justify-between mb-3">
                 <div className={`${c.bg} p-2 rounded-lg`}>
                   <Icon className={`w-5 h-5 ${c.iconColor}`} />
@@ -196,15 +196,15 @@ export default function ReportsOverview({ period, year, month }: ReportsOverview
       </div>
 
       {/* Chart */}
-      <div className="bg-white rounded-lg border border-gray-200 p-4 sm:p-6">
+      <div className="bg-white dark:bg-gray-900 rounded-lg border border-gray-200 dark:border-gray-700 p-4 sm:p-6">
         <div className="mb-4">
           <h3 className="text-base sm:text-lg font-semibold text-gray-900">{t('incomeVsExpenses')}</h3>
-          <p className="text-xs sm:text-sm text-gray-500 mt-0.5">
+          <p className="text-xs sm:text-sm text-gray-500 dark:text-gray-400 mt-0.5">
             {period === 'week' ? t('comparisonDaily') : period === 'month' ? t('comparisonWeekly') : t('comparisonMonthly')}
           </p>
         </div>
         {loading ? (
-          <div className="h-56 bg-gray-50 rounded-lg flex items-center justify-center">
+          <div className="h-56 bg-gray-50 dark:bg-gray-800 rounded-lg flex items-center justify-center">
             <div className="text-gray-400 text-sm">{t('loadingData')}</div>
           </div>
         ) : (

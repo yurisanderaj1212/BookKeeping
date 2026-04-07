@@ -210,7 +210,7 @@ export default function EmployeeSummaryReport({ period }: EmployeeSummaryReportP
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Payroll by Type Chart */}
         <div className="bg-white rounded-lg p-6 shadow-sm border border-gray-200">
-          <h3 className="text-lg font-semibold text-gray-900 mb-4">
+          <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">
             Distribución por Tipo de Nómina
           </h3>
           <div id="employee-bar-chart-container" className="w-full" style={{ height: 320 }}>
@@ -236,7 +236,7 @@ export default function EmployeeSummaryReport({ period }: EmployeeSummaryReportP
                 </BarChart>
               </ResponsiveContainer>
             ) : (
-              <div className="w-full h-full flex items-center justify-center bg-gray-50 rounded-lg">
+              <div className="w-full h-full flex items-center justify-center bg-gray-50 dark:bg-gray-800 rounded-lg">
                 <div className="text-gray-400">Cargando gráfico...</div>
               </div>
             )}
@@ -245,7 +245,7 @@ export default function EmployeeSummaryReport({ period }: EmployeeSummaryReportP
 
         {/* Cost by Position Chart */}
         <div className="bg-white rounded-lg p-6 shadow-sm border border-gray-200">
-          <h3 className="text-lg font-semibold text-gray-900 mb-4">
+          <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">
             Costo por Posición
           </h3>
           <div id="employee-pie-chart-container" className="w-full" style={{ height: 320 }}>
@@ -270,7 +270,7 @@ export default function EmployeeSummaryReport({ period }: EmployeeSummaryReportP
                 </PieChart>
               </ResponsiveContainer>
             ) : (
-              <div className="w-full h-full flex items-center justify-center bg-gray-50 rounded-lg">
+              <div className="w-full h-full flex items-center justify-center bg-gray-50 dark:bg-gray-800 rounded-lg">
                 <div className="text-gray-400">Cargando gráfico...</div>
               </div>
             )}
@@ -282,14 +282,14 @@ export default function EmployeeSummaryReport({ period }: EmployeeSummaryReportP
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Payroll Type Breakdown */}
         <div className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
-          <div className="px-6 py-4 border-b border-gray-200">
+          <div className="px-6 py-4 border-b border-gray-200 dark:border-gray-700">
             <h3 className="text-lg font-semibold text-gray-900">
               Desglose por Tipo de Nómina
             </h3>
           </div>
           <div className="overflow-x-auto">
-            <table className="min-w-full divide-y divide-gray-200">
-              <thead className="bg-gray-50">
+            <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+              <thead className="bg-gray-50 dark:bg-gray-800">
                 <tr>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                     Tipo
@@ -302,7 +302,7 @@ export default function EmployeeSummaryReport({ period }: EmployeeSummaryReportP
                   </th>
                 </tr>
               </thead>
-              <tbody className="bg-white divide-y divide-gray-200">
+              <tbody className="bg-white dark:bg-gray-900 divide-y divide-gray-200 dark:divide-gray-700">
                 {payrollData.map((item, index) => (
                   <tr key={index} className="hover:bg-gray-50">
                     <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
@@ -323,14 +323,14 @@ export default function EmployeeSummaryReport({ period }: EmployeeSummaryReportP
 
         {/* Position Breakdown */}
         <div className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
-          <div className="px-6 py-4 border-b border-gray-200">
+          <div className="px-6 py-4 border-b border-gray-200 dark:border-gray-700">
             <h3 className="text-lg font-semibold text-gray-900">
               Desglose por Posición
             </h3>
           </div>
           <div className="overflow-x-auto">
-            <table className="min-w-full divide-y divide-gray-200">
-              <thead className="bg-gray-50">
+            <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+              <thead className="bg-gray-50 dark:bg-gray-800">
                 <tr>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                     Posición
@@ -343,7 +343,7 @@ export default function EmployeeSummaryReport({ period }: EmployeeSummaryReportP
                   </th>
                 </tr>
               </thead>
-              <tbody className="bg-white divide-y divide-gray-200">
+              <tbody className="bg-white dark:bg-gray-900 divide-y divide-gray-200 dark:divide-gray-700">
                 {positionData.map((item, index) => (
                   <tr key={index} className="hover:bg-gray-50">
                     <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
@@ -365,14 +365,14 @@ export default function EmployeeSummaryReport({ period }: EmployeeSummaryReportP
 
       {/* Employee List */}
       <div className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
-        <div className="px-6 py-4 border-b border-gray-200">
+        <div className="px-6 py-4 border-b border-gray-200 dark:border-gray-700">
           <h3 className="text-lg font-semibold text-gray-900">
             Lista de Empleados Activos
           </h3>
         </div>
         <div className="overflow-x-auto">
-          <table className="min-w-full divide-y divide-gray-200">
-            <thead className="bg-gray-50">
+          <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+            <thead className="bg-gray-50 dark:bg-gray-800">
               <tr>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                   Empleado
@@ -391,7 +391,7 @@ export default function EmployeeSummaryReport({ period }: EmployeeSummaryReportP
                 </th>
               </tr>
             </thead>
-            <tbody className="bg-white divide-y divide-gray-200">
+            <tbody className="bg-white dark:bg-gray-900 divide-y divide-gray-200 dark:divide-gray-700">
               {activeEmployees.map((employee) => {
                 let annualCost = 0
                 let compensation = ''

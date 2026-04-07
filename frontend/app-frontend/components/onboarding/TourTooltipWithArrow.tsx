@@ -218,7 +218,7 @@ export default function TourTooltipWithArrow({
       <div style={arrowStyle} />
       
       {/* Header */}
-      <div className="flex items-center justify-between p-4 border-b border-gray-200 bg-linear-to-r from-primary-50 to-primary-100">
+      <div className="flex items-center justify-between p-4 border-b border-gray-200 dark:border-gray-700 bg-linear-to-r from-primary-50 to-primary-100">
         <div className="flex items-center space-x-3">
           <div className="w-8 h-8 bg-primary-500 rounded-lg flex items-center justify-center shrink-0">
             <span className="text-white text-sm font-bold">{currentStep + 1}</span>

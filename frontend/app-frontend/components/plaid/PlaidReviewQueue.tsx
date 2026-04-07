@@ -54,7 +54,7 @@ function ConfigModal({ tx, categories, accounts, onConfirm, onCancel, saving }: 
           <p className="text-xs text-gray-500 ml-12">{t('configSubtitle')}</p>
         </div>
 
-        <div className="mx-6 mt-4 mb-4 bg-gray-50 rounded-xl px-4 py-3 flex items-center justify-between">
+        <div className="mx-6 mt-4 mb-4 bg-gray-50 dark:bg-gray-800 rounded-xl px-4 py-3 flex items-center justify-between">
           <div>
             <p className="text-sm font-medium text-gray-900 truncate max-w-[220px]">
               {tx.merchantName ?? tx.description ?? 'Transaction'}
@@ -166,7 +166,7 @@ function DiscardModal({ tx, onConfirm, onCancel, saving }: DiscardModalProps) {
         </div>
 
         {/* Transaction summary */}
-        <div className="mx-6 mt-4 mb-4 bg-gray-50 rounded-xl px-4 py-3 flex items-center justify-between">
+        <div className="mx-6 mt-4 mb-4 bg-gray-50 dark:bg-gray-800 rounded-xl px-4 py-3 flex items-center justify-between">
           <div>
             <p className="text-sm font-medium text-gray-900 truncate max-w-[180px]">
               {tx.merchantName ?? tx.description ?? 'Transaction'}
@@ -219,7 +219,7 @@ function TxRow({ tx, onYes, onNo, disabled }: TxRowProps) {
   const t = useTranslations('plaid.reviewQueue')
   const isExpense = tx.type === 2
   return (
-    <div className="flex items-center gap-3 px-4 py-3 border-b border-gray-100 last:border-0 hover:bg-gray-50 transition-colors">
+    <div className="flex items-center gap-3 px-4 py-3 border-b border-gray-100 last:border-0 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors">
       <div className="w-8 h-8 bg-blue-50 rounded-lg flex items-center justify-center shrink-0">
         <Building2 className="w-4 h-4 text-blue-500" />
       </div>
@@ -420,7 +420,7 @@ export default function PlaidReviewQueue({ onCountChange, onTransactionConfirmed
             style={{ animation: 'slideInRight 0.2s ease-out' }}
           >
             {/* Header */}
-            <div className="flex items-center justify-between px-5 py-4 border-b border-gray-200 shrink-0">
+            <div className="flex items-center justify-between px-5 py-4 border-b border-gray-200 dark:border-gray-700 shrink-0">
               <div className="flex items-center gap-3">
                 <div className="w-8 h-8 bg-amber-50 rounded-lg flex items-center justify-center">
                   <AlertCircle className="w-4 h-4 text-amber-500" />

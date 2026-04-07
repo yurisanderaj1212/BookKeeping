@@ -91,7 +91,7 @@ export default function EmployeeAnalysis({ period }: EmployeeAnalysisProps) {
             <div>
               <p className="text-xs font-medium text-gray-500">{t('activeEmployees')}</p>
               <p className="text-base sm:text-xl font-bold text-gray-900">{active.length}</p>
-              <p className="text-xs text-gray-500 mt-1">{inactive.length} {tEmp('statusInactive').toLowerCase()}</p>
+              <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">{inactive.length} {tEmp('statusInactive').toLowerCase()}</p>
             </div>
             <div className="p-3 bg-blue-100 rounded-lg"><Users className="w-6 h-6 text-blue-600" /></div>
           </div>
@@ -102,7 +102,7 @@ export default function EmployeeAnalysis({ period }: EmployeeAnalysisProps) {
             <div>
               <p className="text-xs font-medium text-gray-500">{t('payrollCost')}</p>
               <p className="text-base sm:text-xl font-bold text-gray-900">{formatSalary(periodPayroll)}</p>
-              <p className="text-xs text-gray-500 mt-1 capitalize">{getPeriodLabel()}</p>
+              <p className="text-xs text-gray-500 dark:text-gray-400 mt-1 capitalize">{getPeriodLabel()}</p>
             </div>
             <div className="p-3 bg-green-100 rounded-lg"><DollarSign className="w-6 h-6 text-green-600" /></div>
           </div>
@@ -113,7 +113,7 @@ export default function EmployeeAnalysis({ period }: EmployeeAnalysisProps) {
             <div>
               <p className="text-xs font-medium text-gray-500">{t('avgCost')}</p>
               <p className="text-base sm:text-xl font-bold text-gray-900">{formatSalary(avgPerEmployee)}</p>
-              <p className="text-xs text-gray-500 mt-1">{t('perEmployee')}</p>
+              <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">{t('perEmployee')}</p>
             </div>
             <div className="p-3 bg-yellow-100 rounded-lg"><TrendingUp className="w-6 h-6 text-yellow-600" /></div>
           </div>
@@ -124,7 +124,7 @@ export default function EmployeeAnalysis({ period }: EmployeeAnalysisProps) {
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Payroll type pie */}
         <div className="bg-white rounded-lg p-6 shadow-sm border border-gray-200">
-          <h3 className="text-lg font-semibold text-gray-900 mb-4">{t('payrollDistribution')}</h3>
+          <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">{t('payrollDistribution')}</h3>
           {payrollDist.length === 0 ? (
             <p className="text-sm text-gray-400 text-center py-8">{t('noData')}</p>
           ) : (
@@ -142,7 +142,7 @@ export default function EmployeeAnalysis({ period }: EmployeeAnalysisProps) {
 
         {/* Cost by position bar */}
         <div className="bg-white rounded-lg p-6 shadow-sm border border-gray-200">
-          <h3 className="text-lg font-semibold text-gray-900 mb-4">{t('costByPosition')}</h3>
+          <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">{t('costByPosition')}</h3>
           {positionCosts.length === 0 ? (
             <p className="text-sm text-gray-400 text-center py-8">{t('noData')}</p>
           ) : (
@@ -161,22 +161,22 @@ export default function EmployeeAnalysis({ period }: EmployeeAnalysisProps) {
 
       {/* Summary table */}
       <div className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
-        <div className="px-6 py-4 border-b border-gray-200">
+        <div className="px-6 py-4 border-b border-gray-200 dark:border-gray-700">
           <h3 className="text-lg font-semibold text-gray-900">{t('employeeSummaryByPosition')}</h3>
         </div>
         {positionCosts.length === 0 ? (
           <p className="text-sm text-gray-400 text-center py-8">{t('noData')}</p>
         ) : (
           <div className="overflow-x-auto">
-            <table className="min-w-full divide-y divide-gray-200">
-              <thead className="bg-gray-50">
+            <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+              <thead className="bg-gray-50 dark:bg-gray-800">
                 <tr>
                   {[t('position'), t('employees'), t('annualCost'), t('avgCost'), t('pctTotal')].map(h => (
                     <th key={h} className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{h}</th>
                   ))}
                 </tr>
               </thead>
-              <tbody className="bg-white divide-y divide-gray-200">
+              <tbody className="bg-white dark:bg-gray-900 divide-y divide-gray-200 dark:divide-gray-700">
                 {positionCosts.map((item, i) => (
                   <tr key={i} className="hover:bg-gray-50">
                     <td className="px-6 py-4 text-sm font-medium text-gray-900">{item.position}</td>

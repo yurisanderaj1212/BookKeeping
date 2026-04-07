@@ -80,8 +80,8 @@ export default function YearComparison({ year }: YearComparisonProps) {
   const CustomTooltip = ({ active, payload, label }: any) => {
     if (active && payload && payload.length) {
       return (
-        <div className="bg-white p-3 border border-gray-200 rounded-lg shadow-lg">
-          <p className="font-medium text-gray-900 mb-2">{t('yearLabel', { year: label })}</p>
+        <div className="bg-white dark:bg-gray-900 p-3 border border-gray-200 rounded-lg shadow-lg">
+          <p className="font-medium text-gray-900 dark:text-gray-100 mb-2">{t('yearLabel', { year: label })}</p>
           {payload.map((entry: any, index: number) => (
             <p key={index} className="text-sm" style={{ color: entry.color }}>
               {entry.dataKey === 'ingresos' ? 'Ingresos' : 
@@ -115,7 +115,7 @@ export default function YearComparison({ year }: YearComparisonProps) {
     const bgClass = isPositive ? 'bg-green-100' : 'bg-red-100'
 
     return (
-      <div className="bg-white rounded-lg border border-gray-200 p-4">
+      <div className="bg-white dark:bg-gray-900 rounded-lg border border-gray-200 dark:border-gray-700 p-4">
         <div className="flex items-center justify-between mb-3">
           <h4 className="text-sm font-medium text-gray-600">{title}</h4>
           <div className={`${bgClass} p-1 rounded-full`}>
@@ -148,11 +148,11 @@ export default function YearComparison({ year }: YearComparisonProps) {
   }
 
   return (
-    <div className="bg-white rounded-lg border border-gray-200 p-6 mb-8">
+    <div className="bg-white dark:bg-gray-900 rounded-lg border border-gray-200 dark:border-gray-700 p-6 mb-8">
       <div className="flex items-center justify-between mb-6">
         <div>
           <h3 className="text-lg font-semibold text-gray-900">{t('yearComparison')}</h3>
-          <p className="text-sm text-gray-500 mt-1">
+          <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
             {t('annualPerformanceAnalysis')}
           </p>
         </div>
@@ -216,7 +216,7 @@ export default function YearComparison({ year }: YearComparisonProps) {
       {/* Year Comparison Chart */}
       <div className="w-full mb-6" style={{ height: 320 }}>
         {loading ? (
-          <div className="w-full h-full flex items-center justify-center bg-gray-50 rounded-lg">
+          <div className="w-full h-full flex items-center justify-center bg-gray-50 dark:bg-gray-800 rounded-lg">
             <div className="text-gray-400">{t('loading')}</div>
           </div>
         ) : (
@@ -250,10 +250,10 @@ export default function YearComparison({ year }: YearComparisonProps) {
 
       {/* Year Comparison Table */}
       <div>
-        <h4 className="text-md font-semibold text-gray-900 mb-4">{t('yearSummary')}</h4>
+        <h4 className="text-md font-semibold text-gray-900 dark:text-gray-100 mb-4">{t('yearSummary')}</h4>
         <div className="overflow-hidden">
           <table className="w-full table-fixed">
-            <thead className="bg-gray-50">
+            <thead className="bg-gray-50 dark:bg-gray-800">
               <tr>
                 <th className="w-[15%] px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                   Año
@@ -275,7 +275,7 @@ export default function YearComparison({ year }: YearComparisonProps) {
                 </th>
               </tr>
             </thead>
-            <tbody className="bg-white divide-y divide-gray-200">
+            <tbody className="bg-white dark:bg-gray-900 divide-y divide-gray-200 dark:divide-gray-700">
               {yearComparisonData.map((yearData, index) => (
                 <tr key={index} className={`hover:bg-gray-50 ${yearData.year === year ? 'bg-blue-50' : ''}`}>
                   <td className="px-4 py-3">

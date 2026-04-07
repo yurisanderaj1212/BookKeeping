@@ -12,7 +12,7 @@ export default function PageLayout({ children }: { children: React.ReactNode }) 
   const { isCollapsed } = useSidebarCollapsed()
 
   return (
-    <div className={`flex-1 min-w-0 transition-all duration-300 ${
+    <div className={`flex-1 min-w-0 transition-all duration-300 bg-gray-50 dark:bg-gray-950 ${
       isCollapsed ? 'lg:ml-16' : 'lg:ml-64'
     }`}>
       {children}

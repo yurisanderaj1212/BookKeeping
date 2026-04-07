@@ -118,9 +118,9 @@ export default function CategoryBreakdownReport({ period, year, month }: Categor
   )
 
   return (
-    <div className="bg-white rounded-lg border border-gray-200 shadow-sm">
+    <div className="bg-white dark:bg-gray-900 rounded-lg border border-gray-200 dark:border-gray-700 shadow-sm">
       {/* Report Header */}
-      <div className="border-b border-gray-200 p-6">
+      <div className="border-b border-gray-200 dark:border-gray-700 p-6">
         <div className="flex items-center justify-between">
           <div>
             <h2 className="text-xl font-bold text-gray-900">Desglose por Categorías</h2>
@@ -134,7 +134,7 @@ export default function CategoryBreakdownReport({ period, year, month }: Categor
       </div>
 
       {/* Tab Navigation */}
-      <div className="border-b border-gray-200">
+      <div className="border-b border-gray-200 dark:border-gray-700">
         <div className="flex space-x-8 px-6">
           <button
             onClick={() => setActiveTab('income')}
@@ -172,7 +172,7 @@ export default function CategoryBreakdownReport({ period, year, month }: Categor
       </div>
 
       {/* Summary Section */}
-      <div className="p-6 border-b border-gray-200">
+      <div className="p-6 border-b border-gray-200 dark:border-gray-700">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
           <div className={`${activeTab === 'income' ? 'bg-green-50' : 'bg-red-50'} p-4 rounded-lg`}>
             <div className="flex items-center space-x-2 mb-2">
@@ -221,7 +221,7 @@ export default function CategoryBreakdownReport({ period, year, month }: Categor
       {/* Categories Table */}
       <div className="overflow-x-auto">
         <table className="w-full">
-          <thead className="bg-gray-50">
+          <thead className="bg-gray-50 dark:bg-gray-800">
             <tr>
               <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                 Categoría
@@ -263,7 +263,7 @@ export default function CategoryBreakdownReport({ period, year, month }: Categor
       </div>
 
       {/* Footer */}
-      <div className="border-t border-gray-200 p-4 bg-gray-50 rounded-b-lg">
+      <div className="border-t border-gray-200 dark:border-gray-700 p-4 bg-gray-50 rounded-b-lg">
         <div className="flex items-center justify-between text-xs text-gray-500">
           <span>
             Mostrando {currentData.length} categorías con actividad en el período seleccionado

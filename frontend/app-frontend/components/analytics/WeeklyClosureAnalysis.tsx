@@ -76,8 +76,8 @@ export default function WeeklyClosureAnalysis({ year, month }: WeeklyClosureAnal
     if (!active || !payload?.length) return null
     const d = payload[0]?.payload
     return (
-      <div className="bg-white p-3 border border-gray-200 rounded-lg shadow-lg">
-        <p className="font-medium text-gray-900 mb-2">{d?.fullName}</p>
+      <div className="bg-white dark:bg-gray-900 p-3 border border-gray-200 rounded-lg shadow-lg">
+        <p className="font-medium text-gray-900 dark:text-gray-100 mb-2">{d?.fullName}</p>
         <p className="text-xs text-gray-500 mb-1">{t('status')}: {d?.status === 'closed' ? t('statusClosed') : t('statusOpen')}</p>
         {payload.map((entry: any, i: number) => (
           <p key={i} className="text-sm" style={{ color: entry.color }}>
@@ -114,7 +114,7 @@ export default function WeeklyClosureAnalysis({ year, month }: WeeklyClosureAnal
         ].map((card, i) => {
           const Icon = card.icon
           return (
-            <div key={i} className="bg-white rounded-lg border border-gray-200 p-3 sm:p-4">
+            <div key={i} className="bg-white dark:bg-gray-900 rounded-lg border border-gray-200 dark:border-gray-700 p-3 sm:p-4">
               <div className="flex items-start justify-between mb-3">
                 <div className={`${card.bg} p-2 rounded-lg`}><Icon className={`w-5 h-5 ${card.iconColor}`} /></div>
                 <div className={`${card.badgeBg} px-2 py-1 rounded text-xs font-medium ${card.badgeText}`}>{card.badge}</div>
@@ -128,11 +128,11 @@ export default function WeeklyClosureAnalysis({ year, month }: WeeklyClosureAnal
 
       {/* Chart */}
       {chartData.length > 0 && (
-        <div className="bg-white rounded-lg border border-gray-200 p-6">
+        <div className="bg-white dark:bg-gray-900 rounded-lg border border-gray-200 dark:border-gray-700 p-6">
           <div className="flex items-center justify-between mb-6">
             <div>
               <h3 className="text-lg font-semibold text-gray-900">{t('weeklyPerformance')}</h3>
-              <p className="text-sm text-gray-500 mt-1">{t('weeklyClosureSubtitle')}</p>
+              <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">{t('weeklyClosureSubtitle')}</p>
             </div>
           </div>
           <ResponsiveContainer width="100%" height={320}>
@@ -152,21 +152,21 @@ export default function WeeklyClosureAnalysis({ year, month }: WeeklyClosureAnal
 
       {/* Table */}
       {closures.length > 0 && (
-        <div className="bg-white rounded-lg border border-gray-200 p-6">
+        <div className="bg-white dark:bg-gray-900 rounded-lg border border-gray-200 dark:border-gray-700 p-6">
           <div className="mb-6">
             <h3 className="text-lg font-semibold text-gray-900">{t('weeklyHistory')}</h3>
-            <p className="text-sm text-gray-500 mt-1">{t('weeklyHistorySubtitle')}</p>
+            <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">{t('weeklyHistorySubtitle')}</p>
           </div>
           <div className="overflow-x-auto">
             <table className="w-full table-fixed">
-              <thead className="bg-gray-50">
+              <thead className="bg-gray-50 dark:bg-gray-800">
                 <tr>
                   {[t('week'), t('status'), t('income'), t('expenses'), t('profit')].map(h => (
                     <th key={h} className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{h}</th>
                   ))}
                 </tr>
               </thead>
-              <tbody className="bg-white divide-y divide-gray-200">
+              <tbody className="bg-white dark:bg-gray-900 divide-y divide-gray-200 dark:divide-gray-700">
                 {closures.map(row => {
                   const status = getStatus(row)
                   return (
@@ -195,7 +195,7 @@ export default function WeeklyClosureAnalysis({ year, month }: WeeklyClosureAnal
       )}
 
       {closures.length === 0 && !loading && (
-        <div className="bg-white rounded-lg border border-gray-200 p-12 text-center text-gray-400">
+        <div className="bg-white dark:bg-gray-900 rounded-lg border border-gray-200 dark:border-gray-700 p-12 text-center text-gray-400">
           <Clock className="w-12 h-12 mx-auto mb-3 opacity-30" />
           <p>{t('noDataPeriod')}</p>
         </div>

@@ -112,9 +112,9 @@ export default function TransactionDetailReport({ period, year, month }: Transac
   )
 
   return (
-    <div className="bg-white rounded-lg border border-gray-200 shadow-sm">
+    <div className="bg-white dark:bg-gray-900 rounded-lg border border-gray-200 dark:border-gray-700 shadow-sm">
       {/* Report Header */}
-      <div className="border-b border-gray-200 p-6">
+      <div className="border-b border-gray-200 dark:border-gray-700 p-6">
         <div className="flex items-center justify-between">
           <div>
             <h2 className="text-xl font-bold text-gray-900">Detalle de Transacciones</h2>
@@ -128,7 +128,7 @@ export default function TransactionDetailReport({ period, year, month }: Transac
       </div>
 
       {/* Filters and Summary */}
-      <div className="p-6 border-b border-gray-200">
+      <div className="p-6 border-b border-gray-200 dark:border-gray-700">
         <div className="flex flex-col sm:flex-row gap-4 mb-6">
           <div className="flex items-center space-x-2">
             <Filter className="w-4 h-4 text-gray-400" />
@@ -177,7 +177,7 @@ export default function TransactionDetailReport({ period, year, month }: Transac
       <div className="p-6">
         <div className="overflow-hidden">
           <table className="w-full table-fixed">
-            <thead className="bg-gray-50">
+            <thead className="bg-gray-50 dark:bg-gray-800">
               <tr>
                 <th className="w-[12%] px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                   Fecha
@@ -202,7 +202,7 @@ export default function TransactionDetailReport({ period, year, month }: Transac
                 </th>
               </tr>
             </thead>
-            <tbody className="bg-white divide-y divide-gray-200">
+            <tbody className="bg-white dark:bg-gray-900 divide-y divide-gray-200 dark:divide-gray-700">
               {filteredTransactions.length > 0 ? (
                 filteredTransactions.map((transaction) => (
                   <TransactionRow key={transaction.id} transaction={transaction} />
@@ -220,7 +220,7 @@ export default function TransactionDetailReport({ period, year, month }: Transac
       </div>
 
       {/* Footer */}
-      <div className="border-t border-gray-200 p-4 bg-gray-50 rounded-b-lg">
+      <div className="border-t border-gray-200 dark:border-gray-700 p-4 bg-gray-50 rounded-b-lg">
         <div className="flex items-center justify-between text-xs text-gray-500">
           <span>
             Mostrando {filteredTransactions.length} transacciones de {mockTransactions.length} totales

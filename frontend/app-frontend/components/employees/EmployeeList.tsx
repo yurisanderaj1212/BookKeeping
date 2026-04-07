@@ -43,7 +43,7 @@ export default function EmployeeList({ employees, onEdit, onDelete }: EmployeeLi
         <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
           <Eye className="w-8 h-8 text-gray-400" />
         </div>
-        <h3 className="text-lg font-medium text-gray-900 mb-2">{t('notFound')}</h3>
+        <h3 className="text-lg font-medium text-gray-900 dark:text-gray-100 mb-2">{t('notFound')}</h3>
         <p className="text-gray-500">{t('notFoundDesc')}</p>
       </div>
     )
@@ -53,8 +53,8 @@ export default function EmployeeList({ employees, onEdit, onDelete }: EmployeeLi
     <>
       <div className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
         <div className="overflow-x-auto">
-          <table className="min-w-full divide-y divide-gray-200 table-fixed">
-            <thead className="bg-gray-50">
+          <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700 table-fixed">
+            <thead className="bg-gray-50 dark:bg-gray-800">
               <tr>
                 <th className="w-1/3 px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{t('colEmployee')}</th>
                 <th className="w-1/4 px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{t('colPosition')}</th>
@@ -63,9 +63,9 @@ export default function EmployeeList({ employees, onEdit, onDelete }: EmployeeLi
                 <th className="w-1/8 px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">{t('colActions')}</th>
               </tr>
             </thead>
-            <tbody className="bg-white divide-y divide-gray-200">
+            <tbody className="bg-white dark:bg-gray-900 divide-y divide-gray-200 dark:divide-gray-700">
               {employees.map(emp => (
-                <tr key={emp.id} className="hover:bg-gray-50 transition-colors duration-200">
+                <tr key={emp.id} className="hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors duration-200">
                   <td className="px-6 py-4">
                     <div className="flex items-center">
                       <div className="shrink-0 h-10 w-10">
@@ -109,7 +109,7 @@ export default function EmployeeList({ employees, onEdit, onDelete }: EmployeeLi
       {isDetailModalOpen && selectedEmployee && (
         <div className="fixed inset-0 flex items-center justify-center z-50 p-4">
           <div className="bg-white rounded-lg max-w-lg w-full shadow-xl border border-gray-200">
-            <div className="flex items-center justify-between p-6 border-b border-gray-200">
+            <div className="flex items-center justify-between p-6 border-b border-gray-200 dark:border-gray-700">
               <div className="flex items-center space-x-4">
                 <div className="h-12 w-12 rounded-full bg-primary-100 flex items-center justify-center">
                   <span className="text-lg font-medium text-primary-600">{selectedEmployee.firstName.charAt(0)}{selectedEmployee.lastName.charAt(0)}</span>
@@ -132,7 +132,7 @@ export default function EmployeeList({ employees, onEdit, onDelete }: EmployeeLi
                 <div><h3 className="text-sm font-medium text-gray-700 mb-2">{t('detailNotes')}</h3><p className="text-sm text-gray-600 bg-gray-50 p-3 rounded-lg">{selectedEmployee.notes}</p></div>
               )}
             </div>
-            <div className="flex items-center justify-end space-x-3 p-6 border-t border-gray-200">
+            <div className="flex items-center justify-end space-x-3 p-6 border-t border-gray-200 dark:border-gray-700">
               <button onClick={() => setIsDetailModalOpen(false)} className="px-4 py-2 text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200">{t('close')}</button>
               <button onClick={() => { setIsDetailModalOpen(false); onEdit(selectedEmployee) }} className="px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700">{t('editEmployee')}</button>
             </div>
@@ -144,11 +144,11 @@ export default function EmployeeList({ employees, onEdit, onDelete }: EmployeeLi
       {deleteConfirmEmployee && (
         <div className="fixed inset-0 flex items-center justify-center z-50 p-4">
           <div className="bg-white rounded-lg max-w-md w-full shadow-xl border border-gray-200">
-            <div className="p-6 border-b border-gray-200"><h2 className="text-lg font-semibold text-gray-900">{t('deleteConfirmTitle')}</h2></div>
+            <div className="p-6 border-b border-gray-200 dark:border-gray-700"><h2 className="text-lg font-semibold text-gray-900">{t('deleteConfirmTitle')}</h2></div>
             <div className="p-6">
               <p className="text-gray-600">{t('deleteConfirmMsg', { name: `${deleteConfirmEmployee.firstName} ${deleteConfirmEmployee.lastName}` })}</p>
             </div>
-            <div className="flex items-center justify-end space-x-3 p-6 border-t border-gray-200">
+            <div className="flex items-center justify-end space-x-3 p-6 border-t border-gray-200 dark:border-gray-700">
               <button onClick={() => setDeleteConfirmEmployee(null)} className="px-4 py-2 text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200">{tCommon('cancel')}</button>
               <button onClick={() => { onDelete(deleteConfirmEmployee.id); setDeleteConfirmEmployee(null) }} className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700">{t('deleteEmployee')}</button>
             </div>

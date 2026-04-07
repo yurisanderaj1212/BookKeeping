@@ -59,11 +59,11 @@ export default function ConnectedBanks({ refreshKey }: { refreshKey?: number }) 
   }
 
   return (
-    <div className="bg-white rounded-xl border border-gray-200 p-6">
+    <div className="bg-white dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-gray-700 p-6">
       <div className="flex items-center justify-between mb-5">
         <div>
           <h3 className="text-base font-semibold text-gray-900">{t('title')}</h3>
-          <p className="text-xs text-gray-500 mt-0.5">{t('subtitle')}</p>
+          <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">{t('subtitle')}</p>
         </div>
         <PlaidLinkButton
           onSuccess={() => { load(); showSuccess(tCommon('success'), t('toastConnected')) }}
