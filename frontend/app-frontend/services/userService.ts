@@ -138,6 +138,7 @@ export interface LocalPreferences {
   companyEmail: string
   companyWebsite: string
   sessionTimeout: number
+  theme: 'light' | 'dark' | 'system'
   notifications: {
     emailNotifications: boolean
     transactionAlerts: boolean
@@ -162,6 +163,7 @@ const DEFAULT_PREFS: LocalPreferences = {
   companyEmail: '',
   companyWebsite: '',
   sessionTimeout: 30,
+  theme: 'system',
   notifications: {
     emailNotifications: true,
     transactionAlerts: true,

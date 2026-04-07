@@ -42,7 +42,7 @@ function StatCard({ title, value, change, showChange, icon, color, delay = 0 }: 
 
   return (
     <div
-      className="bg-white rounded-lg border border-gray-200 p-3 sm:p-4 lg:p-6 hover:shadow-md transition-shadow duration-200"
+      className="bg-white dark:bg-gray-900 rounded-lg border border-gray-200 dark:border-gray-700 p-3 sm:p-4 lg:p-6 hover:shadow-md transition-shadow duration-200"
       style={{ animationDelay: `${delay}ms`, animation: 'fadeInUp 0.6s ease-out forwards' }}
     >
       <div className="flex items-start justify-between mb-2 sm:mb-4">
@@ -55,8 +55,8 @@ function StatCard({ title, value, change, showChange, icon, color, delay = 0 }: 
           </div>
         )}
       </div>
-      <p className="text-xs sm:text-sm text-gray-500 mb-1">{title}</p>
-      <p className="text-base sm:text-xl lg:text-2xl font-bold text-gray-900 truncate">{value}</p>
+      <p className="text-xs sm:text-sm text-gray-500 dark:text-gray-400 mb-1">{title}</p>
+      <p className="text-base sm:text-xl lg:text-2xl font-bold text-gray-900 dark:text-gray-100 truncate">{value}</p>
       <style jsx>{`
         @keyframes fadeInUp {
           from { opacity: 0; transform: translateY(20px); }
@@ -82,7 +82,7 @@ export default function StatsCards({
     <div className="mb-8">
       {periodLabel && (
         <div className="mb-4">
-          <p className="text-sm text-gray-600 font-medium">
+          <p className="text-sm text-gray-600 dark:text-gray-400 font-medium">
             {t('showingData')} <span className="text-primary-600">{periodLabel}</span>
           </p>
         </div>

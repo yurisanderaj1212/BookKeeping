@@ -66,40 +66,36 @@ export default function AccountList({ accounts, onEdit, onDelete }: AccountListP
         const colorClass = getAccountColor(type)
 
         return (
-          <div key={type} className="bg-white rounded-lg border border-gray-200 overflow-hidden">
-            <div className="bg-gray-50 px-6 py-3 border-b border-gray-200">
+          <div key={type} className="bg-white dark:bg-gray-900 rounded-lg border border-gray-200 dark:border-gray-700 overflow-hidden">
+            <div className="bg-gray-50 dark:bg-gray-800 px-6 py-3 border-b border-gray-200 dark:border-gray-700">
               <div className="flex items-center space-x-2">
                 <div className={`w-8 h-8 rounded-lg flex items-center justify-center ${colorClass}`}>
                   <Icon className="w-4 h-4" />
                 </div>
-                <h3 className="text-lg font-medium text-gray-900">{getTypeLabel(type)}</h3>
-                <span className="text-sm text-gray-500">({accountsInGroup.length})</span>
+                <h3 className="text-lg font-medium text-gray-900 dark:text-gray-100">{getTypeLabel(type)}</h3>
+                <span className="text-sm text-gray-500 dark:text-gray-400">({accountsInGroup.length})</span>
               </div>
             </div>
 
-            <div className="divide-y divide-gray-200">
+            <div className="divide-y divide-gray-200 dark:divide-gray-700">
               {accountsInGroup.map((account) => (
-                <div key={account.id} className="px-4 sm:px-6 py-3 sm:py-4 hover:bg-gray-50 transition-colors">
-                  {/* Mobile: stacked layout */}
+                <div key={account.id} className="px-4 sm:px-6 py-3 sm:py-4 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors">
                   <div className="flex items-start justify-between gap-3">
                     <div className="flex-1 min-w-0">
-                      {/* Name + badges */}
                       <div className="flex items-center gap-2 flex-wrap mb-1">
-                        <h4 className="text-sm font-semibold text-gray-900 truncate">{getAccountDisplayName(account, locale)}</h4>
+                        <h4 className="text-sm font-semibold text-gray-900 dark:text-gray-100 truncate">{getAccountDisplayName(account, locale)}</h4>
                         {account.code && (
-                          <span className="text-xs text-gray-500 bg-gray-100 px-1.5 py-0.5 rounded shrink-0">{account.code}</span>
+                          <span className="text-xs text-gray-500 dark:text-gray-400 bg-gray-100 dark:bg-gray-700 px-1.5 py-0.5 rounded shrink-0">{account.code}</span>
                         )}
                         {!account.isActive && (
                           <span className="text-xs text-red-600 bg-red-50 px-1.5 py-0.5 rounded shrink-0">{t('inactive')}</span>
                         )}
                       </div>
-                      {/* Subtype + date — compact on mobile */}
-                      <p className="text-xs text-gray-400 truncate">
+                      <p className="text-xs text-gray-400 dark:text-gray-500 truncate">
                         {getSubTypeLabel(account.subType)}
                         <span className="mx-1">·</span>
                         {t('createdOn')} {formatDate(account.createdAt)}
                       </p>
-                      {/* Balance — hidden for Cash account */}
                       {account.sub_type !== 1002 && (
                         <p className={`text-sm font-bold mt-1 ${account.currentBalance >= 0 ? 'text-green-600' : 'text-red-600'}`}>
                           {formatCurrency(account.currentBalance, account.currency)}

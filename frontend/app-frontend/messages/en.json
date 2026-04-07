@@ -1089,6 +1089,11 @@
       "expenseThresholdsDesc": "Alert when expenses exceed established limits"
     },
     "systemPreferences": "System Preferences",
+    "themeTitle": "Appearance",
+    "themeDescription": "Choose how the app looks to you",
+    "themeLight": "Light",
+    "themeDark": "Dark",
+    "themeSystem": "System",
     "currency": "Currency",
     "currencyOptions": {
       "USD": "USD — US Dollar",

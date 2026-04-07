@@ -1089,6 +1089,11 @@
       "expenseThresholdsDesc": "Alertar cuando los gastos superen los límites establecidos"
     },
     "systemPreferences": "Preferencias del Sistema",
+    "themeTitle": "Apariencia",
+    "themeDescription": "Elige cómo se ve la aplicación",
+    "themeLight": "Claro",
+    "themeDark": "Oscuro",
+    "themeSystem": "Sistema",
     "currency": "Moneda",
     "currencyOptions": {
       "USD": "USD — Dólar Estadounidense",

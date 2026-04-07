@@ -34,8 +34,8 @@ export default function MonthlyChart({ data }: MonthlyChartProps) {
   const CustomTooltip = ({ active, payload, label }: any) => {
     if (!active || !payload?.length) return null
     return (
-      <div className="bg-white p-2.5 border border-gray-200 rounded-lg shadow-lg text-xs">
-        <p className="font-semibold text-gray-900 mb-1.5">{label}</p>
+      <div className="bg-white dark:bg-gray-800 p-2.5 border border-gray-200 dark:border-gray-700 rounded-lg shadow-lg text-xs">
+        <p className="font-semibold text-gray-900 dark:text-gray-100 mb-1.5">{label}</p>
         {payload.map((entry: any, index: number) => {
           const value = entry.dataKey === 'profit' ? entry.payload.profitReal : entry.value
           const name = entry.dataKey === 'income' ? t('income')
@@ -80,16 +80,16 @@ export default function MonthlyChart({ data }: MonthlyChartProps) {
   const barCatGap    = isMobile ? '15%' : '25%'
 
   return (
-    <div className="bg-white rounded-xl border border-gray-200 p-4 sm:p-6 hover:shadow-lg transition-shadow duration-300">
+    <div className="bg-white dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-gray-700 p-4 sm:p-6 hover:shadow-lg transition-shadow duration-300">
       <div className="flex items-center justify-between mb-4">
         <div>
-          <h3 className="text-base sm:text-lg font-semibold text-gray-900">
+          <h3 className="text-base sm:text-lg font-semibold text-gray-900 dark:text-gray-100">
             <span className="text-primary-600 mr-1">{new Date().getFullYear()}</span>
             {t('title')}
           </h3>
-          <p className="text-xs sm:text-sm text-gray-500 mt-0.5">{t('subtitle')}</p>
+          <p className="text-xs sm:text-sm text-gray-500 dark:text-gray-400 mt-0.5">{t('subtitle')}</p>
         </div>
-        <button className="p-1.5 hover:bg-gray-100 rounded-lg transition-colors">
+        <button className="p-1.5 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-colors">
           <MoreHorizontal className="w-4 h-4 text-gray-400" />
         </button>
       </div>

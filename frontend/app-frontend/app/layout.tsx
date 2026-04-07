@@ -27,6 +27,10 @@ export default function RootLayout({
 }>) {
   return (
     <html suppressHydrationWarning>
+      <head>
+        {/* Anti-flash: apply dark class synchronously before first paint */}
+        <script dangerouslySetInnerHTML={{ __html: `(function(){try{var p=JSON.parse(localStorage.getItem('bookkeeping_preferences')||'{}');var t=p.theme;if(t==='dark'||(t!=='light'&&window.matchMedia('(prefers-color-scheme: dark)').matches)){document.documentElement.classList.add('dark');}}catch(e){}})();` }} />
+      </head>
       <body suppressHydrationWarning className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
         {children}
       </body>

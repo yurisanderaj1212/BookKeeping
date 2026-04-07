@@ -45,9 +45,9 @@ function ChartCard({ title, data, emptyText, emptyDesc, formatCurrency }: ChartC
   }))
 
   return (
-    <div className="bg-white rounded-xl border border-gray-200 p-4 sm:p-6 hover:shadow-lg transition-shadow duration-300 flex-1 min-w-0">
+    <div className="bg-white dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-gray-700 p-4 sm:p-6 hover:shadow-lg transition-shadow duration-300 flex-1 min-w-0">
       {/* Title — large, top left, no subtitle */}
-      <h3 className="text-base sm:text-lg font-semibold text-gray-900 mb-4">{title}</h3>
+      <h3 className="text-base sm:text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">{title}</h3>
 
       {data.length === 0 ? (
         <div className="flex items-center justify-center py-10">
@@ -83,10 +83,10 @@ function ChartCard({ title, data, emptyText, emptyDesc, formatCurrency }: ChartC
               <div key={i} className="flex items-center justify-between">
                 <div className="flex items-center gap-2 min-w-0">
                   <div className="w-2.5 h-2.5 rounded-full shrink-0" style={{ backgroundColor: cat.color }} />
-                  <span className="text-xs text-gray-700 truncate">{cat.name}</span>
+                  <span className="text-xs text-gray-700 dark:text-gray-300 truncate">{cat.name}</span>
                 </div>
                 <div className="shrink-0 ml-3 text-right">
-                  <span className="text-xs font-semibold text-gray-900">{formatCurrency(cat.amount)}</span>
+                  <span className="text-xs font-semibold text-gray-900 dark:text-gray-100">{formatCurrency(cat.amount)}</span>
                   <span className="text-xs text-gray-400 ml-1">{cat.percentage}%</span>
                 </div>
               </div>

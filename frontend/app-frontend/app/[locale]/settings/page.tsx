@@ -42,6 +42,7 @@ import { useTranslations } from 'next-intl'
 import { useNotifications } from '@/hooks/useNotifications'
 import PageLayout from '@/components/ui/PageLayout'
 import MobileMenuButton from '@/components/ui/MobileMenuButton'
+import ThemeToggle from '@/components/ui/ThemeToggle'
 
 // ─── BillingRedirect ─────────────────────────────────────────────────────────
 // Componente separado para que el useEffect no viole las reglas de hooks
@@ -95,8 +96,8 @@ const ProfileTab = ({
 
   return (
   <div className="space-y-6">
-    <div className="bg-white rounded-lg border border-gray-200 p-6">
-      <h3 className="text-lg font-semibold text-gray-900 mb-4">{t('personalInfo')}</h3>
+    <div className="bg-white dark:bg-gray-900 rounded-lg border border-gray-200 dark:border-gray-700 p-6">
+      <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">{t('personalInfo')}</h3>
 
       <div className="flex items-center space-x-4 mb-6">
         <div className="relative">
@@ -157,17 +158,17 @@ const ProfileTab = ({
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">{t('firstName')}</label>
+          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">{t('firstName')}</label>
           <input type="text" value={firstName} onChange={e => setFirstName(e.target.value)}
             className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500" />
         </div>
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">{t('lastName')}</label>
+          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">{t('lastName')}</label>
           <input type="text" value={lastName} onChange={e => setLastName(e.target.value)}
             className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500" />
         </div>
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">{t('email')}</label>
+          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">{t('email')}</label>
           <div className="relative">
             <Mail className="absolute left-3 top-2.5 w-4 h-4 text-gray-400" />
             <input type="email" value={email} readOnly
@@ -176,7 +177,7 @@ const ProfileTab = ({
           <p className="text-xs text-gray-400 mt-1">{t('emailReadOnly')}</p>
         </div>
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">{t('phone')}</label>
+          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">{t('phone')}</label>
           <div className="relative">
             <Phone className="absolute left-3 top-2.5 w-4 h-4 text-gray-400" />
             <input type="tel" value={phone} onChange={e => setPhone(e.target.value)}
@@ -185,7 +186,7 @@ const ProfileTab = ({
           </div>
         </div>
         <div className="md:col-span-2">
-          <label className="block text-sm font-medium text-gray-700 mb-1">{t('jobTitle')}</label>
+          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">{t('jobTitle')}</label>
           <input type="text" value={jobTitle} onChange={e => setJobTitle(e.target.value)}
             className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
             placeholder={t('jobTitlePlaceholder')} />
@@ -218,17 +219,17 @@ const CompanyTab = ({
   const tCommon = useTranslations('common')
   return (
   <div className="space-y-6">
-    <div className="bg-white rounded-lg border border-gray-200 p-6">
-      <h3 className="text-lg font-semibold text-gray-900 mb-4">{t('companyInfo')}</h3>
+    <div className="bg-white dark:bg-gray-900 rounded-lg border border-gray-200 dark:border-gray-700 p-6">
+      <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">{t('companyInfo')}</h3>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div className="md:col-span-2">
-          <label className="block text-sm font-medium text-gray-700 mb-1">{t('companyName')}</label>
+          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">{t('companyName')}</label>
           <input type="text" value={prefs.companyName}
             onChange={e => setPrefs({ ...prefs, companyName: e.target.value })}
             className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500" />
         </div>
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">{t('businessType')}</label>
+          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">{t('businessType')}</label>
           <select value={prefs.businessType} onChange={e => setPrefs({ ...prefs, businessType: e.target.value })}
             className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500">
             <option value="Servicios Profesionales">{t('businessTypes.professional')}</option>
@@ -242,13 +243,13 @@ const CompanyTab = ({
           </select>
         </div>
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">{t('taxId')}</label>
+          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">{t('taxId')}</label>
           <input type="text" value={prefs.taxId} onChange={e => setPrefs({ ...prefs, taxId: e.target.value })}
             className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
             placeholder="12-3456789" />
         </div>
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">{t('fiscalYearStart')}</label>
+          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">{t('fiscalYearStart')}</label>
           <div className="relative">
             <Calendar className="absolute left-3 top-2.5 w-4 h-4 text-gray-400" />
             <select value={prefs.fiscalYearStart} onChange={e => setPrefs({ ...prefs, fiscalYearStart: e.target.value })}
@@ -261,17 +262,17 @@ const CompanyTab = ({
           </div>
         </div>
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">{t('companyPhone')}</label>
+          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">{t('companyPhone')}</label>
           <input type="tel" value={prefs.companyPhone} onChange={e => setPrefs({ ...prefs, companyPhone: e.target.value })}
             className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500" />
         </div>
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">{t('companyEmail')}</label>
+          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">{t('companyEmail')}</label>
           <input type="email" value={prefs.companyEmail} onChange={e => setPrefs({ ...prefs, companyEmail: e.target.value })}
             className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500" />
         </div>
         <div className="md:col-span-2">
-          <label className="block text-sm font-medium text-gray-700 mb-1">{t('website')}</label>
+          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">{t('website')}</label>
           <input type="url" value={prefs.companyWebsite} onChange={e => setPrefs({ ...prefs, companyWebsite: e.target.value })}
             className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
             placeholder={t('websitePlaceholder')} />
@@ -303,11 +304,11 @@ const SecurityTab = ({
   const tCommon = useTranslations('common')
   return (
   <div className="space-y-6">
-    <div className="bg-white rounded-lg border border-gray-200 p-6">
-      <h3 className="text-lg font-semibold text-gray-900 mb-4">{t('changePassword')}</h3>
+    <div className="bg-white dark:bg-gray-900 rounded-lg border border-gray-200 dark:border-gray-700 p-6">
+      <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">{t('changePassword')}</h3>
       <div className="space-y-4 max-w-md">
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">{t('currentPassword')}</label>
+          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">{t('currentPassword')}</label>
           <div className="relative">
             <input type={form.showCurrent ? 'text' : 'password'} value={form.currentPassword}
               onChange={e => setForm({ ...form, currentPassword: e.target.value })}
@@ -319,7 +320,7 @@ const SecurityTab = ({
           </div>
         </div>
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">{t('newPassword')}</label>
+          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">{t('newPassword')}</label>
           <div className="relative">
             <input type={form.showNew ? 'text' : 'password'} value={form.newPassword}
               onChange={e => setForm({ ...form, newPassword: e.target.value })}
@@ -332,7 +333,7 @@ const SecurityTab = ({
           <p className="text-xs text-gray-400 mt-1">{t('passwordHint')}</p>
         </div>
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">{t('confirmNewPassword')}</label>
+          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">{t('confirmNewPassword')}</label>
           <div className="relative">
             <input type={form.showConfirm ? 'text' : 'password'} value={form.confirmPassword}
               onChange={e => setForm({ ...form, confirmPassword: e.target.value })}
@@ -349,8 +350,8 @@ const SecurityTab = ({
       </div>
     </div>
 
-    <div className="bg-white rounded-lg border border-gray-200 p-6">
-      <h3 className="text-lg font-semibold text-gray-900 mb-4">{t('sessionOptions')}</h3>
+    <div className="bg-white dark:bg-gray-900 rounded-lg border border-gray-200 dark:border-gray-700 p-6">
+      <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">{t('sessionOptions')}</h3>
       <div className="space-y-4">
         <div className="flex items-center justify-between p-4 border border-gray-200 rounded-lg">
           <div>
@@ -559,8 +560,8 @@ export default function SettingsPage() {
       case 'notifications':
         return (
           <div className="space-y-6">
-            <div className="bg-white rounded-lg border border-gray-200 p-6">
-              <h3 className="text-lg font-semibold text-gray-900 mb-4">{t('notifPreferences')}</h3>
+            <div className="bg-white dark:bg-gray-900 rounded-lg border border-gray-200 dark:border-gray-700 p-6">
+              <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">{t('notifPreferences')}</h3>
               <div className="space-y-4">
                 {([
                   { key: 'emailNotifications' },
@@ -602,11 +603,11 @@ export default function SettingsPage() {
       case 'preferences':
         return (
           <div className="space-y-6">
-            <div className="bg-white rounded-lg border border-gray-200 p-6">
-              <h3 className="text-lg font-semibold text-gray-900 mb-4">{t('systemPreferences')}</h3>
+            <div className="bg-white dark:bg-gray-900 rounded-lg border border-gray-200 dark:border-gray-700 p-6">
+              <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">{t('systemPreferences')}</h3>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">{t('language')}</label>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">{t('language')}</label>
                   <div className="relative">
                     <Globe className="absolute left-3 top-2.5 w-4 h-4 text-gray-400" />
                     <select value={prefs.language} onChange={e => setPrefs({ ...prefs, language: e.target.value })}
@@ -617,7 +618,7 @@ export default function SettingsPage() {
                   </div>
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">{t('currency')}</label>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">{t('currency')}</label>
                   <div className="relative">
                     <DollarSign className="absolute left-3 top-2.5 w-4 h-4 text-gray-400" />
                     <select value={prefs.currency} onChange={e => setPrefs({ ...prefs, currency: e.target.value })}
@@ -629,7 +630,7 @@ export default function SettingsPage() {
                   </div>
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">{t('dateFormat')}</label>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">{t('dateFormat')}</label>
                   <select value={prefs.dateFormat} onChange={e => setPrefs({ ...prefs, dateFormat: e.target.value })}
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500">
                     <option value="MM/DD/YYYY">MM/DD/YYYY (US)</option>
@@ -638,7 +639,7 @@ export default function SettingsPage() {
                   </select>
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">{t('timezone')}</label>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">{t('timezone')}</label>
                   <select value={prefs.timezone} onChange={e => setPrefs({ ...prefs, timezone: e.target.value })}
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500">
                     <option value="America/New_York">Eastern Time (ET)</option>
@@ -651,8 +652,14 @@ export default function SettingsPage() {
               </div>
             </div>
 
-            <div className="bg-white rounded-lg border border-gray-200 p-6">
-              <h3 className="text-lg font-semibold text-gray-900 mb-4">{t('dataManagement')}</h3>
+            <div className="bg-white dark:bg-gray-900 rounded-lg border border-gray-200 dark:border-gray-700 p-6">
+              <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-1">{t('themeTitle')}</h3>
+              <p className="text-sm text-gray-500 mb-4">{t('themeDescription')}</p>
+              <ThemeToggle />
+            </div>
+
+            <div className="bg-white dark:bg-gray-900 rounded-lg border border-gray-200 dark:border-gray-700 p-6">
+              <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">{t('dataManagement')}</h3>
               <div className="space-y-4">
                 <div className="flex items-center justify-between p-4 border border-gray-200 rounded-lg">
                   <div>
@@ -691,12 +698,12 @@ export default function SettingsPage() {
   }
 
   return (
-    <div className="flex min-h-screen bg-gray-50">
+    <div className="flex min-h-screen bg-gray-50 dark:bg-gray-950">
       <Sidebar onLogout={logout} />
 
       <PageLayout>
         {/* Header compacto */}
-        <div className="bg-white border-b border-gray-200 sticky top-0 z-10">
+        <div className="bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-700 sticky top-0 z-10">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="flex items-center justify-between min-h-14 py-2 gap-3">
               <div className="flex items-center gap-2 min-w-0">

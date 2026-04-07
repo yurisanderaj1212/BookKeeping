@@ -101,7 +101,7 @@ export default function Sidebar({ onLogout }: SidebarProps) {
           Desktop: fixed sidebar, w-16 when collapsed, w-64 when expanded
       */}
       <div
-        className={`fixed left-0 top-0 h-full bg-white border-r border-gray-200 flex flex-col shadow-sm z-50
+        className={`fixed left-0 top-0 h-full bg-white dark:bg-gray-900 border-r border-gray-200 dark:border-gray-700 flex flex-col shadow-sm z-50
           transition-transform duration-300 ease-in-out
           lg:transition-all lg:duration-300
           ${isCollapsed
@@ -111,13 +111,13 @@ export default function Sidebar({ onLogout }: SidebarProps) {
         data-tour="sidebar"
       >
       {/* ── Logo ── */}
-      <div className="flex items-center justify-between p-4 border-b border-gray-100 shrink-0">
+      <div className="flex items-center justify-between p-4 border-b border-gray-100 dark:border-gray-700 shrink-0">
         {!isCollapsed ? (
           <div className="flex items-center space-x-3">
             <div className="w-8 h-8 bg-primary-500 rounded-lg flex items-center justify-center shrink-0">
               <span className="text-white font-bold text-sm">CN</span>
             </div>
-            <h1 className="text-lg font-bold text-gray-900">Chill Numbers</h1>
+            <h1 className="text-lg font-bold text-gray-900 dark:text-gray-100">Chill Numbers</h1>
           </div>
         ) : (
           <div className="w-8 h-8 bg-primary-500 rounded-lg flex items-center justify-center mx-auto">
@@ -127,12 +127,12 @@ export default function Sidebar({ onLogout }: SidebarProps) {
 
         <button
           onClick={toggleSidebar}
-          className={`p-1.5 hover:bg-gray-100 rounded-full transition-colors shrink-0 ${isCollapsed ? 'mx-auto mt-2' : ''}`}
+          className={`p-1.5 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-full transition-colors shrink-0 ${isCollapsed ? 'mx-auto mt-2' : ''}`}
           title={isCollapsed ? 'Expandir' : 'Colapsar'}
         >
           {isCollapsed
-            ? <ChevronRight className="w-4 h-4 text-gray-500" />
-            : <ChevronLeft  className="w-4 h-4 text-gray-500" />}
+            ? <ChevronRight className="w-4 h-4 text-gray-500 dark:text-gray-400" />
+            : <ChevronLeft  className="w-4 h-4 text-gray-500 dark:text-gray-400" />}
         </button>
       </div>
 
@@ -152,12 +152,12 @@ export default function Sidebar({ onLogout }: SidebarProps) {
                     href={item.href}
                     className={`flex items-center space-x-3 px-3 py-2.5 rounded-lg transition-all duration-200 group ${
                       isActive
-                        ? 'bg-primary-50 text-primary-600 shadow-sm'
-                        : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
+                        ? 'bg-primary-50 dark:bg-primary-900/30 text-primary-600 shadow-sm'
+                        : 'text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800 hover:text-gray-900 dark:hover:text-gray-100'
                     }`}
                     title={isCollapsed ? t(item.label) : undefined}
                   >
-                    <Icon className={`w-5 h-5 shrink-0 ${isActive ? 'text-primary-600' : 'text-gray-400 group-hover:text-gray-600'}`} />
+                    <Icon className={`w-5 h-5 shrink-0 ${isActive ? 'text-primary-600' : 'text-gray-400 dark:text-gray-500 group-hover:text-gray-600 dark:group-hover:text-gray-300'}`} />
                     {!isCollapsed && (
                       <span className="font-medium text-sm">{t(item.label)}</span>
                     )}
@@ -169,9 +169,9 @@ export default function Sidebar({ onLogout }: SidebarProps) {
         </div>
 
         {/* ── System section ── */}
-        <div className="border-t border-gray-200 pt-3 shrink-0">
+        <div className="border-t border-gray-200 dark:border-gray-700 pt-3 shrink-0">
           {!isCollapsed && (
-            <p className="px-3 text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2">
+            <p className="px-3 text-xs font-semibold text-gray-400 dark:text-gray-500 uppercase tracking-wider mb-2">
               {t('common.system')}
             </p>
           )}
@@ -186,14 +186,14 @@ export default function Sidebar({ onLogout }: SidebarProps) {
                     href={item.href}
                     className={`flex items-center space-x-3 px-3 py-2.5 rounded-lg transition-all duration-200 group ${
                       isActive
-                        ? 'bg-primary-50 text-primary-600 shadow-sm'
-                        : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
+                        ? 'bg-primary-50 dark:bg-primary-900/30 text-primary-600 shadow-sm'
+                        : 'text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800 hover:text-gray-900 dark:hover:text-gray-100'
                     }`}
                     title={isCollapsed ? t(item.label) : undefined}
                     data-tour={item.id === 'settings' ? 'settings-link' : undefined}
                   >
                     <div className="relative">
-                      <Icon className={`w-5 h-5 shrink-0 ${isActive ? 'text-primary-600' : 'text-gray-400 group-hover:text-gray-600'}`} />
+                      <Icon className={`w-5 h-5 shrink-0 ${isActive ? 'text-primary-600' : 'text-gray-400 dark:text-gray-500 group-hover:text-gray-600 dark:group-hover:text-gray-300'}`} />
                       {badge > 0 && (
                         <span className="absolute -top-1.5 -right-1.5 bg-red-500 text-white text-[9px] font-bold rounded-full min-w-[14px] h-[14px] flex items-center justify-center px-0.5">
                           {badge > 99 ? '99+' : badge}
@@ -219,23 +219,23 @@ export default function Sidebar({ onLogout }: SidebarProps) {
       </nav>
 
       {/* ── User section ── */}
-      <div className="p-3 border-t border-gray-100 shrink-0">
+      <div className="p-3 border-t border-gray-100 dark:border-gray-700 shrink-0">
         {!isCollapsed ? (
           <>
-            <div className="flex items-center space-x-3 mb-2 p-2.5 rounded-lg bg-gray-50">
-              <div className="w-9 h-9 rounded-full overflow-hidden shrink-0 bg-primary-100 flex items-center justify-center">
+            <div className="flex items-center space-x-3 mb-2 p-2.5 rounded-lg bg-gray-50 dark:bg-gray-800">
+              <div className="w-9 h-9 rounded-full overflow-hidden shrink-0 bg-primary-100 dark:bg-primary-900 flex items-center justify-center">
                 {avatarUrl
                   ? <img src={avatarUrl} alt={userName} className="w-full h-full object-cover" />
                   : <User className="w-4 h-4 text-primary-600" />
                 }
               </div>
               <div className="flex-1 min-w-0">
-                <p className="text-sm font-medium text-gray-900 truncate">
+                <p className="text-sm font-medium text-gray-900 dark:text-gray-100 truncate">
                   {userName || userEmail.split('@')[0] || '—'}
                 </p>
                 <p className="text-xs truncate">
                   {userName
-                    ? <span className="text-gray-500">{userEmail}</span>
+                    ? <span className="text-gray-500 dark:text-gray-400">{userEmail}</span>
                     : <span className="text-primary-500 font-medium">Completa tu perfil →</span>
                   }
                 </p>
@@ -243,19 +243,19 @@ export default function Sidebar({ onLogout }: SidebarProps) {
             </div>
             <button
               onClick={onLogout}
-              className="w-full flex items-center space-x-3 px-3 py-2 text-gray-600 hover:bg-red-50 hover:text-red-600 rounded-lg transition-all duration-200 group mb-2"
+              className="w-full flex items-center space-x-3 px-3 py-2 text-gray-600 dark:text-gray-400 hover:bg-red-50 dark:hover:bg-red-900/20 hover:text-red-600 dark:hover:text-red-400 rounded-lg transition-all duration-200 group mb-2"
             >
-              <LogOut className="w-4 h-4 group-hover:text-red-600 shrink-0" />
+              <LogOut className="w-4 h-4 group-hover:text-red-600 dark:group-hover:text-red-400 shrink-0" />
               <span className="font-medium text-sm">{t('nav.logout')}</span>
             </button>
             {/* Language switcher */}
             <button
               onClick={switchLocale}
               title={locale === 'es' ? 'Switch to English' : 'Cambiar a Español'}
-              className="w-full flex items-center gap-2 px-3 py-2 rounded-lg border border-gray-200 bg-gray-50 hover:border-indigo-400 hover:bg-indigo-50 transition-all duration-200"
+              className="w-full flex items-center gap-2 px-3 py-2 rounded-lg border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 hover:border-indigo-400 hover:bg-indigo-50 dark:hover:bg-indigo-900/20 transition-all duration-200"
             >
               <Globe className="w-3.5 h-3.5 text-indigo-500 shrink-0" />
-              <div className="flex items-center bg-gray-200 rounded-full p-0.5 gap-0.5 flex-1">
+              <div className="flex items-center bg-gray-200 dark:bg-gray-700 rounded-full p-0.5 gap-0.5 flex-1">
                 {(['es', 'en'] as const).map(lang => (
                   <span key={lang} className="flex-1 text-center" style={{
                     fontSize: '11px', fontWeight: 700, letterSpacing: '0.5px',
@@ -271,7 +271,7 @@ export default function Sidebar({ onLogout }: SidebarProps) {
           </>
         ) : (
           <div className="flex flex-col items-center space-y-2">
-            <div className="w-9 h-9 rounded-full overflow-hidden bg-primary-100 flex items-center justify-center">
+            <div className="w-9 h-9 rounded-full overflow-hidden bg-primary-100 dark:bg-primary-900 flex items-center justify-center">
               {avatarUrl
                 ? <img src={avatarUrl} alt={userName} className="w-full h-full object-cover" />
                 : <User className="w-4 h-4 text-primary-600" />
@@ -279,7 +279,7 @@ export default function Sidebar({ onLogout }: SidebarProps) {
             </div>
             <button
               onClick={onLogout}
-              className="p-2 text-gray-600 hover:bg-red-50 hover:text-red-600 rounded-lg transition-all duration-200"
+              className="p-2 text-gray-600 dark:text-gray-400 hover:bg-red-50 dark:hover:bg-red-900/20 hover:text-red-600 dark:hover:text-red-400 rounded-lg transition-all duration-200"
               title={t('nav.logout')}
             >
               <LogOut className="w-4 h-4" />
@@ -288,7 +288,7 @@ export default function Sidebar({ onLogout }: SidebarProps) {
             <button
               onClick={switchLocale}
               title={locale === 'es' ? 'Switch to English' : 'Cambiar a Español'}
-              className="w-9 h-9 rounded-lg border border-indigo-300 bg-indigo-50 hover:bg-indigo-500 hover:text-white flex items-center justify-center transition-all duration-200"
+              className="w-9 h-9 rounded-lg border border-indigo-300 dark:border-indigo-700 bg-indigo-50 dark:bg-indigo-900/30 hover:bg-indigo-500 hover:text-white flex items-center justify-center transition-all duration-200"
               style={{ fontSize: '10px', fontWeight: 800, color: '#6366f1', letterSpacing: '0.5px' }}
             >
               {locale === 'es' ? 'EN' : 'ES'}

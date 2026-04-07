@@ -30,7 +30,7 @@ function FieldError({ message }: { message?: string }) {
 // Required label helper
 function Label({ children, required }: { children: React.ReactNode; required?: boolean }) {
   return (
-    <label className="block text-xs font-medium text-gray-700 mb-1">
+    <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">
       {children}
       {required && <span className="text-red-500 ml-0.5">*</span>}
     </label>
@@ -145,9 +145,9 @@ export default function TransactionForm({ isOpen, onClose, onSave, transaction, 
 
   return (
     <div className="fixed inset-0 flex items-center justify-center z-50 p-4">
-      <div className="bg-white rounded-lg max-w-2xl w-full shadow-xl border border-gray-200 max-h-[90vh] overflow-y-auto">
-        <div className="flex items-center justify-between px-4 py-3 border-b border-gray-200 sticky top-0 bg-white z-10">
-          <h2 className="text-base font-semibold text-gray-900">
+      <div className="bg-white dark:bg-gray-900 rounded-lg max-w-2xl w-full shadow-xl border border-gray-200 dark:border-gray-700 max-h-[90vh] overflow-y-auto">
+        <div className="flex items-center justify-between px-4 py-3 border-b border-gray-200 dark:border-gray-700 sticky top-0 bg-white dark:bg-gray-900 z-10">
+          <h2 className="text-base font-semibold text-gray-900 dark:text-gray-100">
             {mode === 'create' ? t('new') : tCommon('edit')}
           </h2>
           <button onClick={onClose} className="text-gray-400 hover:text-gray-600 transition-colors">
@@ -155,12 +155,12 @@ export default function TransactionForm({ isOpen, onClose, onSave, transaction, 
           </button>
         </div>
 
-        <form onSubmit={handleSubmit} className="p-4 space-y-3">
+        <form onSubmit={handleSubmit} className="p-4 space-y-3 dark:bg-gray-900">
           <div className="grid grid-cols-3 gap-3">
             <div>
               <Label>{t('type')}</Label>
               <select value={formData.type} onChange={e => handleChange('type', e.target.value)}
-                className="w-full px-2 py-1.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 text-sm">
+                className="w-full px-2 py-1.5 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary-500 text-sm bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100">
                 <option value="income">{t('income')}</option>
                 <option value="expense">{t('expense')}</option>
               </select>
@@ -246,7 +246,7 @@ export default function TransactionForm({ isOpen, onClose, onSave, transaction, 
           <div>
             <Label>{t('notes')} <span className="text-gray-400 font-normal">({tCommon('no')})</span></Label>
             <textarea value={formData.notes} onChange={e => handleChange('notes', e.target.value)}
-              rows={2} className="w-full px-2 py-1.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 resize-none text-sm"
+              rows={2} className="w-full px-2 py-1.5 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary-500 resize-none text-sm bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
               placeholder="..." />
           </div>
 
