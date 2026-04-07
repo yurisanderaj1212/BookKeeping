@@ -24,7 +24,10 @@ export async function signUp(email: string, password: string, firstName: string,
   const supabase = getSupabase()
   const { data, error } = await supabase.auth.signUp({
     email, password,
-    options: { data: { first_name: firstName, last_name: lastName } }
+    options: {
+      data: { first_name: firstName, last_name: lastName },
+      emailRedirectTo: `${typeof window !== 'undefined' ? window.location.origin : 'https://www.chillnumbers.com'}/es/auth/login?verified=1`,
+    }
   })
   if (error) throw new Error(error.message)
   return {

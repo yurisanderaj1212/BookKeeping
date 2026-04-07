@@ -32,6 +32,7 @@ function LoginForm() {
   const [lockedMessage, setLockedMessage] = useState('')
 
   const justRegistered = searchParams.get('registered') === '1'
+  const justVerified   = searchParams.get('verified') === '1'
 
   // Si ya está autenticado, redirigir al dashboard
   useEffect(() => {
@@ -169,11 +170,19 @@ function LoginForm() {
           <div className="mt-4">
             {/* Banner: registro exitoso */}
             {justRegistered && (
-              <div className="mb-4 flex items-start gap-3 rounded-lg bg-green-50 border border-green-200 px-4 py-3 text-sm text-green-800">
-                <svg className="mt-0.5 h-4 w-4 shrink-0 text-green-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <div className="mb-4 flex items-center gap-2 rounded-lg bg-green-50 border border-green-200 px-4 py-3 text-sm text-green-800">
+                <svg className="h-4 w-4 shrink-0 text-green-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
                 </svg>
-                <span>{ t('registeredSuccess') }</span>
+                <span className="leading-tight">{ t('registeredSuccess') }</span>
+              </div>
+            )}
+            {justVerified && (
+              <div className="mb-4 flex items-center gap-2 rounded-lg bg-blue-50 border border-blue-200 px-4 py-3 text-sm text-blue-800">
+                <svg className="h-4 w-4 shrink-0 text-blue-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+                <span className="leading-tight">{ t('verifiedSuccess') }</span>
               </div>
             )}
 
