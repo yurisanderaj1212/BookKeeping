@@ -1,5 +1,8 @@
 @import "tailwindcss";
 
+/* Enable dark mode via .dark class on <html> (Tailwind v4 class strategy) */
+@variant dark (&:where(.dark, .dark *));
+
 /* Chill Numbers Brand Colors - Tailwind CSS v4 Theme */
 @theme {
   --color-primary-50: #f0fdfc;
