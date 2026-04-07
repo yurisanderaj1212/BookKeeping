@@ -15,6 +15,9 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   title: "Chill Numbers - Simple Business Accounting Software",
   description: "Manage your business finances with ease. No accounting knowledge required. Track income, expenses, and grow your business with confidence.",
+  icons: {
+    icon: '/Untitled design.ico',
+  },
 };
 
 export default function RootLayout({

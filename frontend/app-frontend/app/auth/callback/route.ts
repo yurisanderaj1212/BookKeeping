@@ -4,8 +4,10 @@ import { cookies } from 'next/headers'
 
 export async function GET(request: Request) {
   const { searchParams, origin } = new URL(request.url)
-  const code  = searchParams.get('code')
-  const next  = searchParams.get('next') ?? '/es/dashboard'
+  const code = searchParams.get('code')
+  // Detect locale from the referrer or default to 'es'
+  const referer = request.headers.get('referer') ?? ''
+  const locale  = referer.includes('/en/') ? 'en' : 'es'
 
   if (code) {
     const cookieStore = await cookies()
@@ -26,10 +28,9 @@ export async function GET(request: Request) {
 
     const { error } = await supabase.auth.exchangeCodeForSession(code)
     if (!error) {
-      return NextResponse.redirect(`${origin}${next}`)
+      return NextResponse.redirect(`${origin}/${locale}/dashboard`)
     }
   }
 
-  // Something went wrong — redirect to login
   return NextResponse.redirect(`${origin}/es/auth/login?error=oauth`)
 }

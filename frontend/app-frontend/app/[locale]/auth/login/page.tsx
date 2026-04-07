@@ -139,11 +139,10 @@ function LoginForm() {
     try {
       const { getSupabase } = await import('@/lib/supabaseClient')
       const supabase = getSupabase()
+      const redirectTo = `${window.location.origin}/auth/callback`
       const { error } = await supabase.auth.signInWithOAuth({
         provider: 'google',
-        options: {
-          redirectTo: `${window.location.origin}/auth/callback`,
-        },
+        options: { redirectTo },
       })
       if (error) showError(tc('error'), error.message)
     } catch {
