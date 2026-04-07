@@ -91,7 +91,11 @@ export async function getSummary(params: DashboardQueryParams = {}): Promise<Das
   const { start, end, prevStart, prevEnd } = getPeriodDates(params.period ?? 'week')
   const [curr, prev] = await Promise.all([sumByType(start, end), sumByType(prevStart, prevEnd)])
 
-  const pct = (a: number, b: number) => b === 0 ? 0 : parseFloat(((a - b) / b * 100).toFixed(1))
+  const pct = (a: number, b: number) => {
+    if (b === 0) return a === 0 ? 0 : (a > 0 ? 100 : -100)
+    if (b < 0) return 0  // previous was negative — percentage is misleading, hide it
+    return parseFloat(((a - b) / Math.abs(b) * 100).toFixed(1))
+  }
 
   return {
     totalIncome: curr.income,

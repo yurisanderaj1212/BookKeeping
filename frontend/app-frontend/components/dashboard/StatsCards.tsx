@@ -48,9 +48,11 @@ function StatCard({ title, value, change, icon, color, delay = 0 }: StatCardProp
         <div className={`${colorClasses[color].iconBg} p-1.5 sm:p-2 rounded-lg`}>
           <div className={`${colorClasses[color].iconColor} [&>svg]:w-4 [&>svg]:h-4 sm:[&>svg]:w-5 sm:[&>svg]:h-5`}>{icon}</div>
         </div>
-        <div className={`${changeBg} px-1.5 py-0.5 rounded text-xs font-medium ${changeColor}`}>
-          {formatPercentage(change)}
-        </div>
+        {change !== 0 && (
+          <div className={`${changeBg} px-1.5 py-0.5 rounded text-xs font-medium ${changeColor}`}>
+            {formatPercentage(change)}
+          </div>
+        )}
       </div>
       <p className="text-xs sm:text-sm text-gray-500 mb-1">{title}</p>
       <p className="text-base sm:text-xl lg:text-2xl font-bold text-gray-900 truncate">{value}</p>
