@@ -3,11 +3,12 @@
 import { useEffect, useState } from 'react'
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts'
 import { WeeklyData } from '../../data/dashboard-data'
+import type { ChartDataPoint } from '@/services/dashboardService'
 import { MoreHorizontal } from 'lucide-react'
 import { useTranslations, useLocale } from 'next-intl'
 
 interface WeeklyChartProps {
-  data: WeeklyData[]
+  data: ChartDataPoint[]
 }
 
 export default function WeeklyChart({ data }: WeeklyChartProps) {
