@@ -5,6 +5,7 @@ import { routing } from '@/i18n/routing'
 import { NotificationProvider } from '@/lib/notificationContext'
 import GlobalToastContainer from '@/components/notifications/GlobalToastContainer'
 import ErrorBoundary from '@/components/ui/ErrorBoundary'
+import SessionGuard from '@/components/ui/SessionGuard'
 
 // Genera los parámetros estáticos para los locales soportados
 export function generateStaticParams() {
@@ -38,6 +39,7 @@ export default async function LocaleLayout({
           <div className="locale-root min-h-screen bg-gray-50 dark:bg-gray-950">
             {children}
             <GlobalToastContainer />
+            <SessionGuard />
           </div>
         </ErrorBoundary>
       </NotificationProvider>

@@ -1,4 +1,10 @@
 {
+  "session": {
+    "warningTitle": "Sesión a punto de expirar",
+    "warningDesc": "Has estado inactivo. Tu sesión se cerrará automáticamente.",
+    "continueSession": "Continuar sesión",
+    "logoutNow": "Cerrar sesión"
+  },
   "common": {
     "appName": "Chill Numbers",
     "loading": "Cargando...",

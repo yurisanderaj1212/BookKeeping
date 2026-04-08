@@ -1,4 +1,10 @@
 {
+  "session": {
+    "warningTitle": "Session about to expire",
+    "warningDesc": "You have been inactive. Your session will close automatically.",
+    "continueSession": "Continue session",
+    "logoutNow": "Log out"
+  },
   "common": {
     "appName": "Chill Numbers",
     "loading": "Loading...",

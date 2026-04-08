@@ -55,6 +55,10 @@ export function useAuth() {
           firstName: u.user_metadata?.first_name ?? '',
           lastName: u.user_metadata?.last_name ?? '',
         })
+        // Reset session start on new login
+        if (_event === 'SIGNED_IN') {
+          localStorage.setItem('cn_session_start', String(Date.now()))
+        }
         if (isAuthRoute(pathname)) router.replace('/dashboard')
       } else {
         setUser(null)
@@ -68,6 +72,7 @@ export function useAuth() {
   const logout = async () => {
     const supabase = getSupabase()
     await supabase.auth.signOut()
+    localStorage.removeItem('cn_session_start')
     setUser(null)
     router.replace('/auth/login')
   }
