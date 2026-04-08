@@ -676,22 +676,35 @@ function svgBarChart(
 
 // ─── ANALYTICS REPORT ────────────────────────────────────────────────────────
 export async function exportAnalyticsReport(
-  params: { period: string; year: string; month: string },
+  params: { period: string; year: string; month: string; week?: string },
   format: 'excel' | 'pdf'
 ) {
   const l = getL()
-  const { period, year, month } = params
+  const locale = getLocale()
+  const { period, year, month, week } = params
   const supabase = (await import('@/lib/supabaseClient')).getSupabase()
   const y = parseInt(year), m = parseInt(month)
+
+  // ── Compute week date range (Sun-Sat) ──────────────────────────────────────
+  const localDate = (d: Date) => {
+    const yr = d.getFullYear(), mo = String(d.getMonth() + 1).padStart(2, '0'), dy = String(d.getDate()).padStart(2, '0')
+    return `${yr}-${mo}-${dy}`
+  }
+  const getWeekRange = (wk: number) => {
+    const firstDay = new Date(y, m - 1, 1)
+    const firstSunday = new Date(firstDay); firstSunday.setDate(firstDay.getDate() - firstDay.getDay())
+    const start = new Date(firstSunday); start.setDate(firstSunday.getDate() + (wk - 1) * 7)
+    const end = new Date(start); end.setDate(start.getDate() + 6)
+    return { start: localDate(start), end: localDate(end) }
+  }
+
   let start: string, end: string
+  const wkNum = parseInt(week ?? '1')
   if (period === 'week') {
-    const now = new Date(); const day = now.getDay()
-    const s = new Date(now); s.setDate(now.getDate() - day)
-    const e = new Date(s); e.setDate(s.getDate() + 6)
-    start = s.toISOString().split('T')[0]; end = e.toISOString().split('T')[0]
+    const r = getWeekRange(wkNum); start = r.start; end = r.end
   } else if (period === 'month') {
     start = `${y}-${String(m).padStart(2, '0')}-01`
-    end = new Date(y, m, 0).toISOString().split('T')[0]
+    end = localDate(new Date(y, m, 0))
   } else {
     start = `${y}-01-01`; end = `${y}-12-31`
   }
@@ -807,73 +820,217 @@ export async function exportAnalyticsReport(
     XLSX.writeFile(wb, filename('analytics-report', 'xlsx'))
 
   } else {
-    const locale = getLocale()
-    const monthlyData = Array.from({ length: 12 }, (_, i) => {
-      const mo = i + 1
-      const monthTxs = txs.filter((r: any) => new Date(r.date).getMonth() + 1 === mo)
-      const inc = monthTxs.filter((r: any) => r.type === 1).reduce((s: number, r: any) => s + r.amount, 0)
-      const exp = monthTxs.filter((r: any) => r.type === 2).reduce((s: number, r: any) => s + r.amount, 0)
-      return { label: new Date(parseInt(year), i, 1).toLocaleDateString(locale, { month: 'short' }), income: inc, expense: exp, profit: inc - exp }
-    })
+    // ── Section labels (locale-aware) ─────────────────────────────────────────
+    const isEs = locale === 'es'
+    const lbl = {
+      totalTx:        isEs ? 'Total Transacciones'    : 'Total Transactions',
+      pendingTx:      isEs ? 'Transacciones Pendientes': 'Pending Transactions',
+      selPeriod:      isEs ? 'Período Seleccionado'   : 'Selected Period',
+      revenueVsExp:   isEs ? 'Ingresos vs Gastos'     : 'Revenue vs Expenses',
+      daily:          isEs ? 'Comparación diaria'      : 'Daily comparison',
+      weekly:         isEs ? 'Comparación semanal'     : 'Weekly comparison',
+      monthly:        isEs ? 'Comparación mensual'     : 'Monthly comparison',
+      weeklyPerf:     isEs ? 'Rendimiento Semanal'     : 'Weekly Performance',
+      weeklyPerfSub:  isEs ? 'Ingresos y gastos por semana del mes' : 'Revenue and expenses per week of the month',
+      weeklyHistory:  isEs ? 'Historial de Cierres Semanales' : 'Weekly Closure History',
+      weeklyHistSub:  isEs ? 'Detalles de todas las semanas y su estado de cierre' : 'Details of all weeks and their closure status',
+      annualPerf:     isEs ? `Rendimiento Anual ${year}` : `Annual Performance ${year}`,
+      annualPerfSub:  isEs ? 'Ingresos y gastos mensuales durante el año' : 'Monthly revenue and expenses throughout the year',
+      monthlyBrkdwn:  isEs ? 'Desglose Mensual'       : 'Monthly Breakdown',
+      annualIncome:   isEs ? 'Ingresos Anuales'        : 'Annual Revenue',
+      annualExpenses: isEs ? 'Gastos Anuales'          : 'Annual Expenses',
+      annualProfit:   isEs ? 'Beneficio Anual'         : 'Annual Profit',
+      bestMonth:      isEs ? 'Mejor Mes'               : 'Best Month',
+      closedWeeks:    isEs ? 'Semanas Cerradas'        : 'Closed Weeks',
+      pendingWeeks:   isEs ? 'Semanas Pendientes'      : 'Pending Weeks',
+      closedIncome:   isEs ? 'Ingresos Cerrados'       : 'Closed Revenue',
+      avgWeeklyProfit:isEs ? 'Beneficio Semanal Prom.' : 'Avg Weekly Profit',
+      colWeek:        isEs ? 'Semana'  : 'Week',
+      colStatus:      isEs ? 'Estado'  : 'Status',
+      colIncome:      isEs ? 'Ingresos': 'Revenue',
+      colExpenses:    isEs ? 'Gastos'  : 'Expenses',
+      colProfit:      isEs ? 'Beneficio': 'Profit',
+      colMonth:       isEs ? 'Mes'     : 'Month',
+      statusClosed:   isEs ? 'Cerrada' : 'Closed',
+      statusOpen:     isEs ? 'Abierta' : 'Open',
+      periodWeekly:   isEs ? 'Semanal' : 'Weekly',
+      periodMonthly:  isEs ? 'Mensual' : 'Monthly',
+      periodAnnual:   isEs ? 'Anual'   : 'Annual',
+      average:        isEs ? 'Promedio': 'Average',
+      margin:         isEs ? 'Margen'  : 'Margin',
+    }
 
-    const catChartData = categories.slice(0, 8).map(c => ({
-      label: c.name.length > 8 ? c.name.substring(0, 7) + '…' : c.name,
-      income: c.income, expense: c.expense,
-    }))
+    // ── 1. Stats cards row (Total Tx, Pending Tx, Period) ────────────────────
+    const periodTypeLabel = period === 'week' ? lbl.periodWeekly : period === 'month' ? lbl.periodMonthly : lbl.periodAnnual
+    const statsCards = `
+      <div class="kpi-grid kpi-grid-3" style="margin-bottom:14px">
+        <div class="kpi blue"><div class="kpi-label">${lbl.totalTx}</div><div class="kpi-value">${txs.length}</div><div class="kpi-sub">${completedTx} ${l.completed.toLowerCase()} · ${pendingTx} ${l.pending.toLowerCase()}</div></div>
+        <div class="kpi orange"><div class="kpi-label">${lbl.pendingTx}</div><div class="kpi-value">${pendingTx}</div></div>
+        <div class="kpi teal"><div class="kpi-label">${lbl.selPeriod}</div><div class="kpi-value" style="font-size:13px">${periodTypeLabel}</div><div class="kpi-sub">${periodLabel}</div></div>
+      </div>`
 
-    const monthlyChart  = period === 'year' ? svgBarChart(monthlyData, `${l.monthlyPerformance} — ${year}`) : ''
-    const categoryChart = categories.length > 0 ? svgBarChart(catChartData, l.distributionByCategory) : ''
-
-    const grandTotal = categories.reduce((s, c) => s + c.total, 0)
-    const catRows = categories.slice(0, 15).map(c => {
-      const pct = grandTotal > 0 ? ((c.total / grandTotal) * 100).toFixed(1) : '0.0'
-      return `<tr><td>${c.name}</td><td class="r pos">${c.income > 0 ? formatCurrency(c.income) : '—'}</td><td class="r neg">${c.expense > 0 ? formatCurrency(c.expense) : '—'}</td><td class="c">${c.count}</td><td class="r">${pct}%</td></tr>`
-    }).join('')
-
-    const topIncomeRows = topIncome.map((r: any, i) =>
-      `<tr><td class="c" style="font-weight:700;color:#276749">${i + 1}</td><td>${(r.description ?? '').substring(0, 28)}</td><td class="c">${r.date}</td><td class="r pos">+${formatCurrency(r.amount)}</td></tr>`
-    ).join('')
-
-    const topExpenseRows = topExpenses.map((r: any, i) =>
-      `<tr><td class="c" style="font-weight:700;color:#9b2c2c">${i + 1}</td><td>${(r.description ?? '').substring(0, 28)}</td><td class="c">${r.date}</td><td class="r neg">-${formatCurrency(r.amount)}</td></tr>`
-    ).join('')
-
-    const closureRows = closures.map((c: any) => {
-      const isClosed = !!c.closed_at
-      return `<tr><td>${l.weekLabel(c.week_number)}</td><td class="c">${c.start_date} — ${c.end_date}</td><td class="r pos">${formatCurrency(c.total_income)}</td><td class="r neg">${formatCurrency(c.total_expenses)}</td><td class="r ${c.net_profit >= 0 ? 'pos' : 'neg'}">${formatCurrency(c.net_profit)}</td><td class="c"><span class="badge ${isClosed ? 'badge-green' : 'badge-blue'}">${isClosed ? l.closed : l.open}</span></td></tr>`
-    }).join('')
-
+    // ── 2. KPI cards (Revenue, Expenses, Profit, Margin) ─────────────────────
     const netClass = netProfit >= 0 ? 'green' : 'red'
-    const body = `
-      <div class="kpi-grid kpi-grid-3">
+    const kpiCards = `
+      <div class="kpi-grid kpi-grid-4" style="margin-bottom:18px">
         <div class="kpi green"><div class="kpi-label">${l.totalIncome}</div><div class="kpi-value">${formatCurrency(totalIncome)}</div><div class="kpi-sub">${txs.filter((r: any) => r.type === 1).length} ${l.transactions}</div></div>
         <div class="kpi red"><div class="kpi-label">${l.totalExpenses}</div><div class="kpi-value">${formatCurrency(totalExpenses)}</div><div class="kpi-sub">${txs.filter((r: any) => r.type === 2).length} ${l.transactions}</div></div>
         <div class="kpi ${netClass}"><div class="kpi-label">${netProfit >= 0 ? l.netProfit : l.netLoss}</div><div class="kpi-value">${formatCurrency(netProfit)}</div><div class="kpi-sub">${netProfit >= 0 ? l.positive : l.negative}</div></div>
-      </div>
-      <div class="kpi-grid kpi-grid-3">
-        <div class="kpi teal"><div class="kpi-label">${l.profitMargin}</div><div class="kpi-value">${profitMargin.toFixed(1)}%</div></div>
-        <div class="kpi blue"><div class="kpi-label">${l.transactions}</div><div class="kpi-value">${txs.length}</div><div class="kpi-sub">${completedTx} ${l.completed.toLowerCase()} · ${pendingTx} ${l.pending.toLowerCase()}</div></div>
-      </div>
-      ${monthlyChart}
-      <div class="section">
-        <div class="section-header"><div class="section-dot"></div><div class="section-title">${l.categoryAnalysis}</div><div class="section-sub">${categories.length} ${l.category.toLowerCase()}</div></div>
-        ${categoryChart}
-        <table><thead><tr><th>${l.category}</th><th class="r">${l.income}</th><th class="r">${l.expenses}</th><th class="c">${l.transactions}</th><th class="r">${l.pctTotal}</th></tr></thead><tbody>${catRows}</tbody></table>
-      </div>
-      <div class="two-col">
-        <div class="section" style="margin:0">
-          <div class="section-header"><div class="section-dot"></div><div class="section-title">${l.top5Income}</div></div>
-          <table><thead><tr><th class="c">#</th><th>${l.description}</th><th class="c">${l.date}</th><th class="r">${l.amount}</th></tr></thead>
-          <tbody>${topIncomeRows || `<tr><td colspan="4" style="text-align:center;color:#a0aec0;padding:10px">${l.noData}</td></tr>`}</tbody></table>
-        </div>
-        <div class="section" style="margin:0">
-          <div class="section-header"><div class="section-dot"></div><div class="section-title">${l.top5Expenses}</div></div>
-          <table><thead><tr><th class="c">#</th><th>${l.description}</th><th class="c">${l.date}</th><th class="r">${l.amount}</th></tr></thead>
-          <tbody>${topExpenseRows || `<tr><td colspan="4" style="text-align:center;color:#a0aec0;padding:10px">${l.noData}</td></tr>`}</tbody></table>
-        </div>
-      </div>
-      ${closures.length > 0 ? `<div class="section"><div class="section-header"><div class="section-dot"></div><div class="section-title">${l.weeklyClosures}</div><div class="section-sub">${closures.filter((c: any) => c.closed_at).length} / ${closures.length} ${l.closed.toLowerCase()}</div></div><table><thead><tr><th>${l.weekLabel(0).replace('0', '#')}</th><th class="c">${l.periodCol}</th><th class="r">${l.incomesCol}</th><th class="r">${l.expensesCol}</th><th class="r">${l.profitCol}</th><th class="c">${l.statusCol}</th></tr></thead><tbody>${closureRows}</tbody></table></div>` : ''}`
+        <div class="kpi purple"><div class="kpi-label">${lbl.margin}</div><div class="kpi-value">${profitMargin.toFixed(1)}%</div></div>
+      </div>`
 
+    // ── 3. Revenue vs Expenses chart (daily/weekly/monthly based on period) ──
+    let revenueChartData: { label: string; income: number; expense: number }[] = []
+    if (period === 'week') {
+      const startDate = new Date(start + 'T00:00:00')
+      const dayNames = locale === 'en'
+        ? ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']
+        : ['Dom', 'Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb']
+      for (let i = 0; i < 7; i++) {
+        const d = new Date(startDate); d.setDate(startDate.getDate() + i)
+        const dateStr = localDate(d)
+        const dayRows = txs.filter((r: any) => (r.date ?? '').substring(0, 10) === dateStr)
+        revenueChartData.push({
+          label: `${dayNames[d.getDay()]} ${d.getDate()}`,
+          income: dayRows.filter((r: any) => r.type === 1).reduce((s: number, r: any) => s + r.amount, 0),
+          expense: dayRows.filter((r: any) => r.type === 2).reduce((s: number, r: any) => s + r.amount, 0),
+        })
+      }
+    } else if (period === 'month') {
+      const weekMap = new Map<number, { income: number; expense: number }>()
+      for (const r of txs) {
+        const d = new Date((r.date ?? '') + 'T00:00:00')
+        const firstOfMonth = new Date(d.getFullYear(), d.getMonth(), 1)
+        const firstSunday = new Date(firstOfMonth); firstSunday.setDate(firstOfMonth.getDate() - firstOfMonth.getDay())
+        const wn = Math.floor((d.getTime() - firstSunday.getTime()) / 86400000 / 7) + 1
+        const ex = weekMap.get(wn) ?? { income: 0, expense: 0 }
+        if (r.type === 1) ex.income += r.amount; else ex.expense += r.amount
+        weekMap.set(wn, ex)
+      }
+      for (let i = 1; i <= 5; i++) {
+        const w = weekMap.get(i) ?? { income: 0, expense: 0 }
+        revenueChartData.push({ label: `${isEs ? 'Sem' : 'Wk'} ${i}`, income: w.income, expense: w.expense })
+      }
+    } else {
+      const monthMap = new Map<number, { income: number; expense: number }>()
+      for (const r of txs) {
+        const mo = new Date(r.date).getMonth() + 1
+        const ex = monthMap.get(mo) ?? { income: 0, expense: 0 }
+        if (r.type === 1) ex.income += r.amount; else ex.expense += r.amount
+        monthMap.set(mo, ex)
+      }
+      for (let i = 1; i <= 12; i++) {
+        const w = monthMap.get(i) ?? { income: 0, expense: 0 }
+        revenueChartData.push({ label: new Date(y, i - 1, 1).toLocaleDateString(locale === 'en' ? 'en-US' : 'es-ES', { month: 'short' }), income: w.income, expense: w.expense })
+      }
+    }
+    const revenueSubtitle = period === 'week' ? lbl.daily : period === 'month' ? lbl.weekly : lbl.monthly
+    const revenueChart = svgBarChart(revenueChartData, lbl.revenueVsExp, false)
+    const revenueSection = `
+      <div class="section">
+        <div class="section-header"><div class="section-dot"></div><div class="section-title">${lbl.revenueVsExp}</div><div class="section-sub">${revenueSubtitle}</div></div>
+        ${revenueChart}
+      </div>`
+
+    // ── 4. Weekly Closure summary cards ──────────────────────────────────────
+    // Enrich closures with real tx data (same logic as WeeklyClosureAnalysis)
+    const enrichedClosures = closures.map((c: any) => {
+      const weekTxs = txs.filter((r: any) => r.date >= c.start_date && r.date <= c.end_date)
+      const inc = weekTxs.filter((r: any) => r.type === 1).reduce((s: number, r: any) => s + r.amount, 0)
+      const exp = weekTxs.filter((r: any) => r.type === 2).reduce((s: number, r: any) => s + r.amount, 0)
+      return { ...c, total_income: inc, total_expenses: exp, net_profit: inc - exp }
+    })
+    const closedRows  = enrichedClosures.filter((c: any) => !!c.closed_at)
+    const openRows    = enrichedClosures.filter((c: any) => !c.closed_at)
+    const closedInc   = closedRows.reduce((s: number, c: any) => s + c.total_income, 0)
+    const closedProfit= closedRows.reduce((s: number, c: any) => s + c.net_profit, 0)
+    const avgWkProfit = closedRows.length > 0 ? closedProfit / closedRows.length : 0
+    const closureSummaryCards = `
+      <div class="kpi-grid kpi-grid-4" style="margin-bottom:14px">
+        <div class="kpi green"><div class="kpi-label">${lbl.closedWeeks}</div><div class="kpi-value">${closedRows.length}</div><div class="kpi-sub">${enrichedClosures.length > 0 ? ((closedRows.length / enrichedClosures.length) * 100).toFixed(0) : 0}%</div></div>
+        <div class="kpi orange"><div class="kpi-label">${lbl.pendingWeeks}</div><div class="kpi-value">${openRows.length}</div></div>
+        <div class="kpi blue"><div class="kpi-label">${lbl.closedIncome}</div><div class="kpi-value">${formatCurrency(closedInc)}</div><div class="kpi-sub">${lbl.statusClosed}</div></div>
+        <div class="kpi purple"><div class="kpi-label">${lbl.avgWeeklyProfit}</div><div class="kpi-value">${formatCurrency(avgWkProfit)}</div><div class="kpi-sub">${lbl.average}</div></div>
+      </div>`
+
+    // ── 5. Weekly Performance chart ───────────────────────────────────────────
+    const weeklyPerfData = enrichedClosures.map((c: any) => ({
+      label: `S${c.week_number}`,
+      income: c.total_income, expense: c.total_expenses, profit: c.net_profit,
+    }))
+    const weeklyPerfChart = weeklyPerfData.length > 0 ? svgBarChart(weeklyPerfData, lbl.weeklyPerf) : ''
+    const weeklyPerfSection = enrichedClosures.length > 0 ? `
+      <div class="section">
+        <div class="section-header"><div class="section-dot"></div><div class="section-title">${lbl.weeklyPerf}</div><div class="section-sub">${lbl.weeklyPerfSub}</div></div>
+        ${weeklyPerfChart}
+      </div>` : ''
+
+    // ── 6. Weekly Closure History table ──────────────────────────────────────
+    const closureTableRows = enrichedClosures.map((c: any) => {
+      const isClosed = !!c.closed_at
+      return `<tr>
+        <td>${isEs ? 'Semana' : 'Week'} ${c.week_number}</td>
+        <td class="c"><span class="badge ${isClosed ? 'badge-green' : 'badge-blue'}">${isClosed ? lbl.statusClosed : lbl.statusOpen}</span></td>
+        <td class="r pos">${formatCurrency(c.total_income)}</td>
+        <td class="r neg">${formatCurrency(c.total_expenses)}</td>
+        <td class="r ${c.net_profit >= 0 ? 'pos' : 'neg'}">${formatCurrency(c.net_profit)}</td>
+      </tr>`
+    }).join('')
+    const closureTableSection = enrichedClosures.length > 0 ? `
+      <div class="section">
+        <div class="section-header"><div class="section-dot"></div><div class="section-title">${lbl.weeklyHistory}</div><div class="section-sub">${lbl.weeklyHistSub}</div></div>
+        <table><thead><tr><th>${lbl.colWeek}</th><th class="c">${lbl.colStatus}</th><th class="r">${lbl.colIncome}</th><th class="r">${lbl.colExpenses}</th><th class="r">${lbl.colProfit}</th></tr></thead>
+        <tbody>${closureTableRows}</tbody></table>
+      </div>` : ''
+
+    // ── 7. Annual Performance KPI cards + chart + monthly table ──────────────
+    const annualTxRes = await supabase.from('transactions').select('type,amount,date')
+      .gte('date', `${y}-01-01`).lte('date', `${y}-12-31`)
+      .or('is_from_plaid.eq.false,is_business_transaction.eq.true')
+    const annualTxs = annualTxRes.data ?? []
+    const annualMonths = Array.from({ length: 12 }, (_, i) => {
+      const mo = i + 1
+      const mRows = annualTxs.filter((r: any) => new Date(r.date).getMonth() + 1 === mo)
+      const inc = mRows.filter((r: any) => r.type === 1).reduce((s: number, r: any) => s + r.amount, 0)
+      const exp = mRows.filter((r: any) => r.type === 2).reduce((s: number, r: any) => s + r.amount, 0)
+      const monthNames = locale === 'en'
+        ? ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec']
+        : ['Ene','Feb','Mar','Abr','May','Jun','Jul','Ago','Sep','Oct','Nov','Dic']
+      const fullNames = locale === 'en'
+        ? ['January','February','March','April','May','June','July','August','September','October','November','December']
+        : ['Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre']
+      return { label: monthNames[i], fullName: fullNames[i], income: inc, expense: exp, profit: inc - exp }
+    })
+    const annualIncome   = annualMonths.reduce((s, m) => s + m.income, 0)
+    const annualExpenses = annualMonths.reduce((s, m) => s + m.expense, 0)
+    const annualProfit   = annualIncome - annualExpenses
+    const bestMonth      = annualMonths.reduce((best, cur) => cur.profit > best.profit ? cur : best, annualMonths[0])
+    const annualKpiCards = `
+      <div class="kpi-grid kpi-grid-4" style="margin-bottom:14px">
+        <div class="kpi green"><div class="kpi-label">${lbl.annualIncome}</div><div class="kpi-value">${formatCurrency(annualIncome)}</div></div>
+        <div class="kpi red"><div class="kpi-label">${lbl.annualExpenses}</div><div class="kpi-value">${formatCurrency(annualExpenses)}</div></div>
+        <div class="kpi ${annualProfit >= 0 ? 'blue' : 'red'}"><div class="kpi-label">${lbl.annualProfit}</div><div class="kpi-value">${formatCurrency(annualProfit)}</div></div>
+        <div class="kpi purple"><div class="kpi-label">${lbl.bestMonth}</div><div class="kpi-value" style="font-size:13px">${bestMonth.fullName}</div><div class="kpi-sub">${formatCurrency(bestMonth.profit)}</div></div>
+      </div>`
+    const annualChartData = annualMonths.map(m => ({ label: m.label, income: m.income, expense: m.expense }))
+    const annualChart = svgBarChart(annualChartData, lbl.annualPerf, false)
+    const monthlyTableRows = annualMonths.map(m =>
+      `<tr><td>${m.fullName}</td><td class="r pos">${formatCurrency(m.income)}</td><td class="r neg">${formatCurrency(m.expense)}</td><td class="r ${m.profit >= 0 ? 'pos' : 'neg'}">${formatCurrency(m.profit)}</td></tr>`
+    ).join('')
+    const annualSection = `
+      <div class="section">
+        <div class="section-header"><div class="section-dot"></div><div class="section-title">${lbl.annualPerf}</div><div class="section-sub">${lbl.annualPerfSub}</div></div>
+        ${annualKpiCards}
+        ${annualChart}
+        <div style="margin-top:12px">
+          <div class="section-header"><div class="section-dot"></div><div class="section-title">${lbl.monthlyBrkdwn}</div></div>
+          <table><thead><tr><th>${lbl.colMonth}</th><th class="r">${lbl.colIncome}</th><th class="r">${lbl.colExpenses}</th><th class="r">${lbl.colProfit}</th></tr></thead>
+          <tbody>${monthlyTableRows}</tbody></table>
+        </div>
+      </div>`
+
+    // ── Assemble full body ────────────────────────────────────────────────────
+    const body = statsCards + kpiCards + revenueSection + closureSummaryCards + weeklyPerfSection + closureTableSection + annualSection
     openPDF(l.analyticsReport, body, periodLabel)
   }
 }

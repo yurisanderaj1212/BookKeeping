@@ -74,7 +74,7 @@ export default function ReportsPage() {
 
   const handleExportReport = () => {
     showExportModal((format) => {
-      exportAnalyticsReport({ period: selectedPeriod, year: selectedYear, month: selectedMonth }, format)
+      exportAnalyticsReport({ period: selectedPeriod, year: selectedYear, month: selectedMonth, week: selectedWeek }, format)
     })
   }
 

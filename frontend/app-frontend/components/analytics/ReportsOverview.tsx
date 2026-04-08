@@ -6,6 +6,7 @@ import { DollarSign, CreditCard, TrendingUp, BarChart3 } from 'lucide-react'
 import { getSupabase } from '@/lib/supabaseClient'
 import { formatCurrency } from '@/services/reportService'
 import { useTranslations, useLocale } from 'next-intl'
+import InfoTooltip from '@/components/ui/InfoTooltip'
 
 interface ReportsOverviewProps {
   period: string
@@ -220,7 +221,10 @@ export default function ReportsOverview({ period, year, month, week }: ReportsOv
       {/* Chart */}
       <div className="bg-white dark:bg-gray-900 rounded-lg border border-gray-200 dark:border-gray-700 p-4 sm:p-6">
         <div className="mb-4">
-          <h3 className="text-base sm:text-lg font-semibold text-gray-900 dark:text-gray-100">{t('incomeVsExpenses')}</h3>
+          <div className="flex items-center gap-2">
+            <h3 className="text-base sm:text-lg font-semibold text-gray-900 dark:text-gray-100">{t('incomeVsExpenses')}</h3>
+            <InfoTooltip title={t('infoTitle')} description={t('infoDesc')} />
+          </div>
           <p className="text-xs sm:text-sm text-gray-500 dark:text-gray-400 mt-0.5">
             {period === 'week' ? t('comparisonDaily') : period === 'month' ? t('comparisonWeekly') : t('comparisonMonthly')}
           </p>

@@ -251,7 +251,9 @@
       "titleIncome": "Ingresos por Categoría",
       "titleExpense": "Gastos por Categoría",
       "subtitleIncome": "Distribución de fuentes de ingresos",
-      "subtitleExpense": "Distribución de categorías de gastos"
+      "subtitleExpense": "Distribución de categorías de gastos",
+      "infoTitle": "Desglose por Categorías",
+      "infoDesc": "Muestra cómo se distribuyen tus ingresos y gastos entre categorías. El gráfico circular ayuda a identificar qué categorías generan más ingresos o consumen más presupuesto."
     },
     "rptCategoryBreakdown": {
       "title": "Ingresos por Categoría",
@@ -946,7 +948,11 @@
       "bestYearLabel": "Mejor Año",
       "avgGrowthLabel": "Crecimiento Promedio",
       "loading": "Cargando gráfico...",
-      "yearLabel": "Año {year}"
+      "yearLabel": "Año {year}",
+      "infoTitle": "Ingresos vs Gastos",
+      "infoDesc": "Compara tus ingresos y gastos para el período seleccionado. Usa este gráfico para identificar tendencias, días pico y semanas donde los gastos superaron los ingresos.",
+      "weeklyPerfInfoTitle": "Rendimiento Semanal",
+      "weeklyPerfInfoDesc": "Muestra ingresos, gastos y beneficio de cada semana del mes basado en los registros de cierre semanal. Las semanas cerradas están bloqueadas y reflejan cifras definitivas."
     },
     "topTransactions": {
       "title": "Top Transacciones",

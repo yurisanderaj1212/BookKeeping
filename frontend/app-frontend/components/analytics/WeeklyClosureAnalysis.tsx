@@ -5,6 +5,7 @@ import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContaine
 import { CheckCircle, Clock, AlertCircle, TrendingUp } from 'lucide-react'
 import { useTranslations, useLocale } from 'next-intl'
 import { getSupabase } from '@/lib/supabaseClient'
+import InfoTooltip from '@/components/ui/InfoTooltip'
 
 interface WeeklyClosureAnalysisProps {
   period: string
@@ -155,7 +156,10 @@ export default function WeeklyClosureAnalysis({ year, month }: WeeklyClosureAnal
         <div className="bg-white dark:bg-gray-900 rounded-lg border border-gray-200 dark:border-gray-700 p-6">
           <div className="flex items-center justify-between mb-6">
             <div>
-              <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">{t('weeklyPerformance')}</h3>
+              <div className="flex items-center gap-2">
+                <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">{t('weeklyPerformance')}</h3>
+                <InfoTooltip title={t('weeklyPerfInfoTitle')} description={t('weeklyPerfInfoDesc')} />
+              </div>
               <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">{t('weeklyClosureSubtitle')}</p>
             </div>
           </div>

@@ -3,6 +3,7 @@
 import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip } from 'recharts'
 import { PieChart as PieIcon } from 'lucide-react'
 import { useTranslations, useLocale } from 'next-intl'
+import InfoTooltip from '@/components/ui/InfoTooltip'
 
 export interface CategoryData {
   name: string
@@ -37,17 +38,21 @@ interface ChartCardProps {
   emptyText: string
   emptyDesc: string
   formatCurrency: (n: number) => string
+  infoTitle?: string
+  infoDesc?: string
 }
 
-function ChartCard({ title, data, emptyText, emptyDesc, formatCurrency }: ChartCardProps) {
+function ChartCard({ title, data, emptyText, emptyDesc, formatCurrency, infoTitle, infoDesc }: ChartCardProps) {
   const chartData = data.map(c => ({
     name: c.name, value: c.amount, percentage: c.percentage, color: c.color,
   }))
 
   return (
     <div className="bg-white dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-gray-700 p-4 sm:p-6 hover:shadow-lg transition-shadow duration-300 flex-1 min-w-0">
-      {/* Title — large, top left, no subtitle */}
-      <h3 className="text-base sm:text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">{title}</h3>
+      <div className="flex items-center gap-2 mb-4">
+        <h3 className="text-base sm:text-lg font-semibold text-gray-900 dark:text-gray-100">{title}</h3>
+        {infoTitle && infoDesc && <InfoTooltip title={infoTitle} description={infoDesc} />}
+      </div>
 
       {data.length === 0 ? (
         <div className="flex items-center justify-center py-10">
@@ -134,6 +139,8 @@ export default function CategoryBreakdown({ categories }: CategoryBreakdownProps
         emptyText={t('empty')}
         emptyDesc={t('emptyDesc')}
         formatCurrency={formatCurrency}
+        infoTitle={t('infoTitle')}
+        infoDesc={t('infoDesc')}
       />
       <ChartCard
         title={t('titleExpense')}
@@ -141,6 +148,8 @@ export default function CategoryBreakdown({ categories }: CategoryBreakdownProps
         emptyText={t('empty')}
         emptyDesc={t('emptyDesc')}
         formatCurrency={formatCurrency}
+        infoTitle={t('infoTitle')}
+        infoDesc={t('infoDesc')}
       />
     </div>
   )
