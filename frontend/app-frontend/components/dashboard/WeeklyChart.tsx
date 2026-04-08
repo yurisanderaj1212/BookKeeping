@@ -4,7 +4,6 @@ import { useEffect, useState } from 'react'
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, Cell } from 'recharts'
 import { WeeklyData } from '../../data/dashboard-data'
 import type { ChartDataPoint } from '@/services/dashboardService'
-import { MoreHorizontal } from 'lucide-react'
 import InfoTooltip from '@/components/ui/InfoTooltip'
 import { useTranslations, useLocale } from 'next-intl'
 
@@ -16,12 +15,21 @@ export default function WeeklyChart({ data }: WeeklyChartProps) {
   const t = useTranslations('dashboard.weeklyChart')
   const locale = useLocale()
   const [isMobile, setIsMobile] = useState(false)
+  const [isDark, setIsDark] = useState(false)
 
   useEffect(() => {
     const check = () => setIsMobile(window.innerWidth < 640)
     check()
     window.addEventListener('resize', check)
     return () => window.removeEventListener('resize', check)
+  }, [])
+
+  useEffect(() => {
+    const checkDark = () => setIsDark(document.documentElement.classList.contains('dark'))
+    checkDark()
+    const obs = new MutationObserver(checkDark)
+    obs.observe(document.documentElement, { attributes: true, attributeFilter: ['class'] })
+    return () => obs.disconnect()
   }, [])
 
   const formatCurrency = (amount: number) =>
@@ -104,9 +112,6 @@ export default function WeeklyChart({ data }: WeeklyChartProps) {
           </h3>
           <p className="text-xs sm:text-sm text-gray-500 dark:text-gray-400 mt-0.5">{t('subtitle')}</p>
         </div>
-        <button className="p-1.5 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-colors">
-          <MoreHorizontal className="w-4 h-4 text-gray-400" />
-        </button>
       </div>
 
       <ResponsiveContainer width="100%" height={chartHeight}>
@@ -132,7 +137,7 @@ export default function WeeklyChart({ data }: WeeklyChartProps) {
             width={yAxisWidth}
             domain={[minNegative, 'auto']}
           />
-          <Tooltip content={<CustomTooltip />} cursor={{ fill: 'rgba(0,0,0,0.04)' }} />
+          <Tooltip content={<CustomTooltip />} cursor={{ fill: isDark ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.04)' }} />
           <Legend
             wrapperStyle={{ paddingTop: isMobile ? '10px' : '16px', fontSize: isMobile ? 11 : 12 }}
             iconType="circle"
