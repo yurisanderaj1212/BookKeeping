@@ -224,8 +224,11 @@ function buildEmail(params: {
 export async function POST(req: NextRequest) {
   // Verify cron secret
   const auth = req.headers.get('authorization')
-  if (auth !== `Bearer ${process.env.CRON_SECRET}`) {
-    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+  const expected = `Bearer ${process.env.CRON_SECRET ?? 'NOT_SET'}`
+  console.log('[weekly-report] auth header:', auth)
+  console.log('[weekly-report] expected:', expected)
+  if (auth !== expected) {
+    return NextResponse.json({ error: 'Unauthorized', hint: `expected length ${expected.length}, got length ${auth?.length ?? 0}` }, { status: 401 })
   }
 
   // Week range: last Sunday → last Saturday
