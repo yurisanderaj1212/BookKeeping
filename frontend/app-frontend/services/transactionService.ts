@@ -163,6 +163,7 @@ export async function update(id: number, dto: UpdateTransactionDto): Promise<Tra
   if (dto.description !== undefined) patch.description = dto.description
   if (dto.date !== undefined) patch.date = dto.date
   if (dto.notes !== undefined) patch.notes = dto.notes
+  if (dto.status !== undefined) patch.status = dto.status
   const catId = dto.category_id ?? dto.categoryId
   if (catId !== undefined) patch.category_id = catId
   const accId = dto.account_id ?? dto.accountId

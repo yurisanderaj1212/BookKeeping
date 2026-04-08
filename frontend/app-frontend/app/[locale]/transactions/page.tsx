@@ -1,4 +1,4 @@
-﻿'use client'
+'use client'
 
 import { useState, useEffect } from 'react'
 import { Plus, Search, Filter, Download, Calendar, ChevronLeft, ChevronRight } from 'lucide-react'
@@ -203,13 +203,14 @@ export default function TransactionsPage() {
       if (editingTransaction) {
         // Update existing transaction
         const updateDto: transactionService.UpdateTransactionDto = {
-          // Income = 1, Expense = 2 (TransactionType enum del backend)
           type: transactionData.type === 'income' ? 1 : 2,
           amount: transactionData.amount,
           description: transactionData.description,
           categoryId: parseInt(transactionData.category),
           date: transactionData.date,
-          accountId: transactionData.accountId || undefined // Incluir accountId (puede ser undefined)
+          notes: transactionData.notes || '',
+          status: transactionData.status === 'pending' ? 1 : 0,
+          accountId: transactionData.accountId || undefined,
         }
         
         await transactionService.update(parseInt(editingTransaction.id), updateDto)
