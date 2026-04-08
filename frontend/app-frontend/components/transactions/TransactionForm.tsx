@@ -45,7 +45,7 @@ export default function TransactionForm({ isOpen, onClose, onSave, transaction, 
 
   const [formData, setFormData] = useState({
     type: 'income', amount: '', description: '', category: '',
-    date: new Date().toISOString().split('T')[0], status: 'pending', notes: '', accountId: '',
+    date: new Date().toISOString().split('T')[0], status: 'completed', notes: '', accountId: '',
   })
   const [errors, setErrors] = useState<Record<string, string>>({})
   const [categories, setCategories] = useState<{ income: Array<{ value: string; label: string; isSystem: boolean }>; expense: Array<{ value: string; label: string; isSystem: boolean }> }>({ income: [], expense: [] })
@@ -101,7 +101,7 @@ export default function TransactionForm({ isOpen, onClose, onSave, transaction, 
         accountId: transaction.accountId?.toString() || '',
       })
     } else {
-      setFormData({ type: 'income', amount: '', description: '', category: '', date: new Date().toISOString().split('T')[0], status: 'pending', notes: '', accountId: '' })
+      setFormData({ type: 'income', amount: '', description: '', category: '', date: new Date().toISOString().split('T')[0], status: 'completed', notes: '', accountId: '' })
     }
     setErrors({})
     setShowAccountWarning(false)
@@ -129,7 +129,7 @@ export default function TransactionForm({ isOpen, onClose, onSave, transaction, 
     })
     onClose()
     if (mode === 'create') {
-      setFormData({ type: 'income', amount: '', description: '', category: '', date: new Date().toISOString().split('T')[0], status: 'pending', notes: '', accountId: '' })
+      setFormData({ type: 'income', amount: '', description: '', category: '', date: new Date().toISOString().split('T')[0], status: 'completed', notes: '', accountId: '' })
       setShowAccountWarning(false)
     }
   }

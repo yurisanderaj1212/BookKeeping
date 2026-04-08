@@ -78,7 +78,9 @@ export default function ReportsPage() {
       cursor.setDate(cursor.getDate() + 7)
     }
     return weeks
-  }  const [totalTransactions, setTotalTransactions] = useState<number>(0)
+  }
+
+  const [totalTransactions, setTotalTransactions] = useState<number>(0)
 
   useEffect(() => {
     getTransactionSummary({ period: 'month' })
