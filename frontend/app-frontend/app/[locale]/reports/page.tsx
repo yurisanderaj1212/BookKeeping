@@ -1,4 +1,4 @@
-﻿'use client'
+'use client'
 
 import { useState, useEffect } from 'react'
 import { useRouter } from '@/i18n/routing'
@@ -51,7 +51,34 @@ export default function ReportsPage() {
   } = useOnboarding()
   const [selectedYear, setSelectedYear] = useState(String(new Date().getFullYear()))
   const [selectedMonth, setSelectedMonth] = useState(String(new Date().getMonth() + 1).padStart(2, '0'))
-  const [totalTransactions, setTotalTransactions] = useState<number>(0)
+  const [selectedWeek, setSelectedWeek] = useState(() => {
+    const now = new Date()
+    const firstDay = new Date(now.getFullYear(), now.getMonth(), 1)
+    const firstSunday = new Date(firstDay)
+    firstSunday.setDate(firstDay.getDate() - firstDay.getDay())
+    const diffDays = Math.floor((now.getTime() - firstSunday.getTime()) / 86400000)
+    return String(Math.floor(diffDays / 7) + 1)
+  })
+  const getWeeksInMonth = (year: number, month: number) => {
+    const firstDay = new Date(year, month - 1, 1)
+    const lastDay  = new Date(year, month, 0)
+    const firstSunday = new Date(firstDay)
+    firstSunday.setDate(firstDay.getDate() - firstDay.getDay())
+    const weeks: { value: string; label: string }[] = []
+    let weekNum = 1
+    const cursor = new Date(firstSunday)
+    while (cursor <= lastDay) {
+      const weekStart = new Date(cursor)
+      const weekEnd   = new Date(cursor); weekEnd.setDate(cursor.getDate() + 6)
+      if (weekEnd >= firstDay) {
+        const fmt = (d: Date) => d.toLocaleDateString(undefined, { month: 'short', day: 'numeric' })
+        weeks.push({ value: String(weekNum), label: `${fmt(weekStart)} - ${fmt(weekEnd)}` })
+        weekNum++
+      }
+      cursor.setDate(cursor.getDate() + 7)
+    }
+    return weeks
+  }  const [totalTransactions, setTotalTransactions] = useState<number>(0)
 
   useEffect(() => {
     getTransactionSummary({ period: 'month' })
@@ -177,40 +204,40 @@ export default function ReportsPage() {
               </div>
             </div>
             <div className="flex items-center gap-2 flex-wrap mt-2">
-              <select
-                value={selectedPeriod}
-                onChange={(e) => setSelectedPeriod(e.target.value as 'week' | 'month' | 'year')}
-                className="flex-1 min-w-[100px] px-2 py-1.5 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary-500 text-sm bg-white dark:bg-gray-800 dark:text-gray-100"
-              >
-                <option value="week">{t('thisWeek')}</option>
-                <option value="month">{t('thisMonth')}</option>
-                <option value="year">{t('thisYear')}</option>
-              </select>
+              {/* Year */}
               <select
                 value={selectedYear}
                 onChange={(e) => setSelectedYear(e.target.value)}
                 className="px-2 py-1.5 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary-500 text-sm bg-white dark:bg-gray-800 dark:text-gray-100"
               >
-                {Array.from({ length: 4 }, (_, i) => {
-                  const y = new Date().getFullYear() - i
-                  return <option key={y} value={String(y)}>{y}</option>
-                })}
+                {Array.from({ length: 4 }, (_, i) => new Date().getFullYear() - i).map(y => (
+                  <option key={y} value={String(y)}>{y}</option>
+                ))}
               </select>
-              {selectedPeriod === 'month' && (
-                <select
-                  value={selectedMonth}
-                  onChange={(e) => setSelectedMonth(e.target.value)}
-                  className="flex-1 min-w-[100px] px-2 py-1.5 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary-500 text-sm bg-white dark:bg-gray-800 dark:text-gray-100"
-                >
-                  {Array.from({ length: 12 }, (_, i) => (
-                    <option key={i + 1} value={String(i + 1).padStart(2, '0')}>
-                      {t(`months.${i + 1}` as any)}
-                    </option>
-                  ))}
-                </select>
-              )}
+              {/* Month */}
+              <select
+                value={selectedMonth}
+                onChange={(e) => setSelectedMonth(e.target.value)}
+                className="flex-1 min-w-[90px] px-2 py-1.5 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary-500 text-sm bg-white dark:bg-gray-800 dark:text-gray-100"
+              >
+                {Array.from({ length: 12 }, (_, i) => (
+                  <option key={i + 1} value={String(i + 1).padStart(2, '0')}>
+                    {t(`months.${i + 1}` as any)}
+                  </option>
+                ))}
+              </select>
+              {/* Week with date range */}
+              <select
+                value={selectedWeek}
+                onChange={(e) => { setSelectedWeek(e.target.value); setSelectedPeriod('week') }}
+                className="flex-1 min-w-[140px] px-2 py-1.5 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary-500 text-sm bg-white dark:bg-gray-800 dark:text-gray-100"
+              >
+                {getWeeksInMonth(parseInt(selectedYear), parseInt(selectedMonth)).map((week) => (
+                  <option key={week.value} value={week.value}>{week.label}</option>
+                ))}
+              </select>
             </div>
-          </div>
+            </div>
 
           {/* Quick Stats — 2 top + 1 full-width bottom on mobile */}
           <div className="grid grid-cols-2 md:grid-cols-3 gap-3 sm:gap-4 mb-4 sm:mb-6">

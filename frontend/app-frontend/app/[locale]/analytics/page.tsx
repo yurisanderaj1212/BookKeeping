@@ -78,12 +78,25 @@ export default function ReportsPage() {
   const getWeeksInMonth = () => {
     const year = parseInt(selectedYear)
     const month = parseInt(selectedMonth)
-    const daysInMonth = new Date(year, month, 0).getDate()
-    const weeks = Math.ceil(daysInMonth / 7)
-    return Array.from({ length: weeks }, (_, i) => ({
-      value: (i + 1).toString(),
-      label: t(`weeks.${i + 1}` as any),
-    }))
+    const firstDay = new Date(year, month - 1, 1)
+    const lastDay  = new Date(year, month, 0)
+    // Find Sunday on or before the 1st
+    const firstSunday = new Date(firstDay)
+    firstSunday.setDate(firstDay.getDate() - firstDay.getDay())
+    const weeks: { value: string; label: string }[] = []
+    let weekNum = 1
+    const cursor = new Date(firstSunday)
+    while (cursor <= lastDay) {
+      const weekStart = new Date(cursor)
+      const weekEnd   = new Date(cursor); weekEnd.setDate(cursor.getDate() + 6)
+      if (weekEnd >= firstDay) {
+        const fmt = (d: Date) => d.toLocaleDateString(undefined, { month: 'short', day: 'numeric' })
+        weeks.push({ value: String(weekNum), label: `${fmt(weekStart)} - ${fmt(weekEnd)}` })
+        weekNum++
+      }
+      cursor.setDate(cursor.getDate() + 7)
+    }
+    return weeks
   }
 
   return (
@@ -130,50 +143,40 @@ export default function ReportsPage() {
               </div>
             </div>
             <div className="flex items-center gap-2 flex-wrap">
-              <select
-                value={selectedPeriod}
-                onChange={(e) => setSelectedPeriod(e.target.value as 'week' | 'month' | 'year')}
-                className="flex-1 min-w-[90px] px-2 py-1.5 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary-500 text-sm bg-white dark:bg-gray-800 dark:text-gray-100"
-              >
-                <option value="week">{t('thisWeek')}</option>
-                <option value="month">{t('thisMonth')}</option>
-                <option value="year">{t('thisYear')}</option>
-              </select>
+              {/* Year */}
               <select
                 value={selectedYear}
-                onChange={(e) => setSelectedYear(e.target.value)}
+                onChange={(e) => { setSelectedYear(e.target.value); setSelectedPeriod('week') }}
                 className="px-2 py-1.5 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary-500 text-sm bg-white dark:bg-gray-800 dark:text-gray-100"
               >
                 {Array.from({ length: 4 }, (_, i) => new Date().getFullYear() - i).map(y => (
                   <option key={y} value={String(y)}>{y}</option>
                 ))}
               </select>
-              {(selectedPeriod === 'month' || selectedPeriod === 'week') && (
-                <select
-                  value={selectedMonth}
-                  onChange={(e) => setSelectedMonth(e.target.value)}
-                  className="flex-1 min-w-[90px] px-2 py-1.5 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary-500 text-sm bg-white dark:bg-gray-800 dark:text-gray-100"
-                >
-                  {Array.from({ length: 12 }, (_, i) => (
-                    <option key={i + 1} value={String(i + 1).padStart(2, '0')}>
-                      {tReports(`months.${i + 1}` as any)}
-                    </option>
-                  ))}
-                </select>
-              )}
-              {selectedPeriod === 'week' && (
-                <select
-                  value={selectedWeek}
-                  onChange={(e) => setSelectedWeek(e.target.value)}
-                  className="flex-1 min-w-[80px] px-2 py-1.5 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary-500 text-sm bg-white dark:bg-gray-800 dark:text-gray-100"
-                >
-                  {getWeeksInMonth().map((week) => (
-                    <option key={week.value} value={week.value}>{week.label}</option>
-                  ))}
-                </select>
-              )}
+              {/* Month */}
+              <select
+                value={selectedMonth}
+                onChange={(e) => { setSelectedMonth(e.target.value); setSelectedPeriod('week') }}
+                className="flex-1 min-w-[90px] px-2 py-1.5 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary-500 text-sm bg-white dark:bg-gray-800 dark:text-gray-100"
+              >
+                {Array.from({ length: 12 }, (_, i) => (
+                  <option key={i + 1} value={String(i + 1).padStart(2, '0')}>
+                    {tReports(`months.${i + 1}` as any)}
+                  </option>
+                ))}
+              </select>
+              {/* Week with date range label */}
+              <select
+                value={selectedWeek}
+                onChange={(e) => { setSelectedWeek(e.target.value); setSelectedPeriod('week') }}
+                className="flex-1 min-w-[140px] px-2 py-1.5 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary-500 text-sm bg-white dark:bg-gray-800 dark:text-gray-100"
+              >
+                {getWeeksInMonth().map((week) => (
+                  <option key={week.value} value={week.value}>{week.label}</option>
+                ))}
+              </select>
             </div>
-          </div>
+            </div>
 
           {/* Summary Stats — 2x2 on mobile, 3-col on md+ */}
           <div className="grid grid-cols-2 md:grid-cols-3 gap-3 sm:gap-4 mb-4 sm:mb-6">
