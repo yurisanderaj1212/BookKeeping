@@ -255,6 +255,7 @@
       "infoTitle": "Category Breakdown",
       "infoDesc": "Shows how your revenue and expenses are distributed across categories. The pie chart helps identify which categories generate the most income or consume the most budget."
     },
+    "rptCategoryBreakdown": {
       "title": "Revenue by Category",
       "subtitle": "Distribution of income sources",
       "viewAll": "View All",
