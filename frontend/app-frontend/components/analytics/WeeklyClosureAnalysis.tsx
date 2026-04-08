@@ -88,9 +88,17 @@ export default function WeeklyClosureAnalysis({ year, month }: WeeklyClosureAnal
   const totalClosedProfit  = totalClosedIncome - totalClosedExpenses
   const avgWeeklyProfit    = closed.length > 0 ? totalClosedProfit / closed.length : 0
 
+  // Format date range label: "Apr 5 - 11"
+  const fmtRange = (start: string, end: string) => {
+    const s = new Date(start + 'T00:00:00')
+    const e = new Date(end   + 'T00:00:00')
+    const monthName = s.toLocaleDateString(locale === 'en' ? 'en-US' : 'es-ES', { month: 'short' })
+    return `${monthName} ${s.getDate()}-${e.getDate()}`
+  }
+
   const chartData = closures.map(r => ({
-    name:      `S${r.week_number}`,
-    fullName:  `${t('week')} ${r.week_number}`,
+    name:      fmtRange(r.start_date, r.end_date),
+    fullName:  `${t('week')} ${r.week_number} · ${fmtRange(r.start_date, r.end_date)}`,
     ingresos:  r.total_income,
     gastos:    r.total_expenses,
     beneficio: r.net_profit,
@@ -163,18 +171,33 @@ export default function WeeklyClosureAnalysis({ year, month }: WeeklyClosureAnal
               <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">{t('weeklyClosureSubtitle')}</p>
             </div>
           </div>
-          <ResponsiveContainer width="100%" height={320}>
-            <BarChart data={chartData} margin={{ top: 20, right: 30, left: 20, bottom: 5 }}>
+          <ResponsiveContainer width="100%" height={340}>
+            <BarChart data={chartData} margin={{ top: 20, right: 30, left: 20, bottom: 40 }}>
               <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
-              <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{ fontSize: 12, fill: '#6b7280' }} />
+              <XAxis dataKey="name" axisLine={false} tickLine={false}
+                tick={{ fontSize: 10, fill: '#6b7280' }}
+                angle={-25} textAnchor="end" interval={0} />
               <YAxis axisLine={false} tickLine={false} tick={{ fontSize: 12, fill: '#6b7280' }}
                 tickFormatter={v => `${(v/1000).toFixed(0)}k`} />
               <Tooltip content={<CustomTooltip />} />
-              <Bar dataKey="ingresos"  fill="#10b981" radius={[4,4,0,0]} />
-              <Bar dataKey="gastos"    fill="#ef4444" radius={[4,4,0,0]} />
-              <Bar dataKey="beneficio" fill="#60a5fa" radius={[4,4,0,0]} />
+              <Bar dataKey="ingresos"  fill="#10b981" radius={[4,4,0,0]} name={t('income')} />
+              <Bar dataKey="gastos"    fill="#ef4444" radius={[4,4,0,0]} name={t('expenses')} />
+              <Bar dataKey="beneficio" fill="#60a5fa" radius={[4,4,0,0]} name={t('profit')} />
             </BarChart>
           </ResponsiveContainer>
+          {/* Legend */}
+          <div className="flex items-center justify-center gap-5 mt-3">
+            {[
+              { color: '#10b981', label: t('income') },
+              { color: '#ef4444', label: t('expenses') },
+              { color: '#60a5fa', label: t('profit') },
+            ].map(item => (
+              <div key={item.label} className="flex items-center gap-1.5">
+                <div className="w-3 h-3 rounded-sm shrink-0" style={{ backgroundColor: item.color }} />
+                <span className="text-xs text-gray-500 dark:text-gray-400">{item.label}</span>
+              </div>
+            ))}
+          </div>
         </div>
       )}
 

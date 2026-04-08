@@ -5,6 +5,7 @@ import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContaine
 import { TrendingUp, BarChart3 } from 'lucide-react'
 import { useTranslations, useLocale } from 'next-intl'
 import { getSupabase } from '@/lib/supabaseClient'
+import InfoTooltip from '@/components/ui/InfoTooltip'
 
 interface AnnualPerformanceProps {
   period: string
@@ -84,7 +85,10 @@ export default function AnnualPerformance({ year }: AnnualPerformanceProps) {
     <div className="bg-white dark:bg-gray-900 rounded-lg border border-gray-200 dark:border-gray-700 p-6 mb-8">
       <div className="flex items-center justify-between mb-6">
         <div>
-          <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">{t('annualPerformanceTitle', { year })}</h3>
+          <div className="flex items-center gap-2">
+            <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">{t('annualPerformanceTitle', { year })}</h3>
+            <InfoTooltip title={t('annualInfoTitle')} description={t('annualInfoDesc')} />
+          </div>
           <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">{t('monthlyBreakdown')}</p>
         </div>
       </div>
