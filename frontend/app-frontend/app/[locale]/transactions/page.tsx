@@ -130,26 +130,32 @@ export default function TransactionsPage() {
       
       // Filtro de rango de fechas
       if (dateRange !== 'all') {
-        const today = new Date()
-        let startDate: Date | null = null
-        
+        const now = new Date()
+        const y = now.getFullYear()
+        const m = now.getMonth()
+        const d = now.getDate()
+        const todayStr = `${y}-${String(m + 1).padStart(2, '0')}-${String(d).padStart(2, '0')}`
+
         switch (dateRange) {
           case 'today':
-            startDate = new Date(today.setHours(0, 0, 0, 0))
-            params.startDate = startDate.toISOString().split('T')[0]
-            params.endDate = startDate.toISOString().split('T')[0]
+            params.startDate = todayStr
+            params.endDate   = todayStr
             break
-          case 'week':
-            startDate = new Date(today.getTime() - 7 * 24 * 60 * 60 * 1000)
-            params.startDate = startDate.toISOString().split('T')[0]
+          case 'week': {
+            // Current week Sun-Sat
+            const sun = new Date(y, m, d - now.getDay())
+            const sat = new Date(y, m, d - now.getDay() + 6)
+            params.startDate = sun.toISOString().split('T')[0]
+            params.endDate   = sat.toISOString().split('T')[0]
             break
+          }
           case 'month':
-            startDate = new Date(today.getFullYear(), today.getMonth(), 1)
-            params.startDate = startDate.toISOString().split('T')[0]
+            params.startDate = `${y}-${String(m + 1).padStart(2, '0')}-01`
+            params.endDate   = new Date(y, m + 1, 0).toISOString().split('T')[0]
             break
           case 'year':
-            startDate = new Date(today.getFullYear(), 0, 1)
-            params.startDate = startDate.toISOString().split('T')[0]
+            params.startDate = `${y}-01-01`
+            params.endDate   = `${y}-12-31`
             break
         }
       }

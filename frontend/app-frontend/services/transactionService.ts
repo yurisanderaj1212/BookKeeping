@@ -101,8 +101,18 @@ export async function getFiltered(params: TransactionQueryParameters): Promise<P
   if (params.startDate) query = query.gte('date', params.startDate)
   if (params.endDate) query = query.lte('date', params.endDate)
   if (params.searchText) query = query.ilike('description', `%${params.searchText}%`)
-  if (params.categoryId) query = query.eq('category_id', params.categoryId)
-  if (params.accountId) query = query.eq('account_id', params.accountId)
+
+  // Category filter — support single ID or comma-separated IDs
+  const catId = params.categoryId ?? (params.categoryIds && params.categoryIds !== 'null' ? parseInt(params.categoryIds) : undefined)
+  if (catId) query = query.eq('category_id', catId)
+
+  // Account filter — support single ID, 'null' (no account), or comma-separated IDs
+  if (params.accountIds === 'null') {
+    query = query.is('account_id', null)
+  } else {
+    const accId = params.accountId ?? (params.accountIds ? parseInt(params.accountIds) : undefined)
+    if (accId) query = query.eq('account_id', accId)
+  }
 
   const sortCol = params.sortBy === 'date' ? 'date' : 'created_at'
   query = query.order(sortCol, { ascending: params.sortDirection === 'asc' })
