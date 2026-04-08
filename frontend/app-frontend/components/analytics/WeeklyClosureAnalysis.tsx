@@ -108,15 +108,20 @@ export default function WeeklyClosureAnalysis({ year, month }: WeeklyClosureAnal
   const CustomTooltip = ({ active, payload }: any) => {
     if (!active || !payload?.length) return null
     const d = payload[0]?.payload
+    const income   = d?.ingresos  ?? 0
+    const expenses = d?.gastos    ?? 0
+    const profit   = d?.beneficio ?? 0
+    const margin   = income > 0 ? ((profit / income) * 100).toFixed(1) : '0.0'
     return (
       <div className="bg-white dark:bg-gray-900 p-3 border border-gray-200 dark:border-gray-700 rounded-lg shadow-lg">
         <p className="font-medium text-gray-900 dark:text-gray-100 mb-2">{d?.fullName}</p>
         <p className="text-xs text-gray-500 dark:text-gray-400 mb-1">{t('status')}: {d?.status === 'closed' ? t('statusClosed') : t('statusOpen')}</p>
-        {payload.map((entry: any, i: number) => (
-          <p key={i} className="text-sm" style={{ color: entry.color }}>
-            {entry.dataKey === 'ingresos' ? t('income') : entry.dataKey === 'gastos' ? t('expenses') : t('profit')}: {formatCurrency(entry.value)}
-          </p>
-        ))}
+        <p className="text-sm" style={{ color: '#10b981' }}>{t('income')}: {formatCurrency(income)}</p>
+        <p className="text-sm" style={{ color: '#ef4444' }}>{t('expenses')}: {formatCurrency(expenses)}</p>
+        <p className="text-sm" style={{ color: '#60a5fa' }}>{t('profit')}: {formatCurrency(profit)}</p>
+        <p className="text-xs text-gray-500 dark:text-gray-400 mt-1 pt-1 border-t border-gray-100 dark:border-gray-700">
+          {t('margin')}: <span className={profit >= 0 ? 'text-green-500' : 'text-red-500'} style={{ fontWeight: 600 }}>{margin}%</span>
+        </p>
       </div>
     )
   }
@@ -171,12 +176,13 @@ export default function WeeklyClosureAnalysis({ year, month }: WeeklyClosureAnal
               <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">{t('weeklyClosureSubtitle')}</p>
             </div>
           </div>
-          <ResponsiveContainer width="100%" height={340}>
-            <BarChart data={chartData} margin={{ top: 20, right: 30, left: 20, bottom: 40 }}>
+          <ResponsiveContainer width="100%" height={360}>
+            <BarChart data={chartData} margin={{ top: 20, right: 30, left: 20, bottom: 55 }}>
               <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
               <XAxis dataKey="name" axisLine={false} tickLine={false}
-                tick={{ fontSize: 10, fill: '#6b7280' }}
-                angle={-25} textAnchor="end" interval={0} />
+                tick={{ fontSize: 12, fill: '#6b7280' }}
+                angle={-25} textAnchor="end" interval={0}
+                dy={8} />
               <YAxis axisLine={false} tickLine={false} tick={{ fontSize: 12, fill: '#6b7280' }}
                 tickCount={5}
                 tickFormatter={v => {
