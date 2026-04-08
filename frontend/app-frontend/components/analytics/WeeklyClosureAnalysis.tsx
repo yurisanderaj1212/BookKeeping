@@ -178,7 +178,12 @@ export default function WeeklyClosureAnalysis({ year, month }: WeeklyClosureAnal
                 tick={{ fontSize: 10, fill: '#6b7280' }}
                 angle={-25} textAnchor="end" interval={0} />
               <YAxis axisLine={false} tickLine={false} tick={{ fontSize: 12, fill: '#6b7280' }}
-                tickFormatter={v => `${(v/1000).toFixed(0)}k`} />
+                tickCount={5}
+                tickFormatter={v => {
+                  if (v === 0) return '$0'
+                  if (v >= 1000) return `$${(v / 1000).toFixed(1).replace(/\.0$/, '')}k`
+                  return `$${v}`
+                }} />
               <Tooltip content={<CustomTooltip />} />
               <Bar dataKey="ingresos"  fill="#10b981" radius={[4,4,0,0]} name={t('income')} />
               <Bar dataKey="gastos"    fill="#ef4444" radius={[4,4,0,0]} name={t('expenses')} />
