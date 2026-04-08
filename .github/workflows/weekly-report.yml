@@ -1,0 +1,20 @@
+name: Weekly Report Email
+
+on:
+  schedule:
+    # Every Monday at 18:00 UTC (2pm EST / 1pm CST / 11am PST)
+    - cron: '0 18 * * 1'
+  workflow_dispatch: # Allow manual trigger for testing
+
+jobs:
+  send-reports:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Send weekly reports
+        run: |
+          curl -X POST https://chillnumbers.com/api/send-weekly-report \
+            -H "Authorization: Bearer ${{ secrets.CRON_SECRET }}" \
+            -H "Content-Type: application/json" \
+            --fail \
+            --silent \
+            --show-error

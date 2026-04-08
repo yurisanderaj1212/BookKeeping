@@ -489,8 +489,21 @@ export default function SettingsPage() {
     showToast(t('companySaved'))
   }, [prefs, showToast, t])
 
-  const handleSaveNotifications = useCallback(() => {
+  const handleSaveNotifications = useCallback(async () => {
     saveLocalPreferences({ notifications: notifPrefs })
+    // Sync weeklyDigest to email_preferences table
+    try {
+      const { getSupabase } = await import('@/lib/supabaseClient')
+      const supabase = getSupabase()
+      const { data: { user } } = await supabase.auth.getUser()
+      if (user) {
+        await supabase.from('email_preferences').upsert({
+          user_id: user.id,
+          weekly_report: notifPrefs.weeklyDigest,
+          language: getLocalPreferences().language,
+        }, { onConflict: 'user_id' })
+      }
+    } catch { /* silencioso */ }
     showToast(t('notifSaved'))
   }, [notifPrefs, showToast, t])
 
