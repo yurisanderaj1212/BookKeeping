@@ -1,19 +1,21 @@
 ﻿'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import Link from 'next/link'
+import { useSearchParams } from 'next/navigation'
 import { ArrowLeft, Mail, CheckCircle, AlertCircle } from 'lucide-react'
 import { useTranslations } from 'next-intl'
 import { getSupabase } from '@/lib/supabaseClient'
 import AppLogo from '@/components/ui/AppLogo'
 import LanguageSwitcher from '@/components/ui/LanguageSwitcher'
+import { Suspense } from 'react'
 
 type Step = 'request' | 'sent' | 'reset' | 'done'
 
-export default function ForgotPasswordPage() {
+function ForgotPasswordForm() {
+  const searchParams  = useSearchParams()
   const [step, setStep]           = useState<Step>('request')
   const [email, setEmail]         = useState('')
-  const [token, setToken]         = useState('')
   const [password, setPassword]   = useState('')
   const [confirm, setConfirm]     = useState('')
   const [showPass, setShowPass]   = useState(false)
@@ -23,6 +25,13 @@ export default function ForgotPasswordPage() {
   const t    = useTranslations('auth.forgotPassword')
   const tReg = useTranslations('auth.register')
   const tErr = useTranslations('apiErrors')
+
+  // If redirected back from email link, go straight to reset form
+  useEffect(() => {
+    if (searchParams.get('reset') === '1') {
+      setStep('reset')
+    }
+  }, [searchParams])
 
   // ─── Step 1: request reset ────────────────────────────────────────────────
   const handleRequestReset = async (e: React.FormEvent) => {
@@ -39,7 +48,7 @@ export default function ForgotPasswordPage() {
     try {
       const supabase = getSupabase()
       await supabase.auth.resetPasswordForEmail(email.toLowerCase().trim(), {
-        redirectTo: `${window.location.origin}/auth/reset-password`
+        redirectTo: `${window.location.origin}/auth/callback?type=recovery`
       })
     } catch {
       // Always advance — don't reveal if email exists
@@ -49,14 +58,12 @@ export default function ForgotPasswordPage() {
     }
   }
 
-  // ─── Step 3: set new password ─────────────────────────────────────────────
+  // ─── Step 3: set new password (session already active from email link) ──────
   const handleResetPassword = async (e: React.FormEvent) => {
     e.preventDefault()
     setError('')
 
-    if (!token.trim()) { setError(t('errors.codeRequired')); return }
     if (password.length < 8) { setError(tErr('passwordWeak')); return }
-
     const hasUpper  = /[A-Z]/.test(password)
     const hasLower  = /[a-z]/.test(password)
     const hasDigit  = /[0-9]/.test(password)
@@ -90,7 +97,7 @@ export default function ForgotPasswordPage() {
   const passwordStrong = Object.values(passwordReqs).every(Boolean)
 
   return (
-    <div className="min-h-screen bg-slate-50 flex items-center justify-center px-4 py-6">
+    <div className="min-h-screen bg-slate-50 dark:bg-gray-950 flex items-center justify-center px-4 py-6">
       <div className="w-full max-w-md">
 
         <div className="flex items-center justify-between mb-6">
@@ -127,7 +134,7 @@ export default function ForgotPasswordPage() {
                 </div>
 
                 {error && (
-                  <div className="flex items-center gap-2 text-red-600 text-sm bg-red-50 px-3 py-2 rounded-lg">
+                  <div className="flex items-center gap-2 text-red-600 dark:text-red-400 text-sm bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 px-3 py-2 rounded-lg">
                     <AlertCircle className="w-4 h-4 shrink-0" />
                     {error}
                   </div>
@@ -148,7 +155,7 @@ export default function ForgotPasswordPage() {
           {step === 'sent' && (
             <>
               <div className="text-center mb-6">
-                <div className="w-12 h-12 bg-green-50 rounded-xl flex items-center justify-center mx-auto mb-4">
+                <div className="w-12 h-12 bg-green-50 dark:bg-green-900/20 rounded-xl flex items-center justify-center mx-auto mb-4">
                   <CheckCircle className="w-6 h-6 text-green-500" />
                 </div>
                 <h1 className="text-xl font-bold text-gray-900 dark:text-gray-100">{t('sentTitle')}</h1>
@@ -157,7 +164,7 @@ export default function ForgotPasswordPage() {
                 </p>
               </div>
 
-              <div className="bg-amber-50 border border-amber-200 rounded-lg p-3 mb-6 text-xs text-amber-700">
+              <div className="bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800 rounded-lg p-3 mb-6 text-xs text-amber-700 dark:text-amber-300">
                 {t('sentHint')}
               </div>
 
@@ -177,7 +184,7 @@ export default function ForgotPasswordPage() {
             </>
           )}
 
-          {/* ── Step 3: Enter code + new password ── */}
+          {/* ── Step 3: New password (session active from email link) ── */}
           {step === 'reset' && (
             <>
               <div className="text-center mb-6">
@@ -186,19 +193,6 @@ export default function ForgotPasswordPage() {
               </div>
 
               <form onSubmit={handleResetPassword} className="space-y-4">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                    {t('codeLabel')}
-                  </label>
-                  <input
-                    type="text"
-                    value={token}
-                    onChange={e => { setToken(e.target.value); setError('') }}
-                    placeholder={t('codePlaceholder')}
-                    required
-                    className="w-full px-3 py-2.5 border border-gray-300 dark:border-gray-600 rounded-lg text-sm font-mono tracking-widest focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent"
-                  />
-                </div>
 
                 <div>
                   <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
@@ -211,9 +205,9 @@ export default function ForgotPasswordPage() {
                       onChange={e => { setPassword(e.target.value); setError('') }}
                       placeholder={tReg('passwordPlaceholder')}
                       required
-                      className={`w-full px-3 py-2.5 pr-10 border rounded-lg text-sm focus:outline-none focus:ring-2 focus:border-transparent ${
+                      className={`w-full px-3 py-2.5 pr-10 border rounded-lg text-sm focus:outline-none focus:ring-2 focus:border-transparent bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 ${
                         password && passwordStrong
-                          ? 'border-green-300 focus:ring-green-500'
+                          ? 'border-green-300 dark:border-green-700 focus:ring-green-500'
                           : 'border-gray-300 dark:border-gray-600 focus:ring-primary-500'
                       }`}
                     />
@@ -265,16 +259,16 @@ export default function ForgotPasswordPage() {
                     onChange={e => { setConfirm(e.target.value); setError('') }}
                     placeholder={t('confirmPasswordPlaceholder')}
                     required
-                    className={`w-full px-3 py-2.5 border rounded-lg text-sm focus:outline-none focus:ring-2 focus:border-transparent ${
+                    className={`w-full px-3 py-2.5 border rounded-lg text-sm focus:outline-none focus:ring-2 focus:border-transparent bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 ${
                       confirm && confirm === password
-                        ? 'border-green-300 focus:ring-green-500'
+                        ? 'border-green-300 dark:border-green-700 focus:ring-green-500'
                         : 'border-gray-300 dark:border-gray-600 focus:ring-primary-500'
                     }`}
                   />
                 </div>
 
                 {error && (
-                  <div className="flex items-center gap-2 text-red-600 text-sm bg-red-50 px-3 py-2 rounded-lg">
+                  <div className="flex items-center gap-2 text-red-600 dark:text-red-400 text-sm bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 px-3 py-2 rounded-lg">
                     <AlertCircle className="w-4 h-4 shrink-0" />
                     {error}
                   </div>
@@ -294,7 +288,7 @@ export default function ForgotPasswordPage() {
           {/* ── Step 4: Success ── */}
           {step === 'done' && (
             <div className="text-center">
-              <div className="w-12 h-12 bg-green-50 rounded-xl flex items-center justify-center mx-auto mb-4">
+              <div className="w-12 h-12 bg-green-50 dark:bg-green-900/20 rounded-xl flex items-center justify-center mx-auto mb-4">
                 <CheckCircle className="w-6 h-6 text-green-500" />
               </div>
               <h1 className="text-xl font-bold text-gray-900 dark:text-gray-100 mb-2">{t('doneTitle')}</h1>
@@ -324,5 +318,13 @@ export default function ForgotPasswordPage() {
 
       </div>
     </div>
+  )
+}
+
+export default function ForgotPasswordPage() {
+  return (
+    <Suspense>
+      <ForgotPasswordForm />
+    </Suspense>
   )
 }

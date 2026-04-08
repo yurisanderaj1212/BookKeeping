@@ -5,6 +5,7 @@ import { cookies } from 'next/headers'
 export async function GET(request: Request) {
   const { searchParams, origin } = new URL(request.url)
   const code = searchParams.get('code')
+  const type = searchParams.get('type') // 'recovery' for password reset
 
   // Render internally uses localhost:10000 — use the real domain from headers
   const host = request.headers.get('x-forwarded-host')
@@ -36,6 +37,11 @@ export async function GET(request: Request) {
 
     const { error } = await supabase.auth.exchangeCodeForSession(code)
     if (!error) {
+      // Password recovery — redirect to reset form
+      if (type === 'recovery') {
+        return NextResponse.redirect(`${baseUrl}/${locale}/auth/forgot-password?reset=1`)
+      }
+      // OAuth or email confirmation — go to dashboard
       return NextResponse.redirect(`${baseUrl}/${locale}/dashboard`)
     }
   }
