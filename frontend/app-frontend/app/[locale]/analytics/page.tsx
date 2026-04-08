@@ -64,7 +64,7 @@ export default function ReportsPage() {
         pendingCount: data.pendingCount ?? 0
       }))
       .catch(() => {})
-  }, [selectedPeriod, selectedYear, selectedMonth])
+  }, [selectedPeriod, selectedYear, selectedMonth, selectedWeek])
 
   if (!isAuthenticated && !isLoading) return null
 

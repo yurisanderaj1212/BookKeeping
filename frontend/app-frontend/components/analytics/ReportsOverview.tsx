@@ -105,8 +105,13 @@ export default function ReportsOverview({ period, year, month, week }: ReportsOv
             const dateStr = `${y}-${m}-${day}`
             // Normalize transaction dates to YYYY-MM-DD (strip time if present)
             const dayRows = rows.filter(r => (r.date ?? '').substring(0, 10) === dateStr)
+            // Use static day abbreviations to avoid hydration mismatch
+            const dayNames = locale === 'en'
+              ? ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']
+              : ['Dom', 'Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb']
+            const label = `${dayNames[d.getDay()]} ${d.getDate()}`
             points.push({
-              name: d.toLocaleDateString(locale, { weekday: 'short' }),
+              name: label,
               ingresos: dayRows.filter(r => r.type === 1).reduce((s, r) => s + r.amount, 0),
               gastos: dayRows.filter(r => r.type === 2).reduce((s, r) => s + r.amount, 0),
             })
@@ -148,7 +153,7 @@ export default function ReportsOverview({ period, year, month, week }: ReportsOv
             const m = i + 1
             const w = monthMap.get(m) ?? { ingresos: 0, gastos: 0 }
             return {
-              name: new Date(parseInt(year), i, 1).toLocaleDateString(locale, { month: 'short' }),
+              name: new Date(parseInt(year), i, 1).toLocaleDateString(locale === 'en' ? 'en-US' : 'es-ES', { month: 'short' }),
               ...w,
             }
           })
