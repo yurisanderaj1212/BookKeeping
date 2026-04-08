@@ -61,6 +61,14 @@ export default function SubscribeSuccessPage() {
   return (
     <div className="min-h-screen bg-linear-to-br from-slate-900 via-slate-800 to-slate-900 text-white flex items-center justify-center px-4">
       <div className="text-center max-w-md">
+        {/* Logo */}
+        <div className="flex items-center justify-center gap-2.5 mb-8">
+          <div className="w-9 h-9 bg-primary-500 rounded-lg flex items-center justify-center">
+            <span className="text-white font-bold text-base">CN</span>
+          </div>
+          <span className="text-lg font-bold text-white">Chill Numbers</span>
+        </div>
+
         <div className="inline-flex items-center justify-center w-20 h-20 bg-green-500/20 rounded-full mb-6">
           {checking
             ? <Loader2 className="w-10 h-10 text-green-400 animate-spin" />
@@ -72,14 +80,14 @@ export default function SubscribeSuccessPage() {
         <p className="text-slate-400 mb-8">
           {checking
             ? 'Confirmando tu pago con Stripe...'
-            : 'Tu pago fue procesado correctamente. Ya tienes acceso completo a BookKeeping.'
+            : 'Tu pago fue procesado correctamente. Ya tienes acceso completo a Chill Numbers.'
           }
         </p>
 
         <button
           onClick={() => router.replace('/dashboard')}
           disabled={checking}
-          className="inline-flex items-center gap-2 bg-blue-600 hover:bg-blue-500 disabled:opacity-50 disabled:cursor-not-allowed px-6 py-3 rounded-xl font-semibold transition-colors"
+          className="inline-flex items-center gap-2 bg-primary-500 hover:bg-primary-600 disabled:opacity-50 disabled:cursor-not-allowed px-6 py-3 rounded-xl font-semibold transition-colors"
         >
           Ir al dashboard
           <ArrowRight className="w-4 h-4" />
