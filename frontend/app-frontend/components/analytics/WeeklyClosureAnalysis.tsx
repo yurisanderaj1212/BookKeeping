@@ -38,13 +38,37 @@ export default function WeeklyClosureAnalysis({ year, month }: WeeklyClosureAnal
       setLoading(true)
       try {
         const supabase = getSupabase()
-        const { data } = await supabase
+        // Get closure records for status/dates
+        const { data: closureData } = await supabase
           .from('week_closures')
           .select('id, week_number, start_date, end_date, total_income, total_expenses, net_profit, closed_at')
           .eq('year', parseInt(year))
           .eq('month', parseInt(month))
           .order('week_number')
-        if (!cancelled) setClosures(data ?? [])
+
+        const closureRows = closureData ?? []
+
+        // Get all transactions for the month to calculate real values
+        const monthStart = `${year}-${String(parseInt(month)).padStart(2, '0')}-01`
+        const monthEnd   = new Date(parseInt(year), parseInt(month), 0).toISOString().split('T')[0]
+        const { data: txData } = await supabase
+          .from('transactions')
+          .select('type, amount, date')
+          .gte('date', monthStart)
+          .lte('date', monthEnd)
+          .or('is_from_plaid.eq.false,is_business_transaction.eq.true')
+
+        const txs = txData ?? []
+
+        // Recalculate income/expenses per week from real transactions
+        const enriched = closureRows.map(row => {
+          const weekTxs = txs.filter(tx => tx.date >= row.start_date && tx.date <= row.end_date)
+          const income   = weekTxs.filter(tx => tx.type === 1).reduce((s, tx) => s + tx.amount, 0)
+          const expenses = weekTxs.filter(tx => tx.type === 2).reduce((s, tx) => s + tx.amount, 0)
+          return { ...row, total_income: income, total_expenses: expenses, net_profit: income - expenses }
+        })
+
+        if (!cancelled) setClosures(enriched)
       } catch { /* silencioso */ }
       finally { if (!cancelled) setLoading(false) }
     }

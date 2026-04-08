@@ -46,7 +46,19 @@ export default function ReportsPage() {
   const [transactionStats, setTransactionStats] = useState({ totalTransactions: 0, pendingCount: 0 })
 
   useEffect(() => {
-    getTransactionSummary({ period: selectedPeriod, year: parseInt(selectedYear), month: parseInt(selectedMonth) })
+    // Calculate week start/end dates for the selected week
+    const getWeekDates = () => {
+      const y = parseInt(selectedYear), m = parseInt(selectedMonth), wk = parseInt(selectedWeek)
+      const firstDay = new Date(y, m - 1, 1)
+      const firstSunday = new Date(firstDay)
+      firstSunday.setDate(firstDay.getDate() - firstDay.getDay())
+      const start = new Date(firstSunday); start.setDate(firstSunday.getDate() + (wk - 1) * 7)
+      const end = new Date(start); end.setDate(start.getDate() + 6)
+      const fmt = (d: Date) => d.toISOString().split('T')[0]
+      return { startDate: fmt(start), endDate: fmt(end) }
+    }
+    const weekDates = selectedPeriod === 'week' ? getWeekDates() : {}
+    getTransactionSummary({ period: selectedPeriod, year: parseInt(selectedYear), month: parseInt(selectedMonth), ...weekDates })
       .then((data: any) => setTransactionStats({
         totalTransactions: data.totalTransactions ?? 0,
         pendingCount: data.pendingCount ?? 0
