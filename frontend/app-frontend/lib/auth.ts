@@ -77,7 +77,6 @@ export function isProtectedRoute(pathname: string): boolean {
   const protectedRoutes = [
     '/dashboard',
     '/transactions',
-    '/employees',
     '/reports',
     '/analytics',
     '/settings',

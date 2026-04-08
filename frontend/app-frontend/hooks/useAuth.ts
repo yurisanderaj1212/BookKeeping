@@ -11,7 +11,7 @@ export interface User {
   lastName: string
 }
 
-const PROTECTED = ['/dashboard','/transactions','/employees','/reports','/analytics','/settings','/week-close','/notifications','/accounts','/subscribe']
+const PROTECTED = ['/dashboard','/transactions','/reports','/analytics','/settings','/week-close','/notifications','/accounts','/subscribe']
 const AUTH_ROUTES = ['/auth/login','/auth/register','/auth/forgot-password']
 
 const isProtected = (p: string) => PROTECTED.some(r => p.includes(r))

@@ -1,4 +1,4 @@
-﻿'use client'
+'use client'
 
 import { useState, useRef, useCallback, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
@@ -23,7 +23,6 @@ function getIcon(type: Notification['type']) {
   switch (type) {
     case 'transaction': return Receipt
     case 'report':      return FileText
-    case 'employee':    return Users
     case 'system':      return Settings
     case 'reminder':    return Clock
     case 'alert':       return AlertTriangle
@@ -124,7 +123,6 @@ export default function NotificationCenter({ isOpen, onClose, onRefresh }: Props
               <option value="all">{t('allTypes')}</option>
               <option value="transaction">{t('typeTransaction')}</option>
               <option value="report">{t('typeReport')}</option>
-              <option value="employee">{t('typeEmployee')}</option>
               <option value="alert">{t('typeAlert')}</option>
               <option value="reminder">{t('typeReminder')}</option>
               <option value="system">{t('typeSystem')}</option>

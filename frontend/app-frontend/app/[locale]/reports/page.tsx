@@ -87,9 +87,6 @@ export default function ReportsPage() {
       case 'category-breakdown':
         router.push(`/reports/category-breakdown?${params.toString()}`)
         break
-      case 'employee-summary':
-        router.push(`/reports/employee-summary?${params.toString()}`)
-        break
       case 'week-close':
         router.push(`/reports/week-close?${params.toString()}`)
         break

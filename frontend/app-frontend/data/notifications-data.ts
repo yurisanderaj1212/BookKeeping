@@ -59,7 +59,7 @@ export const mockNotifications: Notification[] = [
     message: 'Sarah Johnson ha sido agregada al sistema como Gerente de Ventas',
     timestamp: '2024-01-26T08:45:00Z',
     read: true,
-    actionUrl: '/employees',
+    actionUrl: '/dashboard',
     actionLabel: 'Ver Empleados',
     metadata: {
       employeeId: '1'
@@ -117,7 +117,7 @@ export const mockNotifications: Notification[] = [
     message: 'La nómina quincenal ha sido procesada exitosamente para 5 empleados',
     timestamp: '2024-01-25T14:20:00Z',
     read: true,
-    actionUrl: '/employees',
+    actionUrl: '/dashboard',
     actionLabel: 'Ver Detalles'
   },
   {

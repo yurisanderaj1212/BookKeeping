@@ -1,4 +1,4 @@
-﻿'use client'
+'use client'
 
 import { useState, useEffect, useCallback } from 'react'
 import { useRouter } from 'next/navigation'
@@ -23,7 +23,6 @@ function getIcon(type: Notification['type']) {
   switch (type) {
     case 'transaction': return Receipt
     case 'report': return FileText
-    case 'employee': return Users
     case 'system': return Settings
     case 'reminder': return Clock
     case 'alert': return AlertTriangle
@@ -264,7 +263,6 @@ export default function NotificationsPage() {
                     <option value="all">{t('allTypes')}</option>
                     <option value="transaction">{t('typeTransaction')} ({stats?.byType?.transaction ?? 0})</option>
                     <option value="report">{t('typeReport')} ({stats?.byType?.report ?? 0})</option>
-                    <option value="employee">{t('typeEmployee')} ({stats?.byType?.employee ?? 0})</option>
                     <option value="alert">{t('typeAlert')} ({stats?.byType?.alert ?? 0})</option>
                     <option value="reminder">{t('typeReminder')} ({stats?.byType?.reminder ?? 0})</option>
                     <option value="system">{t('typeSystem')} ({stats?.byType?.system ?? 0})</option>

@@ -1,7 +1,5 @@
 // Centralized transactions data - will be replaced with API calls later
 
-import { calculatePayrollExpenses } from './employees-data'
-
 export interface Transaction {
   id: string
   type: 'income' | 'expense'
@@ -432,26 +430,7 @@ export const getTotalExpensesFiltered = (startDate?: string, endDate?: string): 
   }
   
   const transactionExpenses = transactions.reduce((sum, t) => sum + t.amount, 0)
-  
-  // Add payroll expenses based on date range
-  let payrollExpenses = 0
-  if (startDate && endDate) {
-    const start = new Date(startDate)
-    const end = new Date(endDate)
-    const daysDiff = Math.ceil((end.getTime() - start.getTime()) / (1000 * 60 * 60 * 24))
-    
-    if (daysDiff <= 7) {
-      payrollExpenses = calculatePayrollExpenses('week')
-    } else if (daysDiff <= 31) {
-      payrollExpenses = calculatePayrollExpenses('month')
-    } else {
-      payrollExpenses = calculatePayrollExpenses('year')
-    }
-  } else {
-    payrollExpenses = calculatePayrollExpenses('month')
-  }
-  
-  return transactionExpenses + payrollExpenses
+  return transactionExpenses
 }
 
 export const getNetProfitFiltered = (startDate?: string, endDate?: string): number => {
@@ -489,14 +468,9 @@ export const getTotalIncome = (): number => {
 }
 
 export const getTotalExpenses = (): number => {
-  const transactionExpenses = mockTransactions
+  return mockTransactions
     .filter(t => t.type === 'expense')
     .reduce((sum, t) => sum + t.amount, 0)
-  
-  // Add monthly payroll expenses
-  const payrollExpenses = calculatePayrollExpenses('month')
-  
-  return transactionExpenses + payrollExpenses
 }
 
 export const getNetProfit = (): number => {

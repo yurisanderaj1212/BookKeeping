@@ -8,7 +8,6 @@ import { useSidebarCollapsed } from '@/hooks/useSidebarCollapsed'
 import {
   LayoutDashboard,
   Receipt,
-  Users,
   FileText,
   BarChart3,
   Settings,
@@ -37,7 +36,6 @@ const menuItems: MenuItem[] = [
   { id: 'reports',      label: 'nav.reports',      icon: FileText,        href: '/reports' },
   { id: 'analytics',    label: 'nav.analytics',    icon: BarChart3,       href: '/analytics' },
   { id: 'accounts',     label: 'nav.accounts',     icon: Wallet,          href: '/accounts' },
-  { id: 'employees',    label: 'nav.employees',    icon: Users,           href: '/employees' },
 ]
 
 const settingsItems: MenuItem[] = [

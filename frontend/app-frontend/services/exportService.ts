@@ -1,7 +1,7 @@
 import * as XLSX from 'xlsx'
 import {
   getFinancialSummary, getProfitLoss, getTransactionSummary,
-  getCategoryBreakdown, getEmployeeSummary, formatCurrency, type ReportParams
+  getCategoryBreakdown, formatCurrency, type ReportParams
 } from '@/services/reportService'
 import * as transactionService from '@/services/transactionService'
 
@@ -42,18 +42,12 @@ interface L {
   noTxInPeriod: string; showingOf: (shown: number, total: number) => string
   // category breakdown
   categoryBreakdown: string; incomeCategories: string; expenseCategories: string
-  // employee summary
-  employeeSummary: string; generalSummaryEmp: string
-  activeEmployees: string; inactiveEmployees: string
-  annualPayroll: string; avgSalary: string; byPayrollType: string
-  payrollType: string; employeesCount: string; totalSalary: string
   // transactions list
   txList: string; account: string
   // analytics
   analyticsReport: string; executiveSummaryAnalytics: string
   indicator: string; value: string; detailCol: string
   txCompleted2: string; txPending2: string
-  employees: string; activeEmp: string; annualPayrollTotal: string
   avgSalaryLabel: string; txDetail: string; categoryAnalysis: string
   top5Income: string; top5Expenses: string; weeklyClosures: string
   staffSummary: string; monthlyPerformance: string; noData: string
@@ -107,18 +101,12 @@ const LABELS: Record<'en' | 'es', L> = {
     showingOf: (s, t) => `Showing ${s} of ${t}`,
     categoryBreakdown: 'CATEGORY BREAKDOWN',
     incomeCategories: 'Income Categories', expenseCategories: 'Expense Categories',
-    employeeSummary: 'EMPLOYEE SUMMARY', generalSummaryEmp: 'GENERAL SUMMARY',
-    activeEmployees: 'Active Employees', inactiveEmployees: 'Inactive Employees',
-    annualPayroll: 'Total Annual Payroll', avgSalary: 'Average Salary',
-    byPayrollType: 'BY PAYROLL TYPE', payrollType: 'Payroll Type',
-    employeesCount: 'Employees', totalSalary: 'Total Salary',
     txList: 'TRANSACTION LIST', account: 'Account',
     analyticsReport: 'COMPLETE FINANCIAL ANALYSIS',
     executiveSummaryAnalytics: 'EXECUTIVE SUMMARY',
     indicator: 'Indicator', value: 'Value', detailCol: 'Detail',
     txCompleted2: 'Completed Transactions', txPending2: 'Pending Transactions',
-    employees: 'EMPLOYEES', activeEmp: 'Active Employees',
-    annualPayrollTotal: 'Total Annual Payroll', avgSalaryLabel: 'Average Salary',
+    avgSalaryLabel: 'Average Salary',
     txDetail: 'TRANSACTION DETAIL', categoryAnalysis: 'CATEGORY ANALYSIS',
     top5Income: 'Top 5 Income', top5Expenses: 'Top 5 Expenses',
     weeklyClosures: 'Weekly Closures', staffSummary: 'Staff Summary',
@@ -172,18 +160,12 @@ const LABELS: Record<'en' | 'es', L> = {
     showingOf: (s, t) => `Mostrando ${s} de ${t}`,
     categoryBreakdown: 'DESGLOSE POR CATEGORÍAS',
     incomeCategories: 'Categorías de Ingresos', expenseCategories: 'Categorías de Gastos',
-    employeeSummary: 'RESUMEN DE EMPLEADOS', generalSummaryEmp: 'RESUMEN GENERAL',
-    activeEmployees: 'Empleados Activos', inactiveEmployees: 'Empleados Inactivos',
-    annualPayroll: 'Nómina Anual Total', avgSalary: 'Salario Promedio',
-    byPayrollType: 'POR TIPO DE NÓMINA', payrollType: 'Tipo de Nómina',
-    employeesCount: 'Empleados', totalSalary: 'Salario Total',
     txList: 'LISTADO DE TRANSACCIONES', account: 'Cuenta',
     analyticsReport: 'ANÁLISIS FINANCIERO COMPLETO',
     executiveSummaryAnalytics: 'RESUMEN EJECUTIVO',
     indicator: 'Indicador', value: 'Valor', detailCol: 'Detalle',
     txCompleted2: 'Transacciones Completadas', txPending2: 'Transacciones Pendientes',
-    employees: 'EMPLEADOS', activeEmp: 'Empleados Activos',
-    annualPayrollTotal: 'Nómina Total Anual', avgSalaryLabel: 'Salario Promedio',
+    avgSalaryLabel: 'Salario Promedio',
     txDetail: 'DETALLE DE TRANSACCIONES', categoryAnalysis: 'ANÁLISIS POR CATEGORÍAS',
     top5Income: 'Top 5 Ingresos', top5Expenses: 'Top 5 Gastos',
     weeklyClosures: 'Cierres Semanales', staffSummary: 'Resumen de Personal',
@@ -483,7 +465,6 @@ export async function exportTransactionSummary(params: ReportParams, format: 'ex
     ws1['!cols'] = [{wch:32},{wch:18},{wch:36}]
     titleRow(ws1, 0, 3, `CHILL NUMBERS — ${l.txSummary}`)
     applyHeaderStyle(ws1, 'A5:C5')
-    applyHeaderStyle(ws1, 'A13:C13')
     XLSX.utils.book_append_sheet(wb, ws1, l.generalSummary.substring(0, 31))
 
     const s2: any[][] = [
@@ -593,47 +574,6 @@ export async function exportCategoryBreakdown(params: ReportParams, format: 'exc
       return `<tr><td>${c.categoryName ?? c.category ?? c.name}</td><td>${c.type === 0 ? l.income : l.expenses}</td><td class="c">${c.count ?? 0}</td><td class="r ${c.type === 0 ? 'pos' : 'neg'}">${formatCurrency(amt)}</td><td class="r">${pct}%</td></tr>`
     }).join('')
     openPDF(l.categoryBreakdown, `<div class="section"><div class="section-header"><div class="section-dot"></div><div class="section-title">${l.categoryBreakdown}</div></div><table><thead><tr><th>${l.category}</th><th>${l.type}</th><th class="c">${l.transactions}</th><th class="r">${l.amount}</th><th class="r">%</th></tr></thead><tbody>${rows}</tbody></table></div>`)
-  }
-}
-
-// ─── EMPLOYEE SUMMARY ────────────────────────────────────────────────────────
-export async function exportEmployeeSummary(format: 'excel' | 'pdf') {
-  const l = getL()
-  const data = await getEmployeeSummary()
-  const active: number   = data.activeEmployees ?? 0
-  const inactive: number = data.inactiveEmployees ?? 0
-  const payroll: number  = data.totalAnnualPayroll ?? 0
-  const avg: number      = data.averageSalary ?? (active > 0 ? payroll / active : 0)
-  const byType: any[]    = data.byPayrollType ?? []
-
-  if (format === 'excel') {
-    const wb = XLSX.utils.book_new()
-    const rows: any[][] = [
-      [`CHILL NUMBERS — ${l.employeeSummary}`],
-      [`${l.generatedOn}: ${today()}`],
-      [],
-      [l.generalSummaryEmp],
-      [l.indicator, l.value],
-      [l.activeEmployees, active], [l.inactiveEmployees, inactive],
-      [l.annualPayroll, payroll], [l.avgSalary, avg],
-    ]
-    if (byType.length > 0) {
-      rows.push([], [l.byPayrollType], [l.payrollType, l.employeesCount, l.totalSalary])
-      byType.forEach((t: any) => rows.push([t.payrollType, t.count ?? 0, t.totalSalary ?? 0]))
-    }
-    const ws = XLSX.utils.aoa_to_sheet(rows)
-    ws['!cols'] = [{wch:28},{wch:18},{wch:18}]
-    titleRow(ws, 0, 3, `CHILL NUMBERS — ${l.employeeSummary}`)
-    applyHeaderStyle(ws, 'A5:B5')
-    XLSX.utils.book_append_sheet(wb, ws, l.employeeSummary.substring(0, 31))
-    XLSX.writeFile(wb, filename('employee-summary', 'xlsx'))
-  } else {
-    const kpis = `<div class="kpi-grid kpi-grid-3">
-      <div class="kpi blue"><div class="kpi-label">${l.activeEmployees}</div><div class="kpi-value">${active}</div></div>
-      <div class="kpi green"><div class="kpi-label">${l.annualPayroll}</div><div class="kpi-value">${formatCurrency(payroll)}</div></div>
-      <div class="kpi teal"><div class="kpi-label">${l.avgSalary}</div><div class="kpi-value">${formatCurrency(avg)}</div></div>
-    </div>`
-    openPDF(l.employeeSummary, kpis)
   }
 }
 
@@ -756,17 +696,16 @@ export async function exportAnalyticsReport(
     start = `${y}-01-01`; end = `${y}-12-31`
   }
 
-  const [txRes, closuresRes, employeesRes] = await Promise.all([
+  const [txRes, closuresRes] = await Promise.all([
     supabase.from('transactions').select('id,type,amount,date,status,description,categories(name)')
       .gte('date', start).lte('date', end)
       .or('is_from_plaid.eq.false,is_business_transaction.eq.true'),
     supabase.from('week_closures').select('*').eq('year', y).eq('month', m),
-    supabase.from('employees').select('*').eq('status', 1),
+
   ])
 
   const txs       = txRes.data ?? []
   const closures  = closuresRes.data ?? []
-  const employees = employeesRes.data ?? []
 
   const totalIncome   = txs.filter(r => r.type === 1).reduce((s, r) => s + r.amount, 0)
   const totalExpenses = txs.filter(r => r.type === 2).reduce((s, r) => s + r.amount, 0)
@@ -774,7 +713,6 @@ export async function exportAnalyticsReport(
   const profitMargin  = totalIncome > 0 ? (netProfit / totalIncome) * 100 : 0
   const completedTx   = txs.filter(r => r.status === 0).length
   const pendingTx     = txs.filter(r => r.status === 1).length
-  const totalPayroll  = employees.reduce((s, e) => s + (e.salary ?? 0), 0)
 
   const catMap = new Map<string, { income: number; expense: number; count: number }>()
   txs.forEach((r: any) => {
@@ -807,17 +745,11 @@ export async function exportAnalyticsReport(
       [l.profitMargin, parseFloat(profitMargin.toFixed(2)), '%'],
       [l.txCompleted2, completedTx, ''],
       [l.txPending2, pendingTx, ''],
-      [],
-      [l.employees],
-      [l.activeEmp, employees.length, ''],
-      [l.annualPayrollTotal, totalPayroll, ''],
-      [l.avgSalaryLabel, employees.length > 0 ? totalPayroll / employees.length : 0, ''],
     ]
     const ws1 = XLSX.utils.aoa_to_sheet(s1)
     ws1['!cols'] = [{wch:30},{wch:18},{wch:24}]
     titleRow(ws1, 0, 3, `CHILL NUMBERS — ${l.analyticsReport}`)
     applyHeaderStyle(ws1, 'A5:C5')
-    applyHeaderStyle(ws1, 'A13:C13')
     XLSX.utils.book_append_sheet(wb, ws1, l.executiveSummaryAnalytics.substring(0, 31))
 
     const s2: any[][] = [
@@ -921,7 +853,6 @@ export async function exportAnalyticsReport(
       <div class="kpi-grid kpi-grid-3">
         <div class="kpi teal"><div class="kpi-label">${l.profitMargin}</div><div class="kpi-value">${profitMargin.toFixed(1)}%</div></div>
         <div class="kpi blue"><div class="kpi-label">${l.transactions}</div><div class="kpi-value">${txs.length}</div><div class="kpi-sub">${completedTx} ${l.completed.toLowerCase()} · ${pendingTx} ${l.pending.toLowerCase()}</div></div>
-        <div class="kpi purple"><div class="kpi-label">${l.activeEmployees}</div><div class="kpi-value">${employees.length}</div><div class="kpi-sub">${l.annualPayroll}: ${formatCurrency(totalPayroll)}</div></div>
       </div>
       ${monthlyChart}
       <div class="section">
@@ -941,8 +872,7 @@ export async function exportAnalyticsReport(
           <tbody>${topExpenseRows || `<tr><td colspan="4" style="text-align:center;color:#a0aec0;padding:10px">${l.noData}</td></tr>`}</tbody></table>
         </div>
       </div>
-      ${closures.length > 0 ? `<div class="section"><div class="section-header"><div class="section-dot"></div><div class="section-title">${l.weeklyClosures}</div><div class="section-sub">${closures.filter((c: any) => c.closed_at).length} / ${closures.length} ${l.closed.toLowerCase()}</div></div><table><thead><tr><th>${l.weekLabel(0).replace('0', '#')}</th><th class="c">${l.periodCol}</th><th class="r">${l.incomesCol}</th><th class="r">${l.expensesCol}</th><th class="r">${l.profitCol}</th><th class="c">${l.statusCol}</th></tr></thead><tbody>${closureRows}</tbody></table></div>` : ''}
-      ${employees.length > 0 ? `<div class="section"><div class="section-header"><div class="section-dot"></div><div class="section-title">${l.staffSummary}</div></div><div class="kpi-grid kpi-grid-3"><div class="kpi blue"><div class="kpi-label">${l.activeEmployees}</div><div class="kpi-value">${employees.length}</div></div><div class="kpi green"><div class="kpi-label">${l.annualPayroll}</div><div class="kpi-value">${formatCurrency(totalPayroll)}</div></div><div class="kpi teal"><div class="kpi-label">${l.avgSalary}</div><div class="kpi-value">${formatCurrency(employees.length > 0 ? totalPayroll / employees.length : 0)}</div></div></div></div>` : ''}`
+      ${closures.length > 0 ? `<div class="section"><div class="section-header"><div class="section-dot"></div><div class="section-title">${l.weeklyClosures}</div><div class="section-sub">${closures.filter((c: any) => c.closed_at).length} / ${closures.length} ${l.closed.toLowerCase()}</div></div><table><thead><tr><th>${l.weekLabel(0).replace('0', '#')}</th><th class="c">${l.periodCol}</th><th class="r">${l.incomesCol}</th><th class="r">${l.expensesCol}</th><th class="r">${l.profitCol}</th><th class="c">${l.statusCol}</th></tr></thead><tbody>${closureRows}</tbody></table></div>` : ''}`
 
     openPDF(l.analyticsReport, body, periodLabel)
   }
@@ -1096,7 +1026,6 @@ export const exportReportData = async (reportType: string, format: 'excel' | 'pd
     case 'profit-loss-detailed': return exportProfitLoss({ year }, fmt)
     case 'transaction-summary':  return exportTransactionSummary({ period: 'month' }, fmt)
     case 'category-breakdown':   return exportCategoryBreakdown({ period: 'month' }, fmt)
-    case 'employee-summary':     return exportEmployeeSummary(fmt)
     case 'week-close':           return exportWeekClose(year, month, fmt)
     default:                     return exportFinancialSummary({ period: 'month' }, fmt)
   }

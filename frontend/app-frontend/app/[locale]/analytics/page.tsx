@@ -14,7 +14,6 @@ import ReportsOverview from '@/components/analytics/ReportsOverview'
 import AnnualPerformance from '@/components/analytics/AnnualPerformance'
 import WeeklyClosureAnalysis from '@/components/analytics/WeeklyClosureAnalysis'
 import YearComparison from '@/components/analytics/YearComparison'
-import EmployeeAnalysis from '@/components/analytics/EmployeeAnalysis'
 import { getTransactionSummary } from '@/services/reportService'
 import { exportAnalyticsReport, showExportModal } from '@/services/exportService'
 
@@ -240,11 +239,6 @@ export default function ReportsPage() {
                 month={selectedMonth}
               />
             )}
-
-            {/* Employee Analysis */}
-            <EmployeeAnalysis 
-              period={selectedPeriod}
-            />
           </div>
         </div>
       </PageLayout>

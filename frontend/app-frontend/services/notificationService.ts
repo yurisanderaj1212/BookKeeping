@@ -2,7 +2,7 @@ import { getSupabase } from '@/lib/supabaseClient'
 
 export interface Notification {
   id: number
-  type: 'transaction' | 'report' | 'employee' | 'system' | 'reminder' | 'alert'
+  type: 'transaction' | 'report' | 'system' | 'reminder' | 'alert'
   priority: 'low' | 'medium' | 'high' | 'urgent'
   title: string
   message: string
