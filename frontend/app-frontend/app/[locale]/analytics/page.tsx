@@ -230,6 +230,7 @@ export default function ReportsPage() {
               period={selectedPeriod}
               year={selectedYear}
               month={selectedMonth}
+              week={selectedWeek}
             />
 
             {/* Weekly Closure Analysis - New */}

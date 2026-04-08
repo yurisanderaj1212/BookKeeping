@@ -81,6 +81,7 @@ export default function ReportsOverview({ period, year, month, week }: ReportsOv
           .select('type, amount, date')
           .gte('date', start)
           .lte('date', end)
+          .or('is_from_plaid.eq.false,is_business_transaction.eq.true')
 
         if (cancelled) return
         const rows = data ?? []
