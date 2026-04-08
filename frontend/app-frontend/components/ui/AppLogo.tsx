@@ -5,7 +5,7 @@ interface AppLogoProps {
   textColor?: string
 }
 
-export default function AppLogo({ size = 36, className = '', variant = 'icon', textColor = '#111827' }: AppLogoProps) {
+export default function AppLogo({ size = 36, className = '', variant = 'icon', textColor }: AppLogoProps) {
   // viewBox fijo 100x100 — fontSize 22 garantiza que "Numbers" cabe con margen
   const Icon = (
     <svg
@@ -53,11 +53,12 @@ export default function AppLogo({ size = 36, className = '', variant = 'icon', t
     >
       {Icon}
       <span
+        className="text-gray-900 dark:text-gray-100"
         style={{
           fontFamily: 'Arial, Helvetica, sans-serif',
           fontWeight: 700,
           fontSize: Math.round(size * 0.44),
-          color: textColor,
+          color: textColor,  // only applied if explicitly passed
           lineHeight: 1,
           letterSpacing: '-0.01em',
           whiteSpace: 'nowrap',
