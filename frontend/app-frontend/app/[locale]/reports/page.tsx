@@ -95,11 +95,22 @@ export default function ReportsPage() {
   }
 
   const handleGenerateReport = (reportId: string) => {
-    // Construir URL con parámetros de filtro
+    // Calculate week dates if period is week
+    const getWeekStartEnd = () => {
+      const y = parseInt(selectedYear), m = parseInt(selectedMonth), wk = parseInt(selectedWeek)
+      const firstDay = new Date(y, m - 1, 1)
+      const firstSunday = new Date(firstDay)
+      firstSunday.setDate(firstDay.getDate() - firstDay.getDay())
+      const start = new Date(firstSunday); start.setDate(firstSunday.getDate() + (wk - 1) * 7)
+      const end = new Date(start); end.setDate(start.getDate() + 6)
+      return { startDate: start.toISOString().split('T')[0], endDate: end.toISOString().split('T')[0] }
+    }
+    const weekDates = selectedPeriod === 'week' ? getWeekStartEnd() : {}
     const params = new URLSearchParams({
       period: selectedPeriod,
       year: selectedYear,
-      month: selectedMonth
+      month: selectedMonth,
+      ...weekDates,
     })
     
     // Redirigir solo a reportes que realmente tenemos implementados
@@ -196,17 +207,28 @@ export default function ReportsPage() {
         {/* Content */}
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
           
-          {/* Period Filter Bar */}
-          <div className="bg-white dark:bg-gray-900 rounded-lg border border-gray-200 dark:border-gray-700 p-3 sm:p-4 shadow-sm mb-4 sm:mb-6">
-            <div className="flex items-center gap-2 mb-2 sm:mb-0">
-              <Calendar className="w-4 h-4 text-primary-600 shrink-0" />
-              <div>
-                <h3 className="text-sm font-medium text-gray-900 dark:text-gray-100">{t('period')}</h3>
-                <p className="text-xs text-gray-500 dark:text-gray-400">{getPeriodLabel()}</p>
-              </div>
+          {/* Period Filter Bar — professional tab + contextual dropdowns */}
+          <div className="bg-white dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-gray-700 shadow-sm mb-4 sm:mb-6 overflow-hidden">
+            {/* Period type tabs */}
+            <div className="flex border-b border-gray-200 dark:border-gray-700">
+              {(['week', 'month', 'year'] as const).map((p) => (
+                <button
+                  key={p}
+                  onClick={() => setSelectedPeriod(p)}
+                  className={`flex-1 py-2.5 text-sm font-medium transition-colors ${
+                    selectedPeriod === p
+                      ? 'bg-primary-50 dark:bg-primary-900/20 text-primary-600 dark:text-primary-400 border-b-2 border-primary-500'
+                      : 'text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-800'
+                  }`}
+                >
+                  {p === 'week' ? t('thisWeek') : p === 'month' ? t('thisMonth') : t('thisYear')}
+                </button>
+              ))}
             </div>
-            <div className="flex items-center gap-2 flex-wrap mt-2">
-              {/* Year */}
+            {/* Contextual dropdowns */}
+            <div className="p-3 flex items-center gap-2 flex-wrap">
+              <Calendar className="w-4 h-4 text-primary-600 shrink-0" />
+              {/* Year — always shown */}
               <select
                 value={selectedYear}
                 onChange={(e) => setSelectedYear(e.target.value)}
@@ -216,30 +238,35 @@ export default function ReportsPage() {
                   <option key={y} value={String(y)}>{y}</option>
                 ))}
               </select>
-              {/* Month */}
-              <select
-                value={selectedMonth}
-                onChange={(e) => setSelectedMonth(e.target.value)}
-                className="flex-1 min-w-[90px] px-2 py-1.5 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary-500 text-sm bg-white dark:bg-gray-800 dark:text-gray-100"
-              >
-                {Array.from({ length: 12 }, (_, i) => (
-                  <option key={i + 1} value={String(i + 1).padStart(2, '0')}>
-                    {t(`months.${i + 1}` as any)}
-                  </option>
-                ))}
-              </select>
-              {/* Week with date range */}
-              <select
-                value={selectedWeek}
-                onChange={(e) => { setSelectedWeek(e.target.value); setSelectedPeriod('week') }}
-                className="flex-1 min-w-[140px] px-2 py-1.5 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary-500 text-sm bg-white dark:bg-gray-800 dark:text-gray-100"
-              >
-                {getWeeksInMonth(parseInt(selectedYear), parseInt(selectedMonth)).map((week) => (
-                  <option key={week.value} value={week.value}>{week.label}</option>
-                ))}
-              </select>
+              {/* Month — shown for week and month */}
+              {(selectedPeriod === 'week' || selectedPeriod === 'month') && (
+                <select
+                  value={selectedMonth}
+                  onChange={(e) => setSelectedMonth(e.target.value)}
+                  className="flex-1 min-w-[90px] px-2 py-1.5 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary-500 text-sm bg-white dark:bg-gray-800 dark:text-gray-100"
+                >
+                  {Array.from({ length: 12 }, (_, i) => (
+                    <option key={i + 1} value={String(i + 1).padStart(2, '0')}>
+                      {t(`months.${i + 1}` as any)}
+                    </option>
+                  ))}
+                </select>
+              )}
+              {/* Week — shown only for week period */}
+              {selectedPeriod === 'week' && (
+                <select
+                  value={selectedWeek}
+                  onChange={(e) => setSelectedWeek(e.target.value)}
+                  className="flex-1 min-w-[140px] px-2 py-1.5 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary-500 text-sm bg-white dark:bg-gray-800 dark:text-gray-100"
+                >
+                  {getWeeksInMonth(parseInt(selectedYear), parseInt(selectedMonth)).map((week) => (
+                    <option key={week.value} value={week.value}>{week.label}</option>
+                  ))}
+                </select>
+              )}
+              <span className="text-xs text-gray-400 dark:text-gray-500 ml-auto hidden sm:block">{getPeriodLabel()}</span>
             </div>
-            </div>
+          </div>
 
           {/* Quick Stats — 2 top + 1 full-width bottom on mobile */}
           <div className="grid grid-cols-2 md:grid-cols-3 gap-3 sm:gap-4 mb-4 sm:mb-6">

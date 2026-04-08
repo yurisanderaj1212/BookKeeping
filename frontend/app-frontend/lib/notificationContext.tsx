@@ -202,11 +202,62 @@ export function NotificationProvider({ children }: { children: ReactNode }) {
     } catch { /* silencioso */ }
   }, [])
 
+  // ─── Pending transaction reminder (48-72h after creation) ──────────────────
+  const checkPendingTransactions = useCallback(async () => {
+    try {
+      const supabase = getSupabase()
+      const { data: { user } } = await supabase.auth.getUser()
+      if (!user) return
+
+      const now = new Date()
+      const cutoff48h = new Date(now.getTime() - 48 * 60 * 60 * 1000).toISOString()
+      const cutoff72h = new Date(now.getTime() - 72 * 60 * 60 * 1000).toISOString()
+
+      // Find pending transactions created 48-72h ago
+      const { data: pending } = await supabase
+        .from('transactions')
+        .select('id, description, amount, created_at')
+        .eq('status', 1) // pending
+        .lte('created_at', cutoff48h)
+        .gte('created_at', cutoff72h)
+        .or('is_from_plaid.eq.false,is_business_transaction.eq.true')
+        .limit(5)
+
+      if (!pending?.length) return
+
+      // Check if we already sent this notification today
+      const notifKey = `pending-tx-reminder-${now.toISOString().split('T')[0]}`
+      if (localStorage.getItem(notifKey)) return
+
+      const count = pending.length
+      const locale = document.documentElement.lang?.startsWith('en') ? 'en' : 'es'
+      const title = locale === 'en'
+        ? `⏳ ${count} pending transaction${count > 1 ? 's' : ''}`
+        : `⏳ ${count} transacción${count > 1 ? 'es' : ''} pendiente${count > 1 ? 's' : ''}`
+      const message = locale === 'en'
+        ? `You have ${count} transaction${count > 1 ? 's' : ''} pending for over 48 hours. Did ${count > 1 ? 'they' : 'it'} complete?`
+        : `Tienes ${count} transacción${count > 1 ? 'es' : ''} pendiente${count > 1 ? 's' : ''} por más de 48 horas. ¿Ya se completó${count > 1 ? 'n' : ''}?`
+
+      await supabase.from('notifications').insert({
+        user_id:      user.id,
+        type:         'reminder',
+        priority:     'medium',
+        title,
+        message,
+        action_url:   '/transactions',
+        action_label: locale === 'en' ? 'View transactions' : 'Ver transacciones',
+        is_read:      false,
+      })
+      localStorage.setItem(notifKey, '1')
+    } catch { /* silencioso */ }
+  }, [])
+
   useEffect(() => {
     const init = setTimeout(() => {
       poll()
       checkWeeklyReminder()
       checkWeekEndingWarning()
+      checkPendingTransactions()
     }, 1500)
     pollingRef.current = setInterval(poll, 5000)
 
@@ -214,7 +265,7 @@ export function NotificationProvider({ children }: { children: ReactNode }) {
       clearTimeout(init)
       if (pollingRef.current) clearInterval(pollingRef.current)
     }
-  }, [poll, checkWeeklyReminder, checkWeekEndingWarning])
+  }, [poll, checkWeeklyReminder, checkWeekEndingWarning, checkPendingTransactions])
 
   return (
     <NotificationContext.Provider value={{ toasts, unreadCount, addToast, removeToast, markAllRead, refreshUnread }}>

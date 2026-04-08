@@ -204,11 +204,15 @@
       "totalExpenses": "Expenses",
       "netProfit": "Profit",
       "pending": "Pending Items",
-      "showingData": "Showing data for:"
+      "showingData": "Showing data for:",
+      "profitInfoTitle": "Profit Margin",
+      "profitInfoDesc": "Profit margin = (Profit / Revenue) × 100. Shows what percentage of revenue becomes profit after expenses."
     },
     "weeklyChart": {
       "title": "Weekly Summary",
       "subtitle": "Revenue vs Expenses by Week",
+      "infoTitle": "Weekly Summary",
+      "infoDesc": "Shows revenue, expenses and profit for each week of the current month. Bars going down (orange) indicate a loss for that week.",
       "income": "Revenue",
       "expenses": "Expenses",
       "profit": "Profit",
@@ -218,6 +222,8 @@
     "monthlyChart": {
       "title": "Monthly Summary",
       "subtitle": "Performance over the last 6 months",
+      "infoTitle": "Monthly Summary",
+      "infoDesc": "Shows the last 6 months of revenue, expenses and profit. Orange bars going down indicate a loss month.",
       "income": "Revenue",
       "expenses": "Expenses",
       "profit": "Profit",

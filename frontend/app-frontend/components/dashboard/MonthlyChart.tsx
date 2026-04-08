@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react'
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, Cell } from 'recharts'
 import { MonthlyData } from '../../data/dashboard-data'
 import { MoreHorizontal } from 'lucide-react'
+import InfoTooltip from '@/components/ui/InfoTooltip'
 import { useTranslations, useLocale } from 'next-intl'
 
 interface MonthlyChartProps {
@@ -102,6 +103,7 @@ export default function MonthlyChart({ data }: MonthlyChartProps) {
           <h3 className="text-base sm:text-lg font-semibold text-gray-900 dark:text-gray-100">
             <span className="text-primary-600 mr-1">{new Date().getFullYear()}</span>
             {t('title')}
+            <InfoTooltip title={t('infoTitle')} description={t('infoDesc')} className="ml-1.5" />
           </h3>
           <p className="text-xs sm:text-sm text-gray-500 dark:text-gray-400 mt-0.5">{t('subtitle')}</p>
         </div>

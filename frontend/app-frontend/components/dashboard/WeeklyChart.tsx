@@ -5,6 +5,7 @@ import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, Responsive
 import { WeeklyData } from '../../data/dashboard-data'
 import type { ChartDataPoint } from '@/services/dashboardService'
 import { MoreHorizontal } from 'lucide-react'
+import InfoTooltip from '@/components/ui/InfoTooltip'
 import { useTranslations, useLocale } from 'next-intl'
 
 interface WeeklyChartProps {
@@ -99,6 +100,7 @@ export default function WeeklyChart({ data }: WeeklyChartProps) {
               {new Date().toLocaleDateString(locale === 'en' ? 'en-US' : 'es-ES', { month: 'long' }).replace(/^\w/, c => c.toUpperCase())}
             </span>
             {t('title')}
+            <InfoTooltip title={t('infoTitle')} description={t('infoDesc')} className="ml-1.5" />
           </h3>
           <p className="text-xs sm:text-sm text-gray-500 dark:text-gray-400 mt-0.5">{t('subtitle')}</p>
         </div>

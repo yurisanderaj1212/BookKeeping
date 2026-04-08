@@ -3,6 +3,7 @@
 import { formatPercentage } from '../../data/dashboard-data'
 import { TrendingUp, CreditCard, DollarSign, Clock } from 'lucide-react'
 import { useTranslations, useLocale } from 'next-intl'
+import InfoTooltip from '@/components/ui/InfoTooltip'
 
 interface StatsCardsProps {
   totalIncome:    number
@@ -33,9 +34,11 @@ interface StatCardProps {
   icon:       React.ReactNode
   color:      Color
   delay?:     number
+  infoTitle?: string
+  infoDesc?:  string
 }
 
-function StatCard({ title, value, change, showChange, icon, color, delay = 0 }: StatCardProps) {
+function StatCard({ title, value, change, showChange, icon, color, delay = 0, infoTitle, infoDesc }: StatCardProps) {
   const isPositive = change >= 0
   const changeColor = isPositive ? colorClasses[color].changeText : 'text-red-600'
   const changeBg    = isPositive ? colorClasses[color].changeBg   : 'bg-red-100'
@@ -55,7 +58,12 @@ function StatCard({ title, value, change, showChange, icon, color, delay = 0 }: 
           </div>
         )}
       </div>
-      <p className="text-xs sm:text-sm text-gray-500 dark:text-gray-400 mb-1">{title}</p>
+      <div className="flex items-center gap-1 mb-1">
+        <p className="text-xs sm:text-sm text-gray-500 dark:text-gray-400">{title}</p>
+        {infoTitle && infoDesc && (
+          <InfoTooltip title={infoTitle} description={infoDesc} />
+        )}
+      </div>
       <p className="text-base sm:text-xl lg:text-2xl font-bold text-gray-900 dark:text-gray-100 truncate">{value}</p>
       <style jsx>{`
         @keyframes fadeInUp {
@@ -90,7 +98,7 @@ export default function StatsCards({
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 lg:gap-6">
         <StatCard title={t('totalIncome')}   value={formatCurrency(totalIncome)}   change={incomeChange}   showChange={false} color="green"  delay={0}   icon={<DollarSign  className="w-5 h-5" />} />
         <StatCard title={t('totalExpenses')} value={formatCurrency(totalExpenses)} change={expensesChange} showChange={false} color="red"    delay={100} icon={<CreditCard   className="w-5 h-5" />} />
-        <StatCard title={t('netProfit')}     value={formatCurrency(netProfit)}     change={profitChange}   showChange={true}  color="blue"   delay={200} icon={<TrendingUp   className="w-5 h-5" />} />
+        <StatCard title={t('netProfit')}     value={formatCurrency(netProfit)}     change={profitChange}   showChange={true}  color="blue"   delay={200} icon={<TrendingUp   className="w-5 h-5" />} infoTitle={t('profitInfoTitle')} infoDesc={t('profitInfoDesc')} />
         <StatCard title={t('pending')}       value={String(pending)}               change={pendingChange}  showChange={false} color="purple" delay={300} icon={<Clock        className="w-5 h-5" />} />
       </div>
     </div>

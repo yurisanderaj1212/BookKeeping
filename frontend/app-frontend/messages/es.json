@@ -204,11 +204,15 @@
       "totalExpenses": "Gastos",
       "netProfit": "Ganancias",
       "pending": "Asuntos pendientes",
-      "showingData": "Mostrando datos de:"
+      "showingData": "Mostrando datos de:",
+      "profitInfoTitle": "Margen de Ganancia",
+      "profitInfoDesc": "Margen = (Ganancia / Ingresos) × 100. Indica qué porcentaje de los ingresos se convierte en ganancia después de los gastos."
     },
     "weeklyChart": {
       "title": "Resumen Semanal",
       "subtitle": "Ingresos vs Gastos por Semana",
+      "infoTitle": "Resumen Semanal",
+      "infoDesc": "Muestra los ingresos, gastos y ganancias de cada semana del mes actual. Las barras hacia abajo (naranja) indican pérdida en esa semana.",
       "income": "Ingresos",
       "expenses": "Gastos",
       "profit": "Ganancia",
@@ -218,6 +222,8 @@
     "monthlyChart": {
       "title": "Resumen Mensual",
       "subtitle": "Rendimiento en los últimos 6 meses",
+      "infoTitle": "Resumen Mensual",
+      "infoDesc": "Muestra los últimos 6 meses de ingresos, gastos y ganancias. Las barras naranjas hacia abajo indican un mes con pérdida.",
       "income": "Ingresos",
       "expenses": "Gastos",
       "profit": "Ganancia",
