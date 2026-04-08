@@ -28,18 +28,18 @@ export default function About() {
   ]
 
   return (
-    <div id="about" className="py-24 bg-slate-50">
+    <div id="about" className="py-24 bg-slate-50 dark:bg-gray-950">
       <div className="mx-auto max-w-7xl px-6 lg:px-8">
         <div className="mx-auto max-w-2xl text-center">
-          <h2 className="text-3xl font-bold tracking-tight text-navy-800 sm:text-4xl">{t('title')}</h2>
-          <p className="mt-4 text-lg leading-8 text-slate-600">{t('subtitle')}</p>
+          <h2 className="text-3xl font-bold tracking-tight text-navy-800 dark:text-gray-100 sm:text-4xl">{t('title')}</h2>
+          <p className="mt-4 text-lg leading-8 text-slate-600 dark:text-gray-400">{t('subtitle')}</p>
         </div>
 
         {/* Mission */}
         <div className="mx-auto mt-16 max-w-4xl">
           <div className="bg-white dark:bg-gray-900 rounded-2xl p-8 shadow-soft">
-            <h3 className="text-2xl font-bold text-navy-800 mb-6 text-center">{t('missionTitle')}</h3>
-            <p className="text-lg text-slate-600 text-center leading-relaxed">{t('missionText')}</p>
+            <h3 className="text-2xl font-bold text-navy-800 dark:text-gray-100 mb-6 text-center">{t('missionTitle')}</h3>
+            <p className="text-lg text-slate-600 dark:text-gray-400 text-center leading-relaxed">{t('missionText')}</p>
           </div>
         </div>
 
@@ -48,8 +48,8 @@ export default function About() {
           <dl className="grid grid-cols-1 gap-8 lg:grid-cols-4">
             {stats.map(s => (
               <div key={s.labelKey} className="bg-white dark:bg-gray-900 rounded-xl p-6 text-center shadow-soft">
-                <dt className="text-sm font-medium text-slate-600">{t(s.labelKey as any)}</dt>
-                <dd className="mt-2 text-3xl font-bold text-primary-600">{s.value}</dd>
+                <dt className="text-sm font-medium text-slate-600 dark:text-gray-400">{t(s.labelKey as any)}</dt>
+                <dd className="mt-2 text-3xl font-bold text-primary-600 dark:text-primary-400">{s.value}</dd>
               </div>
             ))}
           </dl>
@@ -58,14 +58,14 @@ export default function About() {
         {/* Values */}
         <div className="mx-auto mt-16 max-w-4xl sm:mt-20 lg:mt-24">
           <div className="text-center mb-12">
-            <h3 className="text-2xl font-bold text-navy-800">{t('valuesTitle')}</h3>
+            <h3 className="text-2xl font-bold text-navy-800 dark:text-gray-100">{t('valuesTitle')}</h3>
           </div>
           <div className="grid grid-cols-1 gap-8 lg:grid-cols-3">
             {values.map(v => (
               <div key={v.titleKey} className="bg-white dark:bg-gray-900 rounded-xl p-6 shadow-soft">
-                <div className="h-12 w-12 bg-primary-100 rounded-lg flex items-center justify-center mb-4">{v.icon}</div>
-                <h4 className="text-lg font-semibold text-navy-800 mb-2">{t(v.titleKey as any)}</h4>
-                <p className="text-slate-600">{t(v.descKey as any)}</p>
+                <div className="h-12 w-12 bg-primary-100 dark:bg-primary-900/30 rounded-lg flex items-center justify-center mb-4">{v.icon}</div>
+                <h4 className="text-lg font-semibold text-navy-800 dark:text-gray-100 mb-2">{t(v.titleKey as any)}</h4>
+                <p className="text-slate-600 dark:text-gray-400">{t(v.descKey as any)}</p>
               </div>
             ))}
           </div>

@@ -24,11 +24,11 @@ export default function Features() {
   }, [slides])
 
   return (
-    <div id="features" className="py-24 bg-white dark:bg-gray-900">
+    <div id="features" className="py-24 bg-white dark:bg-gray-950">
       <div className="mx-auto max-w-7xl px-6 lg:px-8">
         <div className="mx-auto max-w-2xl text-center">
-          <h2 className="text-3xl font-bold tracking-tight text-navy-800 sm:text-4xl">{t('title')}</h2>
-          <p className="mt-4 text-lg leading-8 text-slate-600">{t('subtitle')}</p>
+          <h2 className="text-3xl font-bold tracking-tight text-navy-800 dark:text-gray-100 sm:text-4xl">{t('title')}</h2>
+          <p className="mt-4 text-lg leading-8 text-slate-600 dark:text-gray-400">{t('subtitle')}</p>
         </div>
 
         <div className="mx-auto mt-16 max-w-2xl sm:mt-20 lg:mt-24 lg:max-w-none">
@@ -39,11 +39,11 @@ export default function Features() {
                   <dl className="grid grid-cols-1 gap-x-8 gap-y-16 lg:grid-cols-3">
                     {features.slice(slideIndex * 3, slideIndex * 3 + 3).map(f => (
                       <div key={f.nameKey} className="flex flex-col items-center text-center">
-                        <dt className="flex flex-col items-center gap-y-4 text-base font-semibold leading-7 text-navy-800">
+                        <dt className="flex flex-col items-center gap-y-4 text-base font-semibold leading-7 text-navy-800 dark:text-gray-100">
                           <div className="h-16 w-16 flex items-center justify-center rounded-xl bg-linear-to-br from-primary-500 to-primary-600 text-white shadow-lg">{f.icon}</div>
                           {t(f.nameKey as any)}
                         </dt>
-                        <dd className="mt-4 flex flex-auto flex-col text-base leading-7 text-slate-600">
+                        <dd className="mt-4 flex flex-auto flex-col text-base leading-7 text-slate-600 dark:text-gray-400">
                           <p className="flex-auto">{t(f.descKey as any)}</p>
                         </dd>
                       </div>

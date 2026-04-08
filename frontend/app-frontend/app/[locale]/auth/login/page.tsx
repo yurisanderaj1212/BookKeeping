@@ -152,7 +152,7 @@ function LoginForm() {
   }
 
   return (
-    <div className="min-h-screen bg-slate-50 flex">
+    <div className="min-h-screen bg-slate-50 dark:bg-gray-950 flex">
       {/* Left Column - Form */}
       <div className="flex-1 flex flex-col justify-center py-4 sm:py-8 px-4 sm:px-6 lg:px-20 xl:px-24">
         <div className="mx-auto w-full max-w-sm lg:w-96">
@@ -163,8 +163,8 @@ function LoginForm() {
           </div>
 
           <div>
-            <h2 className="text-2xl font-bold text-navy-800">{t('title')}</h2>
-            <p className="mt-1 text-sm text-slate-600">{t('subtitle')}</p>
+            <h2 className="text-2xl font-bold text-navy-800 dark:text-gray-100">{t('title')}</h2>
+            <p className="mt-1 text-sm text-slate-600 dark:text-gray-400">{t('subtitle')}</p>
           </div>
 
           <div className="mt-4">
@@ -203,7 +203,7 @@ function LoginForm() {
               <input type="password" style={{display: 'none'}} />
               
               <div>
-                <label htmlFor="email" className="block text-sm font-medium text-slate-700">
+                <label htmlFor="email" className="block text-sm font-medium text-slate-700 dark:text-gray-300">
                   {t('email')}
                 </label>
                 <div className="mt-1">
@@ -218,8 +218,8 @@ function LoginForm() {
                     required
                     value={email}
                     onChange={handleEmailChange}
-                    className={`appearance-none block w-full px-3 py-2 border rounded-lg placeholder-slate-400 focus:outline-none focus:ring-primary-500 focus:border-primary-500 text-sm ${
-                      errors.email ? 'border-red-300 focus:border-red-500 focus:ring-red-500' : 'border-slate-300'
+                    className={`appearance-none block w-full px-3 py-2 border rounded-lg placeholder-slate-400 dark:placeholder-gray-500 focus:outline-none focus:ring-primary-500 focus:border-primary-500 text-sm bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 ${
+                      errors.email ? 'border-red-300 dark:border-red-700 focus:border-red-500 focus:ring-red-500' : 'border-slate-300 dark:border-gray-600'
                     }`}
                     placeholder={t('emailPlaceholder')}
                   />
@@ -230,7 +230,7 @@ function LoginForm() {
               </div>
 
               <div>
-                <label htmlFor="password" className="block text-sm font-medium text-slate-700">
+                <label htmlFor="password" className="block text-sm font-medium text-slate-700 dark:text-gray-300">
                   {t('password')}
                 </label>
                 <div className="mt-1 relative">
@@ -245,8 +245,8 @@ function LoginForm() {
                     required
                     value={password}
                     onChange={handlePasswordChange}
-                    className={`appearance-none block w-full px-3 py-2 pr-10 border rounded-lg placeholder-slate-400 focus:outline-none focus:ring-primary-500 focus:border-primary-500 text-sm ${
-                      errors.password ? 'border-red-300 focus:border-red-500 focus:ring-red-500' : 'border-slate-300'
+                    className={`appearance-none block w-full px-3 py-2 pr-10 border rounded-lg placeholder-slate-400 dark:placeholder-gray-500 focus:outline-none focus:ring-primary-500 focus:border-primary-500 text-sm bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 ${
+                      errors.password ? 'border-red-300 dark:border-red-700 focus:border-red-500 focus:ring-red-500' : 'border-slate-300 dark:border-gray-600'
                     }`}
                     placeholder={t('passwordPlaceholder')}
                   />
@@ -292,7 +292,7 @@ function LoginForm() {
                 <div></div>
 
                 <div className="text-sm">
-                  <Link href="/auth/forgot-password" className="font-medium text-primary-600 hover:text-primary-500">
+                  <Link href="/auth/forgot-password" className="font-medium text-primary-600 dark:text-primary-400 hover:text-primary-500">
                     {t('forgotPassword')}
                   </Link>
                 </div>
@@ -326,14 +326,14 @@ function LoginForm() {
                   <div className="w-full border-t border-slate-300" />
                 </div>
                 <div className="relative flex justify-center text-sm">
-                  <span className="px-2 bg-slate-50 text-slate-500">{t('orContinueWith')}</span>
+                  <span className="px-2 bg-slate-50 dark:bg-gray-950 text-slate-500 dark:text-gray-400">{t('orContinueWith')}</span>
                 </div>
               </div>
 
               <div className="mt-3 grid grid-cols-2 gap-3">
                 <button
                   onClick={() => handleSocialLogin('google')}
-                  className="w-full flex justify-center items-center px-3 py-2 border border-slate-300 rounded-lg shadow-sm bg-white dark:bg-gray-900 text-sm font-medium text-slate-700 hover:bg-slate-50 transition-colors"
+                  className="w-full flex justify-center items-center px-3 py-2 border border-slate-300 dark:border-gray-600 rounded-lg shadow-sm bg-white dark:bg-gray-800 text-sm font-medium text-slate-700 dark:text-gray-200 hover:bg-slate-50 dark:hover:bg-gray-700 transition-colors"
                 >
                   <svg className="w-4 h-4 mr-2" viewBox="0 0 24 24">
                     <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
@@ -346,7 +346,7 @@ function LoginForm() {
 
                 <button
                   onClick={() => handleSocialLogin('apple')}
-                  className="w-full flex justify-center items-center px-3 py-2 border border-slate-300 rounded-lg shadow-sm bg-white dark:bg-gray-900 text-sm font-medium text-slate-700 hover:bg-slate-50 transition-colors"
+                  className="w-full flex justify-center items-center px-3 py-2 border border-slate-300 dark:border-gray-600 rounded-lg shadow-sm bg-white dark:bg-gray-800 text-sm font-medium text-slate-700 dark:text-gray-200 hover:bg-slate-50 dark:hover:bg-gray-700 transition-colors"
                 >
                   <svg className="w-4 h-4 mr-2" viewBox="0 0 24 24" fill="currentColor">
                     <path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.81-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z"/>
@@ -358,9 +358,9 @@ function LoginForm() {
 
             <div className="mt-4">
               <div className="text-center">
-                <span className="text-sm text-slate-600">
+                <span className="text-sm text-slate-600 dark:text-gray-400">
                   {t('noAccount')}{' '}
-                  <Link href="/auth/register" className="font-medium text-primary-600 hover:text-primary-500">
+                  <Link href="/auth/register" className="font-medium text-primary-600 dark:text-primary-400 hover:text-primary-500">
                     {t('register')}
                   </Link>
                 </span>

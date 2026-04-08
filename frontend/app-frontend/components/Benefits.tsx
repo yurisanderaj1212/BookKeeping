@@ -15,20 +15,20 @@ export default function Benefits() {
   ]
 
   return (
-    <div id="benefits" className="py-24 bg-slate-50">
+    <div id="benefits" className="py-24 bg-slate-50 dark:bg-gray-900">
       <div className="mx-auto max-w-7xl px-6 lg:px-8">
         <div className="mx-auto max-w-2xl text-center">
-          <h2 className="text-3xl font-bold tracking-tight text-navy-800 sm:text-4xl">{t('title')}</h2>
+          <h2 className="text-3xl font-bold tracking-tight text-navy-800 dark:text-gray-100 sm:text-4xl">{t('title')}</h2>
         </div>
         <div className="mx-auto mt-16 max-w-2xl sm:mt-20 lg:mt-24 lg:max-w-none">
           <dl className="grid max-w-xl grid-cols-1 gap-8 lg:max-w-none lg:grid-cols-2 xl:grid-cols-3">
             {benefits.map(b => (
-              <div key={b.titleKey} className="bg-white dark:bg-gray-900 rounded-xl p-8 shadow-soft hover:shadow-medium transition-shadow duration-300">
-                <dt className="flex items-center gap-x-3 text-lg font-semibold leading-7 text-navy-800">
-                  <div className="h-10 w-10 flex items-center justify-center rounded-lg bg-primary-100 text-primary-600">{b.icon}</div>
+              <div key={b.titleKey} className="bg-white dark:bg-gray-800 rounded-xl p-8 shadow-soft hover:shadow-medium transition-shadow duration-300">
+                <dt className="flex items-center gap-x-3 text-lg font-semibold leading-7 text-navy-800 dark:text-gray-100">
+                  <div className="h-10 w-10 flex items-center justify-center rounded-lg bg-primary-100 dark:bg-primary-900/30 text-primary-600 dark:text-primary-400">{b.icon}</div>
                   {t(b.titleKey as any)}
                 </dt>
-                <dd className="mt-4 text-base leading-7 text-slate-600">{t(b.descKey as any)}</dd>
+                <dd className="mt-4 text-base leading-7 text-slate-600 dark:text-gray-400">{t(b.descKey as any)}</dd>
               </div>
             ))}
           </dl>

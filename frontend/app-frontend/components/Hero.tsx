@@ -40,7 +40,7 @@ export default function Hero() {
   }
 
   const navLinkClass = `transition-colors duration-300 cursor-pointer text-sm font-medium ${
-    isScrolled ? 'text-slate-600 hover:text-primary-500' : 'text-white/90 hover:text-white'
+    isScrolled ? 'text-slate-600 dark:text-gray-300 hover:text-primary-500 dark:hover:text-primary-400' : 'text-white/90 hover:text-white'
   }`
 
   return (
@@ -58,7 +58,7 @@ export default function Hero() {
               <span className="text-white font-bold text-base">CN</span>
             </div>
             <span className={`text-lg font-bold transition-colors duration-300 ${
-              isScrolled ? 'text-slate-900' : 'text-white'
+              isScrolled ? 'text-slate-900 dark:text-gray-100' : 'text-white'
             }`}>
               Chill Numbers
             </span>
@@ -84,8 +84,8 @@ export default function Hero() {
             <Link href="/auth/login"
               className={`px-5 py-2 rounded-lg font-semibold text-sm border transition-all duration-200 ${
                 isScrolled
-                  ? 'border-primary-500 text-primary-600 hover:bg-primary-50'
-                  : 'border-white/60 text-white hover:border-white hover:bg-white dark:bg-gray-900/10'
+                  ? 'border-primary-500 text-primary-600 dark:text-primary-400 dark:border-primary-500 hover:bg-primary-50 dark:hover:bg-primary-900/20'
+                  : 'border-white/60 text-white hover:border-white hover:bg-white/10'
               }`}>
               {t('hero.loginBtn')}
             </Link>
@@ -127,19 +127,19 @@ export default function Hero() {
             <div className="px-5 py-4 flex flex-col gap-1">
               <button onClick={() => scrollTo('features')}
                 className={`text-left px-3 py-3 rounded-lg text-sm font-medium transition-colors ${
-                  isScrolled ? 'text-slate-700 hover:bg-gray-50 dark:bg-gray-800 dark:hover:bg-gray-800' : 'text-white/90 hover:bg-white dark:bg-gray-900/10'
+                  isScrolled ? 'text-slate-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-800' : 'text-white/90 hover:bg-white/10'
                 }`}>
                 {tn('features')}
               </button>
               <button onClick={() => scrollTo('benefits')}
                 className={`text-left px-3 py-3 rounded-lg text-sm font-medium transition-colors ${
-                  isScrolled ? 'text-slate-700 hover:bg-gray-50 dark:bg-gray-800 dark:hover:bg-gray-800' : 'text-white/90 hover:bg-white dark:bg-gray-900/10'
+                  isScrolled ? 'text-slate-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-800' : 'text-white/90 hover:bg-white/10'
                 }`}>
                 {tn('benefits')}
               </button>
               <button onClick={() => scrollTo('pricing')}
                 className={`text-left px-3 py-3 rounded-lg text-sm font-medium transition-colors ${
-                  isScrolled ? 'text-slate-700 hover:bg-gray-50 dark:bg-gray-800 dark:hover:bg-gray-800' : 'text-white/90 hover:bg-white dark:bg-gray-900/10'
+                  isScrolled ? 'text-slate-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-800' : 'text-white/90 hover:bg-white/10'
                 }`}>
                 {tn('pricing')}
               </button>

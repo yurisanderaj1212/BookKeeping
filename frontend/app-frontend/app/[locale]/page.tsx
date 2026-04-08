@@ -7,7 +7,7 @@ import CTA from '@/components/CTA'
 
 export default function Home() {
   return (
-    <main className="min-h-screen bg-slate-50">
+    <main className="min-h-screen bg-slate-50 dark:bg-gray-950">
       <Hero />
       <Features />
       <Benefits />
