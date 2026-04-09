@@ -201,6 +201,24 @@ Deno.serve(async (req) => {
       })))
     }
 
+    // ── refreshItem — force Plaid to fetch new transactions ───────────────────
+    if (action === 'refreshItem') {
+      const { itemId } = body
+      const { data: item, error } = await supabase
+        .from('plaid_items')
+        .select('plaid_access_token')
+        .eq('id', itemId)
+        .single()
+      if (error || !item) return json({ error: 'Item not found' }, 404)
+      try {
+        await plaidPost('/transactions/refresh', { access_token: item.plaid_access_token })
+        return json({ message: 'Refresh initiated — new transactions will arrive via webhook' })
+      } catch (e: any) {
+        // If refresh is not available (not billed), fall through to regular sync
+        console.warn('transactions/refresh not available:', e.message)
+      }
+    }
+
     // ── syncItem ──────────────────────────────────────────────────────────────
     if (action === 'syncItem') {
       const { itemId } = body
@@ -456,16 +474,32 @@ async function syncTransactions(
     for (const tx of data.modified ?? []) {
       const type   = tx.amount > 0 ? 2 : 1
       const amount = Math.abs(tx.amount)
-      const { error } = await supabase.from('transactions')
-        .update({
-          amount, type,
-          description:   tx.merchant_name ?? tx.name ?? 'Transacción bancaria',
-          date:          tx.authorized_date ?? tx.date,
-          merchant_name: tx.merchant_name ?? null,
-          updated_at:    new Date().toISOString(),
-        })
-        .eq('plaid_transaction_id', tx.transaction_id)
+      const txAccountId = accountMap?.get(tx.account_id) ?? null
+      // Use upsert — if transaction was deleted from DB, re-insert it
+      // Also updates account_id if it was previously NULL
+      const { error } = await supabase.from('transactions').upsert({
+        user_id:                 userId,
+        type,
+        amount,
+        category_id:             15,
+        account_id:              txAccountId,
+        description:             tx.merchant_name ?? tx.name ?? 'Transacción bancaria',
+        date:                    tx.authorized_date ?? tx.date,
+        status:                  tx.pending ? 1 : 0,
+        is_from_plaid:           true,
+        is_business_transaction: null,
+        merchant_name:           tx.merchant_name ?? null,
+        plaid_transaction_id:    tx.transaction_id,
+        notes:                   `Plaid item: ${plaidItemDbId}`,
+      }, { onConflict: 'plaid_transaction_id', ignoreDuplicates: false })
       if (!error) modified++
+      // If txAccountId is available, also patch any existing row that has account_id=NULL
+      if (txAccountId) {
+        await supabase.from('transactions')
+          .update({ account_id: txAccountId })
+          .eq('plaid_transaction_id', tx.transaction_id)
+          .is('account_id', null)
+      }
     }
 
     for (const tx of data.removed ?? []) {
