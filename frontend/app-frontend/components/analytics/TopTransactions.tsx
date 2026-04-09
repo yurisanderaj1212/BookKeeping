@@ -1,8 +1,9 @@
-'use client'
+﻿'use client'
 
 import { useState, useEffect } from 'react'
 import { ArrowUpRight, ArrowDownRight, TrendingUp } from 'lucide-react'
 import { useTranslations, useLocale } from 'next-intl'
+import { useCurrency } from '@/hooks/useCurrency'
 import { getSupabase } from '@/lib/supabaseClient'
 import { translateCategoryName } from '@/lib/categoryTranslator'
 
@@ -41,12 +42,9 @@ export default function TopTransactions({ period, year, month }: TopTransactions
   const t          = useTranslations('analytics.topTransactions')
   const tCategories = useTranslations('categories')
   const locale     = useLocale()
+  const { formatCurrency } = useCurrency()
   const [rows, setRows]       = useState<TxRow[]>([])
   const [loading, setLoading] = useState(true)
-
-  const formatCurrency = (amount: number) =>
-    new Intl.NumberFormat(locale === 'en' ? 'en-US' : 'es-ES', { style: 'currency', currency: 'USD' }).format(amount)
-
   const formatDate = (d: string) =>
     new Date(d + 'T00:00:00').toLocaleDateString(locale === 'en' ? 'en-US' : 'es-ES')
 
@@ -192,3 +190,5 @@ export default function TopTransactions({ period, year, month }: TopTransactions
     </div>
   )
 }
+
+

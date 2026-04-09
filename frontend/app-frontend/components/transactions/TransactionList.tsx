@@ -6,6 +6,7 @@ import { Transaction } from '@/data/transactions-data'
 import * as categoryService from '@/services/categoryService'
 import { useTranslations, useLocale } from 'next-intl'
 import { translateCategoryName } from '@/lib/categoryTranslator'
+import { useCurrency } from '@/hooks/useCurrency'
 
 interface TransactionListProps {
   transactions: Transaction[]
@@ -19,6 +20,7 @@ export default function TransactionList({ transactions, onEdit, onDelete }: Tran
   const tCommon     = useTranslations('common')
   const tCategories = useTranslations('categories')
   const locale      = useLocale()
+  const { formatCurrency } = useCurrency()
   const [showDeleteConfirm, setShowDeleteConfirm] = useState<string | null>(null)
   const [categoryMap, setCategoryMap] = useState<Record<string, { name: string; type: number }>>({})
 
@@ -29,9 +31,6 @@ export default function TransactionList({ transactions, onEdit, onDelete }: Tran
       setCategoryMap(map)
     }).catch(() => {})
   }, [])
-
-  const formatCurrency = (amount: number) =>
-    new Intl.NumberFormat(locale === 'en' ? 'en-US' : 'es-ES', { style: 'currency', currency: 'USD' }).format(amount)
 
   const getCategoryLabel = (id: string) =>
     translateCategoryName(categoryMap[id]?.name || '', tCategories) || '—'

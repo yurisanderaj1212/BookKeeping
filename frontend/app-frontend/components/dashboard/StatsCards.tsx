@@ -4,6 +4,7 @@ import { formatPercentage } from '../../data/dashboard-data'
 import { TrendingUp, CreditCard, DollarSign, Clock } from 'lucide-react'
 import { useTranslations, useLocale } from 'next-intl'
 import InfoTooltip from '@/components/ui/InfoTooltip'
+import { useCurrency } from '@/hooks/useCurrency'
 
 interface StatsCardsProps {
   totalIncome:    number
@@ -82,9 +83,7 @@ export default function StatsCards({
 }: StatsCardsProps) {
   const t      = useTranslations('dashboard.statsCards')
   const locale = useLocale()
-
-  const formatCurrency = (amount: number) =>
-    new Intl.NumberFormat(locale === 'en' ? 'en-US' : 'es-ES', { style: 'currency', currency: 'USD' }).format(amount)
+  const { formatCurrency } = useCurrency()
 
   return (
     <div className="mb-8">

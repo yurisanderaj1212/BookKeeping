@@ -1,9 +1,10 @@
-'use client'
+﻿'use client'
 
 import { useState, useEffect } from 'react'
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, LineChart, Line } from 'recharts'
 import { Calendar, TrendingUp, ArrowUpRight, ArrowDownRight } from 'lucide-react'
 import { useTranslations, useLocale } from 'next-intl'
+import { useCurrency } from '@/hooks/useCurrency'
 import { getSupabase } from '@/lib/supabaseClient'
 
 interface YearComparisonProps {
@@ -15,13 +16,10 @@ interface YearComparisonProps {
 export default function YearComparison({ year }: YearComparisonProps) {
   const t      = useTranslations('analytics.components')
   const locale = useLocale()
+  const { formatCurrency } = useCurrency()
   const [chartType, setChartType] = useState<'bar' | 'line'>('bar')
   const [yearData, setYearData]   = useState<any[]>([])
   const [loading, setLoading]     = useState(true)
-
-  const formatCurrency = (amount: number) =>
-    new Intl.NumberFormat(locale === 'en' ? 'en-US' : 'es-ES', { style: 'currency', currency: 'USD' }).format(amount)
-
   useEffect(() => {
     let cancelled = false
     async function load() {
@@ -347,3 +345,4 @@ export default function YearComparison({ year }: YearComparisonProps) {
     </div>
   )
 }
+

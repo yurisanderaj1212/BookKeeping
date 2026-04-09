@@ -1,9 +1,10 @@
-'use client'
+﻿'use client'
 
 import { useState, useEffect } from 'react'
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts'
 import { Calendar, TrendingUp, TrendingDown, DollarSign } from 'lucide-react'
 import { useTranslations, useLocale } from 'next-intl'
+import { useCurrency } from '@/hooks/useCurrency'
 import { getPeriodDates, fetchTransactions } from '@/lib/analyticsHelpers'
 
 interface CashFlowAnalysisProps {
@@ -16,6 +17,7 @@ export default function CashFlowAnalysis({ period, year, month }: CashFlowAnalys
   const t  = useTranslations('analytics.cashFlow')
   const tc = useTranslations('analytics.components')
   const locale = useLocale()
+  const { formatCurrency } = useCurrency()
   const [viewType, setViewType] = useState<'daily' | 'weekly'>('weekly')
   const [cashFlowData, setCashFlowData] = useState<any[]>([])
   const [loading, setLoading] = useState(true)
@@ -27,10 +29,6 @@ export default function CashFlowAnalysis({ period, year, month }: CashFlowAnalys
     window.addEventListener('resize', check)
     return () => window.removeEventListener('resize', check)
   }, [])
-
-  const formatCurrency = (amount: number) =>
-    new Intl.NumberFormat(locale === 'en' ? 'en-US' : 'es-ES', { style: 'currency', currency: 'USD' }).format(amount)
-
   useEffect(() => {
     let cancelled = false
     async function load() {
@@ -257,3 +255,5 @@ export default function CashFlowAnalysis({ period, year, month }: CashFlowAnalys
     </div>
   )
 }
+
+

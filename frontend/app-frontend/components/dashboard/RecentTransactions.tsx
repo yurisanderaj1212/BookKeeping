@@ -3,6 +3,7 @@
 import { ArrowUpRight, ArrowDownRight, Eye } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 import { useTranslations, useLocale } from 'next-intl'
+import { useCurrency } from '@/hooks/useCurrency'
 
 export interface RecentTransaction {
   id: string | number
@@ -23,12 +24,7 @@ export default function RecentTransactions({ transactions }: RecentTransactionsP
   const t = useTranslations('dashboard.recentTransactions')
   const tCat = useTranslations('categories')
   const locale = useLocale()
-
-  const formatCurrency = (amount: number) =>
-    new Intl.NumberFormat(locale === 'en' ? 'en-US' : 'es-ES', {
-      style: 'currency', currency: 'USD',
-    }).format(amount)
-
+  const { formatCurrency } = useCurrency()
   const formatDate = (dateStr: string) => {
     const d = new Date(dateStr + 'T00:00:00')
     return d.toLocaleDateString(locale === 'en' ? 'en-US' : 'es-ES', { month: 'short', day: 'numeric' })
@@ -127,3 +123,5 @@ export default function RecentTransactions({ transactions }: RecentTransactionsP
     </div>
   )
 }
+
+

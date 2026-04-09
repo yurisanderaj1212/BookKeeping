@@ -3,6 +3,7 @@
 import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip } from 'recharts'
 import { PieChart as PieIcon } from 'lucide-react'
 import { useTranslations, useLocale } from 'next-intl'
+import { useCurrency } from '@/hooks/useCurrency'
 import InfoTooltip from '@/components/ui/InfoTooltip'
 
 export interface CategoryData {
@@ -107,12 +108,7 @@ export default function CategoryBreakdown({ categories }: CategoryBreakdownProps
   const t    = useTranslations('dashboard.categoryBreakdown')
   const tCat = useTranslations('categories')
   const locale = useLocale()
-
-  const formatCurrency = (amount: number) =>
-    new Intl.NumberFormat(locale === 'en' ? 'en-US' : 'es-ES', {
-      style: 'currency', currency: 'USD',
-    }).format(amount)
-
+  const { formatCurrency } = useCurrency()
   const translateCategory = (name: string): string => {
     const MAP: Record<string, string> = {
       'Supply': 'supply', 'Service': 'service', 'Transport': 'transport',
@@ -154,3 +150,5 @@ export default function CategoryBreakdown({ categories }: CategoryBreakdownProps
     </div>
   )
 }
+
+

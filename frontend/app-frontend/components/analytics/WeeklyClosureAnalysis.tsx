@@ -1,9 +1,10 @@
-'use client'
+﻿'use client'
 
 import { useState, useEffect } from 'react'
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts'
 import { CheckCircle, Clock, AlertCircle, TrendingUp } from 'lucide-react'
 import { useTranslations, useLocale } from 'next-intl'
+import { useCurrency } from '@/hooks/useCurrency'
 import { getSupabase } from '@/lib/supabaseClient'
 import InfoTooltip from '@/components/ui/InfoTooltip'
 
@@ -27,12 +28,9 @@ interface ClosureRow {
 export default function WeeklyClosureAnalysis({ year, month }: WeeklyClosureAnalysisProps) {
   const t      = useTranslations('analytics.components')
   const locale = useLocale()
+  const { formatCurrency } = useCurrency()
   const [closures, setClosures] = useState<ClosureRow[]>([])
   const [loading, setLoading]   = useState(true)
-
-  const formatCurrency = (amount: number) =>
-    new Intl.NumberFormat(locale === 'en' ? 'en-US' : 'es-ES', { style: 'currency', currency: 'USD' }).format(amount)
-
   useEffect(() => {
     let cancelled = false
     async function load() {
@@ -265,3 +263,5 @@ export default function WeeklyClosureAnalysis({ year, month }: WeeklyClosureAnal
     </div>
   )
 }
+
+

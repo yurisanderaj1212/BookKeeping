@@ -1,9 +1,10 @@
-'use client'
+﻿'use client'
 
 import { useState, useEffect } from 'react'
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts'
 import { Target, Clock, CheckCircle, AlertCircle, TrendingUp, TrendingDown } from 'lucide-react'
 import { useTranslations, useLocale } from 'next-intl'
+import { useCurrency } from '@/hooks/useCurrency'
 import { getPeriodDates, fetchTransactions } from '@/lib/analyticsHelpers'
 
 interface PerformanceMetricsProps {
@@ -15,12 +16,9 @@ interface PerformanceMetricsProps {
 export default function PerformanceMetrics({ period, year, month }: PerformanceMetricsProps) {
   const t      = useTranslations('analytics.components')
   const locale = useLocale()
+  const { formatCurrency } = useCurrency()
   const [rows, setRows]       = useState<any[]>([])
   const [loading, setLoading] = useState(true)
-
-  const formatCurrency = (amount: number) =>
-    new Intl.NumberFormat(locale === 'en' ? 'en-US' : 'es-ES', { style: 'currency', currency: 'USD' }).format(amount)
-
   useEffect(() => {
     let cancelled = false
     async function load() {
@@ -211,3 +209,5 @@ export default function PerformanceMetrics({ period, year, month }: PerformanceM
     </div>
   )
 }
+
+

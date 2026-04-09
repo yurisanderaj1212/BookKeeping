@@ -6,6 +6,7 @@ import { WeeklyData } from '../../data/dashboard-data'
 import type { ChartDataPoint } from '@/services/dashboardService'
 import InfoTooltip from '@/components/ui/InfoTooltip'
 import { useTranslations, useLocale } from 'next-intl'
+import { useCurrency } from '@/hooks/useCurrency'
 
 interface WeeklyChartProps {
   data: ChartDataPoint[]
@@ -14,6 +15,7 @@ interface WeeklyChartProps {
 export default function WeeklyChart({ data }: WeeklyChartProps) {
   const t = useTranslations('dashboard.weeklyChart')
   const locale = useLocale()
+  const { formatCurrency } = useCurrency()
   const [isMobile, setIsMobile] = useState(false)
   const [isDark, setIsDark] = useState(false)
 
@@ -31,9 +33,6 @@ export default function WeeklyChart({ data }: WeeklyChartProps) {
     obs.observe(document.documentElement, { attributes: true, attributeFilter: ['class'] })
     return () => obs.disconnect()
   }, [])
-
-  const formatCurrency = (amount: number) =>
-    new Intl.NumberFormat(locale === 'en' ? 'en-US' : 'es-ES', { style: 'currency', currency: 'USD' }).format(amount)
 
   const formatYAxis = (v: number) => {
     const abs = Math.abs(v)

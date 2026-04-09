@@ -1,9 +1,10 @@
-'use client'
+﻿'use client'
 
 import { useState, useEffect } from 'react'
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts'
 import { Calendar, ArrowUpRight, ArrowDownRight } from 'lucide-react'
 import { useTranslations, useLocale } from 'next-intl'
+import { useCurrency } from '@/hooks/useCurrency'
 import { getSupabase } from '@/lib/supabaseClient'
 
 interface PeriodComparisonProps {
@@ -67,13 +68,10 @@ function getCurrentPeriod(period: string, year: string, month: string): { start:
 export default function PeriodComparison({ period, year, month }: PeriodComparisonProps) {
   const t      = useTranslations('analytics.components')
   const locale = useLocale()
+  const { formatCurrency } = useCurrency()
   const [current,  setCurrent]  = useState<PeriodData | null>(null)
   const [previous, setPrevious] = useState<PeriodData | null>(null)
   const [loading,  setLoading]  = useState(true)
-
-  const formatCurrency = (amount: number) =>
-    new Intl.NumberFormat(locale === 'en' ? 'en-US' : 'es-ES', { style: 'currency', currency: 'USD' }).format(amount)
-
   useEffect(() => {
     let cancelled = false
     async function load() {
@@ -186,3 +184,5 @@ export default function PeriodComparison({ period, year, month }: PeriodComparis
     </div>
   )
 }
+
+

@@ -528,6 +528,10 @@ export default function SettingsPage() {
       }
     } catch { /* silencioso */ }
     showToast(t('prefSaved'))
+    // Dispatch currency change so all components update immediately
+    if (typeof window !== 'undefined') {
+      window.dispatchEvent(new CustomEvent('currency-changed', { detail: prefs.currency }))
+    }
     // Navigate to new locale using next-intl router (same as sidebar button)
     if (prefs.language !== currentLocale) {
       intlRouter.replace(intlPathname as any, { locale: prefs.language as 'en' | 'es' })
@@ -622,6 +626,18 @@ export default function SettingsPage() {
                       className="w-full pl-10 pr-3 py-2 border border-gray-300 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-100 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500">
                       <option value="es">{t('languageEs')}</option>
                       <option value="en">{t('languageEn')}</option>
+                    </select>
+                  </div>
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">{t('currency')}</label>
+                  <div className="relative">
+                    <DollarSign className="absolute left-3 top-2.5 w-4 h-4 text-gray-400" />
+                    <select value={prefs.currency} onChange={e => setPrefs({ ...prefs, currency: e.target.value })}
+                      className="w-full pl-10 pr-3 py-2 border border-gray-300 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-100 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500">
+                      {(['USD', 'EUR', 'MXN', 'COP'] as const).map(code => (
+                        <option key={code} value={code}>{t(`currencyOptions.${code}` as any)}</option>
+                      ))}
                     </select>
                   </div>
                 </div>

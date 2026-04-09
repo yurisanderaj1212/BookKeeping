@@ -5,6 +5,7 @@ import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, Responsive
 import { MonthlyData } from '../../data/dashboard-data'
 import InfoTooltip from '@/components/ui/InfoTooltip'
 import { useTranslations, useLocale } from 'next-intl'
+import { useCurrency } from '@/hooks/useCurrency'
 
 interface MonthlyChartProps {
   data: MonthlyData[]
@@ -13,6 +14,7 @@ interface MonthlyChartProps {
 export default function MonthlyChart({ data }: MonthlyChartProps) {
   const t = useTranslations('dashboard.monthlyChart')
   const locale = useLocale()
+  const { formatCurrency } = useCurrency()
   const [isMobile, setIsMobile] = useState(false)
   const [isDark, setIsDark] = useState(false)
 
@@ -30,9 +32,6 @@ export default function MonthlyChart({ data }: MonthlyChartProps) {
     obs.observe(document.documentElement, { attributes: true, attributeFilter: ['class'] })
     return () => obs.disconnect()
   }, [])
-
-  const formatCurrency = (amount: number) =>
-    new Intl.NumberFormat(locale === 'en' ? 'en-US' : 'es-ES', { style: 'currency', currency: 'USD' }).format(amount)
 
   const formatYAxis = (v: number) => {
     const abs = Math.abs(v)

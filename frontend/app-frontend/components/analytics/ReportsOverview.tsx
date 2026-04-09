@@ -4,9 +4,9 @@ import { useState, useEffect } from 'react'
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts'
 import { DollarSign, CreditCard, TrendingUp, BarChart3 } from 'lucide-react'
 import { getSupabase } from '@/lib/supabaseClient'
-import { formatCurrency } from '@/services/reportService'
 import { useTranslations, useLocale } from 'next-intl'
 import InfoTooltip from '@/components/ui/InfoTooltip'
+import { useCurrency } from '@/hooks/useCurrency'
 
 interface ReportsOverviewProps {
   period: string
@@ -64,6 +64,7 @@ function getPeriodDates(period: string, year: string, month: string, week?: stri
 export default function ReportsOverview({ period, year, month, week }: ReportsOverviewProps) {
   const t = useTranslations('analytics.components')
   const locale = useLocale()
+  const { formatCurrency } = useCurrency()
   const [periodData, setPeriodData] = useState<PeriodData>({ totalIncome: 0, totalExpenses: 0, netProfit: 0, profitMargin: 0 })
   const [chartData, setChartData] = useState<ChartPoint[]>([])
   const [loading, setLoading] = useState(true)
