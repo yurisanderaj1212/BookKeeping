@@ -112,7 +112,7 @@ Deno.serve(async (req) => {
       }
       // Required for OAuth institutions in production
       if (PLAID_ENV === 'production') {
-        linkTokenBody.redirect_uri = 'https://www.chillnumbers.com'
+        linkTokenBody.redirect_uri = 'https://www.chillnumbers.com/en/plaid-oauth'
       }
       const data = await plaidPost('/link/token/create', linkTokenBody)
       return json({ linkToken: data.link_token })

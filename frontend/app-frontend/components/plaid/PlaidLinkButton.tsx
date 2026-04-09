@@ -30,6 +30,7 @@ export default function PlaidLinkButton({ onSuccess, onError, 'data-tour': dataT
           metadata.institution?.institution_id ?? null,
           metadata.institution?.name ?? null
         )
+        sessionStorage.removeItem('plaid_link_token')
         onSuccess()
       } catch (e: unknown) {
         onError?.(e instanceof Error ? e.message : t('errConnect'))
@@ -60,6 +61,8 @@ export default function PlaidLinkButton({ onSuccess, onError, 'data-tour': dataT
     try {
       const { linkToken: token } = await createLinkToken()
       setLinkToken(token)
+      // Store for OAuth redirect recovery
+      sessionStorage.setItem('plaid_link_token', token)
     } catch (e: unknown) {
       onError?.(e instanceof Error ? e.message : t('errInit'))
     } finally {
