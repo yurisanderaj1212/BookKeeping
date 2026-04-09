@@ -657,38 +657,6 @@ export default function SettingsPage() {
                     </select>
                   </div>
                 </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">{t('currency')}</label>
-                  <div className="relative">
-                    <DollarSign className="absolute left-3 top-2.5 w-4 h-4 text-gray-400" />
-                    <select value={prefs.currency} onChange={e => setPrefs({ ...prefs, currency: e.target.value })}
-                      className="w-full pl-10 pr-3 py-2 border border-gray-300 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-100 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500">
-                      {(['USD', 'EUR', 'MXN', 'CAD'] as const).map(code => (
-                        <option key={code} value={code}>{t(`currencyOptions.${code}` as any)}</option>
-                      ))}
-                    </select>
-                  </div>
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">{t('dateFormat')}</label>
-                  <select value={prefs.dateFormat} onChange={e => setPrefs({ ...prefs, dateFormat: e.target.value })}
-                    className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-100 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500">
-                    <option value="MM/DD/YYYY">MM/DD/YYYY (US)</option>
-                    <option value="DD/MM/YYYY">DD/MM/YYYY (EU)</option>
-                    <option value="YYYY-MM-DD">YYYY-MM-DD (ISO)</option>
-                  </select>
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">{t('timezone')}</label>
-                  <select value={prefs.timezone} onChange={e => setPrefs({ ...prefs, timezone: e.target.value })}
-                    className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-100 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500">
-                    <option value="America/New_York">Eastern Time (ET)</option>
-                    <option value="America/Chicago">Central Time (CT)</option>
-                    <option value="America/Denver">Mountain Time (MT)</option>
-                    <option value="America/Los_Angeles">Pacific Time (PT)</option>
-                    <option value="America/Mexico_City">Mexico City</option>
-                  </select>
-                </div>
               </div>
             </div>
 
