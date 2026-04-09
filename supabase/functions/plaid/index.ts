@@ -249,6 +249,15 @@ Deno.serve(async (req) => {
         if (match) accountMap.set(match[1], acc.id)
       }
 
+      // If no accounts mapped, reset cursor to force full re-sync
+      if (accountMap.size === 0) {
+        console.log('No mapped accounts found — resetting cursor for full re-sync')
+        await adminSupabase
+          .from('plaid_items')
+          .update({ transactions_cursor: null })
+          .eq('id', itemId)
+      }
+
       const result = await syncTransactions(item.plaid_access_token, itemId, user.id, adminSupabase, accountMap)
       return json(result)
     }
