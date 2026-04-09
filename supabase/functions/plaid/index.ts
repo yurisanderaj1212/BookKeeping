@@ -259,9 +259,14 @@ async function createAccountsFromPlaid(
 
   for (const acc of plaidAccounts) {
     const plaidAccountId = acc.account_id
+    // Log account details to diagnose balance issues
+    console.log(`Plaid account: ${acc.name} | type: ${acc.type} | subtype: ${acc.subtype} | balance: ${acc.balances?.current}`)
     const isCredit = acc.type === 'credit' || acc.type === 'loan'
     const bal = acc.balances?.current ?? 0
-    const balance = isCredit ? -bal : bal
+    // For depository accounts: use balance as-is (positive = money you have)
+    // For credit/loan: Plaid positive = amount owed → store as negative
+    // Special case: if depository balance is negative (overdraft), keep it negative
+    const balance = isCredit ? -Math.abs(bal) : bal
 
     // Account type: 1=Asset (depository/investment), 2=Liability (credit/loan)
     const accountType = isCredit ? 2 : 1
@@ -347,7 +352,7 @@ async function syncTransactions(
         if (!supabaseAccId) continue
         const bal = acc.balances?.current ?? 0
         const isCredit = acc.type === 'credit' || acc.type === 'loan'
-        const balance = isCredit ? -bal : bal
+        const balance = isCredit ? -Math.abs(bal) : bal
         await supabase
           .from('accounts')
           .update({ current_balance: balance, updated_at: new Date().toISOString() })
