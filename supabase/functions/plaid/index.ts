@@ -437,6 +437,7 @@ async function syncTransactions(
     if (cursor) reqBody.cursor = cursor
 
     const data = await plaidPost('/transactions/sync', reqBody)
+    console.log(`Sync page: added=${data.added?.length ?? 0} modified=${data.modified?.length ?? 0} removed=${data.removed?.length ?? 0} has_more=${data.has_more} cursor_was=${cursor ? 'set' : 'null'}`)
 
     // Update account balances from Plaid — only for accounts in the map
     if (data.accounts?.length > 0) {
@@ -458,10 +459,11 @@ async function syncTransactions(
     }
 
     for (const tx of data.added ?? []) {
+      // Plaid: positive amount = debit/expense, negative = credit/income
       const type   = tx.amount > 0 ? 2 : 1
       const amount = Math.abs(tx.amount)
-      // Map to the correct Supabase account — only assign if we have a mapping
       const txAccountId = accountMap?.get(tx.account_id) ?? null
+      console.log(`TX added: ${tx.transaction_id} | account: ${tx.account_id} → supabase: ${txAccountId} | amount: ${tx.amount} | name: ${tx.name}`)
       const { error } = await supabase.from('transactions').upsert({
         user_id:                 userId,
         type,
@@ -470,14 +472,15 @@ async function syncTransactions(
         account_id:              txAccountId,
         description:             tx.merchant_name ?? tx.name ?? 'Transacción bancaria',
         date:                    tx.authorized_date ?? tx.date,
-        status:                  1,
+        status:                  tx.pending ? 1 : 0,
         is_from_plaid:           true,
         is_business_transaction: null,
         merchant_name:           tx.merchant_name ?? null,
         plaid_transaction_id:    tx.transaction_id,
         notes:                   `Plaid item: ${plaidItemDbId}`,
       }, { onConflict: 'plaid_transaction_id', ignoreDuplicates: false })
-      if (!error) added++
+      if (error) console.error(`TX insert error: ${error.message}`)
+      else added++
     }
 
     for (const tx of data.modified ?? []) {
