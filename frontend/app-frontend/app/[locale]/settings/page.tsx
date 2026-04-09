@@ -2,6 +2,8 @@
 
 import { useState, useEffect, useCallback, useRef } from 'react'
 import { useRouter } from 'next/navigation'
+import { useRouter as useIntlRouter, usePathname as useIntlPathname } from '@/i18n/routing'
+import { useLocale } from 'next-intl'
 import { useAuth } from '@/hooks/useAuth'
 import { 
   User, 
@@ -394,6 +396,9 @@ const SecurityTab = ({
 
 export default function SettingsPage() {
   const router = useRouter()
+  const intlRouter = useIntlRouter()
+  const intlPathname = useIntlPathname()
+  const currentLocale = useLocale()
   const { isLoading: authLoading, isAuthenticated, logout } = useAuth()
   const { showSuccess, showError } = useNotifications()
   const [activeTab, setActiveTab] = useState('profile')
@@ -412,18 +417,8 @@ export default function SettingsPage() {
   const [jobTitle, setJobTitle] = useState('')
   const [avatarUrl, setAvatarUrl] = useState<string | null>(null)
 
-  // Local preferences (localStorage) — sync language from URL locale on mount
-  const [prefs, setPrefs] = useState<LocalPreferences>(() => {
-    const stored = getLocalPreferences()
-    // Detect current locale from URL and sync it to prefs
-    if (typeof window !== 'undefined') {
-      const urlLocale = window.location.pathname.startsWith('/en') ? 'en' : 'es'
-      if (stored.language !== urlLocale) {
-        stored.language = urlLocale
-      }
-    }
-    return stored
-  })
+  // Local preferences (localStorage) — always sync language from current URL locale
+  const [prefs, setPrefs] = useState<LocalPreferences>(() => getLocalPreferences())
 
   // Notifications (subset of prefs)
   const [notifPrefs, setNotifPrefs] = useState(getLocalPreferences().notifications)
@@ -439,6 +434,12 @@ export default function SettingsPage() {
     if (type === 'success') showSuccess(tCommon('success'), msg)
     else showError(tCommon('error'), msg)
   }, [showSuccess, showError, tCommon])
+
+  // Sync language selector with current URL locale on mount
+  useEffect(() => {
+    setPrefs(p => ({ ...p, language: currentLocale }))
+    saveLocalPreferences({ language: currentLocale })
+  }, [currentLocale])
 
   // Load profile from API on mount
   useEffect(() => {
@@ -541,28 +542,26 @@ export default function SettingsPage() {
     }
   }, [secForm, showToast, t, tErr])
 
-  const handleSavePreferences = useCallback(() => {
+  const handleSavePreferences = useCallback(async () => {
     saveLocalPreferences(prefs)
-    // Also sync language to email_preferences for weekly reports
-    import('@/lib/supabaseClient').then(({ getSupabase }) => {
+    // Sync language to email_preferences for weekly reports
+    try {
+      const { getSupabase } = await import('@/lib/supabaseClient')
       const supabase = getSupabase()
-      supabase.auth.getUser().then(({ data: { user } }) => {
-        if (user) {
-          supabase.from('email_preferences').upsert({
-            user_id: user.id,
-            language: prefs.language,
-          }, { onConflict: 'user_id' }).then(() => {})
-        }
-      })
-    })
+      const { data: { user } } = await supabase.auth.getUser()
+      if (user) {
+        await supabase.from('email_preferences').upsert({
+          user_id: user.id,
+          language: prefs.language,
+        }, { onConflict: 'user_id' })
+      }
+    } catch { /* silencioso */ }
     showToast(t('prefSaved'))
-    // Navigate to the new locale if language changed
-    const currentLocale = window.location.pathname.startsWith('/en') ? 'en' : 'es'
+    // Navigate to new locale using next-intl router (same as sidebar button)
     if (prefs.language !== currentLocale) {
-      const newPath = window.location.pathname.replace(/^\/(es|en)/, `/${prefs.language}`)
-      window.location.href = newPath
+      intlRouter.replace(intlPathname as any, { locale: prefs.language as 'en' | 'es' })
     }
-  }, [prefs, showToast, t])
+  }, [prefs, currentLocale, intlRouter, intlPathname, showToast, t])
 
   if (authLoading) {
     return (
