@@ -68,11 +68,25 @@ Deno.serve(async (req) => {
 
       if (itemRow && ['SYNC_UPDATES_AVAILABLE', 'INITIAL_UPDATE', 'HISTORICAL_UPDATE'].includes(webhook_code)) {
         try {
+          // Rebuild accountMap from existing accounts in DB
+          const { data: existingAccounts } = await adminSupabase
+            .from('accounts')
+            .select('id, description')
+            .eq('user_id', itemRow.user_id)
+            .like('description', '%[plaid:%')
+
+          const accountMap = new Map<string, number>()
+          for (const acc of existingAccounts ?? []) {
+            const match = acc.description?.match(/\[plaid:([^\]]+)\]/)
+            if (match) accountMap.set(match[1], acc.id)
+          }
+
           const result = await syncTransactions(
             itemRow.plaid_access_token,
             itemRow.id,
             itemRow.user_id,
             adminSupabase,
+            accountMap,
           )
           console.log(`Auto-sync complete: +${result.added} ~${result.modified} -${result.removed}`)
         } catch (err) {
@@ -204,7 +218,20 @@ Deno.serve(async (req) => {
 
       if (error || !item) return json({ error: 'Item not found' }, 404)
 
-      const result = await syncTransactions(item.plaid_access_token, itemId, user.id, adminSupabase)
+      // Rebuild accountMap from existing accounts
+      const { data: existingAccounts } = await adminSupabase
+        .from('accounts')
+        .select('id, description')
+        .eq('user_id', user.id)
+        .like('description', '%[plaid:%')
+
+      const accountMap = new Map<string, number>()
+      for (const acc of existingAccounts ?? []) {
+        const match = acc.description?.match(/\[plaid:([^\]]+)\]/)
+        if (match) accountMap.set(match[1], acc.id)
+      }
+
+      const result = await syncTransactions(item.plaid_access_token, itemId, user.id, adminSupabase, accountMap)
       return json(result)
     }
 
@@ -384,11 +411,15 @@ async function syncTransactions(
 
     const data = await plaidPost('/transactions/sync', reqBody)
 
-    // Update account balances from Plaid — one per account
+    // Update account balances from Plaid — only for accounts in the map
     if (data.accounts?.length > 0) {
       for (const acc of data.accounts) {
-        const supabaseAccId = accountMap?.get(acc.account_id) ?? primaryAccountId
-        if (!supabaseAccId) continue
+        // Only update if we have a mapping for this specific plaid account
+        const supabaseAccId = accountMap?.get(acc.account_id)
+        if (!supabaseAccId) {
+          console.log(`Skipping balance update for unmapped account: ${acc.account_id} (${acc.name})`)
+          continue
+        }
         const bal = acc.balances?.current ?? 0
         const isCredit = acc.type === 'credit' || acc.type === 'loan'
         const balance = isCredit ? -Math.abs(bal) : bal
@@ -402,8 +433,8 @@ async function syncTransactions(
     for (const tx of data.added ?? []) {
       const type   = tx.amount > 0 ? 2 : 1
       const amount = Math.abs(tx.amount)
-      // Map to the correct Supabase account
-      const txAccountId = accountMap?.get(tx.account_id) ?? primaryAccountId
+      // Map to the correct Supabase account — only assign if we have a mapping
+      const txAccountId = accountMap?.get(tx.account_id) ?? null
       const { error } = await supabase.from('transactions').upsert({
         user_id:                 userId,
         type,
