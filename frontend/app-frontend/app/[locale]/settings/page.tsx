@@ -575,13 +575,10 @@ export default function SettingsPage() {
               <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">{t('notifPreferences')}</h3>
               <div className="space-y-4">
                 {([
-                  { key: 'emailNotifications' },
                   { key: 'transactionAlerts' },
                   { key: 'reportReminders' },
                   { key: 'weeklyDigest' },
-                  { key: 'monthlyReports' },
                   { key: 'lowBalanceAlerts' },
-                  { key: 'expenseThresholds' },
                 ] as { key: keyof typeof notifPrefs }[]).map(item => (
                   <div key={item.key} className="flex items-center justify-between p-4 border border-gray-200 dark:border-gray-700 rounded-lg">
                     <div className="flex-1">

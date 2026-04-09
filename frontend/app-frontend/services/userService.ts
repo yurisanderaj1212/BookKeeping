@@ -168,7 +168,7 @@ const DEFAULT_PREFS: LocalPreferences = {
     emailNotifications: true,
     transactionAlerts: true,
     reportReminders: true,
-    weeklyDigest: false,
+    weeklyDigest: true,
     monthlyReports: true,
     lowBalanceAlerts: true,
     expenseThresholds: false,

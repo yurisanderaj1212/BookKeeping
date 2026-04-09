@@ -202,7 +202,92 @@ export function NotificationProvider({ children }: { children: ReactNode }) {
     } catch { /* silencioso */ }
   }, [])
 
-  // ─── Pending transaction reminder (48-72h after creation) ──────────────────
+  // ─── Report Reminder — 1st of each month ─────────────────────────────────
+  const checkMonthlyReportReminder = useCallback(async () => {
+    const now = new Date()
+    if (now.getDate() !== 1) return  // only on the 1st
+    const key = `monthly-report-reminder-${now.getFullYear()}-${now.getMonth() + 1}`
+    if (localStorage.getItem(key)) return
+
+    try {
+      const supabase = getSupabase()
+      const { data: { user } } = await supabase.auth.getUser()
+      if (!user) return
+
+      // Check if user has reportReminders enabled
+      const prefs = JSON.parse(localStorage.getItem('bookkeeping_preferences') || '{}')
+      if (prefs?.notifications?.reportReminders === false) return
+
+      const locale = document.documentElement.lang?.startsWith('en') ? 'en' : 'es'
+      const prevMonth = new Date(now.getFullYear(), now.getMonth() - 1, 1)
+        .toLocaleDateString(locale === 'en' ? 'en-US' : 'es-ES', { month: 'long', year: 'numeric' })
+
+      await supabase.from('notifications').insert({
+        user_id:      user.id,
+        type:         'reminder',
+        priority:     'medium',
+        title:        locale === 'en' ? '📊 Monthly report ready' : '📊 Reporte mensual listo',
+        message:      locale === 'en'
+          ? `The month of ${prevMonth} has ended. Generate your financial report to review your results.`
+          : `El mes de ${prevMonth} ha terminado. Genera tu reporte financiero para revisar tus resultados.`,
+        action_url:   '/reports',
+        action_label: locale === 'en' ? 'Generate report' : 'Generar reporte',
+        is_read:      false,
+      })
+      localStorage.setItem(key, '1')
+    } catch { /* silencioso */ }
+  }, [])
+
+  // ─── Low Balance Alert — check all accounts ────────────────────────────────
+  const checkLowBalance = useCallback(async () => {
+    const key = `low-balance-check-${new Date().toISOString().split('T')[0]}`
+    if (localStorage.getItem(key)) return
+
+    try {
+      const supabase = getSupabase()
+      const { data: { user } } = await supabase.auth.getUser()
+      if (!user) return
+
+      // Check if user has lowBalanceAlerts enabled
+      const prefs = JSON.parse(localStorage.getItem('bookkeeping_preferences') || '{}')
+      if (prefs?.notifications?.lowBalanceAlerts === false) return
+
+      const { data: accounts } = await supabase
+        .from('accounts')
+        .select('id, name, current_balance, sub_type, currency')
+        .eq('is_active', true)
+        .lt('current_balance', 100)  // below $100 threshold
+        .neq('sub_type', 1002)       // exclude Cash (sub_type 1002)
+
+      if (!accounts?.length) {
+        localStorage.setItem(key, '1')
+        return
+      }
+
+      const locale = document.documentElement.lang?.startsWith('en') ? 'en' : 'es'
+
+      for (const acc of accounts) {
+        const name = acc.sub_type === 1002 ? (locale === 'en' ? 'Cash' : 'Efectivo') : acc.name
+        const balance = new Intl.NumberFormat(locale === 'en' ? 'en-US' : 'es-ES', {
+          style: 'currency', currency: acc.currency ?? 'USD'
+        }).format(acc.current_balance)
+
+        await supabase.from('notifications').insert({
+          user_id:      user.id,
+          type:         'alert',
+          priority:     'high',
+          title:        locale === 'en' ? '⚠️ Low balance alert' : '⚠️ Alerta de saldo bajo',
+          message:      locale === 'en'
+            ? `Account "${name}" has a low balance of ${balance}.`
+            : `La cuenta "${name}" tiene un saldo bajo de ${balance}.`,
+          action_url:   '/accounts',
+          action_label: locale === 'en' ? 'View accounts' : 'Ver cuentas',
+          is_read:      false,
+        })
+      }
+      localStorage.setItem(key, '1')
+    } catch { /* silencioso */ }
+  }, [])
   const checkPendingTransactions = useCallback(async () => {
     try {
       const supabase = getSupabase()
@@ -258,6 +343,8 @@ export function NotificationProvider({ children }: { children: ReactNode }) {
       checkWeeklyReminder()
       checkWeekEndingWarning()
       checkPendingTransactions()
+      checkMonthlyReportReminder()
+      checkLowBalance()
     }, 1500)
     pollingRef.current = setInterval(poll, 5000)
 
@@ -265,7 +352,7 @@ export function NotificationProvider({ children }: { children: ReactNode }) {
       clearTimeout(init)
       if (pollingRef.current) clearInterval(pollingRef.current)
     }
-  }, [poll, checkWeeklyReminder, checkWeekEndingWarning, checkPendingTransactions])
+  }, [poll, checkWeeklyReminder, checkWeekEndingWarning, checkPendingTransactions, checkMonthlyReportReminder, checkLowBalance])
 
   return (
     <NotificationContext.Provider value={{ toasts, unreadCount, addToast, removeToast, markAllRead, refreshUnread }}>

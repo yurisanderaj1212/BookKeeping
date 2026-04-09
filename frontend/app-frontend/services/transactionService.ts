@@ -162,6 +162,29 @@ export async function create(dto: CreateTransactionDto): Promise<TransactionDto>
     .from('transactions').insert(payload)
     .select('*, categories(name), accounts(name)').single()
   if (error) throw new Error(error.message)
+
+  // Transaction Alert notification (if enabled)
+  try {
+    const prefs = JSON.parse(localStorage.getItem('bookkeeping_preferences') || '{}')
+    if (prefs?.notifications?.transactionAlerts !== false) {
+      const locale = typeof window !== 'undefined' && document.documentElement.lang?.startsWith('en') ? 'en' : 'es'
+      const typeLabel = dto.type === 1 ? (locale === 'en' ? 'Income' : 'Ingreso') : (locale === 'en' ? 'Expense' : 'Gasto')
+      const amount = new Intl.NumberFormat(locale === 'en' ? 'en-US' : 'es-ES', { style: 'currency', currency: 'USD' }).format(dto.amount)
+      await supabase.from('notifications').insert({
+        user_id:      user.id,
+        type:         'transaction',
+        priority:     'low',
+        title:        locale === 'en' ? `✅ ${typeLabel} recorded` : `✅ ${typeLabel} registrado`,
+        message:      locale === 'en'
+          ? `${dto.description} — ${amount}`
+          : `${dto.description} — ${amount}`,
+        action_url:   '/transactions',
+        action_label: locale === 'en' ? 'View transactions' : 'Ver transacciones',
+        is_read:      false,
+      })
+    }
+  } catch { /* silencioso */ }
+
   return mapTx({ ...data, categories: { name: data.categories?.name }, accounts: { name: data.accounts?.name } })
 }
 
