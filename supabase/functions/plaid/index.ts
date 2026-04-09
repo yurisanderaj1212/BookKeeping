@@ -103,13 +103,18 @@ Deno.serve(async (req) => {
   try {
     // ── createLinkToken ───────────────────────────────────────────────────────
     if (action === 'createLinkToken') {
-      const data = await plaidPost('/link/token/create', {
+      const linkTokenBody: Record<string, unknown> = {
         user:          { client_user_id: user.id },
         client_name:   'Chill Numbers',
         products:      ['transactions'],
         country_codes: ['US'],
         language:      'en',
-      })
+      }
+      // Required for OAuth institutions in production
+      if (PLAID_ENV === 'production') {
+        linkTokenBody.redirect_uri = 'https://www.chillnumbers.com'
+      }
+      const data = await plaidPost('/link/token/create', linkTokenBody)
       return json({ linkToken: data.link_token })
     }
 
