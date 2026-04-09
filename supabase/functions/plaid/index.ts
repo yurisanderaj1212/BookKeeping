@@ -38,6 +38,61 @@ async function plaidPost(endpoint: string, body: Record<string, unknown>) {
 Deno.serve(async (req) => {
   if (req.method === 'OPTIONS') return new Response('ok', { headers: corsHeaders })
 
+  // ── Plaid Webhook (no auth header — Plaid calls this directly) ────────────
+  // Plaid sends: POST with webhook_type, webhook_code, item_id
+  // Register this URL in Plaid Dashboard → Webhooks:
+  //   https://<project>.supabase.co/functions/v1/plaid
+  // For production: verify webhook signature using Plaid-Verification header
+  const contentType = req.headers.get('content-type') ?? ''
+  if (contentType.includes('application/json')) {
+    const rawBody = await req.text()
+    let webhookBody: any
+    try { webhookBody = JSON.parse(rawBody) } catch { webhookBody = null }
+
+    if (webhookBody?.webhook_type && webhookBody?.item_id && !webhookBody?.action) {
+      // This is a Plaid webhook — handle without user auth
+      const adminSupabase = createClient(
+        Deno.env.get('SUPABASE_URL')!,
+        Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!,
+      )
+
+      const { webhook_type, webhook_code, item_id: plaidItemId } = webhookBody
+
+      console.log(`Plaid webhook: ${webhook_type}/${webhook_code} for item ${plaidItemId}`)
+
+      // Only handle transaction webhooks
+      if (webhook_type === 'TRANSACTIONS') {
+        // Find the plaid_item row by plaid_item_id
+        const { data: itemRow } = await adminSupabase
+          .from('plaid_items')
+          .select('id, user_id, plaid_access_token')
+          .eq('plaid_item_id', plaidItemId)
+          .single()
+
+        if (itemRow) {
+          // SYNC_UPDATES_AVAILABLE — new/modified/removed transactions available
+          // INITIAL_UPDATE / HISTORICAL_UPDATE — initial sync complete
+          if (['SYNC_UPDATES_AVAILABLE', 'INITIAL_UPDATE', 'HISTORICAL_UPDATE'].includes(webhook_code)) {
+            try {
+              const result = await syncTransactions(
+                itemRow.plaid_access_token,
+                itemRow.id,
+                itemRow.user_id,
+                adminSupabase,
+              )
+              console.log(`Auto-sync complete: +${result.added} ~${result.modified} -${result.removed}`)
+            } catch (err) {
+              console.error('Auto-sync error:', err)
+            }
+          }
+        }
+      }
+
+      return json({ received: true })
+    }
+  }
+
+  // ── All other actions require user auth ───────────────────────────────────
   const authHeader = req.headers.get('Authorization')
   if (!authHeader) return json({ error: 'Unauthorized' }, 401)
 
@@ -50,7 +105,8 @@ Deno.serve(async (req) => {
   const { data: { user }, error: authError } = await supabase.auth.getUser()
   if (authError || !user) return json({ error: 'Unauthorized' }, 401)
 
-  const body   = await req.json()
+  // Re-use already-parsed body if available, otherwise parse fresh
+  const body   = webhookBody ?? await req.json()
   const action = body.action as string
 
   try {
@@ -76,6 +132,17 @@ Deno.serve(async (req) => {
 
       const accessToken = exchangeData.access_token
       const itemId      = exchangeData.item_id
+
+      // Register webhook URL so Plaid auto-notifies on new transactions
+      const webhookUrl = `${Deno.env.get('SUPABASE_URL')}/functions/v1/plaid`
+      try {
+        await plaidPost('/item/webhook/update', {
+          access_token: accessToken,
+          webhook:      webhookUrl,
+        })
+      } catch (e) {
+        console.warn('Webhook registration failed (non-critical):', e)
+      }
 
       const adminSupabase = createClient(
         Deno.env.get('SUPABASE_URL')!,
