@@ -412,8 +412,18 @@ export default function SettingsPage() {
   const [jobTitle, setJobTitle] = useState('')
   const [avatarUrl, setAvatarUrl] = useState<string | null>(null)
 
-  // Local preferences (localStorage)
-  const [prefs, setPrefs] = useState<LocalPreferences>(getLocalPreferences())
+  // Local preferences (localStorage) — sync language from URL locale on mount
+  const [prefs, setPrefs] = useState<LocalPreferences>(() => {
+    const stored = getLocalPreferences()
+    // Detect current locale from URL and sync it to prefs
+    if (typeof window !== 'undefined') {
+      const urlLocale = window.location.pathname.startsWith('/en') ? 'en' : 'es'
+      if (stored.language !== urlLocale) {
+        stored.language = urlLocale
+      }
+    }
+    return stored
+  })
 
   // Notifications (subset of prefs)
   const [notifPrefs, setNotifPrefs] = useState(getLocalPreferences().notifications)
@@ -533,7 +543,25 @@ export default function SettingsPage() {
 
   const handleSavePreferences = useCallback(() => {
     saveLocalPreferences(prefs)
+    // Also sync language to email_preferences for weekly reports
+    import('@/lib/supabaseClient').then(({ getSupabase }) => {
+      const supabase = getSupabase()
+      supabase.auth.getUser().then(({ data: { user } }) => {
+        if (user) {
+          supabase.from('email_preferences').upsert({
+            user_id: user.id,
+            language: prefs.language,
+          }, { onConflict: 'user_id' }).then(() => {})
+        }
+      })
+    })
     showToast(t('prefSaved'))
+    // Navigate to the new locale if language changed
+    const currentLocale = window.location.pathname.startsWith('/en') ? 'en' : 'es'
+    if (prefs.language !== currentLocale) {
+      const newPath = window.location.pathname.replace(/^\/(es|en)/, `/${prefs.language}`)
+      window.location.href = newPath
+    }
   }, [prefs, showToast, t])
 
   if (authLoading) {

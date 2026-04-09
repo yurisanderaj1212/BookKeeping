@@ -151,7 +151,7 @@ export interface LocalPreferences {
 }
 
 const DEFAULT_PREFS: LocalPreferences = {
-  language: 'es',
+  language: 'en',
   currency: 'USD',
   dateFormat: 'MM/DD/YYYY',
   timezone: 'America/New_York',
