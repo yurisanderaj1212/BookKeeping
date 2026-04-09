@@ -126,8 +126,9 @@ class AccountService {
 
   async deactivateAccount(id: number): Promise<void> {
     const supabase = getSupabase()
+    // Hard delete — removes the account completely
     const { error } = await supabase
-      .from('accounts').update({ is_active: false }).eq('id', id)
+      .from('accounts').delete().eq('id', id)
     if (error) throw new Error(error.message)
   }
 }

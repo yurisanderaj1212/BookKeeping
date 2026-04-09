@@ -112,13 +112,16 @@ export default function AccountList({ accounts, onEdit, onDelete }: AccountListP
                       >
                         <Edit2 className="w-4 h-4" />
                       </button>
-                      <button
-                        onClick={() => onDelete(account.id)}
-                        className="p-1.5 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors"
-                        title={t('deactivateTitle')}
-                      >
-                        <Trash2 className="w-4 h-4" />
-                      </button>
+                      {/* Hide delete for Cash accounts — they are system accounts */}
+                      {account.sub_type !== 1002 && (
+                        <button
+                          onClick={() => onDelete(account.id)}
+                          className="p-1.5 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+                          title={t('deactivateTitle')}
+                        >
+                          <Trash2 className="w-4 h-4" />
+                        </button>
+                      )}
                     </div>
                   </div>
                 </div>

@@ -224,6 +224,40 @@ Deno.serve(async (req) => {
         await plaidPost('/item/remove', { access_token: item.plaid_access_token })
       } catch { /* ignorar si ya fue removido en Plaid */ }
 
+      // Delete associated bank accounts from Supabase
+      const adminSupabase = createClient(
+        Deno.env.get('SUPABASE_URL')!,
+        Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!,
+      )
+      // Get the item to find associated accounts
+      const { data: itemToDelete } = await supabase
+        .from('plaid_items')
+        .select('supabase_account_id, institution_name')
+        .eq('id', itemId)
+        .single()
+
+      if (itemToDelete?.institution_name) {
+        // Delete all accounts from this institution (created by Plaid)
+        // First null out account_id on transactions to avoid FK violation
+        await adminSupabase
+          .from('transactions')
+          .update({ account_id: null })
+          .like('account_id::text', '%')
+          .in('account_id', 
+            (await adminSupabase
+              .from('accounts')
+              .select('id')
+              .like('name', `${itemToDelete.institution_name}%`)
+              .then(r => (r.data ?? []).map((a: any) => a.id))
+            )
+          )
+        await adminSupabase
+          .from('accounts')
+          .delete()
+          .like('name', `${itemToDelete.institution_name}%`)
+          .neq('sub_type', 1002) // never delete Cash
+      }
+
       await supabase.from('plaid_items').delete().eq('id', itemId)
       return json({ message: 'Cuenta desconectada' })
     }
@@ -279,16 +313,21 @@ async function createAccountsFromPlaid(
       ? `${institutionName ?? ''} — ${acc.name}`.trim()
       : (institutionName ?? 'Bank Account')
 
-    // Check if already exists (avoid duplicates on re-connect)
+    // Check if already exists by plaid_account_id stored in description
     const { data: existing } = await supabase
       .from('accounts')
       .select('id')
       .eq('user_id', userId)
-      .eq('name', accountName)
+      .like('description', `%[plaid:${plaidAccountId}]%`)
       .maybeSingle()
 
     if (existing) {
-      accountMap.set(plaidAccountId, existing.id)
+      // Update balance on reconnect
+      const { error: updateErr } = await supabase
+        .from('accounts')
+        .update({ current_balance: balance, is_active: true, updated_at: new Date().toISOString() })
+        .eq('id', existing.id)
+      if (!updateErr) accountMap.set(plaidAccountId, existing.id)
       continue
     }
 
@@ -303,7 +342,7 @@ async function createAccountsFromPlaid(
         current_balance: balance,
         currency:        acc.balances?.iso_currency_code ?? 'USD',
         is_active:       true,
-        description:     `${acc.official_name ?? acc.name} — conectada via Plaid`,
+        description:     `${acc.official_name ?? acc.name} — via Plaid [plaid:${plaidAccountId}]`,
       })
       .select('id')
       .single()
