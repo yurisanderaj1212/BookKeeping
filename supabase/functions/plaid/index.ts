@@ -257,7 +257,10 @@ async function getOrCreateAccount(
     try {
       const accountsData = await plaidPost('/accounts/get', { access_token: accessToken })
       currentBalance = (accountsData.accounts ?? []).reduce((sum: number, acc: any) => {
-        return sum + (acc.balances?.current ?? 0)
+        const bal = acc.balances?.current ?? 0
+        // Credit/loan accounts: Plaid returns positive = amount owed → store as negative (liability)
+        const isCredit = acc.type === 'credit' || acc.type === 'loan'
+        return sum + (isCredit ? -bal : bal)
       }, 0)
     } catch { /* si falla, usar 0 */ }
   }
@@ -315,7 +318,9 @@ async function syncTransactions(
     // Update account balance from Plaid
     if (supabaseAccountId && data.accounts?.length > 0) {
       const totalBalance = data.accounts.reduce((sum: number, acc: any) => {
-        return sum + (acc.balances?.current ?? 0)
+        const bal = acc.balances?.current ?? 0
+        const isCredit = acc.type === 'credit' || acc.type === 'loan'
+        return sum + (isCredit ? -bal : bal)
       }, 0)
       await supabase
         .from('accounts')
