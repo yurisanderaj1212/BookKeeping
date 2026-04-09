@@ -352,35 +352,6 @@ const SecurityTab = ({
       </div>
     </div>
 
-    <div className="bg-white dark:bg-gray-900 rounded-lg border border-gray-200 dark:border-gray-700 p-6">
-      <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">{t('sessionOptions')}</h3>
-      <div className="space-y-4">
-        <div className="flex items-center justify-between p-4 border border-gray-200 dark:border-gray-700 rounded-lg">
-          <div>
-            <h4 className="font-medium text-gray-900 dark:text-gray-100">{t('loginAlerts')}</h4>
-            <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">{t('loginAlertsDesc')}</p>
-          </div>
-          <label className="relative inline-flex items-center cursor-pointer">
-            <input type="checkbox" checked={form.loginAlerts}
-              onChange={e => setForm({ ...form, loginAlerts: e.target.checked })} className="sr-only peer" />
-            <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-primary-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white dark:bg-gray-900 after:border-gray-300 dark:border-gray-600 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary-600"></div>
-          </label>
-        </div>
-        <div className="p-4 border border-gray-200 dark:border-gray-700 rounded-lg">
-          <h4 className="font-medium text-gray-900 dark:text-gray-100 mb-2">{t('sessionTimeout')}</h4>
-          <p className="text-sm text-gray-500 dark:text-gray-400 mb-3">{t('sessionTimeoutDesc')}</p>
-          <select value={form.sessionTimeout} onChange={e => setForm({ ...form, sessionTimeout: parseInt(e.target.value) })}
-            className="w-full md:w-auto px-3 py-2 border border-gray-300 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-100 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500">
-            <option value={15}>{t('timeoutOptions.15min')}</option>
-            <option value={30}>{t('timeoutOptions.30min')}</option>
-            <option value={60}>{t('timeoutOptions.1h')}</option>
-            <option value={120}>{t('timeoutOptions.2h')}</option>
-            <option value={0}>{t('timeoutOptions.never')}</option>
-          </select>
-        </div>
-      </div>
-    </div>
-
     <div className="flex justify-end">
       <button onClick={onSave} disabled={isLoading || (!!form.newPassword && form.newPassword !== form.confirmPassword)}
         className="bg-primary-600 text-white px-6 py-2 rounded-lg hover:bg-primary-700 transition-colors flex items-center space-x-2 disabled:opacity-50">
