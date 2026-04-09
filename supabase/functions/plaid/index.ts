@@ -468,7 +468,7 @@ async function syncTransactions(
         user_id:                 userId,
         type,
         amount,
-        category_id:             15,
+        category_id:             21, // Other
         account_id:              txAccountId,
         description:             tx.merchant_name ?? tx.name ?? 'Transacción bancaria',
         date:                    tx.authorized_date ?? tx.date,
@@ -479,7 +479,7 @@ async function syncTransactions(
         plaid_transaction_id:    tx.transaction_id,
         notes:                   `Plaid item: ${plaidItemDbId}`,
       }, { onConflict: 'plaid_transaction_id', ignoreDuplicates: false })
-      if (error) console.error(`TX insert error: ${error.message}`)
+      if (error) console.error(`TX insert error: ${error.message} | code: ${error.code} | details: ${JSON.stringify(error.details)}`)
       else added++
     }
 
@@ -493,7 +493,7 @@ async function syncTransactions(
         user_id:                 userId,
         type,
         amount,
-        category_id:             15,
+        category_id:             21, // Other
         account_id:              txAccountId,
         description:             tx.merchant_name ?? tx.name ?? 'Transacción bancaria',
         date:                    tx.authorized_date ?? tx.date,
