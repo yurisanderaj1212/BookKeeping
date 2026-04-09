@@ -9,9 +9,9 @@ export default function CookiesPage() {
   const lastUpdated = '19 de marzo de 2026'
 
   return (
-    <div className="min-h-screen bg-slate-50">
+    <div className="min-h-screen bg-slate-50 dark:bg-gray-950">
       {/* Header */}
-      <header className="bg-white dark:bg-gray-900 border-b border-slate-200">
+      <header className="bg-white dark:bg-gray-900 border-b border-slate-200 dark:border-gray-700">
         <div className="max-w-4xl mx-auto px-6 py-4 flex items-center justify-between">
           <Link href="/">
             <AppLogo size={32} variant="full" />
@@ -24,11 +24,11 @@ export default function CookiesPage() {
 
       {/* Content */}
       <main className="max-w-4xl mx-auto px-6 py-12">
-        <div className="bg-white dark:bg-gray-900 rounded-2xl shadow-sm border border-slate-200 p-8 md:p-12">
+        <div className="bg-white dark:bg-gray-900 rounded-2xl shadow-sm border border-slate-200 dark:border-gray-700 p-8 md:p-12">
           {/* Title */}
-          <div className="mb-10 pb-8 border-b border-slate-100">
-            <h1 className="text-3xl font-bold text-slate-900 mb-2">{t('cookiesTitle')}</h1>
-            <p className="text-sm text-slate-500">{t('lastUpdated')}: {lastUpdated}</p>
+          <div className="mb-10 pb-8 border-b border-slate-100 dark:border-gray-700">
+            <h1 className="text-3xl font-bold text-slate-900 dark:text-gray-100 mb-2">{t('cookiesTitle')}</h1>
+            <p className="text-sm text-slate-500 dark:text-gray-400">{t('lastUpdated')}: {lastUpdated}</p>
           </div>
 
           <div className="prose-legal">
@@ -50,14 +50,14 @@ export default function CookiesPage() {
               <p>Clasificamos las cookies según su propósito:</p>
 
               {/* Cookie table */}
-              <div className="mt-4 overflow-x-auto rounded-xl border border-slate-200">
+              <div className="mt-4 overflow-x-auto rounded-xl border border-slate-200 dark:border-gray-700">
                 <table className="w-full text-sm">
                   <thead>
-                    <tr className="bg-slate-50 border-b border-slate-200">
-                      <th className="text-left px-4 py-3 font-semibold text-slate-700 w-1/4">Nombre</th>
-                      <th className="text-left px-4 py-3 font-semibold text-slate-700 w-1/4">Tipo</th>
-                      <th className="text-left px-4 py-3 font-semibold text-slate-700 w-1/4">Duración</th>
-                      <th className="text-left px-4 py-3 font-semibold text-slate-700">Propósito</th>
+                    <tr className="bg-slate-50 dark:bg-gray-800 border-b border-slate-200 dark:border-gray-700">
+                      <th className="text-left px-4 py-3 font-semibold text-slate-700 dark:text-gray-300 w-1/4">Nombre</th>
+                      <th className="text-left px-4 py-3 font-semibold text-slate-700 dark:text-gray-300 w-1/4">Tipo</th>
+                      <th className="text-left px-4 py-3 font-semibold text-slate-700 dark:text-gray-300 w-1/4">Duración</th>
+                      <th className="text-left px-4 py-3 font-semibold text-slate-700 dark:text-gray-300">Propósito</th>
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-slate-100">
@@ -196,9 +196,9 @@ export default function CookiesPage() {
               <p>
                 Para preguntas sobre el uso de cookies:
               </p>
-              <div className="bg-slate-50 rounded-lg p-4 mt-3">
-                <p className="font-medium text-slate-800">Chill Numbers</p>
-                <p className="text-slate-600">
+              <div className="bg-slate-50 dark:bg-gray-800 rounded-lg p-4 mt-3">
+                <p className="font-medium text-slate-800 dark:text-gray-200">Chill Numbers</p>
+                <p className="text-slate-600 dark:text-gray-400">
                   Email:{' '}
                   <a href="mailto:privacy@chillnumbers.com" className="text-primary-600 hover:underline">
                     privacy@chillnumbers.com
@@ -211,7 +211,7 @@ export default function CookiesPage() {
         </div>
 
         {/* Footer links */}
-        <div className="mt-8 flex flex-wrap justify-center gap-6 text-sm text-slate-500">
+        <div className="mt-8 flex flex-wrap justify-center gap-6 text-sm text-slate-500 dark:text-gray-400">
           <Link href="/terms" className="hover:text-primary-600 transition-colors">{t('terms')}</Link>
           <Link href="/privacy" className="hover:text-primary-600 transition-colors">{t('privacy')}</Link>
           <Link href="/" className="hover:text-primary-600 transition-colors">{t('backHome')}</Link>
@@ -224,8 +224,8 @@ export default function CookiesPage() {
 function Section({ title, children }: { title: string; children: React.ReactNode }) {
   return (
     <section className="mb-8">
-      <h2 className="text-lg font-semibold text-slate-900 mb-3">{title}</h2>
-      <div className="text-slate-600 leading-relaxed space-y-3 text-sm [&_ul]:list-disc [&_ul]:pl-5 [&_ul]:space-y-1.5">
+      <h2 className="text-lg font-semibold text-slate-900 dark:text-gray-100 mb-3">{title}</h2>
+      <div className="text-slate-600 dark:text-gray-400 leading-relaxed space-y-3 text-sm [&_ul]:list-disc [&_ul]:pl-5 [&_ul]:space-y-1.5">
         {children}
       </div>
     </section>
@@ -234,36 +234,29 @@ function Section({ title, children }: { title: string; children: React.ReactNode
 
 function SubSection({ title, children }: { title: string; children: React.ReactNode }) {
   return (
-    <div className="mt-4 pl-4 border-l-2 border-primary-100">
-      <p className="font-medium text-slate-700 mb-2">{title}</p>
+    <div className="mt-4 pl-4 border-l-2 border-primary-100 dark:border-primary-800">
+      <p className="font-medium text-slate-700 dark:text-gray-300 mb-2">{title}</p>
       {children}
     </div>
   )
 }
 
-function CookieRow({
-  name, type, duration, purpose
-}: {
-  name: string
-  type: string
-  duration: string
-  purpose: string
-}) {
+function CookieRow({ name, type, duration, purpose }: { name: string; type: string; duration: string; purpose: string }) {
   const typeColor =
     type === 'Esencial'
-      ? 'bg-green-50 text-green-700 border border-green-200'
-      : 'bg-blue-50 text-blue-700 border border-blue-200'
+      ? 'bg-green-50 dark:bg-green-900/20 text-green-700 dark:text-green-400 border border-green-200 dark:border-green-800'
+      : 'bg-blue-50 dark:bg-blue-900/20 text-blue-700 dark:text-blue-400 border border-blue-200 dark:border-blue-800'
 
   return (
-    <tr className="hover:bg-slate-50 transition-colors">
-      <td className="px-4 py-3 font-mono text-xs text-slate-700 align-top">{name}</td>
+    <tr className="hover:bg-slate-50 dark:hover:bg-gray-800 transition-colors">
+      <td className="px-4 py-3 font-mono text-xs text-slate-700 dark:text-gray-300 align-top">{name}</td>
       <td className="px-4 py-3 align-top">
         <span className={`inline-block px-2 py-0.5 rounded-full text-xs font-medium ${typeColor}`}>
           {type}
         </span>
       </td>
-      <td className="px-4 py-3 text-slate-600 align-top whitespace-nowrap">{duration}</td>
-      <td className="px-4 py-3 text-slate-600 align-top">{purpose}</td>
+      <td className="px-4 py-3 text-slate-600 dark:text-gray-400 align-top whitespace-nowrap">{duration}</td>
+      <td className="px-4 py-3 text-slate-600 dark:text-gray-400 align-top">{purpose}</td>
     </tr>
   )
 }

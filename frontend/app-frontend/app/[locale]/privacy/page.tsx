@@ -9,9 +9,9 @@ export default function PrivacyPage() {
   const lastUpdated = '19 de marzo de 2026'
 
   return (
-    <div className="min-h-screen bg-slate-50">
+    <div className="min-h-screen bg-slate-50 dark:bg-gray-950">
       {/* Header */}
-      <header className="bg-white dark:bg-gray-900 border-b border-slate-200">
+      <header className="bg-white dark:bg-gray-900 border-b border-slate-200 dark:border-gray-700">
         <div className="max-w-4xl mx-auto px-6 py-4 flex items-center justify-between">
           <Link href="/">
             <AppLogo size={32} variant="full" />
@@ -24,15 +24,15 @@ export default function PrivacyPage() {
 
       {/* Content */}
       <main className="max-w-4xl mx-auto px-6 py-12">
-        <div className="bg-white dark:bg-gray-900 rounded-2xl shadow-sm border border-slate-200 p-8 md:p-12">
+        <div className="bg-white dark:bg-gray-900 rounded-2xl shadow-sm border border-slate-200 dark:border-gray-700 p-8 md:p-12">
           {/* Title */}
-          <div className="mb-10 pb-8 border-b border-slate-100">
-            <h1 className="text-3xl font-bold text-slate-900 mb-2">{t('privacyTitle')}</h1>
-            <p className="text-sm text-slate-500">{t('lastUpdated')}: {lastUpdated}</p>
+          <div className="mb-10 pb-8 border-b border-slate-100 dark:border-gray-700">
+            <h1 className="text-3xl font-bold text-slate-900 dark:text-gray-100 mb-2">{t('privacyTitle')}</h1>
+            <p className="text-sm text-slate-500 dark:text-gray-400">{t('lastUpdated')}: {lastUpdated}</p>
           </div>
 
           {/* Intro highlight */}
-          <div className="bg-primary-50 border border-primary-100 rounded-xl p-5 mb-10 text-sm text-primary-800 leading-relaxed">
+          <div className="bg-primary-50 dark:bg-primary-900/20 border border-primary-100 dark:border-primary-800 rounded-xl p-5 mb-10 text-sm text-primary-800 dark:text-primary-300 leading-relaxed">
             Tu privacidad es fundamental para nosotros. Esta política explica de forma clara qué
             datos recopilamos, por qué los recopilamos y cómo los protegemos. No vendemos tu
             información personal a terceros, nunca.
@@ -228,9 +228,9 @@ export default function PrivacyPage() {
 
             <Section title="13. Contacto">
               <p>Para cualquier consulta sobre privacidad:</p>
-              <div className="bg-slate-50 rounded-lg p-4 mt-3">
-                <p className="font-medium text-slate-800">Chill Numbers — Privacidad</p>
-                <p className="text-slate-600">
+              <div className="bg-slate-50 dark:bg-gray-800 rounded-lg p-4 mt-3">
+                <p className="font-medium text-slate-800 dark:text-gray-200">Chill Numbers — Privacidad</p>
+                <p className="text-slate-600 dark:text-gray-400">
                   Email:{' '}
                   <a href="mailto:privacy@chillnumbers.com" className="text-primary-600 hover:underline">
                     privacy@chillnumbers.com
@@ -243,7 +243,7 @@ export default function PrivacyPage() {
         </div>
 
         {/* Footer links */}
-        <div className="mt-8 flex flex-wrap justify-center gap-6 text-sm text-slate-500">
+        <div className="mt-8 flex flex-wrap justify-center gap-6 text-sm text-slate-500 dark:text-gray-400">
           <Link href="/terms" className="hover:text-primary-600 transition-colors">{t('terms')}</Link>
           <Link href="/cookies" className="hover:text-primary-600 transition-colors">{t('cookies')}</Link>
           <Link href="/" className="hover:text-primary-600 transition-colors">{t('backHome')}</Link>
@@ -256,8 +256,8 @@ export default function PrivacyPage() {
 function Section({ title, children }: { title: string; children: React.ReactNode }) {
   return (
     <section className="mb-8">
-      <h2 className="text-lg font-semibold text-slate-900 mb-3">{title}</h2>
-      <div className="text-slate-600 leading-relaxed space-y-3 text-sm [&_ul]:list-disc [&_ul]:pl-5 [&_ul]:space-y-1.5">
+      <h2 className="text-lg font-semibold text-slate-900 dark:text-gray-100 mb-3">{title}</h2>
+      <div className="text-slate-600 dark:text-gray-400 leading-relaxed space-y-3 text-sm [&_ul]:list-disc [&_ul]:pl-5 [&_ul]:space-y-1.5">
         {children}
       </div>
     </section>
@@ -267,7 +267,7 @@ function Section({ title, children }: { title: string; children: React.ReactNode
 function SubSection({ title, children }: { title: string; children: React.ReactNode }) {
   return (
     <div className="mt-3">
-      <p className="font-medium text-slate-700 mb-2">{title}</p>
+      <p className="font-medium text-slate-700 dark:text-gray-300 mb-2">{title}</p>
       {children}
     </div>
   )

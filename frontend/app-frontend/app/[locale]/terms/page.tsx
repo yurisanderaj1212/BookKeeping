@@ -9,9 +9,9 @@ export default function TermsPage() {
   const lastUpdated = '19 de marzo de 2026'
 
   return (
-    <div className="min-h-screen bg-slate-50">
+    <div className="min-h-screen bg-slate-50 dark:bg-gray-950">
       {/* Header */}
-      <header className="bg-white dark:bg-gray-900 border-b border-slate-200">
+      <header className="bg-white dark:bg-gray-900 border-b border-slate-200 dark:border-gray-700">
         <div className="max-w-4xl mx-auto px-6 py-4 flex items-center justify-between">
           <Link href="/">
             <AppLogo size={32} variant="full" />
@@ -24,11 +24,11 @@ export default function TermsPage() {
 
       {/* Content */}
       <main className="max-w-4xl mx-auto px-6 py-12">
-        <div className="bg-white dark:bg-gray-900 rounded-2xl shadow-sm border border-slate-200 p-8 md:p-12">
+        <div className="bg-white dark:bg-gray-900 rounded-2xl shadow-sm border border-slate-200 dark:border-gray-700 p-8 md:p-12">
           {/* Title */}
-          <div className="mb-10 pb-8 border-b border-slate-100">
-            <h1 className="text-3xl font-bold text-slate-900 mb-2">{t('termsTitle')}</h1>
-            <p className="text-sm text-slate-500">{t('lastUpdated')}: {lastUpdated}</p>
+          <div className="mb-10 pb-8 border-b border-slate-100 dark:border-gray-700">
+            <h1 className="text-3xl font-bold text-slate-900 dark:text-gray-100 mb-2">{t('termsTitle')}</h1>
+            <p className="text-sm text-slate-500 dark:text-gray-400">{t('lastUpdated')}: {lastUpdated}</p>
           </div>
 
           <div className="prose-legal">
@@ -189,9 +189,9 @@ export default function TermsPage() {
               <p>
                 Si tienes preguntas sobre estos Términos, contáctanos en:
               </p>
-              <div className="bg-slate-50 rounded-lg p-4 mt-3">
-                <p className="font-medium text-slate-800">Chill Numbers</p>
-                <p className="text-slate-600">Email: <a href="mailto:legal@chillnumbers.com" className="text-primary-600 hover:underline">legal@chillnumbers.com</a></p>
+              <div className="bg-slate-50 dark:bg-gray-800 rounded-lg p-4 mt-3">
+                <p className="font-medium text-slate-800 dark:text-gray-200">Chill Numbers</p>
+                <p className="text-slate-600 dark:text-gray-400">Email: <a href="mailto:legal@chillnumbers.com" className="text-primary-600 hover:underline">legal@chillnumbers.com</a></p>
               </div>
             </Section>
 
@@ -199,7 +199,7 @@ export default function TermsPage() {
         </div>
 
         {/* Footer links */}
-        <div className="mt-8 flex flex-wrap justify-center gap-6 text-sm text-slate-500">
+        <div className="mt-8 flex flex-wrap justify-center gap-6 text-sm text-slate-500 dark:text-gray-400">
           <Link href="/privacy" className="hover:text-primary-600 transition-colors">{t('privacy')}</Link>
           <Link href="/cookies" className="hover:text-primary-600 transition-colors">{t('cookies')}</Link>
           <Link href="/" className="hover:text-primary-600 transition-colors">{t('backHome')}</Link>
@@ -212,8 +212,8 @@ export default function TermsPage() {
 function Section({ title, children }: { title: string; children: React.ReactNode }) {
   return (
     <section className="mb-8">
-      <h2 className="text-lg font-semibold text-slate-900 mb-3">{title}</h2>
-      <div className="text-slate-600 leading-relaxed space-y-3 text-sm [&_ul]:list-disc [&_ul]:pl-5 [&_ul]:space-y-1.5">
+      <h2 className="text-lg font-semibold text-slate-900 dark:text-gray-100 mb-3">{title}</h2>
+      <div className="text-slate-600 dark:text-gray-400 leading-relaxed space-y-3 text-sm [&_ul]:list-disc [&_ul]:pl-5 [&_ul]:space-y-1.5">
         {children}
       </div>
     </section>
