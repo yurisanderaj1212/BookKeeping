@@ -3,6 +3,10 @@
 //   PLAID_CLIENT_ID  = 69bb2e17d280d3000c6058fb
 //   PLAID_SECRET     = dc715d73b93fd57ce3e91f7f2c3cb1
 //   PLAID_ENV        = sandbox
+//
+// Webhook URL to register in Plaid Dashboard:
+//   https://<project-ref>.supabase.co/functions/v1/plaid
+// For production: change PLAID_ENV=production and PLAID_SECRET to production key
 
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2'
 
@@ -38,58 +42,46 @@ async function plaidPost(endpoint: string, body: Record<string, unknown>) {
 Deno.serve(async (req) => {
   if (req.method === 'OPTIONS') return new Response('ok', { headers: corsHeaders })
 
-  // ── Plaid Webhook (no auth header — Plaid calls this directly) ────────────
-  // Plaid sends: POST with webhook_type, webhook_code, item_id
-  // Register this URL in Plaid Dashboard → Webhooks:
-  //   https://<project>.supabase.co/functions/v1/plaid
-  // For production: verify webhook signature using Plaid-Verification header
-  const contentType = req.headers.get('content-type') ?? ''
-  if (contentType.includes('application/json')) {
-    const rawBody = await req.text()
-    let webhookBody: any
-    try { webhookBody = JSON.parse(rawBody) } catch { webhookBody = null }
+  // Read body once — needed for both webhook detection and action handling
+  const rawBody = await req.text()
+  let parsedBody: any
+  try { parsedBody = JSON.parse(rawBody) } catch { parsedBody = {} }
 
-    if (webhookBody?.webhook_type && webhookBody?.item_id && !webhookBody?.action) {
-      // This is a Plaid webhook — handle without user auth
-      const adminSupabase = createClient(
-        Deno.env.get('SUPABASE_URL')!,
-        Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!,
-      )
+  // ── Plaid Webhook (no Authorization header — Plaid calls this directly) ────
+  // Plaid sends: { webhook_type, webhook_code, item_id, ... }
+  // Our actions always include an "action" field, so we can distinguish them
+  if (parsedBody?.webhook_type && parsedBody?.item_id && !parsedBody?.action) {
+    const adminSupabase = createClient(
+      Deno.env.get('SUPABASE_URL')!,
+      Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!,
+    )
 
-      const { webhook_type, webhook_code, item_id: plaidItemId } = webhookBody
+    const { webhook_type, webhook_code, item_id: plaidItemId } = parsedBody
+    console.log(`Plaid webhook: ${webhook_type}/${webhook_code} for item ${plaidItemId}`)
 
-      console.log(`Plaid webhook: ${webhook_type}/${webhook_code} for item ${plaidItemId}`)
+    if (webhook_type === 'TRANSACTIONS') {
+      const { data: itemRow } = await adminSupabase
+        .from('plaid_items')
+        .select('id, user_id, plaid_access_token')
+        .eq('plaid_item_id', plaidItemId)
+        .single()
 
-      // Only handle transaction webhooks
-      if (webhook_type === 'TRANSACTIONS') {
-        // Find the plaid_item row by plaid_item_id
-        const { data: itemRow } = await adminSupabase
-          .from('plaid_items')
-          .select('id, user_id, plaid_access_token')
-          .eq('plaid_item_id', plaidItemId)
-          .single()
-
-        if (itemRow) {
-          // SYNC_UPDATES_AVAILABLE — new/modified/removed transactions available
-          // INITIAL_UPDATE / HISTORICAL_UPDATE — initial sync complete
-          if (['SYNC_UPDATES_AVAILABLE', 'INITIAL_UPDATE', 'HISTORICAL_UPDATE'].includes(webhook_code)) {
-            try {
-              const result = await syncTransactions(
-                itemRow.plaid_access_token,
-                itemRow.id,
-                itemRow.user_id,
-                adminSupabase,
-              )
-              console.log(`Auto-sync complete: +${result.added} ~${result.modified} -${result.removed}`)
-            } catch (err) {
-              console.error('Auto-sync error:', err)
-            }
-          }
+      if (itemRow && ['SYNC_UPDATES_AVAILABLE', 'INITIAL_UPDATE', 'HISTORICAL_UPDATE'].includes(webhook_code)) {
+        try {
+          const result = await syncTransactions(
+            itemRow.plaid_access_token,
+            itemRow.id,
+            itemRow.user_id,
+            adminSupabase,
+          )
+          console.log(`Auto-sync complete: +${result.added} ~${result.modified} -${result.removed}`)
+        } catch (err) {
+          console.error('Auto-sync error:', err)
         }
       }
-
-      return json({ received: true })
     }
+
+    return json({ received: true })
   }
 
   // ── All other actions require user auth ───────────────────────────────────
@@ -105,8 +97,7 @@ Deno.serve(async (req) => {
   const { data: { user }, error: authError } = await supabase.auth.getUser()
   if (authError || !user) return json({ error: 'Unauthorized' }, 401)
 
-  // Re-use already-parsed body if available, otherwise parse fresh
-  const body   = webhookBody ?? await req.json()
+  const body   = parsedBody
   const action = body.action as string
 
   try {
@@ -133,7 +124,7 @@ Deno.serve(async (req) => {
       const accessToken = exchangeData.access_token
       const itemId      = exchangeData.item_id
 
-      // Register webhook URL so Plaid auto-notifies on new transactions
+      // Register webhook so Plaid auto-notifies on new transactions
       const webhookUrl = `${Deno.env.get('SUPABASE_URL')}/functions/v1/plaid`
       try {
         await plaidPost('/item/webhook/update', {
@@ -149,7 +140,6 @@ Deno.serve(async (req) => {
         Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!,
       )
 
-      // Buscar o crear cuenta de Supabase para este banco
       const supabaseAccountId = await getOrCreateAccount(
         adminSupabase, user.id, institutionName, accessToken
       )
@@ -169,9 +159,7 @@ Deno.serve(async (req) => {
 
       if (error) throw new Error(error.message)
 
-      // Sync inicial usando /transactions/sync
       const result = await syncTransactions(accessToken, item.id, user.id, adminSupabase)
-
       return json({ message: 'Cuenta conectada exitosamente', ...result })
     }
 
@@ -250,7 +238,6 @@ async function getOrCreateAccount(
 ): Promise<number | null> {
   if (!institutionName) return null
 
-  // Buscar cuenta existente usando service role (bypasa RLS para buscar por user_id)
   const { data: existing } = await supabase
     .from('accounts')
     .select('id')
@@ -260,7 +247,6 @@ async function getOrCreateAccount(
 
   if (existing) return existing.id
 
-  // Obtener balance actual desde Plaid si tenemos el access token
   let currentBalance = 0
   if (accessToken) {
     try {
@@ -303,7 +289,6 @@ async function syncTransactions(
   supabase: ReturnType<typeof createClient>,
 ): Promise<{ added: number; modified: number; removed: number }> {
 
-  // Obtener cursor guardado y account_id vinculado
   const { data: itemRow } = await supabase
     .from('plaid_items')
     .select('transactions_cursor, supabase_account_id')
@@ -316,16 +301,14 @@ async function syncTransactions(
   let added = 0, modified = 0, removed = 0
   let hasMore = true
 
-  // Paginar hasta que has_more sea false
   while (hasMore) {
     const reqBody: Record<string, unknown> = { access_token: accessToken, count: 100 }
     if (cursor) reqBody.cursor = cursor
 
     const data = await plaidPost('/transactions/sync', reqBody)
 
-    // Actualizar balance de la cuenta con datos reales de Plaid
+    // Update account balance from Plaid
     if (supabaseAccountId && data.accounts?.length > 0) {
-      // Tomar el balance del primer account (o sumar si hay varios)
       const totalBalance = data.accounts.reduce((sum: number, acc: any) => {
         return sum + (acc.balances?.current ?? 0)
       }, 0)
@@ -335,11 +318,9 @@ async function syncTransactions(
         .eq('id', supabaseAccountId)
     }
 
-    // Procesar transacciones AÑADIDAS
     for (const tx of data.added ?? []) {
-      const type   = tx.amount > 0 ? 2 : 1  // Plaid: positivo = gasto, negativo = ingreso
+      const type   = tx.amount > 0 ? 2 : 1
       const amount = Math.abs(tx.amount)
-
       const { error } = await supabase.from('transactions').upsert({
         user_id:                 userId,
         type,
@@ -348,42 +329,36 @@ async function syncTransactions(
         account_id:              supabaseAccountId,
         description:             tx.merchant_name ?? tx.name ?? 'Transacción bancaria',
         date:                    tx.authorized_date ?? tx.date,
-        status:                  1,   // Pending — requiere revisión del usuario
+        status:                  1,
         is_from_plaid:           true,
         is_business_transaction: null,
         merchant_name:           tx.merchant_name ?? null,
         plaid_transaction_id:    tx.transaction_id,
         notes:                   `Plaid item: ${plaidItemDbId}`,
       }, { onConflict: 'plaid_transaction_id', ignoreDuplicates: false })
-
       if (!error) added++
     }
 
-    // Procesar transacciones MODIFICADAS
     for (const tx of data.modified ?? []) {
       const type   = tx.amount > 0 ? 2 : 1
       const amount = Math.abs(tx.amount)
-
       const { error } = await supabase.from('transactions')
         .update({
-          amount,
-          type,
-          description:  tx.merchant_name ?? tx.name ?? 'Transacción bancaria',
-          date:         tx.authorized_date ?? tx.date,
+          amount, type,
+          description:   tx.merchant_name ?? tx.name ?? 'Transacción bancaria',
+          date:          tx.authorized_date ?? tx.date,
           merchant_name: tx.merchant_name ?? null,
-          updated_at:   new Date().toISOString(),
+          updated_at:    new Date().toISOString(),
         })
         .eq('plaid_transaction_id', tx.transaction_id)
-
       if (!error) modified++
     }
 
-    // Procesar transacciones ELIMINADAS por Plaid
     for (const tx of data.removed ?? []) {
       await supabase.from('transactions')
         .delete()
         .eq('plaid_transaction_id', tx.transaction_id)
-        .eq('is_business_transaction', null) // solo eliminar si aún no fue revisada
+        .eq('is_business_transaction', null)
       removed++
     }
 
@@ -391,7 +366,6 @@ async function syncTransactions(
     hasMore = data.has_more
   }
 
-  // Guardar cursor actualizado para el próximo sync
   await supabase
     .from('plaid_items')
     .update({ transactions_cursor: cursor, updated_at: new Date().toISOString() })
