@@ -1,4 +1,4 @@
-// Supabase Edge Function — plaid
+﻿// Supabase Edge Function — plaid
 // Secrets needed (Dashboard → Edge Functions → Manage Secrets):
 //   PLAID_CLIENT_ID  = 69bb2e17d280d3000c6058fb
 //   PLAID_SECRET     = dc715d73b93fd57ce3e91f7f2c3cb1
@@ -477,7 +477,7 @@ async function syncTransactions(
         is_business_transaction: null,
         merchant_name:           tx.merchant_name ?? null,
         plaid_transaction_id:    tx.transaction_id,
-        notes:                   `Plaid item: ${plaidItemDbId}`,
+        notes:                   null,
       }, { onConflict: 'plaid_transaction_id', ignoreDuplicates: false })
       if (error) console.error(`TX insert error: ${error.message}`)
       else added++
@@ -500,7 +500,7 @@ async function syncTransactions(
         is_business_transaction: null,
         merchant_name:           tx.merchant_name ?? null,
         plaid_transaction_id:    tx.transaction_id,
-        notes:                   `Plaid item: ${plaidItemDbId}`,
+        notes:                   null,
       }, { onConflict: 'plaid_transaction_id', ignoreDuplicates: false })
       if (error) console.error(`TX modified error: ${error.message}`)
       else modified++
