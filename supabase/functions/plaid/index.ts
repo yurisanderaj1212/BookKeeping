@@ -145,9 +145,12 @@ Deno.serve(async (req) => {
         Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!,
       )
 
-      const supabaseAccountId = await getOrCreateAccount(
+      // Create one Supabase account per Plaid account
+      const accountMap = await createAccountsFromPlaid(
         adminSupabase, user.id, institutionName, accessToken
       )
+      // Primary account ID = first account (for backward compat with plaid_items.supabase_account_id)
+      const primaryAccountId = accountMap.size > 0 ? accountMap.values().next().value : null
 
       const { data: item, error } = await adminSupabase
         .from('plaid_items')
@@ -157,14 +160,14 @@ Deno.serve(async (req) => {
           plaid_access_token:  accessToken,
           institution_id:      institutionId,
           institution_name:    institutionName,
-          supabase_account_id: supabaseAccountId,
+          supabase_account_id: primaryAccountId,
         })
         .select('id')
         .single()
 
       if (error) throw new Error(error.message)
 
-      const result = await syncTransactions(accessToken, item.id, user.id, adminSupabase)
+      const result = await syncTransactions(accessToken, item.id, user.id, adminSupabase, accountMap)
       return json({ message: 'Cuenta conectada exitosamente', ...result })
     }
 
@@ -235,58 +238,79 @@ Deno.serve(async (req) => {
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
 
-async function getOrCreateAccount(
+// ── Create one Supabase account per Plaid account ────────────────────────────
+// Returns a Map<plaid_account_id, supabase_account_id>
+async function createAccountsFromPlaid(
   supabase: ReturnType<typeof createClient>,
   userId: string,
   institutionName: string | null,
-  accessToken?: string,
-): Promise<number | null> {
-  if (!institutionName) return null
+  accessToken: string,
+): Promise<Map<string, number>> {
+  const accountMap = new Map<string, number>()
 
-  const { data: existing } = await supabase
-    .from('accounts')
-    .select('id')
-    .eq('user_id', userId)
-    .ilike('name', `%${institutionName}%`)
-    .maybeSingle()
-
-  if (existing) return existing.id
-
-  let currentBalance = 0
-  if (accessToken) {
-    try {
-      const accountsData = await plaidPost('/accounts/get', { access_token: accessToken })
-      currentBalance = (accountsData.accounts ?? []).reduce((sum: number, acc: any) => {
-        const bal = acc.balances?.current ?? 0
-        // Credit/loan accounts: Plaid returns positive = amount owed → store as negative (liability)
-        const isCredit = acc.type === 'credit' || acc.type === 'loan'
-        return sum + (isCredit ? -bal : bal)
-      }, 0)
-    } catch { /* si falla, usar 0 */ }
+  let plaidAccounts: any[] = []
+  try {
+    const accountsData = await plaidPost('/accounts/get', { access_token: accessToken })
+    plaidAccounts = accountsData.accounts ?? []
+  } catch (e) {
+    console.error('Failed to fetch Plaid accounts:', e)
+    return accountMap
   }
 
-  const { data: newAccount, error } = await supabase
-    .from('accounts')
-    .insert({
-      user_id:         userId,
-      name:            institutionName,
-      type:            1,
-      sub_type:        1001,
-      initial_balance: currentBalance,
-      current_balance: currentBalance,
-      currency:        'USD',
-      is_active:       true,
-      description:     'Cuenta bancaria conectada via Plaid',
-    })
-    .select('id')
-    .single()
+  for (const acc of plaidAccounts) {
+    const plaidAccountId = acc.account_id
+    const isCredit = acc.type === 'credit' || acc.type === 'loan'
+    const bal = acc.balances?.current ?? 0
+    const balance = isCredit ? -bal : bal
 
-  if (error) {
-    console.error('Error creating account:', error.message)
-    return null
+    // Account type: 1=Asset (depository/investment), 2=Liability (credit/loan)
+    const accountType = isCredit ? 2 : 1
+    // Sub-type: 1001=BankAccount, 2002=CreditCard, 2003=Loan
+    const subType = acc.subtype === 'credit card' ? 2002
+      : acc.type === 'loan' ? 2003
+      : 1001
+
+    const accountName = acc.name
+      ? `${institutionName ?? ''} — ${acc.name}`.trim()
+      : (institutionName ?? 'Bank Account')
+
+    // Check if already exists (avoid duplicates on re-connect)
+    const { data: existing } = await supabase
+      .from('accounts')
+      .select('id')
+      .eq('user_id', userId)
+      .eq('name', accountName)
+      .maybeSingle()
+
+    if (existing) {
+      accountMap.set(plaidAccountId, existing.id)
+      continue
+    }
+
+    const { data: newAcc, error } = await supabase
+      .from('accounts')
+      .insert({
+        user_id:         userId,
+        name:            accountName,
+        type:            accountType,
+        sub_type:        subType,
+        initial_balance: balance,
+        current_balance: balance,
+        currency:        acc.balances?.iso_currency_code ?? 'USD',
+        is_active:       true,
+        description:     `${acc.official_name ?? acc.name} — conectada via Plaid`,
+      })
+      .select('id')
+      .single()
+
+    if (!error && newAcc) {
+      accountMap.set(plaidAccountId, newAcc.id)
+    } else if (error) {
+      console.error('Error creating account:', error.message)
+    }
   }
 
-  return newAccount?.id ?? null
+  return accountMap
 }
 
 // ── /transactions/sync con cursor incremental ─────────────────────────────────
@@ -295,6 +319,7 @@ async function syncTransactions(
   plaidItemDbId: number,
   userId: string,
   supabase: ReturnType<typeof createClient>,
+  accountMap?: Map<string, number>,
 ): Promise<{ added: number; modified: number; removed: number }> {
 
   const { data: itemRow } = await supabase
@@ -304,7 +329,7 @@ async function syncTransactions(
     .single()
 
   let cursor: string | null = itemRow?.transactions_cursor ?? null
-  const supabaseAccountId: number | null = itemRow?.supabase_account_id ?? null
+  const primaryAccountId: number | null = itemRow?.supabase_account_id ?? null
 
   let added = 0, modified = 0, removed = 0
   let hasMore = true
@@ -315,28 +340,32 @@ async function syncTransactions(
 
     const data = await plaidPost('/transactions/sync', reqBody)
 
-    // Update account balance from Plaid
-    if (supabaseAccountId && data.accounts?.length > 0) {
-      const totalBalance = data.accounts.reduce((sum: number, acc: any) => {
+    // Update account balances from Plaid — one per account
+    if (data.accounts?.length > 0) {
+      for (const acc of data.accounts) {
+        const supabaseAccId = accountMap?.get(acc.account_id) ?? primaryAccountId
+        if (!supabaseAccId) continue
         const bal = acc.balances?.current ?? 0
         const isCredit = acc.type === 'credit' || acc.type === 'loan'
-        return sum + (isCredit ? -bal : bal)
-      }, 0)
-      await supabase
-        .from('accounts')
-        .update({ current_balance: totalBalance, updated_at: new Date().toISOString() })
-        .eq('id', supabaseAccountId)
+        const balance = isCredit ? -bal : bal
+        await supabase
+          .from('accounts')
+          .update({ current_balance: balance, updated_at: new Date().toISOString() })
+          .eq('id', supabaseAccId)
+      }
     }
 
     for (const tx of data.added ?? []) {
       const type   = tx.amount > 0 ? 2 : 1
       const amount = Math.abs(tx.amount)
+      // Map to the correct Supabase account
+      const txAccountId = accountMap?.get(tx.account_id) ?? primaryAccountId
       const { error } = await supabase.from('transactions').upsert({
         user_id:                 userId,
         type,
         amount,
         category_id:             15,
-        account_id:              supabaseAccountId,
+        account_id:              txAccountId,
         description:             tx.merchant_name ?? tx.name ?? 'Transacción bancaria',
         date:                    tx.authorized_date ?? tx.date,
         status:                  1,
