@@ -437,7 +437,7 @@ async function syncTransactions(
     if (cursor) reqBody.cursor = cursor
 
     const data = await plaidPost('/transactions/sync', reqBody)
-    console.log(`Sync page: added=${data.added?.length ?? 0} modified=${data.modified?.length ?? 0} removed=${data.removed?.length ?? 0} has_more=${data.has_more} cursor_was=${cursor ? 'set' : 'null'}`)
+    console.log(`Sync: added=${data.added?.length ?? 0} modified=${data.modified?.length ?? 0} removed=${data.removed?.length ?? 0} has_more=${data.has_more}`)
 
     // Update account balances from Plaid — only for accounts in the map
     if (data.accounts?.length > 0) {
@@ -463,7 +463,7 @@ async function syncTransactions(
       const type   = tx.amount > 0 ? 2 : 1
       const amount = Math.abs(tx.amount)
       const txAccountId = accountMap?.get(tx.account_id) ?? null
-      console.log(`TX added: ${tx.transaction_id} | account: ${tx.account_id} → supabase: ${txAccountId} | amount: ${tx.amount} | name: ${tx.name}`)
+      console.log(`TX added: ${tx.transaction_id} → account: ${txAccountId} | ${tx.amount} | ${tx.name}`)
       const { error } = await supabase.from('transactions').upsert({
         user_id:                 userId,
         type,
@@ -472,14 +472,14 @@ async function syncTransactions(
         account_id:              txAccountId,
         description:             tx.merchant_name ?? tx.name ?? 'Transacción bancaria',
         date:                    tx.authorized_date ?? tx.date,
-        status:                  tx.pending ? 1 : 0,
+        status:                  1, // Always pending review — user must confirm if business transaction
         is_from_plaid:           true,
         is_business_transaction: null,
         merchant_name:           tx.merchant_name ?? null,
         plaid_transaction_id:    tx.transaction_id,
         notes:                   `Plaid item: ${plaidItemDbId}`,
       }, { onConflict: 'plaid_transaction_id', ignoreDuplicates: false })
-      if (error) console.error(`TX insert error: ${error.message} | code: ${error.code} | details: ${JSON.stringify(error.details)}`)
+      if (error) console.error(`TX insert error: ${error.message}`)
       else added++
     }
 
@@ -487,8 +487,6 @@ async function syncTransactions(
       const type   = tx.amount > 0 ? 2 : 1
       const amount = Math.abs(tx.amount)
       const txAccountId = accountMap?.get(tx.account_id) ?? null
-      // Use upsert — if transaction was deleted from DB, re-insert it
-      // Also updates account_id if it was previously NULL
       const { error } = await supabase.from('transactions').upsert({
         user_id:                 userId,
         type,
@@ -497,15 +495,15 @@ async function syncTransactions(
         account_id:              txAccountId,
         description:             tx.merchant_name ?? tx.name ?? 'Transacción bancaria',
         date:                    tx.authorized_date ?? tx.date,
-        status:                  tx.pending ? 1 : 0,
+        status:                  1, // Keep as pending review
         is_from_plaid:           true,
         is_business_transaction: null,
         merchant_name:           tx.merchant_name ?? null,
         plaid_transaction_id:    tx.transaction_id,
         notes:                   `Plaid item: ${plaidItemDbId}`,
       }, { onConflict: 'plaid_transaction_id', ignoreDuplicates: false })
-      if (!error) modified++
-      // If txAccountId is available, also patch any existing row that has account_id=NULL
+      if (error) console.error(`TX modified error: ${error.message}`)
+      else modified++
       if (txAccountId) {
         await supabase.from('transactions')
           .update({ account_id: txAccountId })
