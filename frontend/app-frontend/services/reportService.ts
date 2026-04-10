@@ -40,8 +40,17 @@ function getPeriodDates(params: ReportParams): { start: string; end: string } {
   return { start: `${year}-01-01`, end: `${year}-12-31` }
 }
 
-export const formatCurrency = (amount: number, locale?: string) =>
-  new Intl.NumberFormat(locale ?? 'en-US', { style: 'currency', currency: 'USD' }).format(amount)
+export const formatCurrency = (amount: number, locale?: string) => {
+  try {
+    const currency = typeof window !== 'undefined'
+      ? (JSON.parse(localStorage.getItem('bookkeeping_preferences') || '{}').currency ?? 'USD')
+      : 'USD'
+    const numberLocale = locale ?? (currency === 'EUR' ? 'de-DE' : currency === 'MXN' ? 'es-MX' : currency === 'COP' ? 'es-CO' : 'en-US')
+    return new Intl.NumberFormat(numberLocale, { style: 'currency', currency }).format(amount)
+  } catch {
+    return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(amount)
+  }
+}
 
 // ─── Financial Summary ────────────────────────────────────────────────────────
 

@@ -7,6 +7,7 @@ import * as categoryService from '@/services/categoryService'
 import accountService, { Account, getAccountDisplayName } from '@/services/accountService'
 import { useTranslations, useLocale } from 'next-intl'
 import { translateCategoryName } from '@/lib/categoryTranslator'
+import { useCurrency } from '@/hooks/useCurrency'
 
 interface TransactionFormProps {
   isOpen:       boolean
@@ -42,8 +43,7 @@ export default function TransactionForm({ isOpen, onClose, onSave, transaction, 
   const tCommon = useTranslations('common')
   const tCategories = useTranslations('categories')
   const locale = useLocale()
-
-  const [formData, setFormData] = useState({
+  const { formatCurrency } = useCurrency()
     type: 'income', amount: '', description: '', category: '',
     date: new Date().toISOString().split('T')[0], status: 'completed', notes: '', accountId: '',
   })
@@ -54,9 +54,6 @@ export default function TransactionForm({ isOpen, onClose, onSave, transaction, 
   const [loadingAccounts, setLoadingAccounts] = useState(true)
   const [selectedAccount, setSelectedAccount] = useState<Account | null>(null)
   const [showAccountWarning, setShowAccountWarning] = useState(false)
-
-  const formatCurrency = (amount: number) =>
-    new Intl.NumberFormat(locale === 'en' ? 'en-US' : 'es-ES', { style: 'currency', currency: 'USD' }).format(amount)
 
   useEffect(() => {
     if (!isOpen) return
