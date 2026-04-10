@@ -26,6 +26,7 @@ export interface ReviewRequest {
   categoryId?:  number
   description?: string
   accountId?:   number
+  notes?:       string
 }
 
 export interface PendingReviewResponse {
@@ -150,6 +151,7 @@ export async function reviewTransaction(
   if (body.categoryId)  patch.category_id = body.categoryId
   if (body.description) patch.description = body.description
   if (body.accountId !== undefined) patch.account_id = body.accountId ?? null
+  if (body.notes !== undefined) patch.notes = body.notes || null
 
   const { error } = await supabase
     .from('transactions')

@@ -1,4 +1,4 @@
-﻿'use client'
+﻿﻿'use client'
 
 import { useState, useEffect, useCallback, useRef } from 'react'
 import {
@@ -19,7 +19,7 @@ interface ConfigModalProps {
   tx:        PendingTransaction
   categories: CategoryDto[]
   accounts:  Account[]
-  onConfirm: (categoryId: number, description: string, accountId: number | null) => void
+  onConfirm: (categoryId: number, description: string, accountId: number | null, notes: string) => void
   onCancel:  () => void
   saving:    boolean
 }
@@ -30,9 +30,10 @@ function ConfigModal({ tx, categories, accounts, onConfirm, onCancel, saving }: 
   const isExpense    = tx.type === 2
   const relevantCats = categories.filter(c => c.type === (isExpense ? 1 : 0))
 
-  const [categoryId,  setCategoryId]  = useState<number>(tx.categoryId)
+  const [categoryId,  setCategoryId]  = useState<number | null>(null) // empty by default — required
   const [description, setDescription] = useState<string>(tx.description ?? tx.merchantName ?? '')
   const [accountId,   setAccountId]   = useState<string>(tx.accountId ? String(tx.accountId) : '')
+  const [notes,       setNotes]       = useState<string>('')
 
   useEffect(() => {
     if (accounts.length > 0 && tx.accountId) {
@@ -41,9 +42,11 @@ function ConfigModal({ tx, categories, accounts, onConfirm, onCancel, saving }: 
     }
   }, [accounts, tx.accountId])
 
+  const canConfirm = categoryId !== null
+
   return (
     <div className="fixed inset-0 z-60 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
-      <div className="bg-white dark:bg-gray-900 rounded-2xl shadow-2xl w-full max-w-md">
+      <div className="bg-white dark:bg-gray-900 rounded-2xl shadow-2xl w-full max-w-md max-h-[90vh] overflow-y-auto">
         <div className="px-6 pt-6 pb-4 border-b border-gray-100 dark:border-gray-800">
           <div className="flex items-center gap-3 mb-1">
             <div className="w-9 h-9 bg-green-50 rounded-xl flex items-center justify-center">
@@ -85,17 +88,25 @@ function ConfigModal({ tx, categories, accounts, onConfirm, onCancel, saving }: 
 
           <div>
             <label className="flex items-center gap-1.5 text-xs font-medium text-gray-700 dark:text-gray-300 mb-1.5">
-              <Tag className="w-3.5 h-3.5" /> {t('configCategory')}
+              <Tag className="w-3.5 h-3.5" />
+              {t('configCategory')}
+              <span className="text-red-500 ml-0.5">*</span>
             </label>
             <select
-              value={categoryId}
-              onChange={e => setCategoryId(Number(e.target.value))}
-              className="w-full px-3 py-2 text-sm border border-gray-300 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-100 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
+              value={categoryId ?? ''}
+              onChange={e => setCategoryId(e.target.value ? Number(e.target.value) : null)}
+              className={`w-full px-3 py-2 text-sm border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none dark:bg-gray-800 dark:text-gray-100 ${
+                categoryId === null ? 'border-red-300 dark:border-red-700 text-gray-400' : 'border-gray-300 dark:border-gray-600'
+              }`}
             >
+              <option value="">{t('configCategoryPlaceholder')}</option>
               {(relevantCats.length > 0 ? relevantCats : categories).map(c => (
                 <option key={c.id} value={c.id}>{c.name}</option>
               ))}
             </select>
+            {categoryId === null && (
+              <p className="text-xs text-red-500 mt-1">{t('configCategoryRequired')}</p>
+            )}
           </div>
 
           <div>
@@ -114,6 +125,20 @@ function ConfigModal({ tx, categories, accounts, onConfirm, onCancel, saving }: 
               ))}
             </select>
           </div>
+
+          <div>
+            <label className="flex items-center gap-1.5 text-xs font-medium text-gray-700 dark:text-gray-300 mb-1.5">
+              <FileText className="w-3.5 h-3.5" /> {t('configNotes')}
+              <span className="text-gray-400 font-normal">{t('configAccountOptional')}</span>
+            </label>
+            <textarea
+              value={notes}
+              onChange={e => setNotes(e.target.value)}
+              placeholder={t('configNotesPlaceholder')}
+              rows={2}
+              className="w-full px-3 py-2 text-sm border border-gray-300 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-100 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none resize-none"
+            />
+          </div>
         </div>
 
         <div className="px-6 py-5 flex gap-3 justify-end">
@@ -125,9 +150,9 @@ function ConfigModal({ tx, categories, accounts, onConfirm, onCancel, saving }: 
             {t('configCancel')}
           </button>
           <button
-            onClick={() => onConfirm(categoryId, description, accountId ? Number(accountId) : null)}
-            disabled={saving}
-            className="inline-flex items-center gap-2 px-5 py-2 text-sm font-semibold text-white bg-blue-600 hover:bg-blue-500 rounded-lg transition-colors disabled:opacity-60"
+            onClick={() => canConfirm && onConfirm(categoryId!, description, accountId ? Number(accountId) : null, notes)}
+            disabled={saving || !canConfirm}
+            className="inline-flex items-center gap-2 px-5 py-2 text-sm font-semibold text-white bg-blue-600 hover:bg-blue-500 rounded-lg transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
           >
             {saving
               ? <><Loader2 className="w-4 h-4 animate-spin" /> {t('configSaving')}</>
@@ -139,6 +164,7 @@ function ConfigModal({ tx, categories, accounts, onConfirm, onCancel, saving }: 
     </div>
   )
 }
+
 
 // ─── Discard Confirm Modal ────────────────────────────────────────────────────
 
@@ -354,11 +380,11 @@ export default function PlaidReviewQueue({ onCountChange, onTransactionConfirmed
     setConfigTx(tx)
   }
 
-  async function handleConfirm(categoryId: number, description: string, accountId: number | null) {
+  async function handleConfirm(categoryId: number, description: string, accountId: number | null, notes: string) {
     if (!configTx) return
     setSaving(true)
     try {
-      await reviewTransaction(configTx.id, { isBusiness: true, categoryId, description, accountId: accountId ?? undefined })
+      await reviewTransaction(configTx.id, { isBusiness: true, categoryId, description, accountId: accountId ?? undefined, notes: notes || undefined })
       const next = pending.filter(p => p.id !== configTx.id)
       setPending(next)
       const newTotal = totalCount - 1
