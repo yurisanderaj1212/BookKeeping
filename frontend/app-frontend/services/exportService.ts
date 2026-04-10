@@ -269,8 +269,6 @@ const PDF_STYLES = `
 
 function openPDF(title: string, body: string, subtitle = '') {
   const l = getL()
-  const w = window.open('', '_blank')
-  if (!w) return
   const header = `
     <div class="header">
       <div class="brand-block">
@@ -281,9 +279,29 @@ function openPDF(title: string, body: string, subtitle = '') {
       <div class="meta">${l.generatedOn}<strong>${today()}</strong></div>
     </div>`
   const footer = `<div class="footer"><span>${l.footerBrand}</span><span>${today()}</span></div>`
-  w.document.write(`<!DOCTYPE html><html><head><meta charset="utf-8"><title>${title} - Chill Numbers</title><style>${PDF_STYLES}</style></head><body>${header}${body}${footer}</body></html>`)
-  w.document.close()
-  setTimeout(() => w.print(), 500)
+  const html = `<!DOCTYPE html><html><head><meta charset="utf-8"><title>${title} - Chill Numbers</title><style>${PDF_STYLES}</style></head><body>${header}${body}${footer}</body></html>`
+
+  // Safari/iOS blocks window.open('', '_blank') — use Blob URL instead
+  const blob = new Blob([html], { type: 'text/html' })
+  const url  = URL.createObjectURL(blob)
+  const w    = window.open(url, '_blank')
+  if (w) {
+    // Clean up blob URL after window loads
+    w.addEventListener('load', () => {
+      URL.revokeObjectURL(url)
+      setTimeout(() => w.print(), 300)
+    })
+  } else {
+    // Fallback for strict popup blockers: navigate current tab
+    const a = document.createElement('a')
+    a.href = url
+    a.target = '_blank'
+    a.rel = 'noopener'
+    document.body.appendChild(a)
+    a.click()
+    document.body.removeChild(a)
+    setTimeout(() => URL.revokeObjectURL(url), 5000)
+  }
 }
 
 // ─── FINANCIAL SUMMARY ───────────────────────────────────────────────────────

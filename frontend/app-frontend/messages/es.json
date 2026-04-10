@@ -366,6 +366,7 @@
     "deactivateBtn": "Desactivar",
     "inactive": "Inactiva",
     "createdOn": "Creada:",
+    "linkedOn": "Vinculada:",
     "currentBalance": "Balance Actual",
     "editTitle": "Editar cuenta",
     "deactivateTitle": "Desactivar cuenta",
@@ -1504,11 +1505,11 @@
       },
       "accounts": {
         "title": "Gestión de Cuentas Bancarias",
-        "description": "Las cuentas son la base de tu contabilidad. Aquí puedes crear cuentas bancarias, efectivo, tarjetas de crédito, préstamos y más. Cada cuenta tiene un balance que se actualiza automáticamente cuando registras transacciones vinculadas a ella."
+        "description": "Las cuentas son la base de tu contabilidad. Aquí puedes vincular tus cuentas bancarias reales via Plaid para importar transacciones automáticamente. También tienes una cuenta de Efectivo ya configurada para registrar ingresos y gastos en efectivo. Cada cuenta tiene un balance que se actualiza automáticamente."
       },
       "addAccount": {
         "title": "Resumen de tus Cuentas",
-        "description": "Aquí ves el balance total de todas tus cuentas, cuántas cuentas activas tienes y el total registrado. Para crear una nueva cuenta, usa el botón 'Nueva Cuenta' en la parte superior. También puedes conectar tu banco real con Plaid para importar transacciones automáticamente."
+        "description": "Aquí ves el balance total de todas tus cuentas, cuántas cuentas activas tienes y el total registrado. Usa el botón 'Conectar banco' para vincular tu banco real via Plaid e importar transacciones automáticamente. Tu cuenta de Efectivo siempre está disponible para registrar transacciones en efectivo."
       },
       "transactions": {
         "title": "Registro de Transacciones",

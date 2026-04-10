@@ -366,6 +366,7 @@
     "deactivateBtn": "Deactivate",
     "inactive": "Inactive",
     "createdOn": "Created:",
+    "linkedOn": "Linked:",
     "currentBalance": "Current Balance",
     "editTitle": "Edit account",
     "deactivateTitle": "Deactivate account",
@@ -1502,11 +1503,11 @@
       },
       "accounts": {
         "title": "Bank Account Management",
-        "description": "Accounts are the foundation of your accounting. Here you can create bank accounts, cash, credit cards, loans and more. Each account has a balance that updates automatically when you record transactions linked to it."
+        "description": "Accounts are the foundation of your accounting. Here you can link your real bank accounts via Plaid to import transactions automatically. You also have a Cash account already set up to record cash income and expenses. Each account has a balance that updates automatically."
       },
       "addAccount": {
         "title": "Your Accounts Summary",
-        "description": "Here you see the total balance of all your accounts, how many active accounts you have and the total registered. To create a new account, use the 'New Account' button at the top. You can also connect your real bank with Plaid to import transactions automatically."
+        "description": "Here you see the total balance of all your accounts, how many active accounts you have and the total registered. Use the 'Connect Bank' button to link your real bank via Plaid and import transactions automatically. Your Cash account is always available to record cash transactions."
       },
       "transactions": {
         "title": "Transaction Records",

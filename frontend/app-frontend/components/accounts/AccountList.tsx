@@ -94,7 +94,7 @@ export default function AccountList({ accounts, onEdit, onDelete }: AccountListP
                       <p className="text-xs text-gray-400 dark:text-gray-500 truncate">
                         {getSubTypeLabel(account.subType)}
                         <span className="mx-1">·</span>
-                        {t('createdOn')} {formatDate(account.createdAt)}
+                        {account.description?.includes('[plaid:') ? t('linkedOn') : t('createdOn')} {formatDate(account.createdAt)}
                       </p>
                       {account.sub_type !== 1002 && (
                         <p className={`text-sm font-bold mt-1 ${account.currentBalance >= 0 ? 'text-green-600' : 'text-red-600'}`}>
