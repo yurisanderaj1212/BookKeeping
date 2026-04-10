@@ -273,8 +273,8 @@ export default function RegisterPage() {
         <div className="absolute inset-0 bg-linear-to-br from-primary-500 via-primary-600 to-primary-700 flex flex-col justify-center items-center p-12">
           <div className="max-w-md text-center text-white">
             {/* Badge */}
-            <div className="inline-flex items-center px-3 py-1.5 bg-white dark:bg-gray-900/20 rounded-full text-xs font-medium mb-4">
-              <svg className="w-3 h-3 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <div className="inline-flex items-center px-3 py-1.5 bg-white/20 rounded-full text-xs font-medium mb-4 text-white">
+              <svg className="w-3 h-3 mr-2 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
               </svg>
               {t('trialBadge')}
@@ -297,7 +297,7 @@ export default function RegisterPage() {
                 </div>
                 <div>
                   <h4 className="font-semibold text-sm">{t('feature1Title')}</h4>
-                  <p className="text-primary-100 text-xs">{t('feature1Desc')}</p>
+                  <p className="text-white/80 text-xs">{t('feature1Desc')}</p>
                 </div>
               </div>
 
@@ -309,7 +309,7 @@ export default function RegisterPage() {
                 </div>
                 <div>
                   <h4 className="font-semibold text-sm">{t('feature2Title')}</h4>
-                  <p className="text-primary-100 text-xs">{t('feature2Desc')}</p>
+                  <p className="text-white/80 text-xs">{t('feature2Desc')}</p>
                 </div>
               </div>
 
@@ -321,7 +321,7 @@ export default function RegisterPage() {
                 </div>
                 <div>
                   <h4 className="font-semibold text-sm">{t('feature3Title')}</h4>
-                  <p className="text-primary-100 text-xs">{t('feature3Desc')}</p>
+                  <p className="text-white/80 text-xs">{t('feature3Desc')}</p>
                 </div>
               </div>
 
@@ -333,7 +333,7 @@ export default function RegisterPage() {
                 </div>
                 <div>
                   <h4 className="font-semibold text-sm">{t('feature4Title')}</h4>
-                  <p className="text-primary-100 text-xs">{t('feature4Desc')}</p>
+                  <p className="text-white/80 text-xs">{t('feature4Desc')}</p>
                 </div>
               </div>
             </div>
