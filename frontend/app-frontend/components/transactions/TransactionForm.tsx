@@ -44,6 +44,7 @@ export default function TransactionForm({ isOpen, onClose, onSave, transaction, 
   const tCategories = useTranslations('categories')
   const locale = useLocale()
   const { formatCurrency } = useCurrency()
+  const [formData, setFormData] = useState({
     type: 'income', amount: '', description: '', category: '',
     date: new Date().toISOString().split('T')[0], status: 'completed', notes: '', accountId: '',
   })
