@@ -487,7 +487,7 @@ async function syncTransactions(
         merchant_name:           tx.merchant_name ?? null,
         plaid_transaction_id:    tx.transaction_id,
         notes:                   null,
-      }, { onConflict: 'plaid_transaction_id', ignoreDuplicates: false })
+      }, { onConflict: 'plaid_transaction_id', ignoreDuplicates: true })  // ignoreDuplicates=true: skip if already reviewed/discarded
       if (error) console.error(`TX insert error: ${error.message}`)
       else added++
     }

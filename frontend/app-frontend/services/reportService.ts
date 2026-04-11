@@ -126,6 +126,7 @@ export async function getProfitLoss(params: ReportParams = {}): Promise<any> {
     .select('type, amount, date')
     .gte('date', startDate)
     .lte('date', endDate)
+    .or('is_from_plaid.eq.false,is_business_transaction.eq.true')
 
   if (error) throw new Error(error.message)
   const rows = data ?? []
@@ -182,6 +183,7 @@ export async function getTransactionSummary(params: ReportParams = {}): Promise<
     .select('type, amount, status, category_id, categories(name), date, description')
     .gte('date', start)
     .lte('date', end)
+    .or('is_from_plaid.eq.false,is_business_transaction.eq.true')
     .order('date', { ascending: false })
 
   if (error) throw new Error(error.message)
@@ -223,6 +225,7 @@ export async function getCategoryBreakdown(params: ReportParams = {}): Promise<a
     .lte('date', end)
 
   if (params.type) query = query.eq('type', params.type)
+  query = query.or('is_from_plaid.eq.false,is_business_transaction.eq.true')
 
   const { data, error } = await query
   if (error) throw new Error(error.message)

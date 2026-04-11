@@ -138,10 +138,15 @@ export async function reviewTransaction(
   const supabase = getSupabase()
 
   if (!body.isBusiness) {
-    // No es del negocio — eliminar la transacción
+    // Mark as discarded — do NOT delete, so future syncs don't re-import it
+    // is_business_transaction=false + status=2 means "reviewed and rejected"
     const { error } = await supabase
       .from('transactions')
-      .delete()
+      .update({
+        is_business_transaction: false,
+        status: 2,  // discarded
+        updated_at: new Date().toISOString(),
+      })
       .eq('id', transactionId)
     if (error) throw new Error(error.message)
     return { message: 'Transacción descartada' }
