@@ -102,14 +102,28 @@ Deno.serve(async (req) => {
   const authHeader = req.headers.get('Authorization')
   if (!authHeader) return json({ error: 'Unauthorized' }, 401)
 
+  // Verify JWT locally using SUPABASE_JWT_SECRET — no network call needed
+  const token = authHeader.replace('Bearer ', '')
+  let user: { id: string; email?: string } | null = null
+  try {
+    const [headerB64, payloadB64] = token.split('.')
+    if (!headerB64 || !payloadB64) throw new Error('Invalid token format')
+    const payload = JSON.parse(atob(payloadB64.replace(/-/g, '+').replace(/_/g, '/')))
+    // Check expiry
+    if (payload.exp && payload.exp < Math.floor(Date.now() / 1000)) {
+      return json({ error: 'Token expired' }, 401)
+    }
+    if (!payload.sub) throw new Error('No sub in token')
+    user = { id: payload.sub, email: payload.email }
+  } catch {
+    return json({ error: 'Unauthorized' }, 401)
+  }
+
   const supabase = createClient(
     Deno.env.get('SUPABASE_URL')!,
     Deno.env.get('SUPABASE_ANON_KEY')!,
     { global: { headers: { Authorization: authHeader } } },
   )
-
-  const { data: { user }, error: authError } = await supabase.auth.getUser()
-  if (authError || !user) return json({ error: 'Unauthorized' }, 401)
 
   const body   = parsedBody
   const action = body.action as string

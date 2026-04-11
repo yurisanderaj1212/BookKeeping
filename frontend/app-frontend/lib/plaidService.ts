@@ -1,4 +1,4 @@
-import { createClient, getSupabase } from '@/lib/supabaseClient'
+import { getSupabase } from '@/lib/supabaseClient'
 
 export interface PlaidItemInfo {
   id:              number
@@ -43,25 +43,9 @@ function getEdgeFunctionUrl(): string {
 }
 
 async function callEdgeFunction(action: string, payload?: Record<string, unknown>) {
-  // Create a fresh client each time to avoid stale session from singleton
-  const supabase = createClient()
-
-  // Get session and refresh if needed
-  let session = (await supabase.auth.getSession()).data.session
-  if (!session) {
-    // Try refreshing — session may be in storage but not yet loaded
-    const { data: refreshed } = await supabase.auth.refreshSession()
-    session = refreshed.session
-  }
+  const supabase = getSupabase()
+  const { data: { session } } = await supabase.auth.getSession()
   if (!session) throw new Error('No hay sesión activa.')
-
-  // If token expires in less than 60 seconds, force a refresh
-  const expiresAt = session.expires_at ?? 0
-  const nowSecs   = Math.floor(Date.now() / 1000)
-  if (expiresAt - nowSecs < 60) {
-    const { data: refreshed } = await supabase.auth.refreshSession()
-    if (refreshed.session) session = refreshed.session
-  }
 
   const res = await fetch(getEdgeFunctionUrl(), {
     method: 'POST',
