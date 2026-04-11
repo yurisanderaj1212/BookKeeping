@@ -59,10 +59,86 @@ export default function TransactionsPage() {
 
   // Cargar transacciones del backend cuando cambian los filtros o la página
   useEffect(() => {
-    if (isAuthenticated) {
-      loadTransactions()
+    if (!isAuthenticated) return
+
+    const fetchTransactions = async () => {
+      try {
+        setLoadingTransactions(true)
+        setError(null)
+
+        const params: transactionService.TransactionQueryParameters = {
+          pageNumber: currentPage,
+          pageSize,
+          sortBy: 'date',
+          sortDirection: 'desc',
+        }
+
+        if (searchTerm) params.searchText = searchTerm
+        if (selectedCategory !== 'all') params.categoryIds = selectedCategory
+        if (selectedType !== 'all') params.type = selectedType === 'income' ? 1 : 2
+        if (selectedAccount !== 'all') params.accountIds = selectedAccount === 'none' ? 'null' : selectedAccount
+
+        if (dateRange !== 'all') {
+          const now = new Date()
+          const y = now.getFullYear()
+          const m = now.getMonth()
+          const d = now.getDate()
+          const pad = (n: number) => String(n).padStart(2, '0')
+          const todayStr = `${y}-${pad(m + 1)}-${pad(d)}`
+
+          switch (dateRange) {
+            case 'today':
+              params.startDate = todayStr
+              params.endDate   = todayStr
+              break
+            case 'week': {
+              const sun = new Date(now)
+              sun.setDate(d - now.getDay())
+              const sat = new Date(now)
+              sat.setDate(d - now.getDay() + 6)
+              params.startDate = `${sun.getFullYear()}-${pad(sun.getMonth() + 1)}-${pad(sun.getDate())}`
+              params.endDate   = `${sat.getFullYear()}-${pad(sat.getMonth() + 1)}-${pad(sat.getDate())}`
+              break
+            }
+            case 'month':
+              params.startDate = `${y}-${pad(m + 1)}-01`
+              params.endDate   = new Date(y, m + 1, 0).toISOString().split('T')[0]
+              break
+            case 'year':
+              params.startDate = `${y}-01-01`
+              params.endDate   = `${y}-12-31`
+              break
+          }
+        }
+
+        const result = await transactionService.getFiltered(params)
+
+        const mappedTransactions: Transaction[] = result.data.map(dto => ({
+          id: dto.id.toString(),
+          type: dto.type === 1 ? 'income' : 'expense',
+          amount: dto.amount,
+          description: dto.description,
+          category: dto.categoryId.toString(),
+          date: dto.date.split('T')[0],
+          status: dto.status === 1 ? 'pending' : 'completed',
+          notes: dto.notes || '',
+          accountId: dto.accountId || undefined,
+          isFromPlaid: (dto as any).isFromPlaid ?? false,
+          isBusinessTransaction: (dto as any).isBusinessTransaction ?? null,
+          merchantName: (dto as any).merchantName ?? null,
+        }))
+
+        setTransactions(mappedTransactions)
+        setPagination(result.pagination)
+      } catch (err: any) {
+        setError(err.message || t('loadError'))
+      } finally {
+        setLoadingTransactions(false)
+      }
     }
-  }, [isAuthenticated, currentPage, pageSize, searchTerm, selectedCategory, selectedType, selectedAccount, dateRange])
+
+    fetchTransactions()
+  }, [isAuthenticated, currentPage, pageSize, searchTerm, selectedCategory, selectedType, selectedAccount, dateRange, t])
 
   // Cargar cuentas solo una vez
   useEffect(() => {
@@ -100,57 +176,40 @@ export default function TransactionsPage() {
     try {
       setLoadingTransactions(true)
       setError(null)
-      
-      // Construir parámetros de filtrado
+
       const params: transactionService.TransactionQueryParameters = {
         pageNumber: currentPage,
-        pageSize: pageSize,
+        pageSize,
         sortBy: 'date',
-        sortDirection: 'desc'
+        sortDirection: 'desc',
       }
-      
-      // Agregar filtros solo si no son 'all'
-      if (searchTerm) {
-        params.searchText = searchTerm
-      }
-      
-      if (selectedCategory !== 'all') {
-        // selectedCategory ahora es el ID numérico como string
-        params.categoryIds = selectedCategory
-      }
-      
-      if (selectedType !== 'all') {
-        // Income = 1, Expense = 2 (TransactionType enum del backend)
-        params.type = selectedType === 'income' ? 1 : 2
-      }
-      
-      if (selectedAccount !== 'all') {
-        params.accountIds = selectedAccount === 'none' ? 'null' : selectedAccount
-      }
-      
-      // Filtro de rango de fechas
+
+      if (searchTerm) params.searchText = searchTerm
+      if (selectedCategory !== 'all') params.categoryIds = selectedCategory
+      if (selectedType !== 'all') params.type = selectedType === 'income' ? 1 : 2
+      if (selectedAccount !== 'all') params.accountIds = selectedAccount === 'none' ? 'null' : selectedAccount
+
       if (dateRange !== 'all') {
         const now = new Date()
         const y = now.getFullYear()
         const m = now.getMonth()
         const d = now.getDate()
-        const todayStr = `${y}-${String(m + 1).padStart(2, '0')}-${String(d).padStart(2, '0')}`
-
+        const pad = (n: number) => String(n).padStart(2, '0')
+        const todayStr = `${y}-${pad(m + 1)}-${pad(d)}`
         switch (dateRange) {
           case 'today':
             params.startDate = todayStr
             params.endDate   = todayStr
             break
           case 'week': {
-            // Current week Sun-Sat
-            const sun = new Date(y, m, d - now.getDay())
-            const sat = new Date(y, m, d - now.getDay() + 6)
-            params.startDate = sun.toISOString().split('T')[0]
-            params.endDate   = sat.toISOString().split('T')[0]
+            const sun = new Date(now); sun.setDate(d - now.getDay())
+            const sat = new Date(now); sat.setDate(d - now.getDay() + 6)
+            params.startDate = `${sun.getFullYear()}-${pad(sun.getMonth() + 1)}-${pad(sun.getDate())}`
+            params.endDate   = `${sat.getFullYear()}-${pad(sat.getMonth() + 1)}-${pad(sat.getDate())}`
             break
           }
           case 'month':
-            params.startDate = `${y}-${String(m + 1).padStart(2, '0')}-01`
+            params.startDate = `${y}-${pad(m + 1)}-01`
             params.endDate   = new Date(y, m + 1, 0).toISOString().split('T')[0]
             break
           case 'year':
@@ -159,11 +218,8 @@ export default function TransactionsPage() {
             break
         }
       }
-      
-      // Llamar al backend con filtros
+
       const result = await transactionService.getFiltered(params)
-      
-      // Mapear TransactionDto del backend a Transaction del frontend
       const mappedTransactions: Transaction[] = result.data.map(dto => ({
         id: dto.id.toString(),
         type: dto.type === 1 ? 'income' : 'expense',
@@ -178,7 +234,6 @@ export default function TransactionsPage() {
         isBusinessTransaction: (dto as any).isBusinessTransaction ?? null,
         merchantName: (dto as any).merchantName ?? null,
       }))
-      
       setTransactions(mappedTransactions)
       setPagination(result.pagination)
     } catch (err: any) {
