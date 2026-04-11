@@ -126,13 +126,19 @@ class AccountService {
 
   async deactivateAccount(id: number): Promise<void> {
     const supabase = getSupabase()
-    // Null out account_id on transactions first to avoid FK violation
+    // Delete Plaid-imported transactions (they belong to the bank account, no value without it)
+    await supabase
+      .from('transactions')
+      .delete()
+      .eq('account_id', id)
+      .eq('is_from_plaid', true)
+    // Null out manually-created transactions (user data, keep it)
     const { error: txError } = await supabase
       .from('transactions')
       .update({ account_id: null })
       .eq('account_id', id)
     if (txError) throw new Error(txError.message)
-    // Hard delete the account
+    // Delete the account
     const { error } = await supabase
       .from('accounts').delete().eq('id', id)
     if (error) throw new Error(error.message)

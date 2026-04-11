@@ -268,7 +268,7 @@ Deno.serve(async (req) => {
 
       const { data: item, error } = await supabase
         .from('plaid_items')
-        .select('plaid_access_token')
+        .select('plaid_access_token, institution_name')
         .eq('id', itemId)
         .single()
 
@@ -283,33 +283,36 @@ Deno.serve(async (req) => {
         Deno.env.get('SUPABASE_URL')!,
         Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!,
       )
-      // Get the item to find associated accounts
-      const { data: itemToDelete } = await supabase
-        .from('plaid_items')
-        .select('supabase_account_id, institution_name')
-        .eq('id', itemId)
-        .single()
 
-      if (itemToDelete?.institution_name) {
-        // Delete all accounts from this institution (created by Plaid)
-        // First null out account_id on transactions to avoid FK violation
+      // Find all Plaid-linked accounts for this item (identified by [plaid:] in description)
+      const { data: plaidAccounts } = await adminSupabase
+        .from('accounts')
+        .select('id')
+        .eq('user_id', user.id)
+        .like('description', '%[plaid:%')
+        .like('name', `${item.institution_name ?? ''}%`)
+
+      const accountIds = (plaidAccounts ?? []).map((a: any) => a.id)
+
+      if (accountIds.length > 0) {
+        // Delete Plaid-imported transactions — they belong to the bank, no value without it
+        await adminSupabase
+          .from('transactions')
+          .delete()
+          .in('account_id', accountIds)
+          .eq('is_from_plaid', true)
+
+        // Null out manually-created transactions — user data, keep it
         await adminSupabase
           .from('transactions')
           .update({ account_id: null })
-          .like('account_id::text', '%')
-          .in('account_id', 
-            (await adminSupabase
-              .from('accounts')
-              .select('id')
-              .like('name', `${itemToDelete.institution_name}%`)
-              .then(r => (r.data ?? []).map((a: any) => a.id))
-            )
-          )
+          .in('account_id', accountIds)
+
+        // Delete the Plaid-linked accounts
         await adminSupabase
           .from('accounts')
           .delete()
-          .like('name', `${itemToDelete.institution_name}%`)
-          .neq('sub_type', 1002) // never delete Cash
+          .in('id', accountIds)
       }
 
       await supabase.from('plaid_items').delete().eq('id', itemId)
