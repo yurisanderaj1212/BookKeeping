@@ -13,24 +13,27 @@ interface PlaidHistoryModalProps {
 }
 
 function getStartDate(option: HistoryOption): string | null {
-  if (option === 'none') return null  // no date filter — import nothing old
   const now = new Date()
+  const pad = (n: number) => String(n).padStart(2, '0')
+  const today = `${now.getFullYear()}-${pad(now.getMonth() + 1)}-${pad(now.getDate())}`
+
   switch (option) {
+    case 'none':
+      return today  // start from today — no historical transactions
     case '3months': {
       const d = new Date(now.getFullYear(), now.getMonth() - 3, 1)
-      return d.toISOString().split('T')[0]
+      return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-01`
     }
     case '2months': {
       const d = new Date(now.getFullYear(), now.getMonth() - 2, 1)
-      return d.toISOString().split('T')[0]
+      return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-01`
     }
     case '1month': {
       const d = new Date(now.getFullYear(), now.getMonth() - 1, 1)
-      return d.toISOString().split('T')[0]
+      return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-01`
     }
     case 'current': {
-      const d = new Date(now.getFullYear(), now.getMonth(), 1)
-      return d.toISOString().split('T')[0]
+      return `${now.getFullYear()}-${pad(now.getMonth() + 1)}-01`
     }
   }
 }
