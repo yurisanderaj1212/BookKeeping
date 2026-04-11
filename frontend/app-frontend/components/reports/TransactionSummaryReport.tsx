@@ -10,9 +10,11 @@ interface TransactionSummaryReportProps {
   period: string
   year: string
   month: string
+  startDate?: string
+  endDate?: string
 }
 
-export default function TransactionSummaryReport({ period, year, month }: TransactionSummaryReportProps) {
+export default function TransactionSummaryReport({ period, year, month, startDate, endDate }: TransactionSummaryReportProps) {
   const t = useTranslations('reports.rptTransactionSummary')
   const tMonths = useTranslations('reports.months')
   const tCategories = useTranslations('categories')
@@ -28,12 +30,14 @@ export default function TransactionSummaryReport({ period, year, month }: Transa
       period: period as ReportParams['period'],
       year: parseInt(year),
       month: period === 'year' ? undefined : parseInt(month),
+      startDate: period === 'week' ? startDate : undefined,
+      endDate:   period === 'week' ? endDate   : undefined,
     }
     getTransactionSummary(params)
       .then(setData)
       .catch((e: any) => setError(e.message ?? t('loadError')))
       .finally(() => setLoading(false))
-  }, [period, year, month])
+  }, [period, year, month, startDate, endDate])
 
   const getPeriodLabel = () => {
     if (period === 'week') return t('currentWeek')

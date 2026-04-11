@@ -21,6 +21,7 @@ function getPeriodDates(params: ReportParams): { start: string; end: string } {
   const month = params.month ?? now.getMonth() + 1
 
   if (params.period === 'week') {
+    // Fall back to current week if no explicit dates (should not happen normally)
     const day = now.getDay()
     const start = new Date(now)
     start.setDate(now.getDate() - day)

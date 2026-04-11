@@ -10,9 +10,11 @@ interface FinancialSummaryReportProps {
   period: string
   year: string
   month: string
+  startDate?: string
+  endDate?: string
 }
 
-export default function FinancialSummaryReport({ period, year, month }: FinancialSummaryReportProps) {
+export default function FinancialSummaryReport({ period, year, month, startDate, endDate }: FinancialSummaryReportProps) {
   const t = useTranslations('reports.financial')
   const tMonths = useTranslations('reports.months')
   const tCategories = useTranslations('categories')
@@ -28,12 +30,14 @@ export default function FinancialSummaryReport({ period, year, month }: Financia
       period: period as ReportParams['period'],
       year: parseInt(year),
       month: period === 'year' ? undefined : parseInt(month),
+      startDate: period === 'week' ? startDate : undefined,
+      endDate:   period === 'week' ? endDate   : undefined,
     }
     getFinancialSummary(params)
       .then(setData)
       .catch((e: any) => setError(e.message ?? t('loadError')))
       .finally(() => setLoading(false))
-  }, [period, year, month])
+  }, [period, year, month, startDate, endDate])
 
   const getPeriodLabel = () => {
     if (period === 'week') return t('currentWeek')

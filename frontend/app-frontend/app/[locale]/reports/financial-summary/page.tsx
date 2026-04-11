@@ -22,6 +22,8 @@ function FinancialSummaryContent() {
   const period = searchParams.get('period') || 'month'
   const year = searchParams.get('year') || String(new Date().getFullYear())
   const month = searchParams.get('month') || String(new Date().getMonth() + 1).padStart(2, '0')
+  const startDate = searchParams.get('startDate') || undefined
+  const endDate = searchParams.get('endDate') || undefined
 
   // Mostrar loading mientras se verifica la autenticación
   if (isLoading) {
@@ -42,7 +44,7 @@ function FinancialSummaryContent() {
 
   const handleExport = () => {
     showExportModal((format) => {
-      exportFinancialSummary({ period: period as 'week' | 'month' | 'year', year: parseInt(year), month: parseInt(month) }, format)
+      exportFinancialSummary({ period: period as 'week' | 'month' | 'year', year: parseInt(year), month: parseInt(month), startDate, endDate }, format)
     })
   }
 
@@ -84,6 +86,8 @@ function FinancialSummaryContent() {
             period={period}
             year={year}
             month={month}
+            startDate={startDate}
+            endDate={endDate}
           />
         </div>
       </PageLayout>
