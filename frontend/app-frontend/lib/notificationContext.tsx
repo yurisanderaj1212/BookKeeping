@@ -108,14 +108,17 @@ export function NotificationProvider({ children }: { children: ReactNode }) {
       if (existing && existing.length > 0) return  // already closed
 
       // Insert warning notification
+      const locale = document.documentElement.lang?.startsWith('en') ? 'en' : 'es'
       await supabase.from('notifications').insert({
         user_id:      user.id,
         type:         'reminder',
         priority:     'high',
-        title:        '⚠️ Semana por cerrar',
-        message:      'La semana actual termina pronto y aún no ha sido cerrada. Recuerda hacer el cierre semanal para mantener la integridad de tus datos.',
+        title:        locale === 'en' ? '⚠️ Week closing soon' : '⚠️ Semana por cerrar',
+        message:      locale === 'en'
+          ? 'The current week is ending soon and has not been closed yet. Remember to do the weekly close to maintain data integrity.'
+          : 'La semana actual termina pronto y aún no ha sido cerrada. Recuerda hacer el cierre semanal para mantener la integridad de tus datos.',
         action_url:   '/reports/week-close',
-        action_label: 'Cerrar semana',
+        action_label: locale === 'en' ? 'Close week' : 'Cerrar semana',
         is_read:      false,
       })
       localStorage.setItem(warningKey, '1')
@@ -133,14 +136,17 @@ export function NotificationProvider({ children }: { children: ReactNode }) {
       const { data: { user } } = await supabase.auth.getUser()
       if (!user) return
 
+      const locale = document.documentElement.lang?.startsWith('en') ? 'en' : 'es'
       await supabase.from('notifications').insert({
         user_id:      user.id,
         type:         'reminder',
         priority:     'medium',
-        title:        '📊 Reportes pendientes',
-        message:      'Es el final de la semana. Recuerda generar tus reportes financieros semanales.',
+        title:        locale === 'en' ? '📊 Pending reports' : '📊 Reportes pendientes',
+        message:      locale === 'en'
+          ? 'It\'s the end of the week. Remember to generate your weekly financial reports.'
+          : 'Es el final de la semana. Recuerda generar tus reportes financieros semanales.',
         action_url:   '/reports',
-        action_label: 'Ver reportes',
+        action_label: locale === 'en' ? 'View reports' : 'Ver reportes',
         is_read:      false,
       })
       localStorage.setItem(key, '1')
