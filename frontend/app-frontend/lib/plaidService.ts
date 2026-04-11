@@ -74,8 +74,9 @@ export async function exchangeToken(
   publicToken: string,
   institutionId: string | null,
   institutionName: string | null,
+  startDate?: string | null,
 ): Promise<{ message: string }> {
-  return callEdgeFunction('exchangeToken', { publicToken, institutionId, institutionName })
+  return callEdgeFunction('exchangeToken', { publicToken, institutionId, institutionName, startDate: startDate ?? null })
 }
 
 export async function getPlaidItems(): Promise<PlaidItemInfo[]> {

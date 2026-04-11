@@ -134,7 +134,7 @@ Deno.serve(async (req) => {
 
     // ── exchangeToken ─────────────────────────────────────────────────────────
     if (action === 'exchangeToken') {
-      const { publicToken, institutionId, institutionName } = body
+      const { publicToken, institutionId, institutionName, startDate } = body
 
       const exchangeData = await plaidPost('/item/public_token/exchange', {
         public_token: publicToken,
@@ -181,7 +181,7 @@ Deno.serve(async (req) => {
 
       if (error) throw new Error(error.message)
 
-      const result = await syncTransactions(accessToken, item.id, user.id, adminSupabase, accountMap)
+      const result = await syncTransactions(accessToken, item.id, user.id, adminSupabase, accountMap, startDate ?? null)
       return json({ message: 'Cuenta conectada exitosamente', ...result })
     }
 
@@ -421,6 +421,7 @@ async function syncTransactions(
   userId: string,
   supabase: ReturnType<typeof createClient>,
   accountMap?: Map<string, number>,
+  startDate?: string | null,
 ): Promise<{ added: number; modified: number; removed: number }> {
 
   const { data: itemRow } = await supabase
@@ -462,6 +463,10 @@ async function syncTransactions(
     }
 
     for (const tx of data.added ?? []) {
+      // Skip transactions before the user's chosen start date
+      const txDate = tx.authorized_date ?? tx.date
+      if (startDate && txDate < startDate) continue
+
       // Plaid: positive amount = debit/expense, negative = credit/income
       const type   = tx.amount > 0 ? 2 : 1
       const amount = Math.abs(tx.amount)
@@ -474,7 +479,7 @@ async function syncTransactions(
         category_id:             21, // Other
         account_id:              txAccountId,
         description:             tx.merchant_name ?? tx.name ?? 'Transacción bancaria',
-        date:                    tx.authorized_date ?? tx.date,
+        date:                    txDate,
         status:                  1, // Always pending review — user must confirm if business transaction
         is_from_plaid:           true,
         is_business_transaction: null,
@@ -487,6 +492,10 @@ async function syncTransactions(
     }
 
     for (const tx of data.modified ?? []) {
+      // Skip transactions before the user's chosen start date
+      const txDate = tx.authorized_date ?? tx.date
+      if (startDate && txDate < startDate) continue
+
       const type   = tx.amount > 0 ? 2 : 1
       const amount = Math.abs(tx.amount)
       const txAccountId = accountMap?.get(tx.account_id) ?? null

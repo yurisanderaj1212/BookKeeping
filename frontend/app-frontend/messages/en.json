@@ -414,6 +414,34 @@
       "errConnect": "Error connecting account.",
       "errInit": "Error starting connection."
     },
+    "plaidHistory": {
+      "title": "Import transaction history",
+      "subtitle": "Choose how far back you want to import transactions from this bank account.",
+      "option": {
+        "3months": {
+          "label": "Last 3 months",
+          "desc": "Import transactions from the past 3 months"
+        },
+        "2months": {
+          "label": "Last 2 months",
+          "desc": "Import transactions from the past 2 months"
+        },
+        "1month": {
+          "label": "Last month",
+          "desc": "Import transactions from the past month"
+        },
+        "current": {
+          "label": "Current month only",
+          "desc": "Only import transactions from this month"
+        },
+        "none": {
+          "label": "Start fresh",
+          "desc": "Don't import past transactions, start from today"
+        }
+      },
+      "cancel": "Cancel",
+      "confirm": "Import"
+    },
     "currencies": {
       "USD": "USD - US Dollar",
       "EUR": "EUR - Euro",
