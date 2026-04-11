@@ -11,12 +11,13 @@ export default function ConnectedBanks({ refreshKey }: { refreshKey?: number }) 
   const tCommon = useTranslations('common')
   const { showSuccess, showError } = useNotifications()
 
-  if (!process.env.NEXT_PUBLIC_PLAID_CLIENT_ID) return null
   const [items, setItems]     = useState<PlaidItemInfo[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError]     = useState<string | null>(null)
   const [syncing, setSyncing] = useState<number | null>(null)
   const [removing, setRemoving] = useState<number | null>(null)
+
+  const isPlaidEnabled = !!process.env.NEXT_PUBLIC_PLAID_CLIENT_ID
 
   const load = useCallback(async () => {
     setLoading(true)
@@ -30,6 +31,8 @@ export default function ConnectedBanks({ refreshKey }: { refreshKey?: number }) 
   }, [t])
 
   useEffect(() => { load() }, [load, refreshKey])
+
+  if (!isPlaidEnabled) return null
 
   async function handleSync(id: number) {
     setSyncing(id)

@@ -1,4 +1,4 @@
-import { getSupabase } from '@/lib/supabaseClient'
+import { createClient, getSupabase } from '@/lib/supabaseClient'
 
 export interface PlaidItemInfo {
   id:              number
@@ -43,14 +43,19 @@ function getEdgeFunctionUrl(): string {
 }
 
 async function callEdgeFunction(action: string, payload?: Record<string, unknown>) {
-  const supabase = getSupabase()
+  // Create a fresh client each time to avoid stale session from singleton
+  const supabase = createClient()
 
-  // Always refresh the session before calling the edge function
-  // to avoid 401s when the JWT has expired (e.g. user spent time in Plaid Link UI)
+  // Get session and refresh if needed
   let session = (await supabase.auth.getSession()).data.session
+  if (!session) {
+    // Try refreshing — session may be in storage but not yet loaded
+    const { data: refreshed } = await supabase.auth.refreshSession()
+    session = refreshed.session
+  }
   if (!session) throw new Error('No hay sesión activa.')
 
-  // If token expires in less than 60 seconds, force a refresh now
+  // If token expires in less than 60 seconds, force a refresh
   const expiresAt = session.expires_at ?? 0
   const nowSecs   = Math.floor(Date.now() / 1000)
   if (expiresAt - nowSecs < 60) {
