@@ -152,8 +152,8 @@ export default function DashboardPage() {
       setLoadingCategories(true)
 
       const [incomeBreakdown, expenseBreakdown] = await Promise.all([
-        dashboardService.getCategoryBreakdown({ period: 'year' }, 10, 1),
-        dashboardService.getCategoryBreakdown({ period: 'year' }, 10, 2),
+        dashboardService.getCategoryBreakdown({ period: 'month' }, 10, 1),
+        dashboardService.getCategoryBreakdown({ period: 'month' }, 10, 2),
       ])
 
       setCategoryBreakdown([...incomeBreakdown, ...expenseBreakdown])
@@ -395,6 +395,7 @@ export default function DashboardPage() {
                   color: '',
                   type: cat.type,
                 }))}
+                monthLabel={new Date().toLocaleDateString(locale === 'en' ? 'en-US' : 'es-ES', { month: 'long', year: 'numeric' })}
               />
             )}
           </div>

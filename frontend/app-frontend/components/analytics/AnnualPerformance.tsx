@@ -56,8 +56,16 @@ export default function AnnualPerformance({ year }: AnnualPerformanceProps) {
   const totalAnnualIncome   = annualData.reduce((s, m) => s + m.ingresos, 0)
   const totalAnnualExpenses = annualData.reduce((s, m) => s + m.gastos, 0)
   const totalAnnualProfit   = totalAnnualIncome - totalAnnualExpenses
-  const avgMonthlyIncome    = totalAnnualIncome / 12
-  const avgMonthlyExpenses  = totalAnnualExpenses / 12
+
+  // Use months elapsed in the year (not always 12) for accurate averages
+  const currentYear   = new Date().getFullYear()
+  const selectedYearN = parseInt(year)
+  const monthsElapsed = selectedYearN < currentYear
+    ? 12  // past year — use all 12 months
+    : new Date().getMonth() + 1  // current year — months elapsed so far
+
+  const avgMonthlyIncome    = totalAnnualIncome   / monthsElapsed
+  const avgMonthlyExpenses  = totalAnnualExpenses / monthsElapsed
   const bestMonth = annualData.length > 0
     ? annualData.reduce((best, cur) => cur.beneficio > best.beneficio ? cur : best, annualData[0])
     : { month: '—', beneficio: 0 }

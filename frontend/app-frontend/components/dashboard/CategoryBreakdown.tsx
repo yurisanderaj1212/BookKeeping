@@ -17,6 +17,7 @@ export interface CategoryData {
 
 interface CategoryBreakdownProps {
   categories: CategoryData[]
+  monthLabel?: string
 }
 
 const INCOME_COLORS  = ['#10b981','#059669','#34d399','#6ee7b7','#a7f3d0','#d1fae5']
@@ -104,7 +105,7 @@ function ChartCard({ title, data, emptyText, emptyDesc, formatCurrency, infoTitl
   )
 }
 
-export default function CategoryBreakdown({ categories }: CategoryBreakdownProps) {
+export default function CategoryBreakdown({ categories, monthLabel }: CategoryBreakdownProps) {
   const t    = useTranslations('dashboard.categoryBreakdown')
   const tCat = useTranslations('categories')
   const locale = useLocale()
@@ -130,7 +131,7 @@ export default function CategoryBreakdown({ categories }: CategoryBreakdownProps
   return (
     <div className="flex flex-col sm:flex-row gap-4 sm:gap-6">
       <ChartCard
-        title={t('titleIncome')}
+        title={monthLabel ? `${t('titleIncome')} — ${monthLabel}` : t('titleIncome')}
         data={incomeList}
         emptyText={t('empty')}
         emptyDesc={t('emptyDesc')}
@@ -139,7 +140,7 @@ export default function CategoryBreakdown({ categories }: CategoryBreakdownProps
         infoDesc={t('infoDesc')}
       />
       <ChartCard
-        title={t('titleExpense')}
+        title={monthLabel ? `${t('titleExpense')} — ${monthLabel}` : t('titleExpense')}
         data={expenseList}
         emptyText={t('empty')}
         emptyDesc={t('emptyDesc')}
