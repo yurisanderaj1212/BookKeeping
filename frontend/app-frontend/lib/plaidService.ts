@@ -44,6 +44,10 @@ function getEdgeFunctionUrl(): string {
 
 async function callEdgeFunction(action: string, payload?: Record<string, unknown>) {
   const supabase = getSupabase()
+  // getUser() validates with Supabase server and triggers token refresh if needed
+  // Then getSession() returns the fresh token
+  const { error: userError } = await supabase.auth.getUser()
+  if (userError) throw new Error('No hay sesión activa.')
   const { data: { session } } = await supabase.auth.getSession()
   if (!session) throw new Error('No hay sesión activa.')
 
