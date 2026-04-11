@@ -45,7 +45,7 @@ export default function MonthlyChart({ data }: MonthlyChartProps) {
     const profitEntry = payload.find((e: any) => e.dataKey === 'profit')
     const incomeVal   = incomeEntry?.value ?? 0
     const profitVal   = profitEntry?.value ?? 0
-    const profitMargin = incomeVal > 0 && profitVal > 0
+    const profitMargin = incomeVal > 0
       ? ((profitVal / incomeVal) * 100).toFixed(1)
       : null
 
