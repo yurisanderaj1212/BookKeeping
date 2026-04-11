@@ -89,8 +89,8 @@ export default function StatsCards({
     <div className="mb-8">
       {periodLabel && (
         <div className="mb-4">
-          <p className="text-sm text-gray-600 dark:text-gray-400 font-medium">
-            {t('showingData')} <span className="text-primary-600">{periodLabel}</span>
+          <p className="text-base font-semibold text-gray-700 dark:text-gray-300">
+            {t('showingData')} <span className="text-primary-600 dark:text-primary-400">{periodLabel}</span>
           </p>
         </div>
       )}

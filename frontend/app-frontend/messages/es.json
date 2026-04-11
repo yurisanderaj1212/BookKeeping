@@ -1493,11 +1493,11 @@
       },
       "sidebar": {
         "title": "Menú de Navegación",
-        "description": "Este es tu menú principal. Desde aquí accedes a todas las secciones: Inicio, Transacciones, Reportes, Análisis, Cuentas y Empleados. Puedes colapsarlo con la flecha para ganar espacio en pantalla. El botón de idioma te permite cambiar entre Español e Inglés."
+        "description": "Este es tu menú principal. Desde aquí accedes a todas las secciones: Inicio, Transacciones, Reportes, Análisis y Cuentas. Puedes colapsarlo con la flecha para ganar espacio en pantalla. El botón de idioma te permite cambiar entre Español e Inglés."
       },
       "dashboard": {
-        "title": "Resumen Financiero en Tiempo Real",
-        "description": "Estas tarjetas muestran tus métricas clave: ingresos totales, gastos totales, beneficio neto y transacciones pendientes. Los datos se actualizan automáticamente cada vez que registras una transacción. De un vistazo sabes cómo va tu negocio."
+        "title": "Tarjetas de Resumen Financiero",
+        "description": "Estas tarjetas muestran tus métricas clave: Ingresos, Gastos, Ganancias y Asuntos Pendientes. Los datos se actualizan automáticamente cada vez que registras una transacción. De un vistazo sabes cómo va tu negocio."
       },
       "quickActions": {
         "title": "Acciones Rápidas",

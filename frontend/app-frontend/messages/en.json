@@ -1491,11 +1491,11 @@
       },
       "sidebar": {
         "title": "Main Navigation Menu",
-        "description": "This is your main menu. From here you access all sections: Home, Transactions, Reports, Analytics, Accounts and Employees. You can collapse it with the arrow to gain screen space. The language button lets you switch between Spanish and English."
+        "description": "This is your main menu. From here you access all sections: Home, Transactions, Reports, Analytics and Accounts. You can collapse it with the arrow to gain screen space. The language button lets you switch between Spanish and English."
       },
       "dashboard": {
-        "title": "Real-Time Financial Summary",
-        "description": "These cards show your key metrics: total income, total expenses, net profit and pending transactions. Data updates automatically every time you record a transaction. At a glance you know how your business is doing."
+        "title": "Financial Summary Cards",
+        "description": "These cards show your key metrics: Revenue, Expenses, Profit and Pending Items. Data updates automatically every time you record a transaction. At a glance you know how your business is doing."
       },
       "quickActions": {
         "title": "Quick Actions",

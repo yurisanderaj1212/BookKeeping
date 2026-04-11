@@ -59,7 +59,7 @@ function ConfigModal({ tx, categories, accounts, onConfirm, onCancel, saving }: 
 
         <div className="mx-6 mt-4 mb-4 bg-gray-50 dark:bg-gray-800 rounded-xl px-4 py-3 flex items-center justify-between">
           <div>
-            <p className="text-sm font-medium text-gray-900 dark:text-gray-100 truncate max-w-[220px]">
+            <p className="text-sm font-medium text-gray-900 dark:text-gray-100 break-words">
               {tx.merchantName ?? tx.description ?? 'Transaction'}
             </p>
             <p className="text-xs text-gray-400 mt-0.5">
@@ -67,7 +67,7 @@ function ConfigModal({ tx, categories, accounts, onConfirm, onCancel, saving }: 
               {tx.institutionName && ` · ${tx.institutionName}`}
             </p>
           </div>
-          <span className={`text-base font-bold ${isExpense ? 'text-red-600' : 'text-green-600'}`}>
+          <span className={`text-base font-bold shrink-0 ml-2 ${isExpense ? 'text-red-600' : 'text-green-600'}`}>
             {isExpense ? '-' : '+'}${tx.amount.toFixed(2)}
           </span>
         </div>
@@ -194,14 +194,14 @@ function DiscardModal({ tx, onConfirm, onCancel, saving }: DiscardModalProps) {
         {/* Transaction summary */}
         <div className="mx-6 mt-4 mb-4 bg-gray-50 dark:bg-gray-800 rounded-xl px-4 py-3 flex items-center justify-between">
           <div>
-            <p className="text-sm font-medium text-gray-900 dark:text-gray-100 truncate max-w-[180px]">
+            <p className="text-sm font-medium text-gray-900 dark:text-gray-100 break-words">
               {tx.merchantName ?? tx.description ?? 'Transaction'}
             </p>
             <p className="text-xs text-gray-400 mt-0.5">
               {new Date(tx.date).toLocaleDateString(undefined, { day: 'numeric', month: 'short', year: 'numeric' })}
             </p>
           </div>
-          <span className={`text-base font-bold ${isExpense ? 'text-red-600' : 'text-green-600'}`}>
+          <span className={`text-base font-bold shrink-0 ml-2 ${isExpense ? 'text-red-600' : 'text-green-600'}`}>
             {isExpense ? '-' : '+'}${tx.amount.toFixed(2)}
           </span>
         </div>
@@ -250,7 +250,7 @@ function TxRow({ tx, onYes, onNo, disabled }: TxRowProps) {
         <Building2 className="w-4 h-4 text-blue-500" />
       </div>
       <div className="flex-1 min-w-0">
-        <p className="text-sm font-medium text-gray-900 dark:text-gray-100 truncate">
+        <p className="text-sm font-medium text-gray-900 dark:text-gray-100 break-words">
           {tx.merchantName ?? tx.description ?? 'Transaction'}
         </p>
         <p className="text-xs text-gray-400 mt-0.5">
@@ -442,7 +442,7 @@ export default function PlaidReviewQueue({ onCountChange, onTransactionConfirmed
           {/* Drawer panel */}
           <div
             ref={drawerRef}
-            className="fixed right-0 top-0 bottom-0 z-50 w-full max-w-md bg-white dark:bg-gray-900 shadow-2xl flex flex-col"
+            className="fixed right-0 top-0 bottom-0 z-50 w-full max-w-lg bg-white dark:bg-gray-900 shadow-2xl flex flex-col"
             style={{ animation: 'slideInRight 0.2s ease-out' }}
           >
             {/* Header */}
