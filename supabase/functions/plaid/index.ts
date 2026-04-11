@@ -266,53 +266,53 @@ Deno.serve(async (req) => {
     if (action === 'removeItem') {
       const { itemId } = body
 
-      const { data: item, error } = await supabase
+      const adminSupabase = createClient(
+        Deno.env.get('SUPABASE_URL')!,
+        Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!,
+      )
+
+      const { data: item, error } = await adminSupabase
         .from('plaid_items')
-        .select('plaid_access_token')
+        .select('plaid_access_token, institution_name, user_id')
         .eq('id', itemId)
         .single()
 
       if (error || !item) return json({ error: 'Item not found' }, 404)
 
+      // Notify Plaid to revoke access (non-critical if it fails)
       try {
         await plaidPost('/item/remove', { access_token: item.plaid_access_token })
-      } catch { /* ignorar si ya fue removido en Plaid */ }
+      } catch { /* ignore — item may already be removed on Plaid side */ }
 
-      // Delete associated bank accounts from Supabase
-      const adminSupabase = createClient(
-        Deno.env.get('SUPABASE_URL')!,
-        Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!,
-      )
-      // Get the item to find associated accounts
-      const { data: itemToDelete } = await supabase
-        .from('plaid_items')
-        .select('supabase_account_id, institution_name')
-        .eq('id', itemId)
-        .single()
+      // Find all Plaid-linked accounts for this institution and user
+      // Accounts created by Plaid always have '[plaid:' in their description
+      const { data: plaidAccounts } = await adminSupabase
+        .from('accounts')
+        .select('id')
+        .eq('user_id', item.user_id)
+        .like('description', '%[plaid:%')
+        .like('name', `${item.institution_name}%`)
 
-      if (itemToDelete?.institution_name) {
-        // Delete all accounts from this institution (created by Plaid)
-        // First null out account_id on transactions to avoid FK violation
+      const accountIds = (plaidAccounts ?? []).map((a: any) => a.id)
+
+      if (accountIds.length > 0) {
+        // Step 1: null out account_id on all transactions linked to these accounts
+        // (both Plaid-imported and any manually assigned ones)
         await adminSupabase
           .from('transactions')
           .update({ account_id: null })
-          .like('account_id::text', '%')
-          .in('account_id', 
-            (await adminSupabase
-              .from('accounts')
-              .select('id')
-              .like('name', `${itemToDelete.institution_name}%`)
-              .then(r => (r.data ?? []).map((a: any) => a.id))
-            )
-          )
+          .in('account_id', accountIds)
+
+        // Step 2: delete the Plaid-linked accounts
         await adminSupabase
           .from('accounts')
           .delete()
-          .like('name', `${itemToDelete.institution_name}%`)
-          .neq('sub_type', 1002) // never delete Cash
+          .in('id', accountIds)
       }
 
-      await supabase.from('plaid_items').delete().eq('id', itemId)
+      // Step 3: delete the plaid_item record
+      await adminSupabase.from('plaid_items').delete().eq('id', itemId)
+
       return json({ message: 'Cuenta desconectada' })
     }
 
@@ -440,9 +440,10 @@ async function syncTransactions(
     console.log(`Sync: added=${data.added?.length ?? 0} modified=${data.modified?.length ?? 0} removed=${data.removed?.length ?? 0} has_more=${data.has_more}`)
 
     // Update account balances from Plaid — only for accounts in the map
+    // Note: /transactions/sync returns balances but they may be slightly stale.
+    // We do a dedicated /accounts/balance/get call after the loop for fresh data.
     if (data.accounts?.length > 0) {
       for (const acc of data.accounts) {
-        // Only update if we have a mapping for this specific plaid account
         const supabaseAccId = accountMap?.get(acc.account_id)
         if (!supabaseAccId) {
           console.log(`Skipping balance update for unmapped account: ${acc.account_id} (${acc.name})`)
@@ -528,6 +529,30 @@ async function syncTransactions(
     .from('plaid_items')
     .update({ transactions_cursor: cursor, updated_at: new Date().toISOString() })
     .eq('id', plaidItemDbId)
+
+  // ── Final balance refresh using /accounts/balance/get ─────────────────────
+  // This guarantees the most up-to-date balance from Plaid after all
+  // transactions have been processed, overriding any stale values from sync.
+  if (accountMap && accountMap.size > 0) {
+    try {
+      const balanceData = await plaidPost('/accounts/balance/get', { access_token: accessToken })
+      for (const acc of balanceData.accounts ?? []) {
+        const supabaseAccId = accountMap.get(acc.account_id)
+        if (!supabaseAccId) continue
+        const bal = acc.balances?.current ?? 0
+        const isCredit = acc.type === 'credit' || acc.type === 'loan'
+        const balance = isCredit ? -Math.abs(bal) : bal
+        await supabase
+          .from('accounts')
+          .update({ current_balance: balance, updated_at: new Date().toISOString() })
+          .eq('id', supabaseAccId)
+        console.log(`Balance refreshed for account ${supabaseAccId}: ${balance}`)
+      }
+    } catch (e) {
+      // Non-critical — sync still succeeded, balance will update on next sync
+      console.warn('Balance refresh failed (non-critical):', e)
+    }
+  }
 
   return { added, modified, removed }
 }

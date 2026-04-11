@@ -126,7 +126,13 @@ class AccountService {
 
   async deactivateAccount(id: number): Promise<void> {
     const supabase = getSupabase()
-    // Hard delete — removes the account completely
+    // Null out account_id on transactions first to avoid FK violation
+    const { error: txError } = await supabase
+      .from('transactions')
+      .update({ account_id: null })
+      .eq('account_id', id)
+    if (txError) throw new Error(txError.message)
+    // Hard delete the account
     const { error } = await supabase
       .from('accounts').delete().eq('id', id)
     if (error) throw new Error(error.message)

@@ -8,26 +8,34 @@
 --   type=1 (Income)  → adds to balance
 --   type=2 (Expense) → subtracts from balance
 -- Only completed transactions (status=0) affect the balance.
+-- NOTE: Plaid-linked accounts (description contains '[plaid:') are excluded —
+--       their balance is managed exclusively by the Plaid sync process.
 -- ============================================================
 
 create or replace function update_account_balance()
 returns trigger language plpgsql security definer as $$
 declare
-  v_delta numeric(18,2) := 0;
+  v_delta      numeric(18,2) := 0;
+  v_is_plaid   boolean := false;
 begin
 
   -- ── DELETE: reverse the old transaction's effect ──────────────────────────
   if (TG_OP = 'DELETE') then
     if OLD.account_id is not null and OLD.status = 0 then
-      if OLD.type = 1 then
-        v_delta := -OLD.amount;
-      else
-        v_delta := OLD.amount;
+      -- Skip Plaid-linked accounts
+      select (description like '%[plaid:%') into v_is_plaid
+        from accounts where id = OLD.account_id;
+      if not v_is_plaid then
+        if OLD.type = 1 then
+          v_delta := -OLD.amount;
+        else
+          v_delta := OLD.amount;
+        end if;
+        update accounts
+          set current_balance = current_balance + v_delta,
+              updated_at = now()
+          where id = OLD.account_id;
       end if;
-      update accounts
-        set current_balance = current_balance + v_delta,
-            updated_at = now()
-        where id = OLD.account_id;
     end if;
     return OLD;
   end if;
@@ -35,15 +43,20 @@ begin
   -- ── INSERT: apply the new transaction ─────────────────────────────────────
   if (TG_OP = 'INSERT') then
     if NEW.account_id is not null and NEW.status = 0 then
-      if NEW.type = 1 then
-        v_delta := NEW.amount;
-      else
-        v_delta := -NEW.amount;
+      -- Skip Plaid-linked accounts
+      select (description like '%[plaid:%') into v_is_plaid
+        from accounts where id = NEW.account_id;
+      if not v_is_plaid then
+        if NEW.type = 1 then
+          v_delta := NEW.amount;
+        else
+          v_delta := -NEW.amount;
+        end if;
+        update accounts
+          set current_balance = current_balance + v_delta,
+              updated_at = now()
+          where id = NEW.account_id;
       end if;
-      update accounts
-        set current_balance = current_balance + v_delta,
-            updated_at = now()
-        where id = NEW.account_id;
     end if;
     return NEW;
   end if;
@@ -52,27 +65,36 @@ begin
   if (TG_OP = 'UPDATE') then
     -- Reverse old
     if OLD.account_id is not null and OLD.status = 0 then
-      if OLD.type = 1 then
-        v_delta := -OLD.amount;
-      else
-        v_delta := OLD.amount;
+      select (description like '%[plaid:%') into v_is_plaid
+        from accounts where id = OLD.account_id;
+      if not v_is_plaid then
+        if OLD.type = 1 then
+          v_delta := -OLD.amount;
+        else
+          v_delta := OLD.amount;
+        end if;
+        update accounts
+          set current_balance = current_balance + v_delta,
+              updated_at = now()
+          where id = OLD.account_id;
       end if;
-      update accounts
-        set current_balance = current_balance + v_delta,
-            updated_at = now()
-        where id = OLD.account_id;
     end if;
     -- Apply new
+    v_is_plaid := false;
     if NEW.account_id is not null and NEW.status = 0 then
-      if NEW.type = 1 then
-        v_delta := NEW.amount;
-      else
-        v_delta := -NEW.amount;
+      select (description like '%[plaid:%') into v_is_plaid
+        from accounts where id = NEW.account_id;
+      if not v_is_plaid then
+        if NEW.type = 1 then
+          v_delta := NEW.amount;
+        else
+          v_delta := -NEW.amount;
+        end if;
+        update accounts
+          set current_balance = current_balance + v_delta,
+              updated_at = now()
+          where id = NEW.account_id;
       end if;
-      update accounts
-        set current_balance = current_balance + v_delta,
-            updated_at = now()
-        where id = NEW.account_id;
     end if;
     return NEW;
   end if;
@@ -89,8 +111,8 @@ create trigger trg_update_account_balance
   for each row execute procedure update_account_balance();
 
 -- ============================================================
--- OPTIONAL: Recalculate all balances from scratch
--- Run this once after creating the trigger to fix existing data
+-- OPTIONAL: Recalculate balances for non-Plaid accounts only
+-- Run this once after updating the trigger to fix existing data
 -- ============================================================
 update accounts a
 set current_balance = a.initial_balance + coalesce((
@@ -99,4 +121,5 @@ set current_balance = a.initial_balance + coalesce((
   where t.account_id = a.id
     and t.status = 0
 ), 0),
-updated_at = now();
+updated_at = now()
+where a.description not like '%[plaid:%' or a.description is null;

@@ -44,8 +44,19 @@ function getEdgeFunctionUrl(): string {
 
 async function callEdgeFunction(action: string, payload?: Record<string, unknown>) {
   const supabase = getSupabase()
-  const { data: { session } } = await supabase.auth.getSession()
+
+  // Always refresh the session before calling the edge function
+  // to avoid 401s when the JWT has expired (e.g. user spent time in Plaid Link UI)
+  let session = (await supabase.auth.getSession()).data.session
   if (!session) throw new Error('No hay sesión activa.')
+
+  // If token expires in less than 60 seconds, force a refresh now
+  const expiresAt = session.expires_at ?? 0
+  const nowSecs   = Math.floor(Date.now() / 1000)
+  if (expiresAt - nowSecs < 60) {
+    const { data: refreshed } = await supabase.auth.refreshSession()
+    if (refreshed.session) session = refreshed.session
+  }
 
   const res = await fetch(getEdgeFunctionUrl(), {
     method: 'POST',
