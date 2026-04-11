@@ -38,3 +38,8 @@ ALTER TABLE plaid_items
 -- ID de transacción de Plaid para manejar updates y deletes
 ALTER TABLE transactions
   ADD COLUMN IF NOT EXISTS plaid_transaction_id text unique;
+
+-- Fecha mínima de sincronización elegida por el usuario al conectar el banco
+-- Todas las sincronizaciones futuras ignorarán transacciones anteriores a esta fecha
+ALTER TABLE plaid_items
+  ADD COLUMN IF NOT EXISTS sync_start_date date;

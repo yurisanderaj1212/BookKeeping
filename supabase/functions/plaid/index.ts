@@ -62,13 +62,12 @@ Deno.serve(async (req) => {
     if (webhook_type === 'TRANSACTIONS') {
       const { data: itemRow } = await adminSupabase
         .from('plaid_items')
-        .select('id, user_id, plaid_access_token')
+        .select('id, user_id, plaid_access_token, sync_start_date')
         .eq('plaid_item_id', plaidItemId)
         .single()
 
       if (itemRow && ['SYNC_UPDATES_AVAILABLE', 'INITIAL_UPDATE', 'HISTORICAL_UPDATE'].includes(webhook_code)) {
         try {
-          // Rebuild accountMap from existing accounts in DB
           const { data: existingAccounts } = await adminSupabase
             .from('accounts')
             .select('id, description')
@@ -87,6 +86,7 @@ Deno.serve(async (req) => {
             itemRow.user_id,
             adminSupabase,
             accountMap,
+            itemRow.sync_start_date ?? null,
           )
           console.log(`Auto-sync complete: +${result.added} ~${result.modified} -${result.removed}`)
         } catch (err) {
@@ -175,6 +175,7 @@ Deno.serve(async (req) => {
           institution_id:      institutionId,
           institution_name:    institutionName,
           supabase_account_id: primaryAccountId,
+          sync_start_date:     startDate ?? null,
         })
         .select('id')
         .single()
@@ -230,7 +231,7 @@ Deno.serve(async (req) => {
 
       const { data: item, error } = await supabase
         .from('plaid_items')
-        .select('plaid_access_token')
+        .select('plaid_access_token, sync_start_date')
         .eq('id', itemId)
         .single()
 
@@ -258,7 +259,7 @@ Deno.serve(async (req) => {
           .eq('id', itemId)
       }
 
-      const result = await syncTransactions(item.plaid_access_token, itemId, user.id, adminSupabase, accountMap)
+      const result = await syncTransactions(item.plaid_access_token, itemId, user.id, adminSupabase, accountMap, item.sync_start_date ?? null)
       return json(result)
     }
 
