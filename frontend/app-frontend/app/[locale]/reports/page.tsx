@@ -29,11 +29,7 @@ const reportTemplates: ReportTemplate[] = [
 const SESSION_KEY = 'reports_date_state'
 
 function getInitialDates(): { start: string | null; end: string | null } {
-  if (typeof window === 'undefined') return { start: null, end: null }
-  try {
-    const saved = sessionStorage.getItem(SESSION_KEY)
-    if (saved) return JSON.parse(saved)
-  } catch { /* ignore */ }
+  // Always start fresh — no preselection on page load
   return { start: null, end: null }
 }
 
@@ -58,8 +54,12 @@ export default function ReportsPage() {
     } catch { /* ignore */ }
   }, [startDate, endDate])
 
-  // Reactive transaction counter
+  // Reactive transaction counter — only fetch when user has selected dates
   useEffect(() => {
+    if (!startDate && !endDate) {
+      setTotalTransactions(0)
+      return
+    }
     getTransactionSummary({
       startDate: startDate ?? undefined,
       endDate:   endDate   ?? undefined,
@@ -72,12 +72,15 @@ export default function ReportsPage() {
 
   const handleGenerateReport = (reportId: string) => {
     const params = new URLSearchParams()
+    // Always pass the exact date range the user selected
     if (startDate) params.set('startDate', startDate)
     if (endDate)   params.set('endDate',   endDate)
-    // Derive period hint for sub-reports
+    // Pass period as 'custom' when user picked a range, otherwise default to month
     params.set('period', startDate && endDate ? 'custom' : 'month')
-    params.set('year',  String(new Date().getFullYear()))
-    params.set('month', String(new Date().getMonth() + 1).padStart(2, '0'))
+    // Pass year/month derived from startDate for sub-reports that need them
+    const ref = startDate ? new Date(startDate + 'T00:00:00') : new Date()
+    params.set('year',  String(ref.getFullYear()))
+    params.set('month', String(ref.getMonth() + 1).padStart(2, '0'))
 
     switch (reportId) {
       case 'profit-loss':         router.push(`/reports/financial-summary?${params}`);    break
@@ -91,8 +94,8 @@ export default function ReportsPage() {
       const fmt = (s: string) => new Date(s + 'T00:00:00').toLocaleDateString(undefined, { day: 'numeric', month: 'short', year: 'numeric' })
       return `${fmt(startDate)} – ${fmt(endDate)}`
     }
-    if (startDate) return `From ${new Date(startDate + 'T00:00:00').toLocaleDateString(undefined, { day: 'numeric', month: 'short', year: 'numeric' })}`
-    return t('availableReports')
+    if (startDate) return new Date(startDate + 'T00:00:00').toLocaleDateString(undefined, { day: 'numeric', month: 'short', year: 'numeric' })
+    return '—'
   }
 
   const ReportCard = ({ report }: { report: ReportTemplate }) => {
@@ -109,7 +112,7 @@ export default function ReportsPage() {
         <div className="mb-6">
           <span className="inline-flex items-center text-sm text-gray-500 dark:text-gray-400 bg-gray-50 dark:bg-gray-800 px-3 py-1 rounded-full">
             <Clock className="w-3 h-3 mr-1" />
-            {startDate && endDate ? getPeriodLabel() : t('monthly')}
+            {startDate && endDate ? getPeriodLabel() : '—'}
           </span>
         </div>
         <button
@@ -190,7 +193,7 @@ export default function ReportsPage() {
                 <div>
                   <p className="text-xs text-gray-600 dark:text-gray-400">{t('selectedPeriod')}</p>
                   <p className="text-base sm:text-lg font-bold text-gray-900 dark:text-gray-100 truncate max-w-[140px]">
-                    {startDate && endDate ? getPeriodLabel() : t('monthly')}
+                    {startDate && endDate ? getPeriodLabel() : '—'}
                   </p>
                 </div>
                 <Calendar className="w-6 h-6 sm:w-8 sm:h-8 text-green-600 shrink-0" />

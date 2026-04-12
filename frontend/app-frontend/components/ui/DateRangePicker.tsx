@@ -213,27 +213,26 @@ export default function DateRangePicker({ startDate, endDate, onChange }: DateRa
           {/* Quick presets */}
           <div className="flex gap-1.5 mt-3 flex-wrap">
             {[
-              { label: 'Today',      fn: () => { const d = fmt(now); onChange(d, d); setOpen(false) } },
-              { label: 'This week',  fn: () => {
+              { labelKey: 'thisWeek',  fn: () => {
                 const sun = new Date(now); sun.setDate(now.getDate() - now.getDay())
                 const sat = new Date(sun); sat.setDate(sun.getDate() + 6)
                 onChange(fmt(sun), fmt(sat)); setOpen(false)
               }},
-              { label: 'This month', fn: () => {
+              { labelKey: 'thisMonth', fn: () => {
                 const s = new Date(now.getFullYear(), now.getMonth(), 1)
                 const e = new Date(now.getFullYear(), now.getMonth() + 1, 0)
                 onChange(fmt(s), fmt(e)); setOpen(false)
               }},
-              { label: 'This year',  fn: () => {
+              { labelKey: 'thisYear',  fn: () => {
                 onChange(`${now.getFullYear()}-01-01`, `${now.getFullYear()}-12-31`); setOpen(false)
               }},
             ].map(p => (
               <button
-                key={p.label}
+                key={p.labelKey}
                 onClick={p.fn}
                 className="text-[10px] px-2 py-1 rounded-md bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400 hover:bg-primary-100 dark:hover:bg-primary-900/30 hover:text-primary-600 dark:hover:text-primary-400 transition-colors"
               >
-                {p.label}
+                {t(p.labelKey as any)}
               </button>
             ))}
           </div>
