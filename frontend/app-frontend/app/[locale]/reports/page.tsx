@@ -39,7 +39,27 @@ export default function ReportsPage() {
   // TODOS LOS HOOKS AL INICIO
   const { user, isLoading, isAuthenticated, logout } = useAuth()
   const t = useTranslations('reports')
-  const [selectedPeriod, setSelectedPeriod] = useState<'week' | 'month' | 'year'>('week')
+  const SESSION_KEY = 'reports_period_state'
+  const getInitialState = () => {
+    if (typeof window === 'undefined') return null
+    try {
+      const saved = sessionStorage.getItem(SESSION_KEY)
+      if (saved) return JSON.parse(saved)
+    } catch { /* ignore */ }
+    return null
+  }
+  const savedState = getInitialState()
+
+  const now = new Date()
+  const defaultWeek = (() => {
+    const firstDay = new Date(now.getFullYear(), now.getMonth(), 1)
+    const firstSunday = new Date(firstDay)
+    firstSunday.setDate(firstDay.getDate() - firstDay.getDay())
+    const diffDays = Math.floor((now.getTime() - firstSunday.getTime()) / 86400000)
+    return String(Math.floor(diffDays / 7) + 1)
+  })()
+
+  const [selectedPeriod, setSelectedPeriod] = useState<'week' | 'month' | 'year'>(savedState?.period ?? 'week')
 
   // Onboarding hook
   const {
@@ -49,16 +69,9 @@ export default function ReportsPage() {
     closeOnboarding,
     completeOnboarding,
   } = useOnboarding()
-  const [selectedYear, setSelectedYear] = useState(String(new Date().getFullYear()))
-  const [selectedMonth, setSelectedMonth] = useState(String(new Date().getMonth() + 1).padStart(2, '0'))
-  const [selectedWeek, setSelectedWeek] = useState(() => {
-    const now = new Date()
-    const firstDay = new Date(now.getFullYear(), now.getMonth(), 1)
-    const firstSunday = new Date(firstDay)
-    firstSunday.setDate(firstDay.getDate() - firstDay.getDay())
-    const diffDays = Math.floor((now.getTime() - firstSunday.getTime()) / 86400000)
-    return String(Math.floor(diffDays / 7) + 1)
-  })
+  const [selectedYear, setSelectedYear] = useState(savedState?.year ?? String(now.getFullYear()))
+  const [selectedMonth, setSelectedMonth] = useState(savedState?.month ?? String(now.getMonth() + 1).padStart(2, '0'))
+  const [selectedWeek, setSelectedWeek] = useState(savedState?.week ?? defaultWeek)
   const getWeeksInMonth = (year: number, month: number) => {
     const firstDay = new Date(year, month - 1, 1)
     const lastDay  = new Date(year, month, 0)
@@ -82,11 +95,53 @@ export default function ReportsPage() {
 
   const [totalTransactions, setTotalTransactions] = useState<number>(0)
 
+  // Persist period state so it survives sub-report navigation
   useEffect(() => {
-    getTransactionSummary({ period: 'month' })
+    try {
+      sessionStorage.setItem(SESSION_KEY, JSON.stringify({
+        period: selectedPeriod, year: selectedYear, month: selectedMonth, week: selectedWeek,
+      }))
+    } catch { /* ignore */ }
+  }, [selectedPeriod, selectedYear, selectedMonth, selectedWeek])
+
+  // Reactive counter — updates whenever any filter changes
+  useEffect(() => {
+    const y = parseInt(selectedYear)
+    const m = parseInt(selectedMonth)
+    const wk = parseInt(selectedWeek)
+    const fmt = (d: Date) => d.toISOString().split('T')[0]
+
+    let startDate: string | undefined
+    let endDate: string | undefined
+
+    if (selectedPeriod === 'week') {
+      const firstDay = new Date(y, m - 1, 1)
+      const firstSunday = new Date(firstDay)
+      firstSunday.setDate(firstDay.getDate() - firstDay.getDay())
+      const start = new Date(firstSunday)
+      start.setDate(firstSunday.getDate() + (wk - 1) * 7)
+      const end = new Date(start)
+      end.setDate(start.getDate() + 6)
+      startDate = fmt(start)
+      endDate   = fmt(end)
+    } else if (selectedPeriod === 'month') {
+      startDate = fmt(new Date(y, m - 1, 1))
+      endDate   = fmt(new Date(y, m, 0))
+    } else {
+      startDate = `${y}-01-01`
+      endDate   = `${y}-12-31`
+    }
+
+    getTransactionSummary({
+      period: selectedPeriod,
+      year: y,
+      month: selectedPeriod === 'year' ? undefined : m,
+      startDate,
+      endDate,
+    })
       .then((d: any) => setTotalTransactions(d?.totalTransactions ?? 0))
       .catch(() => {})
-  }, [])
+  }, [selectedPeriod, selectedYear, selectedMonth, selectedWeek])
 
   if (!isAuthenticated && !isLoading) return null
 
