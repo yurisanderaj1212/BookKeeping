@@ -8,6 +8,7 @@ import { useAuth } from '@/hooks/useAuth'
 import { useNotifications } from '@/hooks/useNotifications'
 import AppLogo from '@/components/ui/AppLogo'
 import LanguageSwitcher from '@/components/ui/LanguageSwitcher'
+import AuthFlipCard from '@/components/auth/AuthFlipCard'
 
 // Inline wrapper needed because LanguageSwitcher uses Suspense internally
 function LanguageSwitcherInline() {
@@ -370,96 +371,42 @@ function LoginForm() {
         </div>
       </div>
 
-      {/* Right Column - Branding */}
+      {/* Right Column - Dark with FlipCard */}
       <div className="hidden lg:block relative w-0 flex-1">
-        <div className="absolute inset-0 bg-linear-to-br from-primary-500 via-primary-600 to-primary-700 flex flex-col justify-center items-center p-12">
-          <div className="max-w-md text-center text-white">
-            {/* Badge */}
-            <div className="inline-flex items-center px-3 py-1.5 bg-white/20 rounded-full text-sm font-medium mb-4 text-white">
-              <svg className="w-4 h-4 mr-2 text-yellow-300" fill="currentColor" viewBox="0 0 20 20">
-                <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+        <div className="absolute inset-0 bg-[#0c0e12] flex flex-col justify-center items-center p-12 gap-10">
+          {/* Ambient glows */}
+          <div className="absolute top-0 left-0 w-80 h-80 bg-[#81ecff]/6 rounded-full blur-[100px] pointer-events-none" />
+          <div className="absolute bottom-0 right-0 w-80 h-80 bg-[#bf81ff]/6 rounded-full blur-[100px] pointer-events-none" />
+
+          {/* Flip card */}
+          <div className="relative z-10 w-full max-w-sm">
+            <AuthFlipCard />
+          </div>
+
+          {/* Text below */}
+          <div className="relative z-10 text-center max-w-sm">
+            <h3
+              className="text-2xl font-bold text-white mb-3"
+              style={{ fontFamily: "'Space Grotesk', sans-serif" }}
+            >
+              {t('panelTitle')}
+            </h3>
+            <p className="text-white/50 text-sm leading-relaxed">{t('panelSubtitle')}</p>
+          </div>
+
+          {/* Security badges */}
+          <div className="relative z-10 flex items-center gap-6 text-white/30">
+            <div className="flex items-center gap-1.5">
+              <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
               </svg>
-              {t('panelBadge')}
+              <span className="text-xs uppercase tracking-widest">{t('panelSsl')}</span>
             </div>
-
-            <div className="mb-6">
-              <h3 className="text-2xl font-bold mb-3">{t('panelTitle')}</h3>
-              <p className="text-white/80 text-base leading-relaxed mb-6">
-                {t('panelSubtitle')}
-              </p>
-            </div>
-
-            {/* Features List */}
-            <div className="space-y-3 mb-6">
-              <div className="flex items-start text-left">
-                <div className="shrink-0 w-7 h-7 bg-white/20 rounded-lg flex items-center justify-center mr-3">
-                  <svg className="w-3.5 h-3.5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
-                  </svg>
-                </div>
-                <div>
-                  <h4 className="font-semibold text-sm">{t('panelFeature1Title')}</h4>
-                  <p className="text-white/80 text-xs">{t('panelFeature1Desc')}</p>
-                </div>
-              </div>
-
-              <div className="flex items-start text-left">
-                <div className="shrink-0 w-7 h-7 bg-white/20 rounded-lg flex items-center justify-center mr-3">
-                  <svg className="w-3.5 h-3.5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
-                  </svg>
-                </div>
-                <div>
-                  <h4 className="font-semibold text-sm">{t('panelFeature2Title')}</h4>
-                  <p className="text-white/80 text-xs">{t('panelFeature2Desc')}</p>
-                </div>
-              </div>
-
-              <div className="flex items-start text-left">
-                <div className="shrink-0 w-7 h-7 bg-white/20 rounded-lg flex items-center justify-center mr-3">
-                  <svg className="w-3.5 h-3.5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                  </svg>
-                </div>
-                <div>
-                  <h4 className="font-semibold text-sm">{t('panelFeature3Title')}</h4>
-                  <p className="text-white/80 text-xs">{t('panelFeature3Desc')}</p>
-                </div>
-              </div>
-            </div>
-
-            {/* Testimonial */}
-            <div className="bg-white/15 rounded-xl p-4 mb-4 border border-white/20">
-              <div className="flex items-center justify-center space-x-1 mb-3">
-                {[...Array(5)].map((_, i) => (
-                  <svg key={i} className="w-4 h-4 text-yellow-400" fill="currentColor" viewBox="0 0 20 20">
-                    <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-                  </svg>
-                ))}
-              </div>
-              <p className="text-white/90 text-xs italic mb-2 text-center">
-                &ldquo;{t('panelTestimonial')}&rdquo;
-              </p>
-              <div className="text-center">
-                <p className="text-white font-semibold text-xs">{t('panelTestimonialName')}</p>
-                <p className="text-white/70 text-xs">{t('panelTestimonialRole')}</p>
-              </div>
-            </div>
-
-            {/* Security badges */}
-            <div className="flex items-center justify-center space-x-4 text-white/70">
-              <div className="flex items-center space-x-1.5">
-                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
-                </svg>
-                <span className="text-xs">{t('panelSsl')}</span>
-              </div>
-              <div className="flex items-center space-x-1.5">
-                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-                </svg>
-                <span className="text-xs">{t('panelUptime')}</span>
-              </div>
+            <div className="flex items-center gap-1.5">
+              <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+              <span className="text-xs uppercase tracking-widest">{t('panelUptime')}</span>
             </div>
           </div>
         </div>

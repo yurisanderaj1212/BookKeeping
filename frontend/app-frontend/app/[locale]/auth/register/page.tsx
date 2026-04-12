@@ -8,6 +8,7 @@ import { useAuth } from '@/hooks/useAuth'
 import { useNotifications } from '@/hooks/useNotifications'
 import AppLogo from '@/components/ui/AppLogo'
 import LanguageSwitcher from '@/components/ui/LanguageSwitcher'
+import AuthFlipCard from '@/components/auth/AuthFlipCard'
 
 // Lista de empleos comunes en Estados Unidos
 const US_JOBS = [
@@ -268,91 +269,35 @@ export default function RegisterPage() {
 
   return (
     <div className="min-h-screen bg-slate-50 dark:bg-gray-950 flex">
-      {/* Left Column - Branding (Inverted) */}
+      {/* Left Column - Dark with FlipCard */}
       <div className="hidden lg:block relative w-0 flex-1">
-        <div className="absolute inset-0 bg-linear-to-br from-primary-500 via-primary-600 to-primary-700 flex flex-col justify-center items-center p-12">
-          <div className="max-w-md text-center text-white">
-            {/* Badge */}
-            <div className="inline-flex items-center px-3 py-1.5 bg-white/20 rounded-full text-xs font-medium mb-4 text-white">
-              <svg className="w-3 h-3 mr-2 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-              </svg>
-              {t('trialBadge')}
-            </div>
+        <div className="absolute inset-0 bg-[#0c0e12] flex flex-col justify-center items-center p-12 gap-10">
+          {/* Ambient glows */}
+          <div className="absolute top-0 left-0 w-80 h-80 bg-[#81ecff]/6 rounded-full blur-[100px] pointer-events-none" />
+          <div className="absolute bottom-0 right-0 w-80 h-80 bg-[#bf81ff]/6 rounded-full blur-[100px] pointer-events-none" />
 
-            <div className="mb-6">
-              <h3 className="text-2xl font-bold mb-3">{t('brandingTitle')}</h3>
-              <p className="text-primary-100 text-base leading-relaxed mb-6">
-                {t('brandingSubtitle')}
-              </p>
-            </div>
+          {/* Flip card */}
+          <div className="relative z-10 w-full max-w-sm">
+            <AuthFlipCard />
+          </div>
 
-            {/* Features List */}
-            <div className="space-y-3 mb-6">
-              <div className="flex items-start text-left">
-                <div className="shrink-0 w-7 h-7 bg-white/20 rounded-lg flex items-center justify-center mr-3">
-                  <svg className="w-3 h-3 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                  </svg>
-                </div>
-                <div>
-                  <h4 className="font-semibold text-sm">{t('feature1Title')}</h4>
-                  <p className="text-white/80 text-xs">{t('feature1Desc')}</p>
-                </div>
-              </div>
+          {/* Text below */}
+          <div className="relative z-10 text-center max-w-sm">
+            <h3
+              className="text-2xl font-bold text-white mb-3"
+              style={{ fontFamily: "'Space Grotesk', sans-serif" }}
+            >
+              {t('brandingTitle')}
+            </h3>
+            <p className="text-white/50 text-sm leading-relaxed">{t('brandingSubtitle')}</p>
+          </div>
 
-              <div className="flex items-start text-left">
-                <div className="shrink-0 w-7 h-7 bg-white/20 rounded-lg flex items-center justify-center mr-3">
-                  <svg className="w-3 h-3 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m5.99-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                  </svg>
-                </div>
-                <div>
-                  <h4 className="font-semibold text-sm">{t('feature2Title')}</h4>
-                  <p className="text-white/80 text-xs">{t('feature2Desc')}</p>
-                </div>
-              </div>
-
-              <div className="flex items-start text-left">
-                <div className="shrink-0 w-7 h-7 bg-white/20 rounded-lg flex items-center justify-center mr-3">
-                  <svg className="w-3 h-3 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M18.364 5.636l-3.536 3.536m0 5.656l3.536 3.536M9.172 9.172L5.636 5.636m3.536 9.192L5.636 18.364M12 2.25a9.75 9.75 0 109.75 9.75A9.75 9.75 0 0012 2.25z" />
-                  </svg>
-                </div>
-                <div>
-                  <h4 className="font-semibold text-sm">{t('feature3Title')}</h4>
-                  <p className="text-white/80 text-xs">{t('feature3Desc')}</p>
-                </div>
-              </div>
-
-              <div className="flex items-start text-left">
-                <div className="shrink-0 w-7 h-7 bg-white/20 rounded-lg flex items-center justify-center mr-3">
-                  <svg className="w-3 h-3 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
-                  </svg>
-                </div>
-                <div>
-                  <h4 className="font-semibold text-sm">{t('feature4Title')}</h4>
-                  <p className="text-white/80 text-xs">{t('feature4Desc')}</p>
-                </div>
-              </div>
-            </div>
-
-            {/* Stats */}
-            <div className="grid grid-cols-3 gap-4 text-center">
-              <div>
-                <div className="text-xl font-bold">10K+</div>
-                <div className="text-primary-200 text-xs">{t('statUsers')}</div>
-              </div>
-              <div>
-                <div className="text-xl font-bold">99.9%</div>
-                <div className="text-primary-200 text-xs">{t('statUptime')}</div>
-              </div>
-              <div>
-                <div className="text-xl font-bold">4.9</div>
-                <div className="text-primary-200 text-xs">{t('statRating')}</div>
-              </div>
-            </div>
+          {/* Trial badge */}
+          <div className="relative z-10 flex items-center gap-2 px-4 py-2 rounded-full border border-[#81ecff]/20 bg-[#81ecff]/5">
+            <svg className="w-3.5 h-3.5 text-[#81ecff]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+            <span className="text-[#81ecff] text-xs font-bold uppercase tracking-widest">{t('trialBadge')}</span>
           </div>
         </div>
       </div>
