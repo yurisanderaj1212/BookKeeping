@@ -48,7 +48,7 @@ export default function Pricing() {
         {/* 3D stacked cards — perspective container */}
         <div
           className="pricing-stack flex flex-col lg:flex-row justify-center items-center gap-8 lg:gap-0 lg:h-[680px]"
-          style={{ perspective: '2500px' }}
+          style={{ perspective: '2500px', transformStyle: 'preserve-3d' }}
         >
           {PLANS.map((plan, idx) => {
             const isCenter = plan.popular
@@ -63,21 +63,16 @@ export default function Pricing() {
                 }`}
                 style={{
                   background: isCenter
-                    ? 'rgba(23, 26, 31, 0.95)'
-                    : 'rgba(17, 19, 24, 0.85)',
-                  backdropFilter: 'blur(24px)',
+                    ? 'rgb(28, 32, 40)'
+                    : 'rgb(20, 23, 30)',
                   border: isCenter
                     ? '1px solid rgba(129,236,255,0.3)'
                     : '1px solid rgba(255,255,255,0.06)',
                   boxShadow: isCenter
                     ? '0 0 80px rgba(129,236,255,0.12)'
                     : 'none',
-                  // 3D initial positions on desktop
-                  transform: isLeft
-                    ? undefined
-                    : isRight
-                    ? undefined
-                    : undefined,
+                  willChange: 'transform',
+                  backfaceVisibility: 'hidden',
                 }}
               >
                 {/* Popular badge */}
