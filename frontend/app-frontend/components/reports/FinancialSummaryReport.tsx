@@ -30,8 +30,9 @@ export default function FinancialSummaryReport({ period, year, month, startDate,
       period: period as ReportParams['period'],
       year: parseInt(year),
       month: period === 'year' ? undefined : parseInt(month),
-      startDate: period === 'week' ? startDate : undefined,
-      endDate:   period === 'week' ? endDate   : undefined,
+      // Always pass startDate/endDate when available — they take priority
+      startDate: startDate || undefined,
+      endDate:   endDate   || undefined,
     }
     getFinancialSummary(params)
       .then(setData)
@@ -40,6 +41,10 @@ export default function FinancialSummaryReport({ period, year, month, startDate,
   }, [period, year, month, startDate, endDate])
 
   const getPeriodLabel = () => {
+    if (startDate && endDate) {
+      const fmt = (s: string) => new Date(s + 'T00:00:00').toLocaleDateString(undefined, { day: 'numeric', month: 'short', year: 'numeric' })
+      return `${fmt(startDate)} – ${fmt(endDate)}`
+    }
     if (period === 'week') return t('currentWeek')
     if (period === 'month') return `${tMonths(String(parseInt(month)) as any)} ${year}`
     return `${t('year')} ${year}`

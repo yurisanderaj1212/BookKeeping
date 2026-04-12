@@ -1,7 +1,7 @@
 import { getSupabase } from '@/lib/supabaseClient'
 
 export interface ReportParams {
-  period?: 'week' | 'month' | 'year'
+  period?: 'week' | 'month' | 'year' | 'custom'
   startDate?: string
   endDate?: string
   year?: number
