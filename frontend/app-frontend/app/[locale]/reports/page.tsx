@@ -5,205 +5,94 @@ import { useRouter } from '@/i18n/routing'
 import { useAuth } from '@/hooks/useAuth'
 import PageLayout from '@/components/ui/PageLayout'
 import MobileMenuButton from '@/components/ui/MobileMenuButton'
-import { 
-  Calendar, 
-  FileText, 
-  TrendingUp,
-  BarChart3,
-  FileBarChart,
-  Clock
-} from 'lucide-react'
+import { FileText, TrendingUp, BarChart3, FileBarChart, Clock, Calendar } from 'lucide-react'
 import Sidebar from '@/components/dashboard/Sidebar'
 import OnboardingTour from '@/components/onboarding/OnboardingTour'
 import { useOnboarding } from '@/hooks/useOnboarding'
 import { useTranslations } from 'next-intl'
 import { getTransactionSummary } from '@/services/reportService'
-import { getWeeksForMonth, getWeekLabel } from '@/lib/weekUtils'
+import DateRangePicker from '@/components/ui/DateRangePicker'
 
 interface ReportTemplate {
   id: string
   nameKey: string
   descKey: string
   icon: React.ComponentType<{ className?: string }>
-  frequency: 'daily' | 'weekly' | 'monthly' | 'quarterly' | 'yearly'
 }
 
 const reportTemplates: ReportTemplate[] = [
-  { id: 'profit-loss',         nameKey: 'financialSummary',    descKey: 'financialSummaryDesc',    icon: TrendingUp,  frequency: 'monthly' },
-  { id: 'transaction-summary', nameKey: 'transactionSummary',  descKey: 'transactionSummaryDesc',  icon: FileBarChart,frequency: 'weekly'  },
-  { id: 'week-close',          nameKey: 'weekClose',           descKey: 'weekCloseDesc',           icon: Calendar,    frequency: 'weekly'  },
+  { id: 'profit-loss',         nameKey: 'financialSummary',   descKey: 'financialSummaryDesc',   icon: TrendingUp  },
+  { id: 'transaction-summary', nameKey: 'transactionSummary', descKey: 'transactionSummaryDesc', icon: FileBarChart },
+  { id: 'week-close',          nameKey: 'weekClose',          descKey: 'weekCloseDesc',          icon: Calendar    },
 ]
+
+const SESSION_KEY = 'reports_date_state'
+
+function getInitialDates(): { start: string | null; end: string | null } {
+  if (typeof window === 'undefined') return { start: null, end: null }
+  try {
+    const saved = sessionStorage.getItem(SESSION_KEY)
+    if (saved) return JSON.parse(saved)
+  } catch { /* ignore */ }
+  return { start: null, end: null }
+}
 
 export default function ReportsPage() {
   const router = useRouter()
-  
-  // TODOS LOS HOOKS AL INICIO
-  const { user, isLoading, isAuthenticated, logout } = useAuth()
+  const { isLoading, isAuthenticated, logout } = useAuth()
   const t = useTranslations('reports')
-  const SESSION_KEY = 'reports_period_state'
-  const getInitialState = () => {
-    if (typeof window === 'undefined') return null
-    try {
-      const saved = sessionStorage.getItem(SESSION_KEY)
-      if (saved) return JSON.parse(saved)
-    } catch { /* ignore */ }
-    return null
-  }
-  const savedState = getInitialState()
-
-  const now = new Date()
-  const defaultWeek = (() => {
-    const firstDay = new Date(now.getFullYear(), now.getMonth(), 1)
-    const firstSunday = new Date(firstDay)
-    firstSunday.setDate(firstDay.getDate() - firstDay.getDay())
-    const diffDays = Math.floor((now.getTime() - firstSunday.getTime()) / 86400000)
-    return String(Math.floor(diffDays / 7) + 1)
-  })()
-
-  const [selectedPeriod, setSelectedPeriod] = useState<'week' | 'month' | 'year'>(savedState?.period ?? 'week')
-
-  // Onboarding hook
   const {
-    isOnboardingOpen,
-    currentStep: onboardingStep,
-    setStep: setOnboardingStep,
-    closeOnboarding,
-    completeOnboarding,
+    isOnboardingOpen, currentStep: onboardingStep,
+    setStep: setOnboardingStep, closeOnboarding, completeOnboarding,
   } = useOnboarding()
-  const [selectedYear, setSelectedYear] = useState(savedState?.year ?? String(now.getFullYear()))
-  const [selectedMonth, setSelectedMonth] = useState(savedState?.month ?? String(now.getMonth() + 1).padStart(2, '0'))
-  const [selectedWeek, setSelectedWeek] = useState(savedState?.week ?? defaultWeek)
-  const getWeeksInMonth = (year: number, month: number) =>
-    getWeeksForMonth(year, month).map(w => ({
-      value: w.weekNumber.toString(),
-      label: getWeekLabel(w.startDate, w.endDate),
-    }))
 
+  const initial = getInitialDates()
+  const [startDate, setStartDate] = useState<string | null>(initial.start)
+  const [endDate,   setEndDate]   = useState<string | null>(initial.end)
   const [totalTransactions, setTotalTransactions] = useState<number>(0)
 
-  // Persist period state so it survives sub-report navigation
+  // Persist date range in sessionStorage
   useEffect(() => {
     try {
-      sessionStorage.setItem(SESSION_KEY, JSON.stringify({
-        period: selectedPeriod, year: selectedYear, month: selectedMonth, week: selectedWeek,
-      }))
+      sessionStorage.setItem(SESSION_KEY, JSON.stringify({ start: startDate, end: endDate }))
     } catch { /* ignore */ }
-  }, [selectedPeriod, selectedYear, selectedMonth, selectedWeek])
+  }, [startDate, endDate])
 
-  // Reactive counter — updates whenever any filter changes
+  // Reactive transaction counter
   useEffect(() => {
-    const y = parseInt(selectedYear)
-    const m = parseInt(selectedMonth)
-    const wk = parseInt(selectedWeek)
-    const fmt = (d: Date) => d.toISOString().split('T')[0]
-
-    let startDate: string | undefined
-    let endDate: string | undefined
-
-    if (selectedPeriod === 'week') {
-      const weeks = getWeeksForMonth(y, m)
-      const found = weeks.find(w => w.weekNumber === wk)
-      if (found) {
-        startDate = found.startDate
-        endDate   = found.endDate
-      } else {
-        const firstDay = new Date(y, m - 1, 1)
-        const firstSunday = new Date(firstDay)
-        firstSunday.setDate(firstDay.getDate() - firstDay.getDay())
-        const start = new Date(firstSunday)
-        start.setDate(firstSunday.getDate() + (wk - 1) * 7)
-        const end = new Date(start)
-        end.setDate(start.getDate() + 6)
-        startDate = fmt(start)
-        endDate   = fmt(end)
-      }
-    } else if (selectedPeriod === 'month') {
-      startDate = fmt(new Date(y, m - 1, 1))
-      endDate   = fmt(new Date(y, m, 0))
-    } else {
-      startDate = `${y}-01-01`
-      endDate   = `${y}-12-31`
-    }
-
     getTransactionSummary({
-      period: selectedPeriod,
-      year: y,
-      month: selectedPeriod === 'year' ? undefined : m,
-      startDate,
-      endDate,
+      startDate: startDate ?? undefined,
+      endDate:   endDate   ?? undefined,
     })
       .then((d: any) => setTotalTransactions(d?.totalTransactions ?? 0))
       .catch(() => {})
-  }, [selectedPeriod, selectedYear, selectedMonth, selectedWeek])
+  }, [startDate, endDate])
 
   if (!isAuthenticated && !isLoading) return null
 
-  const handleLogout = async () => {
-    logout() // Usar la función logout del hook useAuth
-  }
-
   const handleGenerateReport = (reportId: string) => {
-    // Calculate week dates using canonical week assignment
-    const getWeekStartEnd = () => {
-      const y = parseInt(selectedYear), m = parseInt(selectedMonth), wk = parseInt(selectedWeek)
-      const weeks = getWeeksForMonth(y, m)
-      const found = weeks.find(w => w.weekNumber === wk)
-      if (found) return { startDate: found.startDate, endDate: found.endDate }
-      // Fallback: compute directly
-      const firstDay = new Date(y, m - 1, 1)
-      const firstSunday = new Date(firstDay)
-      firstSunday.setDate(firstDay.getDate() - firstDay.getDay())
-      const start = new Date(firstSunday); start.setDate(firstSunday.getDate() + (wk - 1) * 7)
-      const end = new Date(start); end.setDate(start.getDate() + 6)
-      return { startDate: start.toISOString().split('T')[0], endDate: end.toISOString().split('T')[0] }
-    }
-    const weekDates = selectedPeriod === 'week' ? getWeekStartEnd() : {}
-    const params = new URLSearchParams({
-      period: selectedPeriod,
-      year: selectedYear,
-      month: selectedMonth,
-      ...weekDates,
-    })
-    
-    // Redirigir solo a reportes que realmente tenemos implementados
+    const params = new URLSearchParams()
+    if (startDate) params.set('startDate', startDate)
+    if (endDate)   params.set('endDate',   endDate)
+    // Derive period hint for sub-reports
+    params.set('period', startDate && endDate ? 'custom' : 'month')
+    params.set('year',  String(new Date().getFullYear()))
+    params.set('month', String(new Date().getMonth() + 1).padStart(2, '0'))
+
     switch (reportId) {
-      case 'profit-loss':
-        router.push(`/reports/financial-summary?${params.toString()}`)
-        break
-      case 'profit-loss-detailed':
-        router.push(`/reports/profit-loss-detailed?${params.toString()}`)
-        break
-      case 'transaction-summary':
-        router.push(`/reports/transaction-summary?${params.toString()}`)
-        break
-      case 'category-breakdown':
-        router.push(`/reports/category-breakdown?${params.toString()}`)
-        break
-      case 'week-close':
-        router.push(`/reports/week-close?${params.toString()}`)
-        break
-      default:
-        break // report not available
+      case 'profit-loss':         router.push(`/reports/financial-summary?${params}`);    break
+      case 'transaction-summary': router.push(`/reports/transaction-summary?${params}`);  break
+      case 'week-close':          router.push(`/reports/week-close?${params}`);           break
     }
   }
-
 
   const getPeriodLabel = () => {
-    switch (selectedPeriod) {
-      case 'week':  return t('thisWeek')
-      case 'month': return `${t(`months.${parseInt(selectedMonth)}` as any)} ${selectedYear}`
-      case 'year':  return `${t('year')} ${selectedYear}`
-      default:      return t('thisWeek')
+    if (startDate && endDate) {
+      const fmt = (s: string) => new Date(s + 'T00:00:00').toLocaleDateString(undefined, { day: 'numeric', month: 'short', year: 'numeric' })
+      return `${fmt(startDate)} – ${fmt(endDate)}`
     }
-  }
-
-  const getFrequencyText = () => {
-    switch (selectedPeriod) {
-      case 'week':  return t('weekly')
-      case 'month': return t('monthly')
-      case 'year':  return t('annual')
-      default:      return t('monthly')
-    }
+    if (startDate) return `From ${new Date(startDate + 'T00:00:00').toLocaleDateString(undefined, { day: 'numeric', month: 'short', year: 'numeric' })}`
+    return t('availableReports')
   }
 
   const ReportCard = ({ report }: { report: ReportTemplate }) => {
@@ -220,7 +109,7 @@ export default function ReportsPage() {
         <div className="mb-6">
           <span className="inline-flex items-center text-sm text-gray-500 dark:text-gray-400 bg-gray-50 dark:bg-gray-800 px-3 py-1 rounded-full">
             <Clock className="w-3 h-3 mr-1" />
-            {getFrequencyText()}
+            {startDate && endDate ? getPeriodLabel() : t('monthly')}
           </span>
         </div>
         <button
@@ -236,10 +125,8 @@ export default function ReportsPage() {
 
   return (
     <div className="flex min-h-screen bg-gray-50 dark:bg-gray-950">
-      {/* Sidebar */}
-      <Sidebar onLogout={handleLogout} />
-      
-      {/* Main Content */}
+      <Sidebar onLogout={logout} />
+
       <PageLayout>
         {/* Header */}
         <div className="bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-700 sticky top-0 z-10">
@@ -248,79 +135,37 @@ export default function ReportsPage() {
               <div className="flex items-center gap-2 min-w-0">
                 <MobileMenuButton />
                 <div className="min-w-0">
-                <h1 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-gray-100 truncate">{t('title')}</h1>
-                <p className="text-sm text-gray-500 dark:text-gray-400 mt-0.5 hidden sm:block">{t('subtitle')}</p>
-              </div>
+                  <h1 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-gray-100 truncate">{t('title')}</h1>
+                  <p className="text-sm text-gray-500 dark:text-gray-400 mt-0.5 hidden sm:block">{t('subtitle')}</p>
+                </div>
               </div>
             </div>
           </div>
         </div>
 
-        {/* Content */}
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-          
-          {/* Period Filter Bar — professional tab + contextual dropdowns */}
-          <div className="bg-white dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-gray-700 shadow-sm mb-4 sm:mb-6 overflow-hidden">
-            {/* Period type tabs */}
-            <div className="flex border-b border-gray-200 dark:border-gray-700">
-              {(['week', 'month', 'year'] as const).map((p) => (
-                <button
-                  key={p}
-                  onClick={() => setSelectedPeriod(p)}
-                  className={`flex-1 py-2.5 text-sm font-medium transition-colors ${
-                    selectedPeriod === p
-                      ? 'bg-primary-50 dark:bg-primary-900/20 text-primary-600 dark:text-primary-400 border-b-2 border-primary-500'
-                      : 'text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-800'
-                  }`}
-                >
-                  {p === 'week' ? t('thisWeek') : p === 'month' ? t('thisMonth') : t('thisYear')}
-                </button>
-              ))}
-            </div>
-            {/* Contextual dropdowns */}
-            <div className="p-3 flex items-center gap-2 flex-wrap">
-              <Calendar className="w-4 h-4 text-primary-600 shrink-0" />
-              {/* Year — always shown */}
-              <select
-                value={selectedYear}
-                onChange={(e) => setSelectedYear(e.target.value)}
-                className="px-2 py-1.5 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary-500 text-sm bg-white dark:bg-gray-800 dark:text-gray-100"
-              >
-                {Array.from({ length: 4 }, (_, i) => new Date().getFullYear() - i).map(y => (
-                  <option key={y} value={String(y)}>{y}</option>
-                ))}
-              </select>
-              {/* Month — shown for week and month */}
-              {(selectedPeriod === 'week' || selectedPeriod === 'month') && (
-                <select
-                  value={selectedMonth}
-                  onChange={(e) => setSelectedMonth(e.target.value)}
-                  className="flex-1 min-w-[90px] px-2 py-1.5 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary-500 text-sm bg-white dark:bg-gray-800 dark:text-gray-100"
-                >
-                  {Array.from({ length: 12 }, (_, i) => (
-                    <option key={i + 1} value={String(i + 1).padStart(2, '0')}>
-                      {t(`months.${i + 1}` as any)}
-                    </option>
-                  ))}
-                </select>
-              )}
-              {/* Week — shown only for week period */}
-              {selectedPeriod === 'week' && (
-                <select
-                  value={selectedWeek}
-                  onChange={(e) => setSelectedWeek(e.target.value)}
-                  className="flex-1 min-w-[140px] px-2 py-1.5 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary-500 text-sm bg-white dark:bg-gray-800 dark:text-gray-100"
-                >
-                  {getWeeksInMonth(parseInt(selectedYear), parseInt(selectedMonth)).map((week) => (
-                    <option key={week.value} value={week.value}>{week.label}</option>
-                  ))}
-                </select>
-              )}
-              <span className="text-xs text-gray-400 dark:text-gray-500 ml-auto hidden sm:block">{getPeriodLabel()}</span>
+
+          {/* Date Range Filter */}
+          <div className="bg-white dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-gray-700 shadow-sm mb-4 sm:mb-6 p-4">
+            <div className="flex flex-col sm:flex-row sm:items-center gap-3">
+              <div className="flex items-center gap-2 min-w-0">
+                <Calendar className="w-4 h-4 text-primary-600 shrink-0" />
+                <div className="min-w-0">
+                  <p className="text-sm font-medium text-gray-900 dark:text-gray-100">{t('period')}</p>
+                  <p className="text-xs text-gray-500 dark:text-gray-400 truncate">{getPeriodLabel()}</p>
+                </div>
+              </div>
+              <div className="sm:ml-auto">
+                <DateRangePicker
+                  startDate={startDate}
+                  endDate={endDate}
+                  onChange={(s, e) => { setStartDate(s); setEndDate(e) }}
+                />
+              </div>
             </div>
           </div>
 
-          {/* Quick Stats — 2 top + 1 full-width bottom on mobile */}
+          {/* Quick Stats */}
           <div className="grid grid-cols-2 md:grid-cols-3 gap-3 sm:gap-4 mb-4 sm:mb-6">
             <div className="bg-white dark:bg-gray-900 rounded-lg border border-gray-200 dark:border-gray-700 p-3 sm:p-4">
               <div className="flex items-center justify-between">
@@ -340,17 +185,15 @@ export default function ReportsPage() {
                 <BarChart3 className="w-6 h-6 sm:w-8 sm:h-8 text-blue-600" />
               </div>
             </div>
-            {/* 3rd card — full width on mobile (col-span-2), normal on md+ */}
             <div className="col-span-2 md:col-span-1 bg-white dark:bg-gray-900 rounded-lg border border-gray-200 dark:border-gray-700 p-3 sm:p-4">
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-xs text-gray-600 dark:text-gray-400">{t('selectedPeriod')}</p>
-                  <p className="text-base sm:text-lg font-bold text-gray-900 dark:text-gray-100">
-                    {selectedPeriod === 'week' ? t('weekly') :
-                     selectedPeriod === 'month' ? t('monthly') : t('annual')}
+                  <p className="text-base sm:text-lg font-bold text-gray-900 dark:text-gray-100 truncate max-w-[140px]">
+                    {startDate && endDate ? getPeriodLabel() : t('monthly')}
                   </p>
                 </div>
-                <Calendar className="w-6 h-6 sm:w-8 sm:h-8 text-green-600" />
+                <Calendar className="w-6 h-6 sm:w-8 sm:h-8 text-green-600 shrink-0" />
               </div>
             </div>
           </div>
@@ -364,7 +207,6 @@ export default function ReportsPage() {
         </div>
       </PageLayout>
 
-      {/* Onboarding Tour */}
       <OnboardingTour
         isOpen={isOnboardingOpen}
         onClose={closeOnboarding}
