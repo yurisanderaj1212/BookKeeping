@@ -72,6 +72,17 @@
   --shadow-strong: 0 10px 40px -10px rgba(0, 0, 0, 0.15), 0 2px 10px -2px rgba(0, 0, 0, 0.05);
 }
 
+/* ── Dark mode: remap gray scale to landing page neutral-black palette ───────
+   Overrides Tailwind's default blue-tinted grays with deep neutral tones.
+*/
+.dark {
+  --color-gray-950: #0c0e12;
+  --color-gray-900: #111318;
+  --color-gray-800: #171a1f;
+  --color-gray-700: #23262c;
+  --color-gray-600: #2d3139;
+}
+
 :root {
   --background: #ffffff;
   --foreground: #171717;
@@ -80,29 +91,29 @@
 
 /* Dark mode via class strategy — controlled by JS, not OS media query */
 .dark {
-  --background: #0a0a0a;
+  --background: #0c0e12;
   --foreground: #ededed;
   color-scheme: dark;
 }
 
 html {
   scroll-behavior: smooth;
-  background: #f8fafc;
+  background: #eef2f7;
 }
 
 html.dark {
-  background: #111827;
+  background: #0c0e12;
 }
 
 body {
-  background: #f8fafc;
+  background: #eef2f7;
   color: var(--foreground);
   font-family: var(--font-geist-sans), system-ui, sans-serif;
 }
 
 /* Dark mode body */
 .dark body {
-  background: #111827;
+  background: #0c0e12;
 }
 
 /* Fix iOS Safari input text color — prevents light gray text on iPhone */
@@ -117,14 +128,14 @@ input, textarea, select {
 .dark select {
   color: #f3f4f6;
   -webkit-text-fill-color: #f3f4f6;
-  background-color: #1f2937;
-  border-color: #4b5563;
+  background-color: #171a1f;
+  border-color: #2d3139;
   color-scheme: dark;
 }
 
 /* Force select dropdown options to be dark in dark mode */
 .dark select option {
-  background-color: #1f2937;
+  background-color: #171a1f;
   color: #f3f4f6;
 }
 
@@ -161,7 +172,31 @@ main, #__next > div, body > div {
   @apply bg-white rounded-xl transition-shadow duration-300;
 }
 
-/* Hide scrollbar utility */
+/* ── Dark mode gray scale remapping ─────────────────────────────────────────
+   Override Tailwind's default blue-tinted grays with the landing page
+   neutral-black palette for a consistent dark experience.
+*/
+.dark {
+  --color-gray-950: #0c0e12;
+  --color-gray-900: #111318;
+  --color-gray-800: #171a1f;
+  --color-gray-700: #23262c;
+  --color-gray-600: #2d3139;
+  --color-gray-500: #4a4f5a;
+  --color-gray-400: #6b7280;
+  --color-gray-300: #9ca3af;
+  --color-gray-200: #d1d5db;
+  --color-gray-100: #f3f4f6;
+  --color-gray-50:  #f9fafb;
+}
+
+/* ── Light mode background softening ────────────────────────────────────────
+   Slightly off-white background makes white cards stand out clearly.
+*/
+:root {
+  --color-gray-50:  #f8fafc;
+  --color-gray-100: #f1f5f9;
+}
 .scrollbar-hide {
   -ms-overflow-style: none;
   scrollbar-width: none;
@@ -294,6 +329,6 @@ input:-webkit-autofill:active {
 .dark input:-webkit-autofill:hover,
 .dark input:-webkit-autofill:focus,
 .dark input:-webkit-autofill:active {
-  -webkit-box-shadow: 0 0 0 1000px #1f2937 inset !important;
+  -webkit-box-shadow: 0 0 0 1000px #171a1f inset !important;
   -webkit-text-fill-color: #f3f4f6 !important;
 }
