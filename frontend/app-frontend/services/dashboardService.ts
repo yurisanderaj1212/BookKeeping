@@ -1,4 +1,5 @@
 import { getSupabase } from '@/lib/supabaseClient'
+import { getWeeksForMonth } from '@/lib/weekUtils'
 
 export interface DashboardSummary {
   totalIncome: number
@@ -121,31 +122,15 @@ export async function getWeeklyChartData(): Promise<ChartDataPoint[]> {
   const supabase = getSupabase()
   const now   = new Date()
   const year  = now.getFullYear()
-  const month = now.getMonth()
+  const month = now.getMonth() + 1  // 1-based
 
-  // First and last day of current month
-  const firstOfMonth = new Date(year, month, 1)
-  const lastOfMonth  = new Date(year, month + 1, 0)
+  // Use canonical week assignment — each week belongs to exactly one month
+  const weekDefs = getWeeksForMonth(year, month)
 
-  // Find the Sunday on or before the first day of the month
-  const firstSunday = new Date(firstOfMonth)
-  firstSunday.setDate(firstOfMonth.getDate() - firstOfMonth.getDay())
-
-  // Build weeks (Sun-Sat) that START within or overlap the current month
-  const weeks: { start: Date; end: Date }[] = []
-  const cursor = new Date(firstSunday)
-  while (cursor <= lastOfMonth) {
-    const start = new Date(cursor)
-    const end   = new Date(cursor)
-    end.setDate(cursor.getDate() + 6)
-    weeks.push({ start, end })
-    cursor.setDate(cursor.getDate() + 7)
-  }
-
-  // Fetch transactions for the full range
+  // Fetch transactions for the full range of these weeks
   const fmt        = (d: Date) => d.toISOString().split('T')[0]
-  const rangeStart = fmt(weeks[0].start)
-  const rangeEnd   = fmt(weeks[weeks.length - 1].end)
+  const rangeStart = weekDefs[0].startDate
+  const rangeEnd   = weekDefs[weekDefs.length - 1].endDate
 
   const { data } = await supabase
     .from('transactions').select('type, amount, date')
@@ -154,24 +139,22 @@ export async function getWeeklyChartData(): Promise<ChartDataPoint[]> {
 
   const rows = data ?? []
 
-  return weeks.map(({ start, end }) => {
-    const startStr = fmt(start)
-    const endStr   = fmt(end)
-    const weekRows = rows.filter(r => r.date >= startStr && r.date <= endStr)
+  return weekDefs.map(({ startDate, endDate, weekNumber }) => {
+    const weekRows = rows.filter(r => r.date >= startDate && r.date <= endDate)
     let income = 0, expenses = 0
     for (const r of weekRows) {
       if (r.type === 1) income += r.amount
       else expenses += r.amount
     }
-    // Label: show day range. If week crosses months show "Mar 29-4", else "6-12"
+    // Label: show day range, noting cross-month weeks
+    const start    = new Date(startDate + 'T00:00:00')
+    const end      = new Date(endDate   + 'T00:00:00')
     const startDay = start.getDate()
     const endDay   = end.getDate()
-    const label = start.getMonth() !== month
-      ? `${start.toLocaleDateString(undefined, { month: 'short' })} ${startDay}-${endDay}`
-      : end.getMonth() !== month
-        ? `${startDay}-${end.toLocaleDateString(undefined, { month: 'short' })} ${endDay}`
-        : `${startDay}-${endDay}`
-    return { label, income, expenses, startDate: startStr, endDate: endStr }
+    const label = start.getMonth() !== end.getMonth()
+      ? `${start.toLocaleDateString(undefined, { month: 'short' })} ${startDay}-${end.toLocaleDateString(undefined, { month: 'short' })} ${endDay}`
+      : `${startDay}-${endDay}`
+    return { label, income, expenses, startDate, endDate }
   })
 }
 

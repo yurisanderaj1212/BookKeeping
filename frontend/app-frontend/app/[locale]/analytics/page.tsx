@@ -16,6 +16,7 @@ import WeeklyClosureAnalysis from '@/components/analytics/WeeklyClosureAnalysis'
 import YearComparison from '@/components/analytics/YearComparison'
 import { getTransactionSummary } from '@/services/reportService'
 import { exportAnalyticsReport, showExportModal } from '@/services/exportService'
+import { getWeeksForMonth, getWeekLabel } from '@/lib/weekUtils'
 
 export default function ReportsPage() {
   const router = useRouter()
@@ -79,15 +80,23 @@ export default function ReportsPage() {
     let endDate: string | undefined
 
     if (selectedPeriod === 'week') {
-      const firstDay = new Date(y, m - 1, 1)
-      const firstSunday = new Date(firstDay)
-      firstSunday.setDate(firstDay.getDate() - firstDay.getDay())
-      const start = new Date(firstSunday)
-      start.setDate(firstSunday.getDate() + (wk - 1) * 7)
-      const end = new Date(start)
-      end.setDate(start.getDate() + 6)
-      startDate = fmt(start)
-      endDate   = fmt(end)
+      const weeks = getWeeksForMonth(y, m)
+      const found = weeks.find(w => w.weekNumber === wk)
+      if (found) {
+        startDate = found.startDate
+        endDate   = found.endDate
+      } else {
+        // Fallback
+        const firstDay = new Date(y, m - 1, 1)
+        const firstSunday = new Date(firstDay)
+        firstSunday.setDate(firstDay.getDate() - firstDay.getDay())
+        const start = new Date(firstSunday)
+        start.setDate(firstSunday.getDate() + (wk - 1) * 7)
+        const end = new Date(start)
+        end.setDate(start.getDate() + 6)
+        startDate = fmt(start)
+        endDate   = fmt(end)
+      }
     } else if (selectedPeriod === 'month') {
       startDate = fmt(new Date(y, m - 1, 1))
       endDate   = fmt(new Date(y, m, 0))
@@ -131,29 +140,11 @@ export default function ReportsPage() {
     }
   }
 
-  const getWeeksInMonth = () => {
-    const year = parseInt(selectedYear)
-    const month = parseInt(selectedMonth)
-    const firstDay = new Date(year, month - 1, 1)
-    const lastDay  = new Date(year, month, 0)
-    // Find Sunday on or before the 1st
-    const firstSunday = new Date(firstDay)
-    firstSunday.setDate(firstDay.getDate() - firstDay.getDay())
-    const weeks: { value: string; label: string }[] = []
-    let weekNum = 1
-    const cursor = new Date(firstSunday)
-    while (cursor <= lastDay) {
-      const weekStart = new Date(cursor)
-      const weekEnd   = new Date(cursor); weekEnd.setDate(cursor.getDate() + 6)
-      if (weekEnd >= firstDay) {
-        const fmt = (d: Date) => d.toLocaleDateString(undefined, { month: 'short', day: 'numeric' })
-        weeks.push({ value: String(weekNum), label: `${fmt(weekStart)} - ${fmt(weekEnd)}` })
-        weekNum++
-      }
-      cursor.setDate(cursor.getDate() + 7)
-    }
-    return weeks
-  }
+  const getWeeksInMonth = () =>
+    getWeeksForMonth(parseInt(selectedYear), parseInt(selectedMonth)).map(w => ({
+      value: w.weekNumber.toString(),
+      label: getWeekLabel(w.startDate, w.endDate),
+    }))
 
   return (
     <div className="flex min-h-screen bg-gray-50 dark:bg-gray-950">

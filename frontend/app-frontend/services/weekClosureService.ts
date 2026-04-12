@@ -1,4 +1,5 @@
 import { getSupabase } from '@/lib/supabaseClient'
+import { getWeeksForMonth } from '@/lib/weekUtils'
 
 export interface WeekClosureData {
   id: number
@@ -33,51 +34,6 @@ export interface WeekClosureResponse {
   month: number
   weeks: WeekClosureData[]
   summary: WeekClosureSummary
-}
-
-// ─── Helpers ──────────────────────────────────────────────────────────────────
-
-/** Returns the ISO week number (1-based) for a given date */
-function getWeekNumber(date: Date): number {
-  const d = new Date(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate()))
-  const dayNum = d.getUTCDay() || 7
-  d.setUTCDate(d.getUTCDate() + 4 - dayNum)
-  const yearStart = new Date(Date.UTC(d.getUTCFullYear(), 0, 1))
-  return Math.ceil((((d.getTime() - yearStart.getTime()) / 86400000) + 1) / 7)
-}
-
-/** Returns all calendar weeks (Sun-Sat) that overlap with the given month */
-function getWeeksForMonth(year: number, month: number): Array<{ weekNumber: number; startDate: string; endDate: string }> {
-  const weeks: Array<{ weekNumber: number; startDate: string; endDate: string }> = []
-  const firstDay = new Date(year, month - 1, 1)
-  const lastDay  = new Date(year, month, 0)
-
-  // Start from the Sunday on or before the 1st of the month
-  const start = new Date(firstDay)
-  start.setDate(start.getDate() - start.getDay()) // go back to Sunday
-
-  let weekNum = 1
-  const current = new Date(start)
-
-  while (current <= lastDay) {
-    const weekStart = new Date(current)
-    const weekEnd   = new Date(current)
-    weekEnd.setDate(weekEnd.getDate() + 6)
-
-    // Only include weeks that overlap with the month
-    if (weekEnd >= firstDay && weekStart <= lastDay) {
-      weeks.push({
-        weekNumber: weekNum,
-        startDate:  weekStart.toISOString().split('T')[0],
-        endDate:    weekEnd.toISOString().split('T')[0],
-      })
-      weekNum++
-    }
-
-    current.setDate(current.getDate() + 7)
-  }
-
-  return weeks
 }
 
 function toISO(date: string) { return date + 'T00:00:00' }

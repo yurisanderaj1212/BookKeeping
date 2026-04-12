@@ -18,6 +18,7 @@ import OnboardingTour from '@/components/onboarding/OnboardingTour'
 import { useOnboarding } from '@/hooks/useOnboarding'
 import { useTranslations } from 'next-intl'
 import { getTransactionSummary } from '@/services/reportService'
+import { getWeeksForMonth, getWeekLabel } from '@/lib/weekUtils'
 
 interface ReportTemplate {
   id: string
@@ -72,26 +73,11 @@ export default function ReportsPage() {
   const [selectedYear, setSelectedYear] = useState(savedState?.year ?? String(now.getFullYear()))
   const [selectedMonth, setSelectedMonth] = useState(savedState?.month ?? String(now.getMonth() + 1).padStart(2, '0'))
   const [selectedWeek, setSelectedWeek] = useState(savedState?.week ?? defaultWeek)
-  const getWeeksInMonth = (year: number, month: number) => {
-    const firstDay = new Date(year, month - 1, 1)
-    const lastDay  = new Date(year, month, 0)
-    const firstSunday = new Date(firstDay)
-    firstSunday.setDate(firstDay.getDate() - firstDay.getDay())
-    const weeks: { value: string; label: string }[] = []
-    let weekNum = 1
-    const cursor = new Date(firstSunday)
-    while (cursor <= lastDay) {
-      const weekStart = new Date(cursor)
-      const weekEnd   = new Date(cursor); weekEnd.setDate(cursor.getDate() + 6)
-      if (weekEnd >= firstDay) {
-        const fmt = (d: Date) => d.toLocaleDateString(undefined, { month: 'short', day: 'numeric' })
-        weeks.push({ value: String(weekNum), label: `${fmt(weekStart)} - ${fmt(weekEnd)}` })
-        weekNum++
-      }
-      cursor.setDate(cursor.getDate() + 7)
-    }
-    return weeks
-  }
+  const getWeeksInMonth = (year: number, month: number) =>
+    getWeeksForMonth(year, month).map(w => ({
+      value: w.weekNumber.toString(),
+      label: getWeekLabel(w.startDate, w.endDate),
+    }))
 
   const [totalTransactions, setTotalTransactions] = useState<number>(0)
 
@@ -115,15 +101,22 @@ export default function ReportsPage() {
     let endDate: string | undefined
 
     if (selectedPeriod === 'week') {
-      const firstDay = new Date(y, m - 1, 1)
-      const firstSunday = new Date(firstDay)
-      firstSunday.setDate(firstDay.getDate() - firstDay.getDay())
-      const start = new Date(firstSunday)
-      start.setDate(firstSunday.getDate() + (wk - 1) * 7)
-      const end = new Date(start)
-      end.setDate(start.getDate() + 6)
-      startDate = fmt(start)
-      endDate   = fmt(end)
+      const weeks = getWeeksForMonth(y, m)
+      const found = weeks.find(w => w.weekNumber === wk)
+      if (found) {
+        startDate = found.startDate
+        endDate   = found.endDate
+      } else {
+        const firstDay = new Date(y, m - 1, 1)
+        const firstSunday = new Date(firstDay)
+        firstSunday.setDate(firstDay.getDate() - firstDay.getDay())
+        const start = new Date(firstSunday)
+        start.setDate(firstSunday.getDate() + (wk - 1) * 7)
+        const end = new Date(start)
+        end.setDate(start.getDate() + 6)
+        startDate = fmt(start)
+        endDate   = fmt(end)
+      }
     } else if (selectedPeriod === 'month') {
       startDate = fmt(new Date(y, m - 1, 1))
       endDate   = fmt(new Date(y, m, 0))
@@ -150,9 +143,13 @@ export default function ReportsPage() {
   }
 
   const handleGenerateReport = (reportId: string) => {
-    // Calculate week dates if period is week
+    // Calculate week dates using canonical week assignment
     const getWeekStartEnd = () => {
       const y = parseInt(selectedYear), m = parseInt(selectedMonth), wk = parseInt(selectedWeek)
+      const weeks = getWeeksForMonth(y, m)
+      const found = weeks.find(w => w.weekNumber === wk)
+      if (found) return { startDate: found.startDate, endDate: found.endDate }
+      // Fallback: compute directly
       const firstDay = new Date(y, m - 1, 1)
       const firstSunday = new Date(firstDay)
       firstSunday.setDate(firstDay.getDate() - firstDay.getDay())
