@@ -85,76 +85,72 @@ export default function Hero() {
             </div>
           </div>
 
-          {/* Right — floating glass card */}
+          {/* Right — live bar chart */}
           <div className="hidden lg:flex justify-center relative">
-            {/* Ambient glow behind card */}
-            <div className="absolute -z-10 w-80 h-80 bg-[#bf81ff]/10 blur-[80px] rounded-full" />
+            <div className="absolute -z-10 w-96 h-96 bg-[#81ecff]/8 blur-[100px] rounded-full" />
 
-            <div className="w-80 rounded-3xl p-8 flex flex-col gap-6 relative overflow-hidden"
+            <div
+              className="w-full max-w-md rounded-2xl p-8 relative overflow-hidden"
               style={{
-                background: 'rgba(23, 26, 31, 0.6)',
+                background: 'rgba(13, 15, 20, 0.85)',
                 backdropFilter: 'blur(24px)',
-                border: '1px solid rgba(255,255,255,0.08)',
-                animation: 'float 6s ease-in-out infinite',
-              }}>
-
-              {/* Inner gradient overlay */}
-              <div className="absolute inset-0 bg-linear-to-br from-[#81ecff]/5 to-[#bf81ff]/5 pointer-events-none" />
-
-              {/* Balance display */}
-              <div className="relative z-10 flex flex-col items-center gap-2 pt-4">
-                <div className="w-16 h-16 rounded-2xl bg-[#81ecff]/10 flex items-center justify-center mb-2">
-                  <svg className="w-8 h-8 text-[#81ecff]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
-                  </svg>
+                border: '1px solid rgba(255,255,255,0.06)',
+              }}
+            >
+              {/* Header row */}
+              <div className="flex items-start justify-between mb-8">
+                <div>
+                  <p className="text-white/40 text-[10px] uppercase tracking-[0.25em] mb-2">Global Revenue</p>
+                  <p
+                    className="text-[#81ecff] text-4xl font-bold tracking-tight"
+                    style={{ fontFamily: "'Space Grotesk', sans-serif" }}
+                  >
+                    $1,429,203.00
+                  </p>
                 </div>
-                <p className="text-[#81ecff] text-3xl font-bold tracking-tight" style={{ fontFamily: "'Space Grotesk', sans-serif" }}>
-                  $42,890.00
-                </p>
-                <p className="text-white/40 text-xs uppercase tracking-widest">Available Capital</p>
+                {/* Live syncing badge */}
+                <div className="flex items-center gap-2 mt-1">
+                  <span className="relative flex h-2 w-2">
+                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#f4ffc6] opacity-75" />
+                    <span className="relative inline-flex rounded-full h-2 w-2 bg-[#f4ffc6]" />
+                  </span>
+                  <span className="text-[#f4ffc6] text-[10px] font-bold uppercase tracking-[0.2em]">Live Syncing</span>
+                </div>
               </div>
 
-              {/* Animated bar chart */}
-              <div className="relative z-10 flex items-end justify-between h-28 gap-2 px-2">
+              {/* Bar chart */}
+              <div className="flex items-end justify-between gap-3 h-48">
                 {[
-                  { h: '40%', color: '#81ecff', delay: '0s',    label: 'MON' },
-                  { h: '75%', color: '#bf81ff', delay: '0.5s',  label: 'TUE' },
-                  { h: '55%', color: '#81ecff', delay: '1.2s',  label: 'WED' },
-                  { h: '90%', color: '#f4ffc6', delay: '1.8s',  label: 'THU' },
-                  { h: '65%', color: '#81ecff', delay: '2.3s',  label: 'FRI' },
+                  { label: 'MON', pct: 28,  active: false },
+                  { label: 'TUE', pct: 45,  active: false },
+                  { label: 'WED', pct: 72,  active: false },
+                  { label: 'THU', pct: 38,  active: false },
+                  { label: 'FRI', pct: 60,  active: false },
+                  { label: 'SAT', pct: 100, active: true  },
+                  { label: 'SUN', pct: 35,  active: false },
                 ].map((bar, i) => (
-                  <div key={i} className="flex flex-col items-center gap-1 flex-1">
-                    <div className="w-full rounded-t-sm relative overflow-hidden"
+                  <div key={i} className="flex flex-col items-center gap-2 flex-1">
+                    <div
+                      className="w-full rounded-sm transition-all duration-1000"
                       style={{
-                        height: bar.h,
-              background: `linear-gradient(to top, ${bar.color}20, ${bar.color})`,
-                        boxShadow: `0 0 12px ${bar.color}40`,
-                        animation: `barPulse 3s ease-in-out infinite`,
-                        animationDelay: bar.delay,
-                      }} />
-                    <span className="text-[9px] text-white/30 font-bold tracking-wider">{bar.label}</span>
+                        height: `${bar.pct}%`,
+                        background: bar.active
+                          ? '#81ecff'
+                          : 'rgba(255,255,255,0.08)',
+                        boxShadow: bar.active ? '0 0 20px rgba(129,236,255,0.5)' : 'none',
+                        animation: `barGrow 1.2s cubic-bezier(0.34,1.56,0.64,1) forwards`,
+                        animationDelay: `${i * 0.1}s`,
+                        transformOrigin: 'bottom',
+                      }}
+                    />
+                    <span
+                      className={`text-[9px] font-bold uppercase tracking-wider ${bar.active ? 'text-[#81ecff]' : 'text-white/25'}`}
+                    >
+                      {bar.label}
+                    </span>
                   </div>
                 ))}
               </div>
-
-              {/* Revenue growth stat */}
-              <div className="relative z-10 flex items-center justify-between pt-2 border-t border-white/5">
-                <div>
-                  <p className="text-white/40 text-[10px] uppercase tracking-widest">Revenue Growth</p>
-                  <p className="text-white font-bold text-lg" style={{ fontFamily: "'Space Grotesk', sans-serif" }}>
-                    +24.8% <span className="text-emerald-400 text-sm font-normal">vs last quarter</span>
-                  </p>
-                </div>
-                <div className="w-10 h-10 rounded-full bg-[#81ecff]/10 flex items-center justify-center">
-                  <svg className="w-5 h-5 text-[#81ecff]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
-                  </svg>
-                </div>
-              </div>
-
-              {/* Light streak decorations */}
-              <div className="absolute top-0 left-1/4 w-px h-full bg-linear-to-b from-transparent via-white/10 to-transparent pointer-events-none" />
-              <div className="absolute bottom-1/3 left-0 w-full h-px bg-linear-to-r from-transparent via-white/10 to-transparent pointer-events-none" />
             </div>
           </div>
         </div>
@@ -162,13 +158,9 @@ export default function Hero() {
 
       {/* CSS animations */}
       <style jsx>{`
-        @keyframes float {
-          0%, 100% { transform: translateY(0px); }
-          50%       { transform: translateY(-16px); }
-        }
-        @keyframes barPulse {
-          0%, 100% { opacity: 0.7; }
-          50%       { opacity: 1; }
+        @keyframes barGrow {
+          0%   { transform: scaleY(0); opacity: 0; }
+          100% { transform: scaleY(1); opacity: 1; }
         }
       `}</style>
     </div>
