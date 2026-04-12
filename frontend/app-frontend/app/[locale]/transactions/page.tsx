@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { Plus, Search, Filter, Download, Calendar, ChevronLeft, ChevronRight } from 'lucide-react'
+import { Plus, Search, Filter, Download, ChevronLeft, ChevronRight } from 'lucide-react'
 import TransactionForm from '@/components/transactions/TransactionForm'
 import TransactionList from '@/components/transactions/TransactionList'
 import Sidebar from '@/components/dashboard/Sidebar'
@@ -19,6 +19,7 @@ import * as categoryService from '@/services/categoryService'
 import accountService, { getAccountDisplayName } from '@/services/accountService'
 import { exportTransactionsList, showExportModal } from '@/services/exportService'
 import PlaidReviewQueue from '@/components/plaid/PlaidReviewQueue'
+import DateRangePicker from '@/components/ui/DateRangePicker'
 import type { Transaction } from '@/data/transactions-data'
 
 export default function TransactionsPage() {
@@ -33,7 +34,8 @@ export default function TransactionsPage() {
   const [selectedCategory, setSelectedCategory] = useState('all')
   const [selectedType, setSelectedType] = useState('all')
   const [selectedAccount, setSelectedAccount] = useState('all')
-  const [dateRange, setDateRange] = useState('all')
+  const [customStartDate, setCustomStartDate] = useState<string | null>(null)
+  const [customEndDate, setCustomEndDate]   = useState<string | null>(null)
   const [showForm, setShowForm] = useState(false)
   const [editingTransaction, setEditingTransaction] = useState<Transaction | null>(null)
   const [transactions, setTransactions] = useState<Transaction[]>([])
@@ -78,38 +80,8 @@ export default function TransactionsPage() {
         if (selectedType !== 'all') params.type = selectedType === 'income' ? 1 : 2
         if (selectedAccount !== 'all') params.accountIds = selectedAccount === 'none' ? 'null' : selectedAccount
 
-        if (dateRange !== 'all') {
-          const now = new Date()
-          const y = now.getFullYear()
-          const m = now.getMonth()
-          const d = now.getDate()
-          const pad = (n: number) => String(n).padStart(2, '0')
-          const todayStr = `${y}-${pad(m + 1)}-${pad(d)}`
-
-          switch (dateRange) {
-            case 'today':
-              params.startDate = todayStr
-              params.endDate   = todayStr
-              break
-            case 'week': {
-              const sun = new Date(now)
-              sun.setDate(d - now.getDay())
-              const sat = new Date(now)
-              sat.setDate(d - now.getDay() + 6)
-              params.startDate = `${sun.getFullYear()}-${pad(sun.getMonth() + 1)}-${pad(sun.getDate())}`
-              params.endDate   = `${sat.getFullYear()}-${pad(sat.getMonth() + 1)}-${pad(sat.getDate())}`
-              break
-            }
-            case 'month':
-              params.startDate = `${y}-${pad(m + 1)}-01`
-              params.endDate   = new Date(y, m + 1, 0).toISOString().split('T')[0]
-              break
-            case 'year':
-              params.startDate = `${y}-01-01`
-              params.endDate   = `${y}-12-31`
-              break
-          }
-        }
+        if (customStartDate) params.startDate = customStartDate
+        if (customEndDate)   params.endDate   = customEndDate
 
         const result = await transactionService.getFiltered(params)
 
@@ -138,7 +110,7 @@ export default function TransactionsPage() {
     }
 
     fetchTransactions()
-  }, [isAuthenticated, currentPage, pageSize, searchTerm, selectedCategory, selectedType, selectedAccount, dateRange, t])
+  }, [isAuthenticated, currentPage, pageSize, searchTerm, selectedCategory, selectedType, selectedAccount, customStartDate, customEndDate, t])
 
   // Cargar cuentas solo una vez
   useEffect(() => {
@@ -189,35 +161,8 @@ export default function TransactionsPage() {
       if (selectedType !== 'all') params.type = selectedType === 'income' ? 1 : 2
       if (selectedAccount !== 'all') params.accountIds = selectedAccount === 'none' ? 'null' : selectedAccount
 
-      if (dateRange !== 'all') {
-        const now = new Date()
-        const y = now.getFullYear()
-        const m = now.getMonth()
-        const d = now.getDate()
-        const pad = (n: number) => String(n).padStart(2, '0')
-        const todayStr = `${y}-${pad(m + 1)}-${pad(d)}`
-        switch (dateRange) {
-          case 'today':
-            params.startDate = todayStr
-            params.endDate   = todayStr
-            break
-          case 'week': {
-            const sun = new Date(now); sun.setDate(d - now.getDay())
-            const sat = new Date(now); sat.setDate(d - now.getDay() + 6)
-            params.startDate = `${sun.getFullYear()}-${pad(sun.getMonth() + 1)}-${pad(sun.getDate())}`
-            params.endDate   = `${sat.getFullYear()}-${pad(sat.getMonth() + 1)}-${pad(sat.getDate())}`
-            break
-          }
-          case 'month':
-            params.startDate = `${y}-${pad(m + 1)}-01`
-            params.endDate   = new Date(y, m + 1, 0).toISOString().split('T')[0]
-            break
-          case 'year':
-            params.startDate = `${y}-01-01`
-            params.endDate   = `${y}-12-31`
-            break
-        }
-      }
+      if (customStartDate) params.startDate = customStartDate
+      if (customEndDate)   params.endDate   = customEndDate
 
       const result = await transactionService.getFiltered(params)
       const mappedTransactions: Transaction[] = result.data.map(dto => ({
@@ -488,23 +433,17 @@ export default function TransactionsPage() {
               </select>
             </div>
 
-            {/* Date Range */}
-            <div className="relative">
-              <Calendar className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
-              <select
-                value={dateRange}
-                onChange={(e) => {
-                  setDateRange(e.target.value)
+            {/* Date Range Picker */}
+            <div>
+              <DateRangePicker
+                startDate={customStartDate}
+                endDate={customEndDate}
+                onChange={(start, end) => {
+                  setCustomStartDate(start)
+                  setCustomEndDate(end)
                   setCurrentPage(1)
                 }}
-                className="w-full pl-10 pr-4 py-2 border border-gray-300 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-100 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent appearance-none"
-              >
-                <option value="all">{t('allDates')}</option>
-                <option value="today">{t('today')}</option>
-                <option value="week">{t('thisWeek')}</option>
-                <option value="month">{t('thisMonth')}</option>
-                <option value="year">{t('thisYear')}</option>
-              </select>
+              />
             </div>
           </div>
         </div>
