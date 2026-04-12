@@ -1,0 +1,466 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&amp;family=Manrope:wght@300;400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "primary": "#1dbbb4",
+                    "secondary-container": "#f0dcff",
+                    "on-secondary": "#32005c",
+                    "on-surface": "#0a192f",
+                    "surface": "#ffffff",
+                    "on-secondary-container": "#21005d",
+                    "inverse-primary": "#81ecff",
+                    "error-dim": "#d7383b",
+                    "secondary-fixed-dim": "#dab4ff",
+                    "inverse-surface": "#2f3033",
+                    "surface-variant": "#e1e2e9",
+                    "on-error": "#ffffff",
+                    "surface-container-lowest": "#ffffff",
+                    "tertiary-dim": "#a2c100",
+                    "on-primary-fixed": "#001f24",
+                    "surface-container-high": "#ebeef5",
+                    "background": "#F8FAFC",
+                    "error-container": "#f9dedc",
+                    "primary-fixed-dim": "#00d4ec",
+                    "tertiary-fixed": "#d4ff00",
+                    "on-background": "#0a192f",
+                    "primary-dim": "#006976",
+                    "inverse-on-surface": "#f1f0f4",
+                    "outline-variant": "#c4c7cf",
+                    "tertiary-fixed-dim": "#c7ef00",
+                    "primary-container": "#c1f1ff",
+                    "surface-dim": "#d9dbdf",
+                    "on-error-container": "#410002",
+                    "on-tertiary-fixed": "#1d2000",
+                    "on-secondary-fixed-variant": "#5a00a7",
+                    "surface-container-highest": "#e3e2e6",
+                    "on-tertiary-fixed-variant": "#3e4c00",
+                    "secondary": "#21409a",
+                    "on-tertiary": "#ffffff",
+                    "outline": "#74777f",
+                    "surface-container": "#f1f5f9",
+                    "secondary-fixed": "#e4c6ff",
+                    "on-primary-container": "#001f24",
+                    "tertiary": "#546600",
+                    "on-tertiary-container": "#181e00",
+                    "primary-fixed": "#00e3fd",
+                    "error": "#b3261e",
+                    "on-primary": "#ffffff",
+                    "on-surface-variant": "#4b5563",
+                    "on-primary-fixed-variant": "#004f58",
+                    "surface-bright": "#fbfcfe",
+                    "surface-tint": "#006976",
+                    "secondary-dim": "#9c42f4",
+                    "on-secondary-fixed": "#21005d",
+                    "surface-container-low": "#f4f3f9",
+                    "tertiary-container": "#e6ff7e"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.125rem",
+                    "lg": "0.5rem",
+                    "xl": "1rem",
+                    "full": "9999px"
+            },
+            "fontFamily": {
+                    "headline": ["Space Grotesk"],
+                    "body": ["Manrope"],
+                    "label": ["Manrope"]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.5);
+            box-shadow: 0 4px 20px -4px rgba(0, 0, 0, 0.05);
+        }
+        .premium-shadow {
+            box-shadow: 0 10px 30px -5px rgba(0, 0, 0, 0.04), 0 4px 12px -2px rgba(0, 0, 0, 0.03);
+        }
+        .pricing-stack {
+            perspective: 2000px;
+        }
+        .pricing-card {
+            transition: all 0.5s cubic-bezier(0.23, 1, 0.32, 1);
+            transform-style: preserve-3d;
+        }
+        @media (min-width: 1024px) {
+            .pricing-card-1 { transform: translateX(40px) scale(0.95); z-index: 10; opacity: 0.95; }
+            .pricing-card-2 { transform: translateZ(50px) scale(1.05); z-index: 30; }
+            .pricing-card-3 { transform: translateX(-40px) scale(0.95); z-index: 10; opacity: 0.95; }
+            
+            .pricing-stack:hover .pricing-card {
+                transform: translateX(0) scale(1) translateZ(0);
+                opacity: 1;
+                z-index: 20;
+            }
+            .pricing-stack .pricing-card:hover {
+                transform: scale(1.08) translateZ(100px);
+                z-index: 40;
+                box-shadow: 0 30px 60px -15px rgba(29, 187, 180, 0.2);
+            }
+        }
+        .iridescent-mesh {
+            background: radial-gradient(circle at 50% 50%, rgba(29, 187, 180, 0.15) 0%, rgba(33, 64, 154, 0.08) 50%, transparent 100%);
+            filter: blur(60px);
+        }
+
+        /* 3D Bar Chart Animations */
+        @keyframes barGrow {
+            0% { transform: scaleY(0.1); }
+            100% { transform: scaleY(1); }
+        }
+        .animate-bar {
+            transform-origin: bottom;
+            animation: barGrow 1.2s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+        }
+        .chart-container {
+            perspective: 1000px;
+        }
+        .chart-3d {
+            transform: rotateX(25deg) rotateY(-20deg) rotateZ(0deg);
+            transform-style: preserve-3d;
+        }
+        .bar-3d {
+            transform-style: preserve-3d;
+            position: relative;
+        }
+        .bar-face {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+        }
+        .bar-top {
+            transform: translateY(-100%) rotateX(90deg);
+            transform-origin: bottom;
+        }
+        .bar-right {
+            transform: rotateY(90deg);
+            transform-origin: right;
+        }
+    </style>
+</head>
+<body class="bg-background text-on-background font-body selection:bg-primary/20">
+<!-- TopNavBar -->
+<nav class="fixed top-0 w-full z-50 bg-white/80 backdrop-blur-lg border-b border-slate-200/50">
+<div class="flex justify-between items-center max-w-7xl mx-auto px-6 py-4">
+<div class="flex items-center gap-2">
+<div class="w-8 h-8 bg-primary rounded flex items-center justify-center text-white font-bold text-xs">CN</div>
+<div class="text-xl font-bold tracking-tight text-on-surface font-headline">Chill Numbers</div>
+</div>
+<div class="hidden md:flex gap-8 items-center">
+<a class="text-on-surface-variant hover:text-primary transition-colors text-sm font-medium" href="#">Features</a>
+<a class="text-on-surface-variant hover:text-primary transition-colors text-sm font-medium" href="#">Benefits</a>
+<a class="text-on-surface-variant hover:text-primary transition-colors text-sm font-medium" href="#">Pricing</a>
+</div>
+<div class="flex items-center gap-4">
+<button class="flex items-center gap-1 px-3 py-1.5 border border-slate-200 rounded-lg text-sm font-medium hover:bg-slate-50 transition-colors">
+<span class="material-symbols-outlined text-base">language</span> ES
+            </button>
+<button class="text-on-surface font-medium text-sm hover:text-primary transition-colors">Sign in</button>
+<button class="bg-primary text-white px-5 py-2 rounded-lg font-bold text-sm hover:brightness-110 transition-all shadow-md shadow-primary/20">
+                Get Started
+            </button>
+</div>
+</div>
+</nav>
+<!-- Hero Section -->
+<section class="relative min-h-[95vh] flex items-center pt-24 overflow-hidden">
+<!-- 3D Decorative Element & Background -->
+<div class="absolute top-1/2 right-0 -translate-y-1/2 w-1/2 h-full opacity-60 pointer-events-none z-0">
+<div class="absolute inset-0 iridescent-mesh animate-pulse"></div>
+<img alt="3D iridescent crystal geometry" class="w-full h-full object-contain mix-blend-multiply opacity-20 scale-125" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCMpPemw8AIlV6wp4uBYBq_rrMR9txzoDTmyWyDjedV_wYeB-A8b2zyL5PFovZDapGKwWBmyMLuX9oIfjQke-5yK4xBo30sOB3QnIPgnherFcCx3BdC6TbZyRyAlD0OS1Tw8nzTSCSLzrjVcXCm84b84WsQDgcfSpKFdesdt00RK2Pl9PZ6tCa1SrcKRAKmfjNE4faHvhE4O3Ax-zPbsDmPpCbhcWEC36D9pIAnezMr_oSkN-5ukCjGO0AmmxhKhVkxl0ycz1waX6T0"/>
+</div>
+<div class="max-w-7xl mx-auto px-6 relative z-10 w-full flex flex-col lg:flex-row items-center gap-12">
+<div class="flex-1 text-center lg:text-left">
+<h1 class="text-6xl md:text-8xl font-headline font-bold tracking-tight leading-[1.1] text-on-surface mb-6">
+                Simple Accounting <br/><span class="text-secondary">for Everyone</span>
+</h1>
+<p class="text-xl md:text-2xl text-on-surface-variant mb-10 font-light leading-relaxed max-w-2xl mx-auto lg:mx-0">
+                Manage your business finances with ease. No accounting knowledge required.
+            </p>
+<div class="flex flex-wrap gap-4 justify-center lg:justify-start">
+<button class="bg-primary text-white px-10 py-4 rounded-xl font-bold text-lg hover:shadow-xl hover:shadow-primary/30 hover:-translate-y-1 transition-all">
+                    Free Trial
+                </button>
+<button class="flex items-center gap-2 text-on-surface px-10 py-4 rounded-xl font-bold text-lg hover:text-primary transition-colors group">
+                    Learn More <span class="material-symbols-outlined group-hover:translate-x-1 transition-transform">arrow_forward</span>
+</button>
+</div>
+</div>
+<!-- 3D Animated Bar Chart Component -->
+<div class="flex-1 w-full max-w-lg hidden lg:block">
+<div class="glass-panel p-8 rounded-3xl premium-shadow relative overflow-hidden">
+<div class="flex justify-between items-end h-64 gap-6 chart-container">
+<div class="chart-3d flex items-end gap-8 w-full h-full">
+<!-- Bar 1 -->
+<div class="bar-3d w-12 bg-primary/20 animate-bar" style="height: 40%; animation-delay: 0.1s;">
+<div class="bar-face w-full h-full bg-primary/40 border-l border-primary/30"></div>
+<div class="bar-face bar-top w-full h-12 bg-primary/60"></div>
+<div class="bar-face bar-right w-12 h-full bg-primary/50"></div>
+</div>
+<!-- Bar 2 -->
+<div class="bar-3d w-12 bg-secondary/20 animate-bar" style="height: 70%; animation-delay: 0.3s;">
+<div class="bar-face w-full h-full bg-secondary/40 border-l border-secondary/30"></div>
+<div class="bar-face bar-top w-full h-12 bg-secondary/60"></div>
+<div class="bar-face bar-right w-12 h-full bg-secondary/50"></div>
+</div>
+<!-- Bar 3 -->
+<div class="bar-3d w-12 bg-primary/20 animate-bar" style="height: 55%; animation-delay: 0.5s;">
+<div class="bar-face w-full h-full bg-primary/40 border-l border-primary/30"></div>
+<div class="bar-face bar-top w-full h-12 bg-primary/60"></div>
+<div class="bar-face bar-right w-12 h-full bg-primary/50"></div>
+</div>
+<!-- Bar 4 -->
+<div class="bar-3d w-12 bg-secondary/20 animate-bar" style="height: 90%; animation-delay: 0.7s;">
+<div class="bar-face w-full h-full bg-secondary/40 border-l border-secondary/30"></div>
+<div class="bar-face bar-top w-full h-12 bg-secondary/60"></div>
+<div class="bar-face bar-right w-12 h-full bg-secondary/50"></div>
+</div>
+</div>
+</div>
+<div class="mt-8 flex justify-between items-center">
+<div>
+<p class="text-xs font-bold uppercase tracking-widest text-on-surface-variant opacity-60">Revenue Growth</p>
+<p class="text-2xl font-headline font-bold text-on-surface">+24.8% <span class="text-sm font-normal text-emerald-500">vs last quarter</span></p>
+</div>
+<div class="w-12 h-12 rounded-full bg-slate-100 flex items-center justify-center">
+<span class="material-symbols-outlined text-primary">trending_up</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- Benefits Section -->
+<section class="py-24">
+<div class="max-w-7xl mx-auto px-6">
+<h2 class="text-4xl md:text-5xl font-headline font-bold text-secondary text-center mb-16">Why Choose Chill Numbers?</h2>
+<div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+<!-- Benefit 1 -->
+<div class="glass-panel p-10 rounded-xl premium-shadow border-white/50 hover:border-primary/30 transition-all group">
+<div class="mb-6 w-14 h-14 flex items-center justify-center rounded-xl bg-primary/10 text-primary group-hover:bg-primary group-hover:text-white transition-all">
+<span class="material-symbols-outlined text-3xl">menu_book</span>
+</div>
+<h4 class="text-xl font-headline font-bold text-secondary mb-4">No Accounting Degree Needed</h4>
+<p class="text-on-surface-variant leading-relaxed text-sm">Our intuitive interface makes bookkeeping accessible to everyone, regardless of experience</p>
+</div>
+<!-- Benefit 2 -->
+<div class="glass-panel p-10 rounded-xl premium-shadow border-white/50 hover:border-primary/30 transition-all group">
+<div class="mb-6 w-14 h-14 flex items-center justify-center rounded-xl bg-primary/10 text-primary group-hover:bg-primary group-hover:text-white transition-all">
+<span class="material-symbols-outlined text-3xl">credit_card</span>
+</div>
+<h4 class="text-xl font-headline font-bold text-secondary mb-4">Bank Integration</h4>
+<p class="text-on-surface-variant leading-relaxed text-sm">Securely connect your bank accounts with Plaid and import transactions automatically</p>
+</div>
+<!-- Benefit 3 -->
+<div class="glass-panel p-10 rounded-xl premium-shadow border-white/50 hover:border-primary/30 transition-all group">
+<div class="mb-6 w-14 h-14 flex items-center justify-center rounded-xl bg-primary/10 text-primary group-hover:bg-primary group-hover:text-white transition-all">
+<span class="material-symbols-outlined text-3xl">devices</span>
+</div>
+<h4 class="text-xl font-headline font-bold text-secondary mb-4">Multiplatform Access</h4>
+<p class="text-on-surface-variant leading-relaxed text-sm">Access your data from anywhere with web, iOS and Android apps</p>
+</div>
+<!-- Benefit 4 -->
+<div class="glass-panel p-10 rounded-xl premium-shadow border-white/50 hover:border-primary/30 transition-all group">
+<div class="mb-6 w-14 h-14 flex items-center justify-center rounded-xl bg-primary/10 text-primary group-hover:bg-primary group-hover:text-white transition-all">
+<span class="material-symbols-outlined text-3xl">cloud_done</span>
+</div>
+<h4 class="text-xl font-headline font-bold text-secondary mb-4">Automatic Backups</h4>
+<p class="text-on-surface-variant leading-relaxed text-sm">Your data is automatically backed up to the cloud for your peace of mind</p>
+</div>
+<!-- Benefit 5 -->
+<div class="glass-panel p-10 rounded-xl premium-shadow border-white/50 hover:border-primary/30 transition-all group">
+<div class="mb-6 w-14 h-14 flex items-center justify-center rounded-xl bg-primary/10 text-primary group-hover:bg-primary group-hover:text-white transition-all">
+<span class="material-symbols-outlined text-3xl">loyalty</span>
+</div>
+<h4 class="text-xl font-headline font-bold text-secondary mb-4">Custom Categories</h4>
+<p class="text-on-surface-variant leading-relaxed text-sm">Create and manage your own categories to match your business needs</p>
+</div>
+<!-- Benefit 6 -->
+<div class="glass-panel p-10 rounded-xl premium-shadow border-white/50 hover:border-primary/30 transition-all group">
+<div class="mb-6 w-14 h-14 flex items-center justify-center rounded-xl bg-primary/10 text-primary group-hover:bg-primary group-hover:text-white transition-all">
+<span class="material-symbols-outlined text-3xl">mail</span>
+</div>
+<h4 class="text-xl font-headline font-bold text-secondary mb-4">Email Reports</h4>
+<p class="text-on-surface-variant leading-relaxed text-sm">Receive automatic financial summaries directly in your inbox</p>
+</div>
+</div>
+</div>
+</section>
+<!-- Powerful Features Section -->
+<section class="py-24 bg-white/40">
+<div class="max-w-7xl mx-auto px-6 text-center">
+<h2 class="text-4xl md:text-5xl font-headline font-bold text-secondary mb-4">Powerful Features</h2>
+<p class="text-on-surface-variant mb-20">Everything you need to manage your business finances in one place</p>
+<div class="grid grid-cols-1 md:grid-cols-3 gap-12">
+<div class="flex flex-col items-center">
+<div class="w-20 h-20 bg-primary rounded-2xl shadow-xl shadow-primary/20 flex items-center justify-center text-white mb-6">
+<span class="material-symbols-outlined text-4xl">description</span>
+</div>
+<h5 class="text-xl font-bold text-secondary mb-4">Professional Reports</h5>
+<p class="text-on-surface-variant text-sm max-w-xs mx-auto">Generate detailed financial statements and export them in PDF or CSV format</p>
+</div>
+<div class="flex flex-col items-center">
+<div class="w-20 h-20 bg-primary rounded-2xl shadow-xl shadow-primary/20 flex items-center justify-center text-white mb-6">
+<span class="material-symbols-outlined text-4xl">equalizer</span>
+</div>
+<h5 class="text-xl font-bold text-secondary mb-4">Advanced Analytics</h5>
+<p class="text-on-surface-variant text-sm max-w-xs mx-auto">Visualize your data with interactive charts and compare performance over time</p>
+</div>
+<div class="flex flex-col items-center">
+<div class="w-20 h-20 bg-primary rounded-2xl shadow-xl shadow-primary/20 flex items-center justify-center text-white mb-6">
+<span class="material-symbols-outlined text-4xl">lock</span>
+</div>
+<h5 class="text-xl font-bold text-secondary mb-4">Weekly Close</h5>
+<p class="text-on-surface-variant text-sm max-w-xs mx-auto">Close your books weekly with automatic locking to maintain data integrity</p>
+</div>
+</div>
+</div>
+</section>
+<!-- Pricing Section -->
+<section class="py-32 relative overflow-hidden">
+<div class="max-w-7xl mx-auto px-6 relative z-10">
+<div class="text-center mb-24">
+<h2 class="text-5xl font-headline font-bold text-on-surface tracking-tight">Precision Pricing</h2>
+<p class="text-on-surface-variant mt-4 text-lg">Choose the plan that's right for your business</p>
+</div>
+<div class="pricing-stack flex flex-col lg:flex-row justify-center items-center gap-8 lg:gap-0 h-auto lg:min-h-[600px]">
+<!-- Free Trial Card -->
+<div class="pricing-card pricing-card-3 w-full max-w-sm bg-white border border-slate-100 rounded-2xl p-8 flex flex-col gap-6 premium-shadow">
+<div>
+<h4 class="text-secondary font-headline font-bold text-2xl">Free Trial</h4>
+<p class="text-on-surface-variant text-sm mt-1">Perfect for getting started</p>
+</div>
+<div class="flex items-baseline gap-1">
+<span class="text-5xl font-headline font-bold text-on-surface">$0</span>
+<span class="text-on-surface-variant text-sm">/month</span>
+</div>
+<p class="text-primary text-sm font-bold">First 2 months free</p>
+<ul class="flex flex-col gap-3 py-6 border-t border-slate-100">
+<li class="flex items-center gap-3 text-sm text-on-surface-variant">
+<span class="material-symbols-outlined text-primary text-lg">check</span> Dashboard access
+                    </li>
+<li class="flex items-center gap-3 text-sm text-on-surface-variant">
+<span class="material-symbols-outlined text-primary text-lg">check</span> Manual transactions
+                    </li>
+<li class="flex items-center gap-3 text-sm text-on-surface-variant">
+<span class="material-symbols-outlined text-primary text-lg">check</span> Basic reports
+                    </li>
+<li class="flex items-center gap-3 text-sm text-on-surface-variant">
+<span class="material-symbols-outlined text-primary text-lg">check</span> Up to 50 transactions/month
+                    </li>
+</ul>
+<button class="w-full py-3 rounded-lg bg-primary/5 text-primary font-bold hover:bg-primary hover:text-white transition-all">Start Free Trial</button>
+</div>
+<!-- Annual Plan Card (Popular) -->
+<div class="pricing-card pricing-card-2 w-full max-w-md bg-primary rounded-3xl p-10 flex flex-col gap-8 shadow-2xl shadow-primary/30 relative">
+<div class="absolute -top-4 left-1/2 -translate-x-1/2 bg-[#ff8c00] text-white text-[11px] font-black px-5 py-1.5 rounded-full uppercase tracking-widest shadow-lg">Popular</div>
+<div>
+<h4 class="text-white font-headline font-bold text-3xl">Annual Plan</h4>
+<p class="text-white/80 text-sm mt-2">The best value for your business</p>
+</div>
+<div class="flex items-baseline gap-1">
+<span class="text-6xl font-headline font-bold text-white">$99.99</span>
+<span class="text-white/80 text-lg">/year</span>
+</div>
+<p class="text-white/90 font-bold bg-white/20 inline-block px-3 py-1 rounded-md text-sm self-start">Save $19.89 per year</p>
+<ul class="grid grid-cols-1 gap-4 py-6 border-y border-white/20 text-white">
+<li class="flex items-center gap-3 text-sm">
+<span class="material-symbols-outlined text-lg">check</span> Everything in Free
+                    </li>
+<li class="flex items-center gap-3 text-sm">
+<span class="material-symbols-outlined text-lg">check</span> Unlimited transactions
+                    </li>
+<li class="flex items-center gap-3 text-sm">
+<span class="material-symbols-outlined text-lg">check</span> Bank integration (Plaid)
+                    </li>
+<li class="flex items-center gap-3 text-sm">
+<span class="material-symbols-outlined text-lg">check</span> Advanced analytics
+                    </li>
+<li class="flex items-center gap-3 text-sm">
+<span class="material-symbols-outlined text-lg">check</span> Weekly close feature
+                    </li>
+</ul>
+<button class="w-full py-5 rounded-xl bg-white text-primary font-black hover:scale-[1.02] transition-all text-lg shadow-xl shadow-black/10">Choose Annual Plan</button>
+</div>
+<!-- Monthly Plan Card -->
+<div class="pricing-card pricing-card-1 w-full max-w-sm bg-white border border-slate-100 rounded-2xl p-8 flex flex-col gap-6 premium-shadow">
+<div>
+<h4 class="text-secondary font-headline font-bold text-2xl">Monthly Plan</h4>
+<p class="text-on-surface-variant text-sm mt-1">Month-to-month flexibility</p>
+</div>
+<div class="flex items-baseline gap-1">
+<span class="text-5xl font-headline font-bold text-on-surface">$9.99</span>
+<span class="text-on-surface-variant text-sm">/month</span>
+</div>
+<p class="text-primary text-sm font-bold">Billed monthly after trial</p>
+<ul class="flex flex-col gap-3 py-6 border-t border-slate-100">
+<li class="flex items-center gap-3 text-sm text-on-surface-variant">
+<span class="material-symbols-outlined text-primary text-lg">check</span> Everything in Free
+                    </li>
+<li class="flex items-center gap-3 text-sm text-on-surface-variant">
+<span class="material-symbols-outlined text-primary text-lg">check</span> Unlimited transactions
+                    </li>
+<li class="flex items-center gap-3 text-sm text-on-surface-variant">
+<span class="material-symbols-outlined text-primary text-lg">check</span> Bank integration (Plaid)
+                    </li>
+<li class="flex items-center gap-3 text-sm text-on-surface-variant">
+<span class="material-symbols-outlined text-primary text-lg">check</span> Advanced analytics
+                    </li>
+</ul>
+<button class="w-full py-3 rounded-lg bg-primary/5 text-primary font-bold hover:bg-primary hover:text-white transition-all">Choose Monthly Plan</button>
+</div>
+</div>
+</div>
+</section>
+<!-- CTA Section -->
+<section class="py-24 bg-primary relative overflow-hidden">
+<div class="absolute inset-0 opacity-10">
+<div class="absolute top-0 left-0 w-64 h-64 bg-white rounded-full blur-3xl -translate-x-1/2 -translate-y-1/2"></div>
+<div class="absolute bottom-0 right-0 w-96 h-96 bg-white rounded-full blur-3xl translate-x-1/2 translate-y-1/2"></div>
+</div>
+<div class="max-w-7xl mx-auto px-6 relative z-10 text-center text-white">
+<h2 class="text-4xl md:text-6xl font-headline font-bold mb-6 tracking-tight">Ready to Take Control of Your Finances?</h2>
+<p class="text-xl opacity-90 mb-12 max-w-2xl mx-auto font-light">Join thousands of businesses managing their accounting with ease</p>
+<button class="bg-white text-primary px-12 py-5 rounded-xl font-black text-xl hover:shadow-2xl hover:shadow-black/20 transition-all hover:-translate-y-1">
+            Start Your Free Trial Today
+        </button>
+</div>
+</section>
+<!-- Footer -->
+<footer class="bg-secondary pt-20 pb-10">
+<div class="max-w-7xl mx-auto px-6">
+<div class="flex flex-col md:flex-row justify-between items-center gap-10 mb-12">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 bg-primary rounded flex items-center justify-center text-white font-bold">CN</div>
+<span class="text-2xl font-bold text-white tracking-tight">Chill Numbers</span>
+</div>
+<div class="flex gap-10">
+<a class="text-white/70 hover:text-white transition-colors text-sm font-medium" href="#">Privacy Policy</a>
+<a class="text-white/70 hover:text-white transition-colors text-sm font-medium" href="#">Terms of Service</a>
+</div>
+</div>
+<div class="pt-10 border-t border-white/10 text-center">
+<p class="text-white/40 text-xs tracking-widest uppercase font-medium">
+                © 2024 Chill Numbers. All rights reserved.
+            </p>
+</div>
+</div>
+</footer>
+</body></html>
