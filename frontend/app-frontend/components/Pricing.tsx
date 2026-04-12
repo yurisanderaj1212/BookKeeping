@@ -3,86 +3,136 @@
 import Link from 'next/link'
 import { useTranslations } from 'next-intl'
 
+const PLANS = [
+  {
+    nameKey: 'freePlanName', descKey: 'freePlanDesc', highlightKey: 'freePlanHighlight',
+    price: '$0', periodKey: 'perMonth',
+    featureKeys: ['featureDashboard','featureManualTx','featureBasicReports','featureLimit','featureEmailSupport'],
+    ctaKey: 'ctaFree', ctaLink: '/auth/register', popular: false,
+  },
+  {
+    nameKey: 'annualPlanName', descKey: 'annualPlanDesc', highlightKey: 'annualPlanHighlight',
+    price: '$99.99', periodKey: 'perYear',
+    featureKeys: ['featureEverythingFree','featureUnlimitedTx','featurePlaid','featureAdvancedAnalytics','featureWeeklyClose','featureTeam','featurePrioritySupport','featureBackups','featureCustomCategories','featureEmailReports','featureMultiplatform'],
+    ctaKey: 'ctaAnnual', ctaLink: '/auth/register', popular: true,
+  },
+  {
+    nameKey: 'monthlyPlanName', descKey: 'monthlyPlanDesc', highlightKey: 'monthlyPlanHighlight',
+    price: '$9.99', periodKey: 'perMonth',
+    featureKeys: ['featureEverythingFree','featureUnlimitedTx','featurePlaid','featureAdvancedAnalytics','featureWeeklyClose','featureTeam','featurePrioritySupport','featureBackups','featureCustomCategories'],
+    ctaKey: 'ctaMonthly', ctaLink: '/auth/register', popular: false,
+  },
+]
+
 export default function Pricing() {
   const t = useTranslations('landing.pricing')
 
-  const plans = [
-    {
-      nameKey: 'freePlanName', descKey: 'freePlanDesc', highlightKey: 'freePlanHighlight',
-      price: '$0', periodKey: 'perMonth',
-      featureKeys: ['featureDashboard','featureManualTx','featureBasicReports','featureLimit','featureEmailSupport'],
-      ctaKey: 'ctaFree', ctaLink: '/auth/register', popular: false,
-    },
-    {
-      nameKey: 'annualPlanName', descKey: 'annualPlanDesc', highlightKey: 'annualPlanHighlight',
-      price: '$99.99', periodKey: 'perYear',
-      featureKeys: ['featureEverythingFree','featureUnlimitedTx','featurePlaid','featureAdvancedAnalytics','featureWeeklyClose','featureTeam','featurePrioritySupport','featureBackups','featureCustomCategories','featureEmailReports','featureMultiplatform'],
-      ctaKey: 'ctaAnnual', ctaLink: '/auth/register', popular: true,
-    },
-    {
-      nameKey: 'monthlyPlanName', descKey: 'monthlyPlanDesc', highlightKey: 'monthlyPlanHighlight',
-      price: '$9.99', periodKey: 'perMonth',
-      featureKeys: ['featureEverythingFree','featureUnlimitedTx','featurePlaid','featureAdvancedAnalytics','featureWeeklyClose','featureTeam','featurePrioritySupport','featureBackups','featureCustomCategories'],
-      ctaKey: 'ctaMonthly', ctaLink: '/auth/register', popular: false,
-    },
-  ]
-
   return (
-    <div id="pricing" className="py-24 bg-white dark:bg-gray-950">
-      <div className="mx-auto max-w-7xl px-6 lg:px-8">
-        <div className="mx-auto max-w-2xl text-center">
-          <h2 className="text-3xl font-bold tracking-tight text-navy-800 dark:text-gray-100 sm:text-4xl">{t('title')}</h2>
-          <p className="mt-4 text-lg leading-8 text-slate-600 dark:text-gray-400">{t('subtitle')}</p>
+    <section id="pricing" className="py-32 bg-[#0c0e12] relative overflow-hidden">
+      {/* Background glows */}
+      <div className="absolute top-0 left-1/4 w-96 h-96 bg-[#81ecff]/5 rounded-full blur-[120px] pointer-events-none" />
+      <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-[#bf81ff]/5 rounded-full blur-[120px] pointer-events-none" />
+
+      <div className="max-w-7xl mx-auto px-6 lg:px-8 relative z-10">
+        {/* Header */}
+        <div className="text-center mb-20">
+          <h2
+            className="text-4xl md:text-6xl font-bold text-white tracking-tight mb-4"
+            style={{ fontFamily: "'Space Grotesk', sans-serif" }}
+          >
+            {t('title')}
+          </h2>
+          <p className="text-white/50 text-lg">{t('subtitle')}</p>
         </div>
 
-        <div className="mx-auto mt-16 grid max-w-lg grid-cols-1 items-center gap-y-6 sm:mt-20 sm:gap-y-0 lg:max-w-6xl lg:grid-cols-3">
-          {plans.map(plan => (
-            <div key={plan.nameKey} className={`${
-              plan.popular
-                ? 'relative bg-linear-to-br from-primary-400 via-primary-500 to-cyan-500 text-white shadow-strong ring-2 ring-primary-400 lg:z-10 scale-105'
-                : 'bg-white dark:bg-gray-900 shadow-soft'
-            } rounded-3xl p-8 lg:mx-0 lg:flex lg:max-w-none lg:flex-col lg:justify-center lg:py-16`}>
+        {/* Cards */}
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 items-center">
+          {PLANS.map((plan) => (
+            <div
+              key={plan.nameKey}
+              className={`relative flex flex-col gap-6 rounded-3xl p-8 transition-all duration-500 ${
+                plan.popular ? 'lg:scale-105 lg:-my-4' : ''
+              }`}
+              style={
+                plan.popular
+                  ? {
+                      background: 'rgba(23, 26, 31, 0.9)',
+                      backdropFilter: 'blur(24px)',
+                      border: '1px solid rgba(129,236,255,0.3)',
+                      boxShadow: '0 0 80px rgba(129,236,255,0.12)',
+                    }
+                  : {
+                      background: 'rgba(17, 19, 24, 0.8)',
+                      border: '1px solid rgba(255,255,255,0.06)',
+                    }
+              }
+            >
+              {/* Popular badge */}
               {plan.popular && (
-                <div className="absolute -top-5 left-0 right-0 mx-auto w-24 rounded-full bg-linear-to-r from-yellow-400 to-orange-500 px-3 py-2 text-sm font-medium text-white text-center shadow-lg">
+                <div className="absolute -top-4 left-1/2 -translate-x-1/2 bg-linear-to-r from-[#81ecff] to-[#bf81ff] text-[#0c0e12] text-[11px] font-black px-5 py-1.5 rounded-full uppercase tracking-[0.2em] whitespace-nowrap">
                   {t('popular')}
                 </div>
               )}
-              <div className="mx-auto max-w-xs lg:mx-0 lg:flex-auto">
-                <h3 className={`text-2xl font-bold tracking-tight ${plan.popular ? 'text-white' : 'text-navy-800 dark:text-gray-100'}`}>
+
+              {/* Plan name & desc */}
+              <div>
+                <h3
+                  className="text-xl font-bold text-white mb-1"
+                  style={{ fontFamily: "'Space Grotesk', sans-serif" }}
+                >
                   {t(plan.nameKey as any)}
                 </h3>
-                <p className={`mt-6 text-base leading-7 ${plan.popular ? 'text-blue-100' : 'text-slate-600 dark:text-gray-400'}`}>
-                  {t(plan.descKey as any)}
-                </p>
-                <p className="mt-6 flex items-baseline gap-x-1">
-                  <span className={`text-5xl font-bold tracking-tight ${plan.popular ? 'text-white' : 'text-navy-800 dark:text-gray-100'}`}>{plan.price}</span>
-                  <span className={`text-sm font-semibold leading-6 ${plan.popular ? 'text-blue-100' : 'text-slate-600 dark:text-gray-400'}`}>{t(plan.periodKey as any)}</span>
-                </p>
-                <p className={`mt-3 text-sm leading-6 font-medium ${plan.popular ? 'text-cyan-200' : 'text-primary-600 dark:text-primary-400'}`}>
+                <p className="text-white/40 text-sm">{t(plan.descKey as any)}</p>
+              </div>
+
+              {/* Price */}
+              <div>
+                <div className="flex items-baseline gap-1">
+                  <span
+                    className={`text-5xl font-bold ${plan.popular ? 'text-[#81ecff]' : 'text-white'}`}
+                    style={{ fontFamily: "'Space Grotesk', sans-serif" }}
+                  >
+                    {plan.price}
+                  </span>
+                  <span className="text-white/40 text-xs uppercase tracking-widest font-bold">
+                    {t(plan.periodKey as any)}
+                  </span>
+                </div>
+                <p className={`text-xs font-bold mt-1 uppercase tracking-widest ${plan.popular ? 'text-[#f4ffc6]' : 'text-white/30'}`}>
                   {t(plan.highlightKey as any)}
                 </p>
-                <ul role="list" className={`mt-8 space-y-3 text-sm leading-6 ${plan.popular ? 'text-blue-100' : 'text-slate-600 dark:text-gray-400'}`}>
-                  {plan.featureKeys.map(fk => (
-                    <li key={fk} className="flex gap-x-3">
-                      <svg className={`h-6 w-5 flex-none ${plan.popular ? 'text-cyan-200' : 'text-primary-500 dark:text-primary-400'}`} viewBox="0 0 20 20" fill="currentColor">
-                        <path fillRule="evenodd" d="M16.704 4.153a.75.75 0 01.143 1.052l-8 10.5a.75.75 0 01-1.127.075l-4.5-4.5a.75.75 0 011.06-1.06l3.894 3.893 7.48-9.817a.75.75 0 011.05-.143z" clipRule="evenodd" />
-                      </svg>
-                      {t(fk as any)}
-                    </li>
-                  ))}
-                </ul>
-                <Link href={plan.ctaLink} className={`${
-                  plan.popular
-                    ? 'bg-white text-primary-600 shadow-sm hover:bg-blue-50'
-                    : 'bg-primary-50 dark:bg-primary-900/30 text-primary-600 dark:text-primary-400 hover:bg-primary-100 dark:hover:bg-primary-900/50'
-                } mt-8 block w-full rounded-lg px-3 py-2 text-center text-sm font-semibold transition-all duration-200`}>
-                  {t(plan.ctaKey as any)}
-                </Link>
               </div>
+
+              {/* Features */}
+              <ul className="flex flex-col gap-3 py-6 border-t border-white/5">
+                {plan.featureKeys.map((fk) => (
+                  <li key={fk} className="flex items-center gap-3 text-sm text-white/60">
+                    <svg
+                      className={`w-4 h-4 shrink-0 ${plan.popular ? 'text-[#81ecff]' : 'text-white/30'}`}
+                      fill="none" stroke="currentColor" strokeWidth={2.5} viewBox="0 0 24 24"
+                    >
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+                    </svg>
+                    {t(fk as any)}
+                  </li>
+                ))}
+              </ul>
+
+              {/* CTA */}
+              <Link
+                href={plan.ctaLink}
+                className={`w-full py-3.5 rounded-xl text-sm font-bold text-center transition-all duration-300 uppercase tracking-widest ${
+                  plan.popular
+                    ? 'bg-[#81ecff] text-[#005762] hover:shadow-[0_0_30px_rgba(129,236,255,0.4)] hover:scale-[1.02]'
+                    : 'border border-white/10 text-white/70 hover:bg-white/5 hover:border-white/20'
+                }`}
+              >
+                {t(plan.ctaKey as any)}
+              </Link>
             </div>
           ))}
         </div>
       </div>
-    </div>
+    </section>
   )
 }
