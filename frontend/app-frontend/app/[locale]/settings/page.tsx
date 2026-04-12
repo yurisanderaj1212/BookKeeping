@@ -430,6 +430,8 @@ export default function SettingsPage() {
     try {
       const url = await uploadAvatar(file)
       setAvatarUrl(url)
+      // Notify sidebar to update avatar instantly
+      window.dispatchEvent(new CustomEvent('profile-updated', { detail: { avatar: url } }))
       showToast(t('photoSaved'))
     } catch (e: unknown) {
       const msg = e instanceof Error ? e.message : ''
@@ -444,6 +446,8 @@ export default function SettingsPage() {
     try {
       await removeAvatar()
       setAvatarUrl(null)
+      // Notify sidebar to clear avatar instantly
+      window.dispatchEvent(new CustomEvent('profile-updated', { detail: { avatar: null } }))
       showToast(t('photoRemoved'))
     } catch (e: unknown) {
       const msg = e instanceof Error ? e.message : ''
@@ -457,6 +461,8 @@ export default function SettingsPage() {
     setIsLoading(true)
     try {
       await updateProfile({ firstName, lastName, phone, jobTitle })
+      // Notify sidebar to update name instantly
+      window.dispatchEvent(new CustomEvent('profile-updated', { detail: { name: [firstName, lastName].filter(Boolean).join(' ') } }))
       showToast(t('profileSaved'))
     } catch (e: unknown) {
       const msg = e instanceof Error ? e.message : ''
@@ -540,7 +546,7 @@ export default function SettingsPage() {
 
   if (authLoading) {
     return (
-      <div className="min-h-screen bg-slate-50 flex items-center justify-center">
+      <div className="min-h-screen bg-slate-50 dark:bg-gray-950 flex items-center justify-center">
         <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary-500"></div>
       </div>
     )
@@ -690,7 +696,12 @@ export default function SettingsPage() {
   }
 
   return (
-    <div className="flex min-h-screen bg-gray-50 dark:bg-gray-950">
+    <div
+      className="flex min-h-screen bg-gray-50 dark:bg-gray-950"
+      style={{
+        animation: 'settingsFadeIn 0.35s cubic-bezier(0.22,1,0.36,1) both',
+      }}
+    >
       <Sidebar onLogout={logout} />
 
       <PageLayout>

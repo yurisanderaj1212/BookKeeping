@@ -56,22 +56,54 @@ export default function Sidebar({ onLogout }: SidebarProps) {
   const { isCollapsed, toggle: toggleCollapsed } = useSidebarCollapsed()
   const { unreadCount } = useNotificationContext()
 
-  // Load real user data
+  // Load real user data — cached in sessionStorage to avoid flicker on navigation
   const [userName, setUserName]   = useState('')
   const [userEmail, setUserEmail] = useState('')
   const [avatarUrl, setAvatarUrl] = useState<string | null>(null)
 
   useEffect(() => {
+    // Try cache first to avoid avatar flicker on page navigation
+    const CACHE_KEY = 'sidebar_user_cache'
+    try {
+      const cached = sessionStorage.getItem(CACHE_KEY)
+      if (cached) {
+        const { name, email, avatar } = JSON.parse(cached)
+        setUserName(name ?? '')
+        setUserEmail(email ?? '')
+        setAvatarUrl(avatar ?? null)
+      }
+    } catch { /* ignore */ }
+
     getSupabase().auth.getUser().then(({ data: { user } }) => {
       if (!user) return
       const meta = user.user_metadata ?? {}
       const first = meta.first_name ?? meta.firstName ?? ''
       const last  = meta.last_name  ?? meta.lastName  ?? ''
       const full  = [first, last].filter(Boolean).join(' ')
-      setUserName(full || user.email?.split('@')[0] || '')
-      setUserEmail(user.email ?? '')
-      if (meta.avatar_path) setAvatarUrl(getAvatarUrl(meta.avatar_path))
+      const name  = full || user.email?.split('@')[0] || ''
+      const email = user.email ?? ''
+      const avatar = meta.avatar_path ? getAvatarUrl(meta.avatar_path) : null
+      setUserName(name)
+      setUserEmail(email)
+      setAvatarUrl(avatar)
+      // Cache so next navigation shows instantly
+      try {
+        sessionStorage.setItem(CACHE_KEY, JSON.stringify({ name, email, avatar }))
+      } catch { /* ignore */ }
     })
+
+    // Listen for profile updates from settings page to update avatar instantly
+    const onProfileUpdate = (e: Event) => {
+      const detail = (e as CustomEvent).detail
+      if (detail?.name !== undefined)   setUserName(detail.name)
+      if (detail?.avatar !== undefined) setAvatarUrl(detail.avatar)
+      try {
+        const prev = JSON.parse(sessionStorage.getItem(CACHE_KEY) ?? '{}')
+        sessionStorage.setItem(CACHE_KEY, JSON.stringify({ ...prev, ...detail }))
+      } catch { /* ignore */ }
+    }
+    window.addEventListener('profile-updated', onProfileUpdate)
+    return () => window.removeEventListener('profile-updated', onProfileUpdate)
   }, [])
 
   const toggleSidebar = () => {
