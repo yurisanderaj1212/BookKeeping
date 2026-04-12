@@ -82,8 +82,8 @@ export default function TransactionSummaryReport({ period, year, month, startDat
   const pendingIncomeCount     = transactions.filter((r: any) => r.type === 1 && r.status === 1).length
   const pendingExpensesCount   = transactions.filter((r: any) => r.type === 2 && r.status === 1).length
 
-  // Recent 10 transactions
-  const recent = transactions.slice(0, 10)
+  // All transactions in the period (not just recent 10)
+  const allTransactions = transactions
 
   return (
     <div className="bg-white dark:bg-gray-900 rounded-lg border border-gray-200 dark:border-gray-700 shadow-sm">
@@ -220,10 +220,12 @@ export default function TransactionSummaryReport({ period, year, month, startDat
         </div>
       </div>
 
-      {/* Recent transactions */}
-      {recent.length > 0 && (
+      {/* All transactions in period */}
+      {allTransactions.length > 0 && (
         <div className="p-6 border-b border-gray-200 dark:border-gray-700">
-          <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">{t('recentTransactions')}</h3>
+          <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">
+            {t('recentTransactions')} ({allTransactions.length})
+          </h3>
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
               <thead className="bg-gray-50 dark:bg-gray-800">
@@ -235,7 +237,7 @@ export default function TransactionSummaryReport({ period, year, month, startDat
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-100">
-                {recent.map((tx: any, i: number) => (
+                {allTransactions.map((tx: any, i: number) => (
                   <tr key={i} className="hover:bg-gray-50 dark:bg-gray-800 dark:hover:bg-gray-800">
                     <td className="px-3 py-2 text-gray-600 dark:text-gray-400">{new Date(tx.date + 'T00:00:00').toLocaleDateString()}</td>
                     <td className="px-3 py-2 text-gray-900 dark:text-gray-100 max-w-[200px] truncate">{tx.description}</td>

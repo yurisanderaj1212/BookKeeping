@@ -24,17 +24,32 @@ export default function ReportsPage() {
   const { user, isLoading, isAuthenticated, logout } = useAuth()
   const t = useTranslations('analytics')
   const tReports = useTranslations('reports')
-  const [selectedPeriod, setSelectedPeriod] = useState<'week' | 'month' | 'year'>('week')
-  const [selectedYear, setSelectedYear] = useState(String(new Date().getFullYear()))
-  const [selectedMonth, setSelectedMonth] = useState(String(new Date().getMonth() + 1).padStart(2, '0'))
-  const [selectedWeek, setSelectedWeek] = useState(() => {
-    const now = new Date()
+  const now = new Date()
+  const defaultWeek = (() => {
     const firstDay = new Date(now.getFullYear(), now.getMonth(), 1)
     const firstSunday = new Date(firstDay)
     firstSunday.setDate(firstDay.getDate() - firstDay.getDay())
     const diffDays = Math.floor((now.getTime() - firstSunday.getTime()) / 86400000)
     return String(Math.floor(diffDays / 7) + 1)
-  })
+  })()
+
+  // Restore period state from sessionStorage when navigating back from a sub-report
+  // Reset to current date when entering from outside the reports section
+  const SESSION_KEY = 'analytics_period_state'
+  const getInitialState = () => {
+    if (typeof window === 'undefined') return null
+    try {
+      const saved = sessionStorage.getItem(SESSION_KEY)
+      if (saved) return JSON.parse(saved)
+    } catch { /* ignore */ }
+    return null
+  }
+  const saved = getInitialState()
+
+  const [selectedPeriod, setSelectedPeriod] = useState<'week' | 'month' | 'year'>(saved?.period ?? 'week')
+  const [selectedYear, setSelectedYear] = useState(saved?.year ?? String(now.getFullYear()))
+  const [selectedMonth, setSelectedMonth] = useState(saved?.month ?? String(now.getMonth() + 1).padStart(2, '0'))
+  const [selectedWeek, setSelectedWeek] = useState(saved?.week ?? defaultWeek)
   const {
     isOnboardingOpen,
     currentStep: onboardingStep,
@@ -45,23 +60,52 @@ export default function ReportsPage() {
 
   const [transactionStats, setTransactionStats] = useState({ totalTransactions: 0, pendingCount: 0 })
 
+  // Persist period state in sessionStorage so it survives sub-report navigation
   useEffect(() => {
-    // Calculate week start/end dates for the selected week
-    const getWeekDates = () => {
-      const y = parseInt(selectedYear), m = parseInt(selectedMonth), wk = parseInt(selectedWeek)
+    try {
+      sessionStorage.setItem(SESSION_KEY, JSON.stringify({
+        period: selectedPeriod, year: selectedYear, month: selectedMonth, week: selectedWeek,
+      }))
+    } catch { /* ignore */ }
+  }, [selectedPeriod, selectedYear, selectedMonth, selectedWeek])
+
+  useEffect(() => {
+    const y = parseInt(selectedYear)
+    const m = parseInt(selectedMonth)
+    const wk = parseInt(selectedWeek)
+    const fmt = (d: Date) => d.toISOString().split('T')[0]
+
+    let startDate: string | undefined
+    let endDate: string | undefined
+
+    if (selectedPeriod === 'week') {
       const firstDay = new Date(y, m - 1, 1)
       const firstSunday = new Date(firstDay)
       firstSunday.setDate(firstDay.getDate() - firstDay.getDay())
-      const start = new Date(firstSunday); start.setDate(firstSunday.getDate() + (wk - 1) * 7)
-      const end = new Date(start); end.setDate(start.getDate() + 6)
-      const fmt = (d: Date) => d.toISOString().split('T')[0]
-      return { startDate: fmt(start), endDate: fmt(end) }
+      const start = new Date(firstSunday)
+      start.setDate(firstSunday.getDate() + (wk - 1) * 7)
+      const end = new Date(start)
+      end.setDate(start.getDate() + 6)
+      startDate = fmt(start)
+      endDate   = fmt(end)
+    } else if (selectedPeriod === 'month') {
+      startDate = fmt(new Date(y, m - 1, 1))
+      endDate   = fmt(new Date(y, m, 0))
+    } else {
+      startDate = `${y}-01-01`
+      endDate   = `${y}-12-31`
     }
-    const weekDates = selectedPeriod === 'week' ? getWeekDates() : {}
-    getTransactionSummary({ period: selectedPeriod, year: parseInt(selectedYear), month: parseInt(selectedMonth), ...weekDates })
+
+    getTransactionSummary({
+      period: selectedPeriod,
+      year: y,
+      month: selectedPeriod === 'year' ? undefined : m,
+      startDate,
+      endDate,
+    })
       .then((data: any) => setTransactionStats({
         totalTransactions: data.totalTransactions ?? 0,
-        pendingCount: data.pendingCount ?? 0
+        pendingCount: data.pendingCount ?? 0,
       }))
       .catch(() => {})
   }, [selectedPeriod, selectedYear, selectedMonth, selectedWeek])
