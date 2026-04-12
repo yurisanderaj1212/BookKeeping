@@ -1,97 +1,9 @@
 ﻿'use client'
 
 import Link from 'next/link'
-import { useEffect, useRef, useState } from 'react'
 import { useTranslations } from 'next-intl'
 import LandingNav from '@/components/LandingNav'
-
-const BARS = [
-  { label: 'MON', pct: 28,  active: false },
-  { label: 'TUE', pct: 45,  active: false },
-  { label: 'WED', pct: 72,  active: false },
-  { label: 'THU', pct: 38,  active: false },
-  { label: 'FRI', pct: 60,  active: false },
-  { label: 'SAT', pct: 100, active: true  },
-  { label: 'SUN', pct: 35,  active: false },
-]
-
-function LiveChart() {
-  const [animated, setAnimated] = useState(false)
-  const ref = useRef<HTMLDivElement>(null)
-
-  useEffect(() => {
-    const observer = new IntersectionObserver(
-      ([entry]) => { if (entry.isIntersecting) setAnimated(true) },
-      { threshold: 0.3 }
-    )
-    if (ref.current) observer.observe(ref.current)
-    return () => observer.disconnect()
-  }, [])
-
-  return (
-    <div
-      ref={ref}
-      className="w-full max-w-md rounded-2xl p-8 relative overflow-hidden"
-      style={{
-        background: 'rgba(13, 15, 20, 0.9)',
-        backdropFilter: 'blur(24px)',
-        border: '1px solid rgba(255,255,255,0.07)',
-      }}
-    >
-      {/* Header */}
-      <div className="flex items-start justify-between mb-10">
-        <div>
-          <p className="text-white/40 text-[10px] uppercase tracking-[0.25em] mb-2">Global Revenue</p>
-          <p
-            className="text-[#81ecff] text-4xl font-bold tracking-tight"
-            style={{ fontFamily: "'Space Grotesk', sans-serif" }}
-          >
-            $1,429,203.00
-          </p>
-        </div>
-        <div className="flex items-center gap-2 mt-1">
-          <span className="relative flex h-2 w-2">
-            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#f4ffc6] opacity-75" />
-            <span className="relative inline-flex rounded-full h-2 w-2 bg-[#f4ffc6]" />
-          </span>
-          <span className="text-[#f4ffc6] text-[10px] font-bold uppercase tracking-[0.2em]">Live Syncing</span>
-        </div>
-      </div>
-
-      {/* Bar chart — fixed height container, bars grow from bottom */}
-      <div className="relative" style={{ height: '160px' }}>
-        <div className="absolute inset-0 flex items-end justify-between gap-3">
-          {BARS.map((bar, i) => (
-            <div key={i} className="flex flex-col items-center gap-2 flex-1 h-full justify-end">
-              {/* Bar wrapper — full height, bar grows from bottom */}
-              <div className="w-full flex items-end" style={{ height: '130px' }}>
-                <div
-                  className="w-full rounded-sm"
-                  style={{
-                    height: animated ? `${bar.pct}%` : '0%',
-                    background: bar.active
-                      ? '#81ecff'
-                      : 'rgba(255,255,255,0.1)',
-                    boxShadow: bar.active ? '0 0 20px rgba(129,236,255,0.5)' : 'none',
-                    transition: `height 0.8s cubic-bezier(0.34,1.2,0.64,1)`,
-                    transitionDelay: `${i * 80}ms`,
-                  }}
-                />
-              </div>
-              <span
-                className={`text-[9px] font-bold uppercase tracking-wider ${
-                  bar.active ? 'text-[#81ecff]' : 'text-white/25'
-                }`}
-              >
-                {bar.label}
-              </span>
-            </div>
-          ))}
-        </div>
-      </div>
-    </div>
-  )
-}
+import AuthFlipCard from '@/components/auth/AuthFlipCard'
 
 export default function Hero() {
   const t  = useTranslations('landing')
@@ -168,10 +80,10 @@ export default function Hero() {
             </div>
           </div>
 
-          {/* Right — live bar chart */}
+          {/* Right — flip card */}
           <div className="hidden lg:flex justify-center relative">
             <div className="absolute -z-10 w-96 h-96 bg-[#81ecff]/8 blur-[100px] rounded-full" />
-            <LiveChart />
+            <AuthFlipCard />
           </div>
         </div>
       </div>
