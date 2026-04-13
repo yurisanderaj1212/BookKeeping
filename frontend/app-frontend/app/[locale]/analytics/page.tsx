@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
-import { Download, Calendar, TrendingUp, BarChart3 } from 'lucide-react'
+import { Download, Calendar } from 'lucide-react'
 import Sidebar from '@/components/dashboard/Sidebar'
 import OnboardingTour from '@/components/onboarding/OnboardingTour'
 import { useOnboarding } from '@/hooks/useOnboarding'
@@ -224,40 +224,6 @@ export default function ReportsPage() {
               </select>
             </div>
             </div>
-
-          {/* Summary Stats — 2x2 on mobile, 3-col on md+ */}
-          <div className="grid grid-cols-2 md:grid-cols-3 gap-3 sm:gap-4 mb-4 sm:mb-6">
-            <div className="bg-white dark:bg-gray-900 rounded-lg border border-gray-200 dark:border-gray-700 p-3 sm:p-4">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-xs text-gray-600 dark:text-gray-400">{t('totalTransactions')}</p>
-                  <p className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-gray-100">{transactionStats.totalTransactions}</p>
-                </div>
-                <BarChart3 className="w-6 h-6 sm:w-8 sm:h-8 text-primary-600" />
-              </div>
-            </div>
-            <div className="bg-white dark:bg-gray-900 rounded-lg border border-gray-200 dark:border-gray-700 p-3 sm:p-4">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-xs text-gray-600 dark:text-gray-400">{t('pendingTransactions')}</p>
-                  <p className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-gray-100">{transactionStats.pendingCount}</p>
-                </div>
-                <TrendingUp className="w-6 h-6 sm:w-8 sm:h-8 text-orange-600" />
-              </div>
-            </div>
-            <div className="col-span-2 md:col-span-1 bg-white dark:bg-gray-900 rounded-lg border border-gray-200 dark:border-gray-700 p-3 sm:p-4">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-xs text-gray-600 dark:text-gray-400">{t('selectedPeriod')}</p>
-                  <p className="text-base sm:text-lg font-bold text-gray-900 dark:text-gray-100">
-                    {selectedPeriod === 'week' ? t('weekly') :
-                     selectedPeriod === 'month' ? t('monthly') : t('annual')}
-                  </p>
-                </div>
-                <Calendar className="w-6 h-6 sm:w-8 sm:h-8 text-green-600" />
-              </div>
-            </div>
-          </div>
 
           {/* Reports Overview - Restored */}
           <div data-tour="analytics-main">
