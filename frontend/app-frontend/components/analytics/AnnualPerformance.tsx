@@ -72,15 +72,22 @@ export default function AnnualPerformance({ year }: AnnualPerformanceProps) {
 
   const CustomTooltip = ({ active, payload, label }: any) => {
     if (active && payload && payload.length) {
+      const income   = payload.find((p: any) => p.dataKey === 'ingresos')?.value ?? 0
+      const expenses = payload.find((p: any) => p.dataKey === 'gastos')?.value ?? 0
+      const profit   = income - expenses
+      const margin   = income > 0 ? ((profit / income) * 100).toFixed(1) : '0.0'
+      const isLoss   = profit < 0
       return (
         <div className="bg-white dark:bg-gray-900 p-3 border border-gray-200 dark:border-gray-700 rounded-lg shadow-lg">
           <p className="font-medium text-gray-900 dark:text-gray-100 mb-2">{label}</p>
-          {payload.map((entry: any, index: number) => (
-            <p key={index} className="text-sm" style={{ color: entry.color }}>
-              {entry.dataKey === 'ingresos' ? t('income') :
-               entry.dataKey === 'gastos' ? t('expenses') : t('profit')}: {formatCurrency(entry.value)}
-            </p>
-          ))}
+          <p className="text-sm text-green-600">{t('income')}: {formatCurrency(income)}</p>
+          <p className="text-sm text-red-500">{t('expenses')}: {formatCurrency(expenses)}</p>
+          <p className={`text-sm font-semibold ${isLoss ? 'text-orange-500' : 'text-blue-500'}`}>
+            {isLoss ? t('loss') : t('profit')}: {formatCurrency(profit)}
+          </p>
+          <p className={`text-xs mt-1 pt-1 border-t border-gray-100 dark:border-gray-700 ${isLoss ? 'text-orange-400' : 'text-gray-500 dark:text-gray-400'}`}>
+            {t('margin')}: <span className="font-semibold">{margin}%</span>
+          </p>
         </div>
       )
     }

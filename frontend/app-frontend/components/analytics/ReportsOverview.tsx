@@ -121,26 +121,42 @@ export default function ReportsOverview({ period, year, month, week }: ReportsOv
           }
           setChartData(points)
         } else if (period === 'month') {
-          // Group by Sunday-based week within the month
-          const weekMap = new Map<number, { ingresos: number; gastos: number }>()
+          // Group by canonical week within the month, show date ranges as labels
+          const y = parseInt(year)
+          const m = parseInt(month)
+          const firstOfMonth = new Date(y, m - 1, 1)
+          const firstSunday  = new Date(firstOfMonth)
+          firstSunday.setDate(firstOfMonth.getDate() - firstOfMonth.getDay())
+
+          const weekMap = new Map<number, { ingresos: number; gastos: number; start: Date; end: Date }>()
+          // Pre-build week date ranges
+          for (let i = 0; i < 6; i++) {
+            const wStart = new Date(firstSunday)
+            wStart.setDate(firstSunday.getDate() + i * 7)
+            const wEnd = new Date(wStart)
+            wEnd.setDate(wStart.getDate() + 6)
+            weekMap.set(i + 1, { ingresos: 0, gastos: 0, start: wStart, end: wEnd })
+          }
+
           for (const r of rows) {
             const d = new Date(r.date + 'T00:00:00')
-            // Find which week slot (1-5) this day belongs to
-            // Week 1 starts on the Sunday on or before the 1st of the month
-            const firstOfMonth = new Date(d.getFullYear(), d.getMonth(), 1)
-            const firstSunday  = new Date(firstOfMonth)
-            firstSunday.setDate(firstOfMonth.getDate() - firstOfMonth.getDay())
-            const diffDays = Math.floor((d.getTime() - firstSunday.getTime()) / (86400000))
+            const diffDays = Math.floor((d.getTime() - firstSunday.getTime()) / 86400000)
             const weekNum  = Math.floor(diffDays / 7) + 1
-            const existing = weekMap.get(weekNum) ?? { ingresos: 0, gastos: 0 }
+            const existing = weekMap.get(weekNum)
+            if (!existing) continue
             if (r.type === 1) existing.ingresos += r.amount
             else existing.gastos += r.amount
-            weekMap.set(weekNum, existing)
           }
-          const points: ChartPoint[] = Array.from({ length: 5 }, (_, i) => {
-            const w = weekMap.get(i + 1) ?? { ingresos: 0, gastos: 0 }
-            return { name: `${t('week')} ${i + 1}`, ...w }
-          })
+
+          const fmtDay = (d: Date) => d.toLocaleDateString(locale === 'en' ? 'en-US' : 'es-ES', { month: 'short', day: 'numeric' })
+          const points: ChartPoint[] = Array.from(weekMap.entries())
+            .filter(([, v]) => v.start <= new Date(y, m, 0)) // only weeks overlapping the month
+            .slice(0, 5)
+            .map(([, v]) => ({
+              name: `${fmtDay(v.start)}-${v.end.getDate()}`,
+              ingresos: v.ingresos,
+              gastos: v.gastos,
+            }))
           setChartData(points)
         } else {
           // year — group by month
@@ -226,7 +242,7 @@ export default function ReportsOverview({ period, year, month, week }: ReportsOv
             <h3 className="text-base sm:text-lg font-semibold text-gray-900 dark:text-gray-100">{t('incomeVsExpenses')}</h3>
             <InfoTooltip title={t('infoTitle')} description={t('infoDesc')} />
           </div>
-          <p className="text-xs sm:text-sm text-gray-500 dark:text-gray-400 mt-0.5">
+          <p className="text-xs sm:text-sm text-gray-500 dark:text-gray-400 mt-0.5 capitalize font-medium">
             {period === 'week' ? t('comparisonDaily') : period === 'month' ? t('comparisonWeekly') : t('comparisonMonthly')}
           </p>
         </div>
