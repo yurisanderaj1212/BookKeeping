@@ -865,6 +865,7 @@
       "income": "Revenue",
       "expenses": "Expenses",
       "profit": "Profit",
+      "loss": "Loss",
       "annualPerformance": "Annual Performance",
       "monthlyBreakdown": "Monthly revenue and expenses throughout the year",
       "annualIncome": "Annual Revenue",

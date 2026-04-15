@@ -382,7 +382,6 @@ export function NotificationProvider({ children }: { children: ReactNode }) {
       checkWeekEndingWarning()
       checkPendingTransactions()
       checkMonthlyReportReminder()
-      checkLowBalance()
     }, 1500)
     pollingRef.current = setInterval(poll, 5000)
 
@@ -390,7 +389,7 @@ export function NotificationProvider({ children }: { children: ReactNode }) {
       clearTimeout(init)
       if (pollingRef.current) clearInterval(pollingRef.current)
     }
-  }, [poll, checkWeeklyReminder, checkWeekEndingWarning, checkPendingTransactions, checkMonthlyReportReminder, checkLowBalance])
+  }, [poll, checkWeeklyReminder, checkWeekEndingWarning, checkPendingTransactions, checkMonthlyReportReminder])
 
   return (
     <NotificationContext.Provider value={{ toasts, unreadCount, addToast, removeToast, markAllRead, refreshUnread }}>

@@ -168,11 +168,11 @@ export default function WeeklyClosureAnalysis({ year, month }: WeeklyClosureAnal
           <p className="text-sm text-gray-500 dark:text-gray-400 mb-4">{t('weeklyClosureSubtitle')}</p>
           <div className="w-full mb-6" style={{ height: 280 }}>
             <ResponsiveContainer width="100%" height={280}>
-              <BarChart data={chartData} margin={{ top: 10, right: 8, left: 0, bottom: 45 }}>
+              <BarChart data={chartData} margin={{ top: 10, right: 8, left: 0, bottom: 20 }}>
                 <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" vertical={false} />
                 <XAxis dataKey="name" axisLine={false} tickLine={false}
-                  tick={{ fontSize: 10, fill: '#6b7280' }}
-                  angle={-25} textAnchor="end" interval={0} dy={8} />
+                  tick={{ fontSize: 11, fill: '#6b7280' }}
+                  angle={0} textAnchor="middle" interval={0} />
                 <YAxis axisLine={false} tickLine={false} tick={{ fontSize: 10, fill: '#6b7280' }}
                   tickFormatter={v => v === 0 ? '$0' : Math.abs(v) >= 1000 ? `${(v/1000).toFixed(0)}k` : `${v}`} />
                 <Tooltip content={<CustomTooltip />} />
