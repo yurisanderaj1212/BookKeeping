@@ -8,12 +8,15 @@ import { useCurrency } from '@/hooks/useCurrency'
 import { getSupabase } from '@/lib/supabaseClient'
 
 interface YearComparisonProps {
-  period: string
-  year: string
-  month: string
+  startDate: string | null
+  endDate:   string | null
 }
 
-export default function YearComparison({ year }: YearComparisonProps) {
+export default function YearComparison({ startDate }: YearComparisonProps) {
+  // Derive year from startDate, fallback to current year
+  const year = startDate
+    ? String(new Date(startDate + 'T00:00:00').getFullYear())
+    : String(new Date().getFullYear())
   const t      = useTranslations('analytics.components')
   const locale = useLocale()
   const { formatCurrency } = useCurrency()

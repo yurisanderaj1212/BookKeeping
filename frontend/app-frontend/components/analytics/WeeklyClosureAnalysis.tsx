@@ -9,9 +9,8 @@ import { getSupabase } from '@/lib/supabaseClient'
 import InfoTooltip from '@/components/ui/InfoTooltip'
 
 interface WeeklyClosureAnalysisProps {
-  period: string
-  year:   string
-  month:  string
+  startDate: string | null
+  endDate:   string | null
 }
 
 interface ClosureRow {
@@ -25,7 +24,7 @@ interface ClosureRow {
   closed_at:      string | null
 }
 
-export default function WeeklyClosureAnalysis({ year, month }: WeeklyClosureAnalysisProps) {
+export default function WeeklyClosureAnalysis({ startDate, endDate }: WeeklyClosureAnalysisProps) {
   const t      = useTranslations('analytics.components')
   const locale = useLocale()
   const { formatCurrency } = useCurrency()
@@ -38,21 +37,28 @@ export default function WeeklyClosureAnalysis({ year, month }: WeeklyClosureAnal
       setLoading(true)
       try {
         const supabase = getSupabase()
+        const now = new Date()
+        const start = startDate ?? `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-01`
+        const end   = endDate   ?? new Date(now.getFullYear(), now.getMonth() + 1, 0).toISOString().split('T')[0]
+
+        // Derive year/month range from the date range to query week_closures
+        const startD = new Date(start + 'T00:00:00')
+        const endD   = new Date(end   + 'T00:00:00')
+
         const { data: closureData } = await supabase
           .from('week_closures')
           .select('id, week_number, start_date, end_date, total_income, total_expenses, net_profit, closed_at')
-          .eq('year', parseInt(year))
-          .eq('month', parseInt(month))
-          .order('week_number')
+          .gte('start_date', start)
+          .lte('end_date', end)
+          .order('start_date')
 
         const closureRows = closureData ?? []
-        const monthStart = `${year}-${String(parseInt(month)).padStart(2, '0')}-01`
-        const monthEnd   = new Date(parseInt(year), parseInt(month), 0).toISOString().split('T')[0]
+
         const { data: txData } = await supabase
           .from('transactions')
           .select('type, amount, date')
-          .gte('date', monthStart)
-          .lte('date', monthEnd)
+          .gte('date', start)
+          .lte('date', end)
           .or('is_from_plaid.eq.false,is_business_transaction.eq.true')
 
         const txs = txData ?? []
@@ -69,7 +75,7 @@ export default function WeeklyClosureAnalysis({ year, month }: WeeklyClosureAnal
     }
     load()
     return () => { cancelled = true }
-  }, [year, month])
+  }, [startDate, endDate])
 
   const getStatus = (row: ClosureRow): 'closed' | 'open' => row.closed_at ? 'closed' : 'open'
 
@@ -111,10 +117,10 @@ export default function WeeklyClosureAnalysis({ year, month }: WeeklyClosureAnal
         <p className="text-sm" style={{ color: '#10b981' }}>{t('income')}: {formatCurrency(income)}</p>
         <p className="text-sm" style={{ color: '#ef4444' }}>{t('expenses')}: {formatCurrency(expenses)}</p>
         <p className="text-sm font-semibold" style={{ color: isLoss ? '#f97316' : '#60a5fa' }}>
-          {isLoss ? t('loss') : t('profit')}: {formatCurrency(profit)}
+          {isLoss ? t('loss') : t('profit')}: {formatCurrency(Math.abs(profit))}
         </p>
         <p className="text-xs text-gray-500 dark:text-gray-400 mt-1 pt-1 border-t border-gray-100 dark:border-gray-700">
-          {t('margin')}: <span className={isLoss ? 'text-orange-500' : 'text-green-500'} style={{ fontWeight: 600 }}>{margin}%</span>
+          {t('margin')}: <span className={isLoss ? 'text-orange-500' : 'text-green-500'} style={{ fontWeight: 600 }}>{Math.abs(parseFloat(margin)).toFixed(1)}%</span>
         </p>
       </div>
     )
@@ -166,7 +172,7 @@ export default function WeeklyClosureAnalysis({ year, month }: WeeklyClosureAnal
       {chartData.length > 0 && (
         <>
           <p className="text-sm text-gray-500 dark:text-gray-400 mb-4">{t('weeklyClosureSubtitle')}</p>
-          <div className="w-full mb-6" style={{ height: 280 }}>
+          <div className="w-full mb-4" style={{ height: 280 }}>
             <ResponsiveContainer width="100%" height={280}>
               <BarChart data={chartData} margin={{ top: 10, right: 8, left: 0, bottom: 20 }}>
                 <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" vertical={false} />
@@ -186,6 +192,8 @@ export default function WeeklyClosureAnalysis({ year, month }: WeeklyClosureAnal
               </BarChart>
             </ResponsiveContainer>
           </div>
+
+          {/* Legend */}
           <div className="flex items-center justify-center gap-5 mb-6">
             {[
               { color: '#10b981', label: t('income') },

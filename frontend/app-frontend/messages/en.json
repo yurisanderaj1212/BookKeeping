@@ -990,7 +990,9 @@
       "weeklyPerfInfoTitle": "Weekly Performance",
       "weeklyPerfInfoDesc": "Shows revenue, expenses and profit for each week of the month based on weekly closure records. Closed weeks are locked and reflect final figures.",
       "annualInfoTitle": "Annual Performance",
-      "annualInfoDesc": "Shows your total revenue, expenses and profit for each month of the year. Use this to identify your best and worst months and spot seasonal trends in your business."
+      "annualInfoDesc": "Shows your total revenue, expenses and profit for each month of the year. Use this to identify your best and worst months and spot seasonal trends in your business.",
+      "dailyBreakdown": "Period Breakdown",
+      "period": "Period"
     },
     "topTransactions": {
       "title": "Top Transactions",

@@ -990,7 +990,9 @@
       "weeklyPerfInfoTitle": "Rendimiento Semanal",
       "weeklyPerfInfoDesc": "Muestra ingresos, gastos y beneficio de cada semana del mes basado en los registros de cierre semanal. Las semanas cerradas están bloqueadas y reflejan cifras definitivas.",
       "annualInfoTitle": "Rendimiento Anual",
-      "annualInfoDesc": "Muestra tus ingresos, gastos y beneficio totales por cada mes del año. Úsalo para identificar tus mejores y peores meses y detectar tendencias estacionales en tu negocio."
+      "annualInfoDesc": "Muestra tus ingresos, gastos y beneficio totales por cada mes del año. Úsalo para identificar tus mejores y peores meses y detectar tendencias estacionales en tu negocio.",
+      "dailyBreakdown": "Desglose del Período",
+      "period": "Período"
     },
     "topTransactions": {
       "title": "Top Transacciones",
