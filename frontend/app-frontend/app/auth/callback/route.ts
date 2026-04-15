@@ -41,8 +41,8 @@ export async function GET(request: Request) {
       if (type === 'recovery') {
         return NextResponse.redirect(`${baseUrl}/${locale}/auth/forgot-password?reset=1`)
       }
-      // OAuth or email confirmation — go to dashboard
-      return NextResponse.redirect(`${baseUrl}/${locale}/dashboard`)
+      // OAuth or email confirmation — go to checkout gate (checks subscription)
+      return NextResponse.redirect(`${baseUrl}/${locale}/subscribe/checkout`)
     }
   }
 
