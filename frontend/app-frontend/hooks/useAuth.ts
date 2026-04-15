@@ -11,7 +11,7 @@ export interface User {
   lastName: string
 }
 
-const PROTECTED = ['/dashboard','/transactions','/reports','/analytics','/settings','/week-close','/notifications','/accounts','/subscribe']
+const PROTECTED = ['/dashboard','/transactions','/reports','/analytics','/settings','/week-close','/notifications','/accounts']
 const AUTH_ROUTES = ['/auth/login','/auth/register','/auth/forgot-password']
 
 const isProtected = (p: string) => PROTECTED.some(r => p.includes(r))
@@ -62,7 +62,8 @@ export function useAuth() {
         if (_event === 'SIGNED_IN') {
           localStorage.setItem('cn_session_start', String(Date.now()))
         }
-        if (isAuthRoute(pathname)) router.replace('/dashboard')
+        // Don't auto-redirect here — let the login page handle the redirect
+        // so it can go through the checkout gate
       } else {
         setUser(null)
         if (isProtected(pathname)) router.replace('/auth/login')
