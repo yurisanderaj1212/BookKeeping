@@ -5,11 +5,10 @@
 //   GEMINI_API_KEY = your key from https://aistudio.google.com/app/apikey
 
 const GEMINI_API_KEY = Deno.env.get('GEMINI_API_KEY')!
-// Try multiple models in order — use the first one that works
+// Free tier models per Google AI documentation (April 2026)
 const GEMINI_MODELS = [
-  'gemini-1.5-flash-latest',
-  'gemini-1.5-flash',
-  'gemini-2.0-flash-lite',
+  'gemini-3.1-flash-lite-preview',  // free tier, high-volume, low latency
+  'gemini-3-flash-preview',          // free tier, Pro-level intelligence
 ]
 const GEMINI_BASE = 'https://generativelanguage.googleapis.com/v1beta/models'
 
@@ -99,16 +98,9 @@ Deno.serve(async (req) => {
       system_instruction: { parts: [{ text: SYSTEM_PROMPT }] },
       contents,
       generationConfig: {
-        temperature:     0.7,
+        // Gemini 3 docs: keep temperature at default 1.0 for best performance
         maxOutputTokens: 512,
-        topP:            0.9,
       },
-      safetySettings: [
-        { category: 'HARM_CATEGORY_HARASSMENT',        threshold: 'BLOCK_MEDIUM_AND_ABOVE' },
-        { category: 'HARM_CATEGORY_HATE_SPEECH',       threshold: 'BLOCK_MEDIUM_AND_ABOVE' },
-        { category: 'HARM_CATEGORY_SEXUALLY_EXPLICIT', threshold: 'BLOCK_MEDIUM_AND_ABOVE' },
-        { category: 'HARM_CATEGORY_DANGEROUS_CONTENT', threshold: 'BLOCK_MEDIUM_AND_ABOVE' },
-      ],
     }
 
     // Try each model until one works

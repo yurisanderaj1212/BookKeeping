@@ -1,7 +1,7 @@
-﻿﻿'use client'
+﻿'use client'
 
 import { useState, useEffect } from 'react'
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts'
+import { BarChart, Bar, Cell, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts'
 import { CheckCircle, Clock, AlertCircle, TrendingUp } from 'lucide-react'
 import { useTranslations, useLocale } from 'next-intl'
 import { useCurrency } from '@/hooks/useCurrency'
@@ -102,6 +102,7 @@ export default function WeeklyClosureAnalysis({ year, month }: WeeklyClosureAnal
     const income   = d?.ingresos  ?? 0
     const expenses = d?.gastos    ?? 0
     const profit   = d?.beneficio ?? 0
+    const isLoss   = profit < 0
     const margin   = income > 0 ? ((profit / income) * 100).toFixed(1) : '0.0'
     return (
       <div className="bg-white dark:bg-gray-900 p-3 border border-gray-200 dark:border-gray-700 rounded-lg shadow-lg">
@@ -109,9 +110,11 @@ export default function WeeklyClosureAnalysis({ year, month }: WeeklyClosureAnal
         <p className="text-xs text-gray-500 dark:text-gray-400 mb-1">{t('status')}: {d?.status === 'closed' ? t('statusClosed') : t('statusOpen')}</p>
         <p className="text-sm" style={{ color: '#10b981' }}>{t('income')}: {formatCurrency(income)}</p>
         <p className="text-sm" style={{ color: '#ef4444' }}>{t('expenses')}: {formatCurrency(expenses)}</p>
-        <p className="text-sm" style={{ color: '#60a5fa' }}>{t('profit')}: {formatCurrency(profit)}</p>
+        <p className="text-sm font-semibold" style={{ color: isLoss ? '#f97316' : '#60a5fa' }}>
+          {isLoss ? t('loss') : t('profit')}: {formatCurrency(profit)}
+        </p>
         <p className="text-xs text-gray-500 dark:text-gray-400 mt-1 pt-1 border-t border-gray-100 dark:border-gray-700">
-          {t('margin')}: <span className={profit >= 0 ? 'text-green-500' : 'text-red-500'} style={{ fontWeight: 600 }}>{margin}%</span>
+          {t('margin')}: <span className={isLoss ? 'text-orange-500' : 'text-green-500'} style={{ fontWeight: 600 }}>{margin}%</span>
         </p>
       </div>
     )
@@ -129,7 +132,7 @@ export default function WeeklyClosureAnalysis({ year, month }: WeeklyClosureAnal
         <InfoTooltip title={t('weeklyPerfInfoTitle')} description={t('weeklyPerfInfoDesc')} />
       </div>
 
-      {/* Summary Cards — same style as AnnualPerformance */}
+      {/* Summary Cards */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4 mb-6">
         {[
           { icon: CheckCircle, bg: 'bg-green-50 dark:bg-green-900/20', iconColor: 'text-green-600 dark:text-green-400', badgeColor: 'text-green-600 dark:text-green-400',
@@ -173,14 +176,23 @@ export default function WeeklyClosureAnalysis({ year, month }: WeeklyClosureAnal
                 <YAxis axisLine={false} tickLine={false} tick={{ fontSize: 10, fill: '#6b7280' }}
                   tickFormatter={v => v === 0 ? '$0' : Math.abs(v) >= 1000 ? `${(v/1000).toFixed(0)}k` : `${v}`} />
                 <Tooltip content={<CustomTooltip />} />
-                <Bar dataKey="ingresos"  fill="#10b981" radius={[3,3,0,0]} name={t('income')} animationDuration={1200} />
-                <Bar dataKey="gastos"    fill="#ef4444" radius={[3,3,0,0]} name={t('expenses')} animationDuration={1200} animationBegin={200} />
-                <Bar dataKey="beneficio" fill="#60a5fa" radius={[3,3,0,0]} name={t('profit')} animationDuration={1200} animationBegin={400} />
+                <Bar dataKey="ingresos" fill="#10b981" radius={[3,3,0,0]} name={t('income')} animationDuration={1200} />
+                <Bar dataKey="gastos" fill="#ef4444" radius={[3,3,0,0]} name={t('expenses')} animationDuration={1200} animationBegin={200} />
+                <Bar dataKey="beneficio" radius={[3,3,0,0]} name={t('profit')} animationDuration={1200} animationBegin={400}>
+                  {chartData.map((entry, index) => (
+                    <Cell key={`cell-${index}`} fill={entry.beneficio >= 0 ? '#60a5fa' : '#f97316'} />
+                  ))}
+                </Bar>
               </BarChart>
             </ResponsiveContainer>
           </div>
           <div className="flex items-center justify-center gap-5 mb-6">
-            {[{ color: '#10b981', label: t('income') }, { color: '#ef4444', label: t('expenses') }, { color: '#60a5fa', label: t('profit') }].map(item => (
+            {[
+              { color: '#10b981', label: t('income') },
+              { color: '#ef4444', label: t('expenses') },
+              { color: '#60a5fa', label: t('profit') },
+              { color: '#f97316', label: t('loss') },
+            ].map(item => (
               <div key={item.label} className="flex items-center gap-1.5">
                 <div className="w-3 h-3 rounded-sm shrink-0" style={{ backgroundColor: item.color }} />
                 <span className="text-xs text-gray-500 dark:text-gray-400">{item.label}</span>
@@ -208,7 +220,7 @@ export default function WeeklyClosureAnalysis({ year, month }: WeeklyClosureAnal
                   const status = getStatus(row)
                   return (
                     <tr key={row.id} className="hover:bg-gray-50 dark:hover:bg-gray-800">
-                      <td className="px-3 py-2 text-xs font-medium text-gray-900 dark:text-gray-100 whitespace-nowrap">{t('week')} {row.week_number}</td>
+                      <td className="px-3 py-2 text-xs font-medium text-gray-900 dark:text-gray-100 whitespace-nowrap">{fmtRange(row.start_date, row.end_date)}</td>
                       <td className="px-3 py-2">
                         <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium ${
                           status === 'closed' ? 'bg-green-100 text-green-800' : 'bg-blue-100 text-blue-800'
