@@ -26,10 +26,11 @@ export function useAuth() {
   useEffect(() => {
     const supabase = getSupabase()
 
-    // Verificar sesión inicial
-    supabase.auth.getSession().then(({ data }) => {
-      if (data.session?.user) {
-        const u = data.session.user
+    // Use getUser() to validate session against Supabase server
+    // (getSession() only reads localStorage and can return stale/deleted accounts)
+    supabase.auth.getUser().then(({ data, error }) => {
+      if (data.user && !error) {
+        const u = data.user
         setUser({
           id: u.id, email: u.email!,
           firstName: u.user_metadata?.first_name ?? '',
@@ -40,6 +41,8 @@ export function useAuth() {
           accountService.ensureCashAccount().catch(console.error)
         })
       } else {
+        // Invalid or deleted account — clear session and redirect
+        supabase.auth.signOut()
         setUser(null)
         if (isProtected(pathname)) router.replace('/auth/login')
       }
