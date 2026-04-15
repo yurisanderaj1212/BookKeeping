@@ -63,7 +63,7 @@ export default function ReportsOverview({ startDate, endDate }: ReportsOverviewP
         const profitMargin   = totalIncome > 0 ? (netProfit / totalIncome) * 100 : 0
         setPeriodData({ totalIncome, totalExpenses, netProfit, profitMargin })
 
-        // Determine granularity based on range length
+        // Always daily — one bar per day in the selected range
         const startD = new Date(start + 'T00:00:00')
         const endD   = new Date(end   + 'T00:00:00')
         const diffDays = Math.round((endD.getTime() - startD.getTime()) / 86400000) + 1
@@ -72,66 +72,21 @@ export default function ReportsOverview({ startDate, endDate }: ReportsOverviewP
           ? ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']
           : ['Dom', 'Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb']
 
-        const fmtDay = (d: Date) => d.toLocaleDateString(locale === 'en' ? 'en-US' : 'es-ES', { month: 'short', day: 'numeric' })
-
-        let points: ChartPoint[] = []
-
-        if (diffDays <= 14) {
-          // Daily view
-          for (let i = 0; i < diffDays; i++) {
-            const d = new Date(startD)
-            d.setDate(startD.getDate() + i)
-            const dateStr = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`
-            const dayRows = rows.filter(r => (r.date ?? '').substring(0, 10) === dateStr)
-            const ing = dayRows.filter(r => r.type === 1).reduce((s, r) => s + r.amount, 0)
-            const gas = dayRows.filter(r => r.type === 2).reduce((s, r) => s + r.amount, 0)
-            points.push({ name: `${dayNames[d.getDay()]} ${d.getDate()}`, ingresos: ing, gastos: gas, beneficio: ing - gas })
-          }
-        } else if (diffDays <= 92) {
-          // Weekly view — group by week
-          const weekMap = new Map<string, { ingresos: number; gastos: number; start: Date; end: Date }>()
-          for (let i = 0; i < diffDays; i++) {
-            const d = new Date(startD)
-            d.setDate(startD.getDate() + i)
-            const weekStart = new Date(d)
-            weekStart.setDate(d.getDate() - d.getDay())
-            const key = weekStart.toISOString().split('T')[0]
-            if (!weekMap.has(key)) {
-              const weekEnd = new Date(weekStart)
-              weekEnd.setDate(weekStart.getDate() + 6)
-              weekMap.set(key, { ingresos: 0, gastos: 0, start: weekStart, end: weekEnd })
-            }
-            const dateStr = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`
-            const dayRows = rows.filter(r => (r.date ?? '').substring(0, 10) === dateStr)
-            const w = weekMap.get(key)!
-            w.ingresos += dayRows.filter(r => r.type === 1).reduce((s, r) => s + r.amount, 0)
-            w.gastos   += dayRows.filter(r => r.type === 2).reduce((s, r) => s + r.amount, 0)
-          }
-          points = Array.from(weekMap.values()).map(v => ({
-            name: `${fmtDay(v.start)}-${v.end.getDate()}`,
-            ingresos: v.ingresos,
-            gastos: v.gastos,
-            beneficio: v.ingresos - v.gastos,
-          }))
-        } else {
-          // Monthly view
-          const monthMap = new Map<number, { ingresos: number; gastos: number; year: number }>()
-          for (const r of rows) {
-            const d = new Date(r.date + 'T00:00:00')
-            const key = d.getFullYear() * 100 + (d.getMonth() + 1)
-            const ex = monthMap.get(key) ?? { ingresos: 0, gastos: 0, year: d.getFullYear() }
-            if (r.type === 1) ex.ingresos += r.amount
-            else ex.gastos += r.amount
-            monthMap.set(key, ex)
-          }
-          points = Array.from(monthMap.entries())
-            .sort(([a], [b]) => a - b)
-            .map(([key, v]) => {
-              const m = key % 100
-              const y = Math.floor(key / 100)
-              const label = new Date(y, m - 1, 1).toLocaleDateString(locale === 'en' ? 'en-US' : 'es-ES', { month: 'short', year: '2-digit' })
-              return { name: label, ingresos: v.ingresos, gastos: v.gastos, beneficio: v.ingresos - v.gastos }
-            })
+        const points: ChartPoint[] = []
+        for (let i = 0; i < diffDays; i++) {
+          const d = new Date(startD)
+          d.setDate(startD.getDate() + i)
+          const dateStr = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`
+          const dayRows = rows.filter(r => (r.date ?? '').substring(0, 10) === dateStr)
+          const ing = dayRows.filter(r => r.type === 1).reduce((s, r) => s + r.amount, 0)
+          const gas = dayRows.filter(r => r.type === 2).reduce((s, r) => s + r.amount, 0)
+          // Label: short for long ranges (just day number), full for short ranges
+          const label = diffDays <= 14
+            ? `${dayNames[d.getDay()]} ${d.getDate()}`
+            : diffDays <= 31
+            ? `${d.getDate()}`
+            : `${String(d.getMonth() + 1).padStart(2, '0')}/${d.getDate()}`
+          points.push({ name: label, ingresos: ing, gastos: gas, beneficio: ing - gas })
         }
 
         if (!cancelled) setChartData(points)

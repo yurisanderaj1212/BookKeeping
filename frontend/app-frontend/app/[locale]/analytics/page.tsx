@@ -12,7 +12,6 @@ import MobileMenuButton from '@/components/ui/MobileMenuButton'
 import ReportsOverview from '@/components/analytics/ReportsOverview'
 import AnnualPerformance from '@/components/analytics/AnnualPerformance'
 import WeeklyClosureAnalysis from '@/components/analytics/WeeklyClosureAnalysis'
-import YearComparison from '@/components/analytics/YearComparison'
 import DateRangePicker from '@/components/ui/DateRangePicker'
 import { exportAnalyticsReport, showExportModal } from '@/services/exportService'
 
@@ -123,11 +122,6 @@ export default function AnalyticsPage() {
             />
 
             <AnnualPerformance
-              startDate={startDate}
-              endDate={endDate}
-            />
-
-            <YearComparison
               startDate={startDate}
               endDate={endDate}
             />
