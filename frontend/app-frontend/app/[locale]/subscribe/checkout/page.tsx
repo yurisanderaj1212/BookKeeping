@@ -26,20 +26,24 @@ export default function CheckoutGatePage() {
       handled = true
 
       try {
-        // Check subscriptions table directly — no Edge Function needed for this check
-        const { data: sub } = await supabase
+        // Check subscriptions table directly
+        const { data: sub, error: subError } = await supabase
           .from('subscriptions')
           .select('stripe_customer_id')
           .eq('user_id', userId)
           .single()
 
+        // DEBUG: show what we found
+        console.log('[checkout-gate] userId:', userId)
+        console.log('[checkout-gate] sub row:', sub, 'error:', subError?.code)
+
         if (sub?.stripe_customer_id) {
-          // Already has Stripe subscription → dashboard
+          console.log('[checkout-gate] has stripe_customer_id → dashboard')
           router.replace('/dashboard')
           return
         }
 
-        // No Stripe subscription → go to Checkout
+        console.log('[checkout-gate] no stripe_customer_id → calling Stripe')
         setStatus('redirecting')
 
         const supabaseUrl  = process.env.NEXT_PUBLIC_SUPABASE_URL!
