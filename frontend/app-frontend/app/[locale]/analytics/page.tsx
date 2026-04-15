@@ -27,13 +27,15 @@ export default function AnalyticsPage() {
   } = useOnboarding()
 
   const now = new Date()
-  // Default to current month
-  const defaultStart = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-01`
-  const defaultEnd   = new Date(now.getFullYear(), now.getMonth() + 1, 0)
-    .toISOString().split('T')[0]
+  // Default to current week (Sunday to Saturday)
+  const currentSunday = new Date(now)
+  currentSunday.setDate(now.getDate() - now.getDay())
+  const currentSaturday = new Date(currentSunday)
+  currentSaturday.setDate(currentSunday.getDate() + 6)
+  const fmt = (d: Date) => `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`
 
-  const [startDate, setStartDate] = useState<string | null>(defaultStart)
-  const [endDate,   setEndDate]   = useState<string | null>(defaultEnd)
+  const [startDate, setStartDate] = useState<string | null>(fmt(currentSunday))
+  const [endDate,   setEndDate]   = useState<string | null>(fmt(currentSaturday))
 
   if (!isAuthenticated && !isLoading) return null
 

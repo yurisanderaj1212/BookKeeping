@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { BarChart, Bar, Cell, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts'
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts'
 import { DollarSign, CreditCard, TrendingUp, BarChart3 } from 'lucide-react'
 import { getSupabase } from '@/lib/supabaseClient'
 import { useTranslations, useLocale } from 'next-intl'
@@ -24,7 +24,8 @@ interface ChartPoint {
   name:      string
   ingresos:  number
   gastos:    number
-  beneficio: number
+  profit:    number   // positive value when income > expenses, else 0
+  loss:      number   // negative value when expenses > income, else 0
 }
 
 export default function ReportsOverview({ startDate, endDate }: ReportsOverviewProps) {
@@ -86,7 +87,14 @@ export default function ReportsOverview({ startDate, endDate }: ReportsOverviewP
             : diffDays <= 31
             ? `${d.getDate()}`
             : `${String(d.getMonth() + 1).padStart(2, '0')}/${d.getDate()}`
-          points.push({ name: label, ingresos: ing, gastos: gas, beneficio: ing - gas })
+          const beneficio = ing - gas
+          points.push({
+            name: label,
+            ingresos: ing,
+            gastos: gas,
+            profit: beneficio >= 0 ? beneficio : 0,
+            loss:   beneficio < 0  ? beneficio : 0,  // negative number → bar goes down
+          })
         }
 
         if (!cancelled) setChartData(points)
@@ -99,18 +107,20 @@ export default function ReportsOverview({ startDate, endDate }: ReportsOverviewP
 
   const CustomTooltip = ({ active, payload, label }: any) => {
     if (!active || !payload?.length) return null
-    const income   = payload.find((p: any) => p.dataKey === 'ingresos')?.value  ?? 0
-    const expenses = payload.find((p: any) => p.dataKey === 'gastos')?.value    ?? 0
-    const profit   = payload.find((p: any) => p.dataKey === 'beneficio')?.value ?? income - expenses
-    const isLoss   = profit < 0
-    const margin   = income > 0 ? ((profit / income) * 100).toFixed(1) : '0.0'
+    const income   = payload.find((p: any) => p.dataKey === 'ingresos')?.value ?? 0
+    const expenses = payload.find((p: any) => p.dataKey === 'gastos')?.value   ?? 0
+    const profitVal = payload.find((p: any) => p.dataKey === 'profit')?.value  ?? 0
+    const lossVal   = payload.find((p: any) => p.dataKey === 'loss')?.value    ?? 0
+    const net    = profitVal !== 0 ? profitVal : lossVal
+    const isLoss = net < 0
+    const margin = income > 0 ? ((net / income) * 100).toFixed(1) : '0.0'
     return (
       <div className="bg-white dark:bg-gray-900 p-3 border border-gray-200 dark:border-gray-700 rounded-lg shadow-lg">
         <p className="font-medium text-gray-900 dark:text-gray-100 mb-2">{label}</p>
         <p className="text-sm text-green-600">{t('income')}: {formatCurrency(income)}</p>
         <p className="text-sm text-red-500">{t('expenses')}: {formatCurrency(expenses)}</p>
         <p className="text-sm font-semibold" style={{ color: isLoss ? '#f97316' : '#60a5fa' }}>
-          {isLoss ? t('loss') : t('profit')}: {formatCurrency(Math.abs(profit))}
+          {isLoss ? t('loss') : t('profit')}: {formatCurrency(Math.abs(net))}
         </p>
         <p className={`text-xs mt-1 pt-1 border-t border-gray-100 dark:border-gray-700 ${isLoss ? 'text-orange-400' : 'text-gray-500 dark:text-gray-400'}`}>
           {t('margin')}: <span className="font-semibold">{Math.abs(parseFloat(margin)).toFixed(1)}%</span>
@@ -180,13 +190,12 @@ export default function ReportsOverview({ startDate, endDate }: ReportsOverviewP
                     return `${v}`
                   }} />
                 <Tooltip content={<CustomTooltip />} />
-                <Bar dataKey="ingresos"  fill="#10b981" radius={[3, 3, 0, 0]} name={t('income')}   animationDuration={1200} />
-                <Bar dataKey="gastos"    fill="#ef4444" radius={[3, 3, 0, 0]} name={t('expenses')} animationDuration={1200} animationBegin={200} />
-                <Bar dataKey="beneficio" radius={[3, 3, 0, 0]} name={t('profit')} animationDuration={1200} animationBegin={400}>
-                  {chartData.map((entry, index) => (
-                    <Cell key={`cell-${index}`} fill={entry.beneficio >= 0 ? '#60a5fa' : '#f97316'} />
-                  ))}
-                </Bar>
+                <Bar dataKey="ingresos" fill="#10b981" radius={[3, 3, 0, 0]} name={t('income')}   animationDuration={1200} />
+                <Bar dataKey="gastos"   fill="#ef4444" radius={[3, 3, 0, 0]} name={t('expenses')} animationDuration={1200} animationBegin={200} />
+                {/* profit: positive → bar goes up (blue) */}
+                <Bar dataKey="profit" fill="#60a5fa" radius={[3, 3, 0, 0]} name={t('profit')} animationDuration={1200} animationBegin={400} />
+                {/* loss: negative value → bar goes down (orange) */}
+                <Bar dataKey="loss"   fill="#f97316" radius={[0, 0, 3, 3]} name={t('loss')}   animationDuration={1200} animationBegin={400} />
               </BarChart>
             </ResponsiveContainer>
           </div>
@@ -222,16 +231,19 @@ export default function ReportsOverview({ startDate, endDate }: ReportsOverviewP
                 </tr>
               </thead>
               <tbody className="bg-white dark:bg-gray-900 divide-y divide-gray-100 dark:divide-gray-700">
-                {chartData.map((row, i) => (
-                  <tr key={i} className="hover:bg-gray-50 dark:hover:bg-gray-800">
-                    <td className="px-3 py-2 text-xs font-medium text-gray-900 dark:text-gray-100 whitespace-nowrap">{row.name}</td>
-                    <td className="px-3 py-2 text-xs text-green-600 dark:text-green-400 font-semibold whitespace-nowrap">{formatCurrency(row.ingresos)}</td>
-                    <td className="px-3 py-2 text-xs text-red-600 dark:text-red-400 font-semibold whitespace-nowrap">{formatCurrency(row.gastos)}</td>
-                    <td className={`px-3 py-2 text-xs font-semibold whitespace-nowrap ${row.beneficio >= 0 ? 'text-blue-600 dark:text-blue-400' : 'text-orange-600 dark:text-orange-400'}`}>
-                      {formatCurrency(row.beneficio)}
-                    </td>
-                  </tr>
-                ))}
+                {chartData.map((row, i) => {
+                  const net = row.profit !== 0 ? row.profit : row.loss
+                  return (
+                    <tr key={i} className="hover:bg-gray-50 dark:hover:bg-gray-800">
+                      <td className="px-3 py-2 text-xs font-medium text-gray-900 dark:text-gray-100 whitespace-nowrap">{row.name}</td>
+                      <td className="px-3 py-2 text-xs text-green-600 dark:text-green-400 font-semibold whitespace-nowrap">{formatCurrency(row.ingresos)}</td>
+                      <td className="px-3 py-2 text-xs text-red-600 dark:text-red-400 font-semibold whitespace-nowrap">{formatCurrency(row.gastos)}</td>
+                      <td className={`px-3 py-2 text-xs font-semibold whitespace-nowrap ${net >= 0 ? 'text-blue-600 dark:text-blue-400' : 'text-orange-600 dark:text-orange-400'}`}>
+                        {formatCurrency(net)}
+                      </td>
+                    </tr>
+                  )
+                })}
               </tbody>
             </table>
           </div>
