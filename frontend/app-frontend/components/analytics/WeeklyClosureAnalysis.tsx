@@ -117,10 +117,10 @@ export default function WeeklyClosureAnalysis({ startDate, endDate }: WeeklyClos
         <p className="text-sm" style={{ color: '#10b981' }}>{t('income')}: {formatCurrency(income)}</p>
         <p className="text-sm" style={{ color: '#ef4444' }}>{t('expenses')}: {formatCurrency(expenses)}</p>
         <p className="text-sm font-semibold" style={{ color: isLoss ? '#f97316' : '#60a5fa' }}>
-          {isLoss ? t('loss') : t('profit')}: {formatCurrency(Math.abs(profit))}
+          {isLoss ? t('loss') : t('profit')}: {formatCurrency(profit)}
         </p>
         <p className="text-xs text-gray-500 dark:text-gray-400 mt-1 pt-1 border-t border-gray-100 dark:border-gray-700">
-          {t('margin')}: <span className={isLoss ? 'text-orange-500' : 'text-green-500'} style={{ fontWeight: 600 }}>{Math.abs(parseFloat(margin)).toFixed(1)}%</span>
+          {t('margin')}: <span className={isLoss ? 'text-orange-500' : 'text-green-500'} style={{ fontWeight: 600 }}>{parseFloat(margin).toFixed(1)}%</span>
         </p>
       </div>
     )

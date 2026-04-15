@@ -125,10 +125,10 @@ export default function AnnualPerformance({ startDate, endDate }: AnnualPerforma
           <p className="text-sm text-green-600">{t('income')}: {formatCurrency(income)}</p>
           <p className="text-sm text-red-500">{t('expenses')}: {formatCurrency(expenses)}</p>
           <p className="text-sm font-semibold" style={{ color: isLoss ? '#f97316' : '#60a5fa' }}>
-            {isLoss ? t('loss') : t('profit')}: {formatCurrency(Math.abs(profit))}
+            {isLoss ? t('loss') : t('profit')}: {formatCurrency(profit)}
           </p>
           <p className={`text-xs mt-1 pt-1 border-t border-gray-100 dark:border-gray-700 ${isLoss ? 'text-orange-400' : 'text-gray-500 dark:text-gray-400'}`}>
-            {t('margin')}: <span className="font-semibold">{Math.abs(parseFloat(margin)).toFixed(1)}%</span>
+            {t('margin')}: <span className="font-semibold">{parseFloat(margin).toFixed(1)}%</span>
           </p>
         </div>
       )

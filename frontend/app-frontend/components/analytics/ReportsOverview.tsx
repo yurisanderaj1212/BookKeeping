@@ -120,10 +120,10 @@ export default function ReportsOverview({ startDate, endDate }: ReportsOverviewP
         <p className="text-sm text-green-600">{t('income')}: {formatCurrency(income)}</p>
         <p className="text-sm text-red-500">{t('expenses')}: {formatCurrency(expenses)}</p>
         <p className="text-sm font-semibold" style={{ color: isLoss ? '#f97316' : '#60a5fa' }}>
-          {isLoss ? t('loss') : t('profit')}: {formatCurrency(Math.abs(net))}
+          {isLoss ? t('loss') : t('profit')}: {formatCurrency(net)}
         </p>
         <p className={`text-xs mt-1 pt-1 border-t border-gray-100 dark:border-gray-700 ${isLoss ? 'text-orange-400' : 'text-gray-500 dark:text-gray-400'}`}>
-          {t('margin')}: <span className="font-semibold">{Math.abs(parseFloat(margin)).toFixed(1)}%</span>
+          {t('margin')}: <span className="font-semibold">{parseFloat(margin).toFixed(1)}%</span>
         </p>
       </div>
     )
@@ -142,10 +142,9 @@ export default function ReportsOverview({ startDate, endDate }: ReportsOverviewP
       <div className="flex items-center gap-2 mb-6">
         <div>
           <div className="flex items-center gap-2">
-            <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">{t('incomeVsExpenses')}</h3>
+            <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">{t('dailyPerformanceTitle')}</h3>
             <InfoTooltip title={t('infoTitle')} description={t('infoDesc')} />
           </div>
-          <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">{t('comparisonDaily')}</p>
         </div>
       </div>
 
