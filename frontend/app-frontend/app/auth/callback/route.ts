@@ -4,8 +4,9 @@ import { cookies } from 'next/headers'
 
 export async function GET(request: Request) {
   const { searchParams, origin } = new URL(request.url)
-  const code = searchParams.get('code')
-  const type = searchParams.get('type') // 'recovery' for password reset
+  const code       = searchParams.get('code')
+  const tokenHash  = searchParams.get('token_hash')
+  const type       = searchParams.get('type') // 'signup' | 'recovery' | 'email_change'
 
   // Render internally uses localhost:10000 — use the real domain from headers
   const host = request.headers.get('x-forwarded-host')
@@ -18,30 +19,41 @@ export async function GET(request: Request) {
   const referer = request.headers.get('referer') ?? ''
   const locale  = referer.includes('/en/') ? 'en' : 'es'
 
-  if (code) {
-    const cookieStore = await cookies()
-    const supabase = createServerClient(
-      process.env.NEXT_PUBLIC_SUPABASE_URL!,
-      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-      {
-        cookies: {
-          getAll: () => cookieStore.getAll(),
-          setAll: (cookiesToSet) => {
-            cookiesToSet.forEach(({ name, value, options }) =>
-              cookieStore.set(name, value, options)
-            )
-          },
+  const cookieStore = await cookies()
+  const supabase = createServerClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+    {
+      cookies: {
+        getAll: () => cookieStore.getAll(),
+        setAll: (cookiesToSet) => {
+          cookiesToSet.forEach(({ name, value, options }) =>
+            cookieStore.set(name, value, options)
+          )
         },
-      }
-    )
+      },
+    }
+  )
 
+  // ── OAuth / magic link flow: ?code= ──────────────────────────────────────
+  if (code) {
     const { error } = await supabase.auth.exchangeCodeForSession(code)
     if (!error) {
-      // Password recovery — redirect to reset form
       if (type === 'recovery') {
         return NextResponse.redirect(`${baseUrl}/${locale}/auth/forgot-password?reset=1`)
       }
-      // OAuth or email confirmation — go to checkout gate (checks subscription)
+      return NextResponse.redirect(`${baseUrl}/${locale}/subscribe/checkout`)
+    }
+  }
+
+  // ── Email verification flow: ?token_hash= ────────────────────────────────
+  if (tokenHash && type) {
+    const { error } = await supabase.auth.verifyOtp({ token_hash: tokenHash, type: type as any })
+    if (!error) {
+      if (type === 'recovery') {
+        return NextResponse.redirect(`${baseUrl}/${locale}/auth/forgot-password?reset=1`)
+      }
+      // signup / email_change → go to checkout gate
       return NextResponse.redirect(`${baseUrl}/${locale}/subscribe/checkout`)
     }
   }
