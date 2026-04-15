@@ -19,12 +19,11 @@ export default function SubscribeSuccessPage() {
     async function checkStatus() {
       try {
         const info = await getSubscriptionStatus()
-        if (info.hasActiveAccess && info.status === 'Active') {
-          // Webhook procesado — suscripción activa
+        if (info.hasActiveAccess && (info.status === 'Active' || info.status === 'Trial')) {
+          // Webhook processed — subscription active or trialing
           setConfirmed(true)
           setChecking(false)
-          // Actualizar cookie para que el middleware no bloquee
-          document.cookie = `sub-status=Active; path=/; SameSite=Lax`
+          document.cookie = `sub-status=${info.status}; path=/; SameSite=Lax`
           if (pollRef.current) clearInterval(pollRef.current)
         }
       } catch {
@@ -32,10 +31,10 @@ export default function SubscribeSuccessPage() {
       }
       attemptsRef.current += 1
       if (attemptsRef.current >= MAX_ATTEMPTS) {
-        // Timeout: asumir éxito de todas formas (Stripe ya cobró)
+        // Timeout: assume success anyway (Stripe already processed)
         setConfirmed(true)
         setChecking(false)
-        document.cookie = `sub-status=Active; path=/; SameSite=Lax`
+        document.cookie = `sub-status=Trial; path=/; SameSite=Lax`
         if (pollRef.current) clearInterval(pollRef.current)
       }
     }

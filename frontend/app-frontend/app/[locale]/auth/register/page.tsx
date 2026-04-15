@@ -233,7 +233,16 @@ export default function RegisterPage() {
         const { accountService } = await import('@/services/accountService')
         await accountService.ensureCashAccount()
       } catch { /* silencioso — se reintentará al cargar cuentas */ }
-      router.push('/auth/login?registered=1')
+
+      // Redirect to Stripe Checkout (monthly plan with 30-day trial)
+      try {
+        const { createCheckoutSession } = await import('@/lib/subscriptionService')
+        const { url } = await createCheckoutSession('monthly')
+        window.location.href = url
+      } catch {
+        // If Stripe fails, fall back to login — user can subscribe later
+        router.push('/auth/login?registered=1')
+      }
 
     } catch (error: unknown) {
       const msg = error instanceof Error ? error.message.toLowerCase() : ''
