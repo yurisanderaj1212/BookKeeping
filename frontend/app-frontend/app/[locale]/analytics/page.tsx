@@ -27,15 +27,9 @@ export default function AnalyticsPage() {
   } = useOnboarding()
 
   const now = new Date()
-  // Default to current week (Sunday to Saturday)
-  const currentSunday = new Date(now)
-  currentSunday.setDate(now.getDate() - now.getDay())
-  const currentSaturday = new Date(currentSunday)
-  currentSaturday.setDate(currentSunday.getDate() + 6)
-  const fmt = (d: Date) => `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`
-
-  const [startDate, setStartDate] = useState<string | null>(fmt(currentSunday))
-  const [endDate,   setEndDate]   = useState<string | null>(fmt(currentSaturday))
+  // Calendar starts empty — no date pre-selected
+  const [startDate, setStartDate] = useState<string | null>(null)
+  const [endDate,   setEndDate]   = useState<string | null>(null)
 
   if (!isAuthenticated && !isLoading) return null
 

@@ -43,10 +43,16 @@ export default function ReportsOverview({ startDate, endDate }: ReportsOverviewP
       try {
         const supabase = getSupabase()
 
-        // Determine query range
+        // When no date selected → default to current week (Sun–Sat)
         const now = new Date()
-        const start = startDate ?? `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-01`
-        const end   = endDate   ?? new Date(now.getFullYear(), now.getMonth() + 1, 0).toISOString().split('T')[0]
+        const fmtD = (d: Date) => `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`
+        const defaultSunday = new Date(now)
+        defaultSunday.setDate(now.getDate() - now.getDay())
+        const defaultSaturday = new Date(defaultSunday)
+        defaultSaturday.setDate(defaultSunday.getDate() + 6)
+
+        const start = startDate ?? fmtD(defaultSunday)
+        const end   = endDate   ?? fmtD(defaultSaturday)
 
         const { data } = await supabase
           .from('transactions')
