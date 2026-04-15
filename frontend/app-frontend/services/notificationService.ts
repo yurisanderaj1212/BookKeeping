@@ -22,7 +22,20 @@ export interface NotificationStats {
 }
 
 function mapNotif(r: any): Notification {
-  return { ...r, isRead: r.is_read, createdAt: r.created_at, actionUrl: r.action_url, actionLabel: r.action_label }
+  // If the notification has i18n metadata, use the current locale's text
+  const locale = typeof window !== 'undefined'
+    ? (document.documentElement.lang?.startsWith('en') ? 'en' : 'es')
+    : 'es'
+  const i18n = r.metadata?.i18n?.[locale]
+  return {
+    ...r,
+    title:       i18n?.title       ?? r.title,
+    message:     i18n?.message     ?? r.message,
+    actionLabel: i18n?.action_label ?? r.action_label,
+    isRead:      r.is_read,
+    createdAt:   r.created_at,
+    actionUrl:   r.action_url,
+  }
 }
 
 export async function getNotifications(): Promise<Notification[]> {

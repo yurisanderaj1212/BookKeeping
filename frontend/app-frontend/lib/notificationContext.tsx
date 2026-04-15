@@ -120,6 +120,12 @@ export function NotificationProvider({ children }: { children: ReactNode }) {
         action_url:   '/reports/week-close',
         action_label: locale === 'en' ? 'Close week' : 'Cerrar semana',
         is_read:      false,
+        metadata: {
+          i18n: {
+            en: { title: '⚠️ Week closing soon', message: 'The current week is ending soon and has not been closed yet. Remember to do the weekly close to maintain data integrity.', action_label: 'Close week' },
+            es: { title: '⚠️ Semana por cerrar', message: 'La semana actual termina pronto y aún no ha sido cerrada. Recuerda hacer el cierre semanal para mantener la integridad de tus datos.', action_label: 'Cerrar semana' },
+          }
+        }
       })
       localStorage.setItem(warningKey, '1')
     } catch { /* silencioso */ }
@@ -148,6 +154,12 @@ export function NotificationProvider({ children }: { children: ReactNode }) {
         action_url:   '/reports',
         action_label: locale === 'en' ? 'View reports' : 'Ver reportes',
         is_read:      false,
+        metadata: {
+          i18n: {
+            en: { title: '📊 Pending reports',    message: "It's the end of the week. Remember to generate your weekly financial reports.", action_label: 'View reports' },
+            es: { title: '📊 Reportes pendientes', message: 'Es el final de la semana. Recuerda generar tus reportes financieros semanales.', action_label: 'Ver reportes' },
+          }
+        }
       })
       localStorage.setItem(key, '1')
     } catch { /* silencioso */ }
@@ -224,9 +236,12 @@ export function NotificationProvider({ children }: { children: ReactNode }) {
       const prefs = JSON.parse(localStorage.getItem('bookkeeping_preferences') || '{}')
       if (prefs?.notifications?.reportReminders === false) return
 
+      const prevMonth_en = new Date(now.getFullYear(), now.getMonth() - 1, 1)
+        .toLocaleDateString('en-US', { month: 'long', year: 'numeric' })
+      const prevMonth_es = new Date(now.getFullYear(), now.getMonth() - 1, 1)
+        .toLocaleDateString('es-ES', { month: 'long', year: 'numeric' })
       const locale = document.documentElement.lang?.startsWith('en') ? 'en' : 'es'
-      const prevMonth = new Date(now.getFullYear(), now.getMonth() - 1, 1)
-        .toLocaleDateString(locale === 'en' ? 'en-US' : 'es-ES', { month: 'long', year: 'numeric' })
+      const prevMonth = locale === 'en' ? prevMonth_en : prevMonth_es
 
       await supabase.from('notifications').insert({
         user_id:      user.id,
@@ -239,6 +254,12 @@ export function NotificationProvider({ children }: { children: ReactNode }) {
         action_url:   '/reports',
         action_label: locale === 'en' ? 'Generate report' : 'Generar reporte',
         is_read:      false,
+        metadata: {
+          i18n: {
+            en: { title: '📊 Monthly report ready',   message: `The month of ${prevMonth_en} has ended. Generate your financial report to review your results.`, action_label: 'Generate report' },
+            es: { title: '📊 Reporte mensual listo',  message: `El mes de ${prevMonth_es} ha terminado. Genera tu reporte financiero para revisar tus resultados.`, action_label: 'Generar reporte' },
+          }
+        }
       })
       localStorage.setItem(key, '1')
     } catch { /* silencioso */ }
@@ -273,10 +294,11 @@ export function NotificationProvider({ children }: { children: ReactNode }) {
       const locale = document.documentElement.lang?.startsWith('en') ? 'en' : 'es'
 
       for (const acc of accounts) {
-        const name = acc.sub_type === 1002 ? (locale === 'en' ? 'Cash' : 'Efectivo') : acc.name
-        const balance = new Intl.NumberFormat(locale === 'en' ? 'en-US' : 'es-ES', {
-          style: 'currency', currency: acc.currency ?? 'USD'
-        }).format(acc.current_balance)
+        const nameEn = acc.sub_type === 1002 ? 'Cash' : acc.name
+        const nameEs = acc.sub_type === 1002 ? 'Efectivo' : acc.name
+        const bal_en = new Intl.NumberFormat('en-US', { style: 'currency', currency: acc.currency ?? 'USD' }).format(acc.current_balance)
+        const bal_es = new Intl.NumberFormat('es-ES', { style: 'currency', currency: acc.currency ?? 'USD' }).format(acc.current_balance)
+        const locale = document.documentElement.lang?.startsWith('en') ? 'en' : 'es'
 
         await supabase.from('notifications').insert({
           user_id:      user.id,
@@ -284,11 +306,17 @@ export function NotificationProvider({ children }: { children: ReactNode }) {
           priority:     'high',
           title:        locale === 'en' ? '⚠️ Low balance alert' : '⚠️ Alerta de saldo bajo',
           message:      locale === 'en'
-            ? `Account "${name}" has a low balance of ${balance}.`
-            : `La cuenta "${name}" tiene un saldo bajo de ${balance}.`,
+            ? `Account "${nameEn}" has a low balance of ${bal_en}.`
+            : `La cuenta "${nameEs}" tiene un saldo bajo de ${bal_es}.`,
           action_url:   '/accounts',
           action_label: locale === 'en' ? 'View accounts' : 'Ver cuentas',
           is_read:      false,
+          metadata: {
+            i18n: {
+              en: { title: '⚠️ Low balance alert',    message: `Account "${nameEn}" has a low balance of ${bal_en}.`, action_label: 'View accounts' },
+              es: { title: '⚠️ Alerta de saldo bajo', message: `La cuenta "${nameEs}" tiene un saldo bajo de ${bal_es}.`, action_label: 'Ver cuentas' },
+            }
+          }
         })
       }
       localStorage.setItem(key, '1')
@@ -321,23 +349,27 @@ export function NotificationProvider({ children }: { children: ReactNode }) {
       if (localStorage.getItem(notifKey)) return
 
       const count = pending.length
+      const title_en = `⏳ ${count} pending transaction${count > 1 ? 's' : ''}`
+      const title_es = `⏳ ${count} transacción${count > 1 ? 'es' : ''} pendiente${count > 1 ? 's' : ''}`
+      const msg_en = `You have ${count} transaction${count > 1 ? 's' : ''} pending for over 48 hours. Did ${count > 1 ? 'they' : 'it'} complete?`
+      const msg_es = `Tienes ${count} transacción${count > 1 ? 'es' : ''} pendiente${count > 1 ? 's' : ''} por más de 48 horas. ¿Ya se completó${count > 1 ? 'n' : ''}?`
       const locale = document.documentElement.lang?.startsWith('en') ? 'en' : 'es'
-      const title = locale === 'en'
-        ? `⏳ ${count} pending transaction${count > 1 ? 's' : ''}`
-        : `⏳ ${count} transacción${count > 1 ? 'es' : ''} pendiente${count > 1 ? 's' : ''}`
-      const message = locale === 'en'
-        ? `You have ${count} transaction${count > 1 ? 's' : ''} pending for over 48 hours. Did ${count > 1 ? 'they' : 'it'} complete?`
-        : `Tienes ${count} transacción${count > 1 ? 'es' : ''} pendiente${count > 1 ? 's' : ''} por más de 48 horas. ¿Ya se completó${count > 1 ? 'n' : ''}?`
 
       await supabase.from('notifications').insert({
         user_id:      user.id,
         type:         'reminder',
         priority:     'medium',
-        title,
-        message,
+        title:        locale === 'en' ? title_en : title_es,
+        message:      locale === 'en' ? msg_en : msg_es,
         action_url:   '/transactions',
         action_label: locale === 'en' ? 'View transactions' : 'Ver transacciones',
         is_read:      false,
+        metadata: {
+          i18n: {
+            en: { title: title_en, message: msg_en, action_label: 'View transactions' },
+            es: { title: title_es, message: msg_es, action_label: 'Ver transacciones' },
+          }
+        }
       })
       localStorage.setItem(notifKey, '1')
     } catch { /* silencioso */ }

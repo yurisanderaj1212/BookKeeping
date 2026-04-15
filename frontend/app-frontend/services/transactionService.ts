@@ -167,20 +167,27 @@ export async function create(dto: CreateTransactionDto): Promise<TransactionDto>
   try {
     const prefs = JSON.parse(localStorage.getItem('bookkeeping_preferences') || '{}')
     if (prefs?.notifications?.transactionAlerts !== false) {
+      const amount_en = new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(dto.amount)
+      const amount_es = new Intl.NumberFormat('es-ES', { style: 'currency', currency: 'USD' }).format(dto.amount)
+      const typeEn = dto.type === 1 ? 'Income' : 'Expense'
+      const typeEs = dto.type === 1 ? 'Ingreso' : 'Gasto'
+      // Detect current locale from URL
       const locale = typeof window !== 'undefined' && document.documentElement.lang?.startsWith('en') ? 'en' : 'es'
-      const typeLabel = dto.type === 1 ? (locale === 'en' ? 'Income' : 'Ingreso') : (locale === 'en' ? 'Expense' : 'Gasto')
-      const amount = new Intl.NumberFormat(locale === 'en' ? 'en-US' : 'es-ES', { style: 'currency', currency: 'USD' }).format(dto.amount)
       await supabase.from('notifications').insert({
         user_id:      user.id,
         type:         'transaction',
         priority:     'low',
-        title:        locale === 'en' ? `✅ ${typeLabel} recorded` : `✅ ${typeLabel} registrado`,
-        message:      locale === 'en'
-          ? `${dto.description} — ${amount}`
-          : `${dto.description} — ${amount}`,
+        title:        locale === 'en' ? `✅ ${typeEn} recorded` : `✅ ${typeEs} registrado`,
+        message:      `${dto.description} — ${locale === 'en' ? amount_en : amount_es}`,
         action_url:   '/transactions',
         action_label: locale === 'en' ? 'View transactions' : 'Ver transacciones',
         is_read:      false,
+        metadata: {
+          i18n: {
+            en: { title: `✅ ${typeEn} recorded`,    message: `${dto.description} — ${amount_en}`, action_label: 'View transactions' },
+            es: { title: `✅ ${typeEs} registrado`,  message: `${dto.description} — ${amount_es}`, action_label: 'Ver transacciones' },
+          }
+        }
       })
     }
   } catch { /* silencioso */ }
