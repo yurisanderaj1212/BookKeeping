@@ -17,9 +17,11 @@ export default function CheckoutGatePage() {
   useEffect(() => {
     async function gate() {
       try {
+        // Small delay to ensure OAuth session cookie is fully set
+        await new Promise(r => setTimeout(r, 800))
+
         const info = await getSubscriptionStatus()
         if (info.hasActiveAccess) {
-          // Already subscribed or in trial — go straight to dashboard
           router.replace('/dashboard')
           return
         }

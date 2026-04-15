@@ -63,9 +63,10 @@ export async function getSubscriptionStatus(): Promise<SubscriptionInfo> {
     .single()
 
   if (error || !data) {
+    // No subscription row yet — user needs to go through Stripe Checkout
     return {
-      status: 'Trial', plan: 'Free', hasActiveAccess: true,
-      trialDaysRemaining: 30, trialEndsAt: null,
+      status: 'Trial', plan: 'Free', hasActiveAccess: false,
+      trialDaysRemaining: 0, trialEndsAt: null,
       currentPeriodEnd: null, canceledAt: null, stripeCustomerId: null,
     }
   }
@@ -79,9 +80,8 @@ export async function getSubscriptionStatus(): Promise<SubscriptionInfo> {
     ? Math.max(0, Math.ceil((trialEndsAt.getTime() - now.getTime()) / (1000 * 60 * 60 * 24)))
     : 0
 
-  const hasActiveAccess = status === 'Trial'
-    ? trialDaysRemaining > 0
-    : status === 'Active'
+  // hasActiveAccess: Trial (Stripe manages end date) or Active
+  const hasActiveAccess = status === 'Trial' || status === 'Active'
 
   return {
     status,
