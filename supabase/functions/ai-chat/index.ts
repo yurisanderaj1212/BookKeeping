@@ -5,7 +5,13 @@
 //   GEMINI_API_KEY = your key from https://aistudio.google.com/app/apikey
 
 const GEMINI_API_KEY = Deno.env.get('GEMINI_API_KEY')!
-const GEMINI_URL     = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent'
+// Try multiple models in order — use the first one that works
+const GEMINI_MODELS = [
+  'gemini-1.5-flash-latest',
+  'gemini-1.5-flash',
+  'gemini-2.0-flash-lite',
+]
+const GEMINI_BASE = 'https://generativelanguage.googleapis.com/v1beta/models'
 
 const corsHeaders = {
   'Access-Control-Allow-Origin':  '*',
@@ -105,19 +111,27 @@ Deno.serve(async (req) => {
       ],
     }
 
-    const geminiRes = await fetch(`${GEMINI_URL}?key=${GEMINI_API_KEY}`, {
-      method:  'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body:    JSON.stringify(geminiBody),
-    })
+    // Try each model until one works
+    let geminiRes: Response | null = null
+    let lastErr = ''
+    for (const model of GEMINI_MODELS) {
+      const url = `${GEMINI_BASE}/${model}:generateContent?key=${GEMINI_API_KEY}`
+      geminiRes = await fetch(url, {
+        method:  'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body:    JSON.stringify(geminiBody),
+      })
+      if (geminiRes.ok) break
+      lastErr = await geminiRes.text()
+      console.warn(`Model ${model} failed (${geminiRes.status}):`, lastErr)
+      geminiRes = null
+    }
 
-    if (!geminiRes.ok) {
-      const err = await geminiRes.text()
-      console.error('Gemini error:', geminiRes.status, err)
-      // Parse Gemini error for better messaging
+    if (!geminiRes) {
+      console.error('All Gemini models failed. Last error:', lastErr)
       let userMsg = 'AI service temporarily unavailable. Please try again.'
       try {
-        const errJson = JSON.parse(err)
+        const errJson = JSON.parse(lastErr)
         const geminiMsg = errJson?.error?.message ?? ''
         if (geminiMsg.includes('API_KEY_INVALID') || geminiMsg.includes('API key')) {
           userMsg = 'AI configuration error. Please contact support.'
