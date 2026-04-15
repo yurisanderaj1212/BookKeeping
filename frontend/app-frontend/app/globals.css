@@ -156,6 +156,21 @@ input, textarea, select {
   to   { opacity: 1; transform: translateY(0); }
 }
 
+/* AI chat greeting bubble */
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* Mascot bounce */
+@keyframes mascotBounce {
+  0%, 100% { transform: translateY(0); }
+  50%       { transform: translateY(-4px); }
+}
+.mascot-bounce {
+  animation: mascotBounce 2s ease-in-out infinite;
+}
+
 .locale-root {
   animation: page-fade-in 0.12s ease-out;
 }

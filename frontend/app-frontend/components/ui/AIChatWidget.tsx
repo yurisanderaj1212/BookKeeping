@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useRef, useEffect, useCallback } from 'react'
-import { MessageCircle, X, Send, Loader2, Bot, User, Minimize2 } from 'lucide-react'
+import { X, Send, Loader2, Bot, User, Minimize2 } from 'lucide-react'
 import { getSupabase } from '@/lib/supabaseClient'
 import { usePathname } from 'next/navigation'
 
@@ -26,18 +26,65 @@ function getPageContext(pathname: string): string {
 
 const WELCOME = "Hi! I'm your Chill Numbers assistant. Ask me anything about the app or your finances — I'm here to help! 💡"
 
+// ── Chill Numbers mascot — wallet with eyes and feet ─────────────────────────
+function WalletMascot({ size = 32, animate = false }: { size?: number; animate?: boolean }) {
+  return (
+    <svg
+      width={size} height={size} viewBox="0 0 64 64" fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      className={animate ? 'mascot-bounce' : ''}
+    >
+      {/* Body — wallet */}
+      <rect x="6" y="18" width="52" height="34" rx="8" fill="#20b2aa" />
+      {/* Wallet flap */}
+      <rect x="6" y="18" width="52" height="14" rx="8" fill="#1a9b94" />
+      {/* Coin slot */}
+      <rect x="38" y="28" width="16" height="10" rx="5" fill="#0d7a73" />
+      <circle cx="46" cy="33" r="3" fill="#f4ffc6" />
+      {/* Left eye */}
+      <circle cx="22" cy="30" r="5" fill="white" />
+      <circle cx="23" cy="30" r="2.5" fill="#0d3d3a" />
+      <circle cx="24" cy="29" r="0.8" fill="white" />
+      {/* Right eye */}
+      <circle cx="36" cy="30" r="5" fill="white" />
+      <circle cx="37" cy="30" r="2.5" fill="#0d3d3a" />
+      <circle cx="38" cy="29" r="0.8" fill="white" />
+      {/* Smile */}
+      <path d="M24 38 Q29 43 36 38" stroke="white" strokeWidth="2.5" strokeLinecap="round" fill="none" />
+      {/* Left foot */}
+      <ellipse cx="20" cy="54" rx="7" ry="4" fill="#1a9b94" />
+      <ellipse cx="17" cy="55" rx="3" ry="2" fill="#0d7a73" />
+      {/* Right foot */}
+      <ellipse cx="44" cy="54" rx="7" ry="4" fill="#1a9b94" />
+      <ellipse cx="47" cy="55" rx="3" ry="2" fill="#0d7a73" />
+    </svg>
+  )
+}
+
 export default function AIChatWidget() {
   const pathname = usePathname()
-  const [open, setOpen]         = useState(false)
-  const [minimized, setMin]     = useState(false)
-  const [messages, setMessages] = useState<Message[]>([
+  const [open, setOpen]           = useState(false)
+  const [minimized, setMin]       = useState(false)
+  const [showGreeting, setGreeting] = useState(false)
+  const [messages, setMessages]   = useState<Message[]>([
     { id: '0', role: 'assistant', content: WELCOME, ts: Date.now() },
   ])
-  const [input, setInput]       = useState('')
-  const [loading, setLoading]   = useState(false)
-  const [error, setError]       = useState<string | null>(null)
+  const [input, setInput]         = useState('')
+  const [loading, setLoading]     = useState(false)
+  const [error, setError]         = useState<string | null>(null)
   const bottomRef = useRef<HTMLDivElement>(null)
   const inputRef  = useRef<HTMLInputElement>(null)
+
+  // Show greeting bubble after 2s on mount
+  useEffect(() => {
+    const t = setTimeout(() => setGreeting(true), 2000)
+    return () => clearTimeout(t)
+  }, [])
+
+  // Hide greeting when chat opens
+  useEffect(() => {
+    if (open) setGreeting(false)
+  }, [open])
 
   // Scroll to bottom on new message
   useEffect(() => {
@@ -120,16 +167,35 @@ export default function AIChatWidget() {
 
   return (
     <>
-      {/* Floating button */}
+      {/* Floating button with mascot */}
       {!open && (
-        <button
-          onClick={() => { setOpen(true); setMin(false) }}
-          className="fixed bottom-6 right-6 z-50 w-14 h-14 bg-primary-500 hover:bg-primary-600 text-white rounded-full shadow-xl flex items-center justify-center transition-all duration-300 hover:scale-110 group"
-          aria-label="Open AI assistant"
-        >
-          <MessageCircle className="w-6 h-6" />
-          <span className="absolute -top-1 -right-1 w-4 h-4 bg-[#81ecff] rounded-full animate-pulse" />
-        </button>
+        <div className="fixed bottom-6 right-6 z-50 flex flex-col items-end gap-2">
+          {/* Greeting bubble */}
+          {showGreeting && (
+            <div
+              className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-2xl rounded-br-sm px-4 py-2.5 shadow-lg max-w-[200px] text-sm text-gray-700 dark:text-gray-200 animate-fade-in"
+              style={{ animation: 'fadeInUp 0.4s ease-out' }}
+            >
+              👋 Hi! Need help with Chill Numbers?
+              <button
+                onClick={() => setGreeting(false)}
+                className="ml-2 text-gray-400 hover:text-gray-600 text-xs"
+              >✕</button>
+            </div>
+          )}
+
+          {/* Mascot button */}
+          <button
+            onClick={() => { setOpen(true); setMin(false) }}
+            className="w-16 h-16 flex items-center justify-center rounded-full bg-primary-500 hover:bg-primary-600 shadow-xl transition-all duration-300 hover:scale-110 relative"
+            aria-label="Open AI assistant"
+            style={{ padding: '6px' }}
+          >
+            <WalletMascot size={44} animate />
+            <span className="absolute -top-1 -right-1 w-4 h-4 bg-[#f4ffc6] rounded-full animate-ping opacity-75" />
+            <span className="absolute -top-1 -right-1 w-4 h-4 bg-[#f4ffc6] rounded-full" />
+          </button>
+        </div>
       )}
 
       {/* Chat panel */}
@@ -143,8 +209,8 @@ export default function AIChatWidget() {
           {/* Header */}
           <div className="flex items-center justify-between px-4 py-3 bg-primary-500 rounded-t-2xl shrink-0">
             <div className="flex items-center gap-2.5">
-              <div className="w-8 h-8 bg-white/20 rounded-full flex items-center justify-center">
-                <Bot className="w-4 h-4 text-white" />
+              <div className="w-9 h-9 flex items-center justify-center">
+                <WalletMascot size={36} />
               </div>
               <div>
                 <p className="text-white font-semibold text-sm">Chill Numbers AI</p>
