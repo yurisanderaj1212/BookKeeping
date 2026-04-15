@@ -47,7 +47,7 @@ export default function Pricing() {
 
         {/* 3D stacked cards — perspective container */}
         <div
-          className="pricing-stack flex flex-col lg:flex-row justify-center items-center gap-8 lg:gap-0 lg:h-[680px]"
+          className="pricing-stack flex flex-col lg:flex-row justify-center items-center gap-6 lg:gap-0 lg:h-[560px]"
           style={{ perspective: '2500px', transformStyle: 'preserve-3d' }}
         >
           {PLANS.map((plan, idx) => {
@@ -58,8 +58,8 @@ export default function Pricing() {
             return (
               <div
                 key={plan.nameKey}
-                className={`pricing-card relative flex flex-col gap-6 rounded-3xl p-8 w-full max-w-sm transition-all duration-700 ${
-                  isCenter ? 'lg:max-w-md lg:p-10 lg:z-30' : 'lg:z-10'
+                className={`pricing-card relative flex flex-col gap-4 rounded-2xl p-6 w-full max-w-xs transition-all duration-700 ${
+                  isCenter ? 'lg:max-w-sm lg:p-8 lg:z-30' : 'lg:z-10'
                 }`}
                 style={{
                   background: isCenter
@@ -77,7 +77,7 @@ export default function Pricing() {
               >
                 {/* Popular badge */}
                 {isCenter && (
-                  <div className="absolute -top-4 left-1/2 -translate-x-1/2 bg-linear-to-r from-[#81ecff] to-[#bf81ff] text-[#0c0e12] text-[11px] font-black px-5 py-1.5 rounded-full uppercase tracking-[0.2em] whitespace-nowrap">
+                  <div className="absolute -top-3.5 left-1/2 -translate-x-1/2 bg-linear-to-r from-[#81ecff] to-[#bf81ff] text-[#0c0e12] text-[10px] font-black px-4 py-1 rounded-full uppercase tracking-[0.2em] whitespace-nowrap">
                     {t('popular')}
                   </div>
                 )}
@@ -85,19 +85,19 @@ export default function Pricing() {
                 {/* Plan name & desc */}
                 <div>
                   <h3
-                    className="text-xl font-bold text-white mb-1"
+                    className="text-base font-bold text-white mb-0.5"
                     style={{ fontFamily: "'Space Grotesk', sans-serif" }}
                   >
                     {t(plan.nameKey as any)}
                   </h3>
-                  <p className="text-white/40 text-sm">{t(plan.descKey as any)}</p>
+                  <p className="text-white/40 text-xs">{t(plan.descKey as any)}</p>
                 </div>
 
                 {/* Price */}
                 <div>
                   <div className="flex items-baseline gap-1">
                     <span
-                      className={`font-bold ${isCenter ? 'text-6xl text-[#81ecff]' : 'text-5xl text-white'}`}
+                      className={`font-bold ${isCenter ? 'text-4xl text-[#81ecff]' : 'text-3xl text-white'}`}
                       style={{ fontFamily: "'Space Grotesk', sans-serif" }}
                     >
                       {plan.price}
@@ -106,17 +106,17 @@ export default function Pricing() {
                       {t(plan.periodKey as any)}
                     </span>
                   </div>
-                  <p className={`text-xs font-bold mt-1 uppercase tracking-widest ${isCenter ? 'text-[#f4ffc6]' : 'text-white/30'}`}>
+                  <p className={`text-xs font-bold mt-0.5 uppercase tracking-widest ${isCenter ? 'text-[#f4ffc6]' : 'text-white/30'}`}>
                     {t(plan.highlightKey as any)}
                   </p>
                 </div>
 
                 {/* Features */}
-                <ul className="flex flex-col gap-3 py-5 border-t border-white/5">
+                <ul className="flex flex-col gap-2 py-3 border-t border-white/5">
                   {plan.featureKeys.map((fk) => (
-                    <li key={fk} className="flex items-center gap-3 text-sm text-white/55">
+                    <li key={fk} className="flex items-center gap-2.5 text-xs text-white/55">
                       <svg
-                        className={`w-4 h-4 shrink-0 ${isCenter ? 'text-[#81ecff]' : 'text-white/25'}`}
+                        className={`w-3.5 h-3.5 shrink-0 ${isCenter ? 'text-[#81ecff]' : 'text-white/25'}`}
                         fill="none" stroke="currentColor" strokeWidth={2.5} viewBox="0 0 24 24"
                       >
                         <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
@@ -129,7 +129,7 @@ export default function Pricing() {
                 {/* CTA */}
                 <Link
                   href={plan.ctaLink}
-                  className={`w-full py-3.5 rounded-xl text-sm font-bold text-center transition-all duration-300 uppercase tracking-widest ${
+                  className={`w-full py-2.5 rounded-xl text-xs font-bold text-center transition-all duration-300 uppercase tracking-widest ${
                     isCenter
                       ? 'bg-[#81ecff] text-[#005762] hover:shadow-[0_0_30px_rgba(129,236,255,0.5)] hover:scale-[1.02]'
                       : 'border border-white/10 text-white/60 hover:bg-white/5 hover:border-white/20'

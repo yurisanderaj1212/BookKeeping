@@ -20,7 +20,6 @@ export default function AccountsPage() {
   const { isLoading, isAuthenticated, logout } = useAuth()
   const t = useTranslations('accounts')
   const tCommon = useTranslations('common')
-  const locale = useLocale()
   const {
     isOnboardingOpen,
     currentStep: onboardingStep,

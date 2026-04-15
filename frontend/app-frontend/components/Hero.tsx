@@ -65,18 +65,6 @@ export default function Hero() {
             </div>
 
             <div className="flex items-center gap-6 pt-2">
-              <div className="flex -space-x-2">
-                {['#81ecff', '#bf81ff', '#f4ffc6', '#81ecff'].map((c, i) => (
-                  <div
-                    key={i}
-                    className="w-8 h-8 rounded-full border-2"
-                    style={{ backgroundColor: c + '33', borderColor: c + '66' }}
-                  />
-                ))}
-              </div>
-              <p className="text-white/40 text-sm">
-                <span className="text-white/70 font-semibold">+2,000</span> businesses trust us
-              </p>
             </div>
           </div>
 

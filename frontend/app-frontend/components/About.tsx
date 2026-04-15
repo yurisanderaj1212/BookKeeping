@@ -2,13 +2,6 @@
 
 import { useTranslations } from 'next-intl'
 
-const STATS = [
-  { labelKey: 'statsActiveCompanies', value: '10,000+' },
-  { labelKey: 'statsTransactions',    value: '2M+' },
-  { labelKey: 'statsCountries',       value: '25+' },
-  { labelKey: 'statsSatisfaction',    value: '98%' },
-]
-
 const VALUES = [
   {
     titleKey: 'valueSimplicityTitle', descKey: 'valueSimplicityDesc', accent: '#81ecff',
@@ -73,28 +66,6 @@ export default function About() {
             </h3>
             <p className="text-white/55 text-lg leading-relaxed">{t('missionText')}</p>
           </div>
-        </div>
-
-        {/* Stats */}
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-20">
-          {STATS.map((s) => (
-            <div
-              key={s.labelKey}
-              className="p-6 rounded-2xl text-center"
-              style={{
-                background: 'rgba(17, 19, 24, 0.8)',
-                border: '1px solid rgba(255,255,255,0.05)',
-              }}
-            >
-              <p
-                className="text-3xl font-bold text-[#81ecff] mb-1"
-                style={{ fontFamily: "'Space Grotesk', sans-serif" }}
-              >
-                {s.value}
-              </p>
-              <p className="text-white/40 text-xs uppercase tracking-widest">{t(s.labelKey as any)}</p>
-            </div>
-          ))}
         </div>
 
         {/* Values */}
