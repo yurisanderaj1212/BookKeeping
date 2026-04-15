@@ -228,21 +228,12 @@ export default function RegisterPage() {
     try {
       const { signUp } = await import('@/services/authService')
       await signUp(formData.email, formData.password, formData.firstName, formData.lastName)
-      // Create default Cash account for the new user
-      try {
-        const { accountService } = await import('@/services/accountService')
-        await accountService.ensureCashAccount()
-      } catch { /* silencioso — se reintentará al cargar cuentas */ }
 
-      // Redirect to Stripe Checkout (monthly plan with 30-day trial)
-      try {
-        const { createCheckoutSession } = await import('@/lib/subscriptionService')
-        const { url } = await createCheckoutSession('monthly')
-        window.location.href = url
-      } catch {
-        // If Stripe fails, fall back to login — user can subscribe later
-        router.push('/auth/login?registered=1')
-      }
+      // After signUp, Supabase sends a verification email.
+      // The user is NOT authenticated yet — redirect to login with a message.
+      // After they verify their email, the callback will send them through
+      // the checkout gate which will trigger Stripe Checkout.
+      router.push('/auth/login?registered=1')
 
     } catch (error: unknown) {
       const msg = error instanceof Error ? error.message.toLowerCase() : ''
