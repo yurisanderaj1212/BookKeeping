@@ -22,11 +22,13 @@ export async function signIn(email: string, password: string): Promise<AuthUser>
 
 export async function signUp(email: string, password: string, firstName: string, lastName: string): Promise<AuthUser> {
   const supabase = getSupabase()
+  const origin = typeof window !== 'undefined' ? window.location.origin : 'https://www.chillnumbers.com'
   const { data, error } = await supabase.auth.signUp({
     email, password,
     options: {
       data: { first_name: firstName, last_name: lastName },
-      emailRedirectTo: `${typeof window !== 'undefined' ? window.location.origin : 'https://www.chillnumbers.com'}/es/auth/login?verified=1`,
+      // After email verification, Supabase redirects here → checkout gate → Stripe
+      emailRedirectTo: `${origin}/auth/callback`,
     }
   })
   if (error) throw new Error(error.message)

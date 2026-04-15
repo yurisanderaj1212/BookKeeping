@@ -228,11 +228,8 @@ export default function RegisterPage() {
     try {
       const { signUp } = await import('@/services/authService')
       await signUp(formData.email, formData.password, formData.firstName, formData.lastName)
-
-      // After signUp, Supabase sends a verification email.
-      // The user is NOT authenticated yet — redirect to login with a message.
-      // After they verify their email, the callback will send them through
-      // the checkout gate which will trigger Stripe Checkout.
+      // Supabase sends verification email → user clicks link → /auth/callback
+      // → /subscribe/checkout → Stripe Checkout → Dashboard
       router.push('/auth/login?registered=1')
 
     } catch (error: unknown) {
