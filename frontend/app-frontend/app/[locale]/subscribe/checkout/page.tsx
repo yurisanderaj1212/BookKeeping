@@ -30,7 +30,9 @@ export default function CheckoutGatePage() {
         }
 
         const info = await getSubscriptionStatus()
-        if (info.hasActiveAccess) {
+        // hasActiveAccess AND has a real Stripe subscription → go to dashboard
+        // If no stripe_subscription_id, user has an old free trial row → send to Stripe
+        if (info.hasActiveAccess && info.stripeCustomerId) {
           router.replace('/dashboard')
           return
         }
