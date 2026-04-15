@@ -187,9 +187,9 @@ export default function AIChatWidget() {
           {/* Mascot button */}
           <button
             onClick={() => { setOpen(true); setMin(false) }}
-            className="w-16 h-16 flex items-center justify-center rounded-full bg-primary-500 hover:bg-primary-600 shadow-xl transition-all duration-300 hover:scale-110 relative"
+            className="w-16 h-16 flex items-center justify-center rounded-full shadow-xl transition-all duration-300 hover:scale-110 relative"
             aria-label="Open AI assistant"
-            style={{ padding: '6px' }}
+            style={{ padding: '6px', background: '#0d3d3a' }}
           >
             <WalletMascot size={44} animate />
             <span className="absolute -top-1 -right-1 w-4 h-4 bg-[#f4ffc6] rounded-full animate-ping opacity-75" />

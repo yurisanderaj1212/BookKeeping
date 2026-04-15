@@ -4,8 +4,6 @@
 // Secret needed (Dashboard → Edge Functions → Manage Secrets):
 //   GEMINI_API_KEY = your key from https://aistudio.google.com/app/apikey
 
-import { createClient } from 'https://esm.sh/@supabase/supabase-js@2'
-
 const GEMINI_API_KEY = Deno.env.get('GEMINI_API_KEY')!
 const GEMINI_URL     = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent'
 
@@ -47,17 +45,24 @@ Always be encouraging and supportive.`
 Deno.serve(async (req) => {
   if (req.method === 'OPTIONS') return new Response('ok', { headers: corsHeaders })
 
-  // Auth check
+  // Auth check — decode JWT locally (same pattern as plaid function)
   const authHeader = req.headers.get('Authorization')
   if (!authHeader) return new Response(JSON.stringify({ error: 'Unauthorized' }), { status: 401, headers: corsHeaders })
 
-  const supabase = createClient(
-    Deno.env.get('SUPABASE_URL')!,
-    Deno.env.get('SUPABASE_ANON_KEY')!,
-    { global: { headers: { Authorization: authHeader } } },
-  )
-  const { data: { user }, error: authError } = await supabase.auth.getUser()
-  if (authError || !user) return new Response(JSON.stringify({ error: 'Unauthorized' }), { status: 401, headers: corsHeaders })
+  const token = authHeader.replace('Bearer ', '')
+  let userId: string | null = null
+  try {
+    const [, payloadB64] = token.split('.')
+    if (!payloadB64) throw new Error('Invalid token')
+    const payload = JSON.parse(atob(payloadB64.replace(/-/g, '+').replace(/_/g, '/')))
+    if (payload.exp && payload.exp < Math.floor(Date.now() / 1000)) {
+      return new Response(JSON.stringify({ error: 'Token expired' }), { status: 401, headers: corsHeaders })
+    }
+    if (!payload.sub) throw new Error('No sub')
+    userId = payload.sub
+  } catch {
+    return new Response(JSON.stringify({ error: 'Unauthorized' }), { status: 401, headers: corsHeaders })
+  }
 
   try {
     const { message, history = [], context = '' } = await req.json()
