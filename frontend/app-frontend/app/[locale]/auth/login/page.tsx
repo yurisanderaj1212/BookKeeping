@@ -118,8 +118,14 @@ function LoginForm() {
       const { error: authError } = await supabase.auth.signInWithPassword({ email, password })
       if (authError) throw authError
 
+      // After login, go through checkout gate — it checks for Stripe subscription
+      // and redirects to Stripe Checkout if needed, or dashboard if already subscribed
       const redirect = searchParams.get('redirect')
-      router.push(redirect && redirect.startsWith('/') ? redirect : '/dashboard')
+      if (redirect && redirect.startsWith('/')) {
+        router.push(redirect)
+      } else {
+        router.push('/subscribe/checkout')
+      }
 
     } catch (error: unknown) {
       const msg = error instanceof Error ? error.message : ''
