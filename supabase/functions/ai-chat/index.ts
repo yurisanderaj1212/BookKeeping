@@ -5,7 +5,7 @@
 //   GEMINI_API_KEY = your key from https://aistudio.google.com/app/apikey
 
 const GEMINI_API_KEY = Deno.env.get('GEMINI_API_KEY')!
-const GEMINI_URL     = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent'
+const GEMINI_URL     = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent'
 
 const corsHeaders = {
   'Access-Control-Allow-Origin':  '*',
@@ -113,9 +113,20 @@ Deno.serve(async (req) => {
 
     if (!geminiRes.ok) {
       const err = await geminiRes.text()
-      console.error('Gemini error:', err)
+      console.error('Gemini error:', geminiRes.status, err)
+      // Parse Gemini error for better messaging
+      let userMsg = 'AI service temporarily unavailable. Please try again.'
+      try {
+        const errJson = JSON.parse(err)
+        const geminiMsg = errJson?.error?.message ?? ''
+        if (geminiMsg.includes('API_KEY_INVALID') || geminiMsg.includes('API key')) {
+          userMsg = 'AI configuration error. Please contact support.'
+        } else if (geminiMsg.includes('quota') || geminiMsg.includes('RESOURCE_EXHAUSTED')) {
+          userMsg = 'AI usage limit reached. Please try again in a moment.'
+        }
+      } catch { /* use default message */ }
       return new Response(
-        JSON.stringify({ error: 'AI service temporarily unavailable. Please try again.' }),
+        JSON.stringify({ error: userMsg }),
         { status: 503, headers: { ...corsHeaders, 'Content-Type': 'application/json' } },
       )
     }
