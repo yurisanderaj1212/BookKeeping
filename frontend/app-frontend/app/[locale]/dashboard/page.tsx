@@ -58,7 +58,7 @@ export default function DashboardPage() {
   const { user, isLoading, isAuthenticated, logout } = useAuth()
   const t = useTranslations('dashboard')
   const locale = useLocale()
-  const selectedPeriod = 'week' as const
+  const selectedPeriod = 'month' as const
   
   // Estados para datos del dashboard
   const [dashboardSummary, setDashboardSummary] = useState<dashboardService.DashboardSummary | null>(null)

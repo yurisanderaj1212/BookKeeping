@@ -1,13 +1,13 @@
 ﻿'use client'
 
 import { useState, useEffect } from 'react'
-import { Plus, Wallet, Landmark, DollarSign } from 'lucide-react'
+import { Plus, Wallet, Landmark } from 'lucide-react'
 import Sidebar from '@/components/dashboard/Sidebar'
 import AccountForm from '@/components/accounts/AccountForm'
 import AccountList from '@/components/accounts/AccountList'
 import OnboardingTour from '@/components/onboarding/OnboardingTour'
 import { useAuth } from '@/hooks/useAuth'
-import { useTranslations, useLocale } from 'next-intl'
+import { useTranslations } from 'next-intl'
 import PageLayout from '@/components/ui/PageLayout'
 import MobileMenuButton from '@/components/ui/MobileMenuButton'
 import { useOnboarding } from '@/hooks/useOnboarding'
@@ -115,10 +115,6 @@ export default function AccountsPage() {
   }
 
   // Calcular totales
-  const totalBalance = accounts
-    .filter(acc => acc.isActive)
-    .reduce((sum, acc) => sum + acc.currentBalance, 0)
-
   const activeAccounts = accounts.filter(acc => acc.isActive).length
 
   return (
@@ -182,22 +178,8 @@ export default function AccountsPage() {
             </div>
           )}
 
-          {/* Summary Cards — 2x2 on mobile */}
-          <div className="grid grid-cols-2 md:grid-cols-3 gap-3 sm:gap-4 mb-4 sm:mb-6" data-tour="accounts-summary">
-            <div className="bg-white dark:bg-gray-900 rounded-lg border border-gray-200 dark:border-gray-700 p-3 sm:p-4">
-              <div className="flex items-center justify-between gap-2">
-                <div className="min-w-0">
-                  <p className="text-xs text-gray-500 dark:text-gray-400 mb-0.5">{t('totalBalance')}</p>
-                  <p className="text-base sm:text-2xl font-bold text-gray-900 dark:text-gray-100 break-all">
-                    ${totalBalance.toLocaleString(locale === 'en' ? 'en-US' : 'es-ES', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
-                  </p>
-                </div>
-                <div className="w-9 h-9 sm:w-12 sm:h-12 shrink-0 bg-green-100 rounded-lg flex items-center justify-center">
-                  <DollarSign className="w-5 h-5 sm:w-6 sm:h-6 text-green-600" />
-                </div>
-              </div>
-            </div>
-
+          {/* Summary Cards */}
+          <div className="grid grid-cols-2 gap-3 sm:gap-4 mb-4 sm:mb-6" data-tour="accounts-summary">
             <div className="bg-white dark:bg-gray-900 rounded-lg border border-gray-200 dark:border-gray-700 p-3 sm:p-4">
               <div className="flex items-center justify-between gap-2">
                 <div className="min-w-0">
@@ -210,8 +192,7 @@ export default function AccountsPage() {
               </div>
             </div>
 
-            {/* 3rd card — full width on mobile */}
-            <div className="col-span-2 md:col-span-1 bg-white dark:bg-gray-900 rounded-lg border border-gray-200 dark:border-gray-700 p-3 sm:p-4">
+            <div className="bg-white dark:bg-gray-900 rounded-lg border border-gray-200 dark:border-gray-700 p-3 sm:p-4">
               <div className="flex items-center justify-between gap-2">
                 <div className="min-w-0">
                   <p className="text-xs text-gray-500 dark:text-gray-400 mb-0.5">{t('totalAccounts')}</p>
