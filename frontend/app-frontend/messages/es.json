@@ -77,7 +77,7 @@
       "register": "Regístrate gratis",
       "orContinueWith": "O continúa con",
       "socialNotAvailable": "Iniciar sesión con {provider} no está disponible aún.",
-      "registeredSuccess": "¡Cuenta creada! Revisa tu correo para verificar tu cuenta antes de iniciar sesión.",
+      "registeredSuccess": "¡Cuenta creada! Revisa tu correo para verificar tu cuenta antes de iniciar sesión. Si no lo ves, revisa tu carpeta de spam.",
       "verifiedSuccess": "Correo verificado correctamente. Ya puedes iniciar sesión.",
       "errors": {
         "emailRequired": "El email es requerido",

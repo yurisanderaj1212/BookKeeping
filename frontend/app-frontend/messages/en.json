@@ -77,7 +77,7 @@
       "register": "Sign up for free",
       "orContinueWith": "Or continue with",
       "socialNotAvailable": "Sign in with {provider} is not available yet.",
-      "registeredSuccess": "Account created! Please check your email to verify your account before signing in.",
+      "registeredSuccess": "Account created! Please check your email to verify your account before signing in. If you don't see it, check your spam folder.",
       "verifiedSuccess": "Email verified successfully. You can now sign in.",
       "errors": {
         "emailRequired": "Email is required",

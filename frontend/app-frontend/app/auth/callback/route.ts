@@ -53,8 +53,9 @@ export async function GET(request: Request) {
       if (type === 'recovery') {
         return NextResponse.redirect(`${baseUrl}/${locale}/auth/forgot-password?reset=1`)
       }
-      // signup / email_change → go to checkout gate
-      return NextResponse.redirect(`${baseUrl}/${locale}/subscribe/checkout`)
+      // signup verification → go to login with verified banner
+      // The login page will redirect through checkout gate after login
+      return NextResponse.redirect(`${baseUrl}/${locale}/auth/login?verified=1`)
     }
   }
 
