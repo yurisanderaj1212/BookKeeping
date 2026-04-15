@@ -35,10 +35,10 @@ function LoginForm() {
   const justRegistered = searchParams.get('registered') === '1'
   const justVerified   = searchParams.get('verified') === '1'
 
-  // Si ya está autenticado, redirigir al dashboard
+  // If already authenticated, go through checkout gate (checks Stripe subscription)
   useEffect(() => {
     if (isAuthenticated) {
-      router.replace('/dashboard')
+      router.replace('/subscribe/checkout')
     }
   }, [isAuthenticated, router])
 
