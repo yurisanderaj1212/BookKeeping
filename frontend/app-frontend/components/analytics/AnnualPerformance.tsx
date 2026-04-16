@@ -247,37 +247,32 @@ export default function AnnualPerformance({ startDate, endDate }: AnnualPerforma
       {/* Monthly Breakdown Table */}
       <div className="mt-4">
         <h4 className="text-sm font-semibold text-gray-900 dark:text-gray-100 mb-3">{t('monthlyBreakdownTitle')}</h4>
-        <div className="overflow-x-auto -mx-4 sm:mx-0">
-          <table className="min-w-full sm:w-full">
-            <thead className="bg-gray-50 dark:bg-gray-800">
-              <tr>
-                <th className="px-3 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase whitespace-nowrap">{t('month')}</th>
-                <th className="px-3 py-2 text-right text-xs font-medium text-gray-500 dark:text-gray-400 uppercase whitespace-nowrap">{t('income')}</th>
-                <th className="px-3 py-2 text-right text-xs font-medium text-gray-500 dark:text-gray-400 uppercase whitespace-nowrap">{t('expenses')}</th>
-                <th className="px-3 py-2 text-right text-xs font-medium text-gray-500 dark:text-gray-400 uppercase whitespace-nowrap">{t('profit')}</th>
-                <th className="px-3 py-2 text-center text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">●</th>
+        <table className="w-full">
+          <thead className="bg-gray-50 dark:bg-gray-800">
+            <tr>
+              <th className="px-2 sm:px-3 py-2 text-left text-[10px] sm:text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">{t('month')}</th>
+              <th className="px-2 sm:px-3 py-2 text-right text-[10px] sm:text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">{t('income')}</th>
+              <th className="px-2 sm:px-3 py-2 text-right text-[10px] sm:text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">{t('expenses')}</th>
+              <th className="px-2 sm:px-3 py-2 text-right text-[10px] sm:text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">{t('profit')}</th>
+              <th className="hidden sm:table-cell px-3 py-2 text-center text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">●</th>
+            </tr>
+          </thead>
+          <tbody className="bg-white dark:bg-gray-900 divide-y divide-gray-100">
+            {annualData.map((monthData, index) => (
+              <tr key={index} className="hover:bg-gray-50 dark:hover:bg-gray-800">
+                <td className="px-2 sm:px-3 py-1.5 sm:py-2 text-[11px] sm:text-xs font-medium text-gray-900 dark:text-gray-100 whitespace-nowrap">{monthData.monthShort ?? monthData.month}</td>
+                <td className="px-2 sm:px-3 py-1.5 sm:py-2 text-right text-[11px] sm:text-xs text-green-600 dark:text-green-400 font-semibold whitespace-nowrap">{formatCurrency(monthData.ingresos)}</td>
+                <td className="px-2 sm:px-3 py-1.5 sm:py-2 text-right text-[11px] sm:text-xs text-red-600 dark:text-red-400 font-semibold whitespace-nowrap">{formatCurrency(monthData.gastos)}</td>
+                <td className={`px-2 sm:px-3 py-1.5 sm:py-2 text-right text-[11px] sm:text-xs font-semibold whitespace-nowrap ${monthData.beneficio >= 0 ? 'text-blue-600 dark:text-blue-400' : 'text-orange-600 dark:text-orange-400'}`}>
+                  {formatCurrency(monthData.beneficio)}
+                </td>
+                <td className="hidden sm:table-cell px-3 py-2 text-center">
+                  <div className={`w-2.5 h-2.5 rounded-full mx-auto ${monthData.beneficio > 0 ? 'bg-green-400' : monthData.beneficio === 0 ? 'bg-yellow-400' : 'bg-red-400'}`} />
+                </td>
               </tr>
-            </thead>
-            <tbody className="bg-white dark:bg-gray-900 divide-y divide-gray-100">
-              {annualData.map((monthData, index) => (
-                <tr key={index} className="hover:bg-gray-50 dark:hover:bg-gray-800">
-                  <td className="px-3 py-2 text-xs font-medium text-gray-900 dark:text-gray-100 whitespace-nowrap">{monthData.monthShort ?? monthData.month}</td>
-                  <td className="px-3 py-2 text-right text-xs text-green-600 dark:text-green-400 font-semibold whitespace-nowrap">{formatCurrency(monthData.ingresos)}</td>
-                  <td className="px-3 py-2 text-right text-xs text-red-600 dark:text-red-400 font-semibold whitespace-nowrap">{formatCurrency(monthData.gastos)}</td>
-                  <td className={`px-3 py-2 text-right text-xs font-semibold whitespace-nowrap ${monthData.beneficio >= 0 ? 'text-blue-600 dark:text-blue-400' : 'text-orange-600 dark:text-orange-400'}`}>
-                    {formatCurrency(monthData.beneficio)}
-                  </td>
-                  <td className="px-3 py-2 text-center">
-                    <div className={`w-2.5 h-2.5 rounded-full mx-auto ${
-                      monthData.beneficio > 0 ? 'bg-green-400' :
-                      monthData.beneficio === 0 ? 'bg-yellow-400' : 'bg-red-400'
-                    }`} />
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+            ))}
+          </tbody>
+        </table>
       </div>
     </div>
   )

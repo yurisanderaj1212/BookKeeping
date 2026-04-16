@@ -153,12 +153,18 @@ export default function WeeklyClosureAnalysis({ startDate, endDate }: WeeklyClos
       <div className="flex items-center justify-between mb-6">
         <div>
           <div className="flex items-center gap-2">
-            <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 capitalize">
-              {t('weeklyPerformance')} — {monthLabel}
-            </h3>
-            <InfoTooltip title={t('weeklyPerfInfoTitle')} description={t('weeklyPerfInfoDesc')} />
+            <div className="min-w-0">
+              <div className="flex items-center gap-2">
+                <h3 className="text-base sm:text-lg font-semibold text-gray-900 dark:text-gray-100 capitalize leading-tight">
+                  {t('weeklyPerformance')}
+                  <span className="text-gray-400 dark:text-gray-500 font-normal"> — </span>
+                  <span className="capitalize">{monthLabel}</span>
+                </h3>
+                <InfoTooltip title={t('weeklyPerfInfoTitle')} description={t('weeklyPerfInfoDesc')} />
+              </div>
+              <p className="text-xs sm:text-sm text-gray-500 dark:text-gray-400 mt-0.5">{t('weeklyClosureSubtitle')}</p>
+            </div>
           </div>
-          <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">{t('weeklyClosureSubtitle')}</p>
         </div>
       </div>
 
@@ -269,38 +275,33 @@ export default function WeeklyClosureAnalysis({ startDate, endDate }: WeeklyClos
       {/* Weekly Breakdown Table */}
       {!loading && weekData.length > 0 && (
         <div className="mt-4">
-          <h4 className="text-sm font-semibold text-gray-900 dark:text-gray-100 mb-3">{t('weeklyHistory')}</h4>
-          <div className="overflow-x-auto -mx-4 sm:mx-0">
-            <table className="min-w-full sm:w-full">
-              <thead className="bg-gray-50 dark:bg-gray-800">
-                <tr>
-                  <th className="px-3 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase whitespace-nowrap">{t('week')}</th>
-                  <th className="px-3 py-2 text-right text-xs font-medium text-gray-500 dark:text-gray-400 uppercase whitespace-nowrap">{t('income')}</th>
-                  <th className="px-3 py-2 text-right text-xs font-medium text-gray-500 dark:text-gray-400 uppercase whitespace-nowrap">{t('expenses')}</th>
-                  <th className="px-3 py-2 text-right text-xs font-medium text-gray-500 dark:text-gray-400 uppercase whitespace-nowrap">{t('profit')}</th>
-                  <th className="px-3 py-2 text-center text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">●</th>
+          <h4 className="text-sm font-semibold text-gray-900 dark:text-gray-100 mb-3">{t('weeklyBreakdownTitle')}</h4>
+          <table className="w-full">
+            <thead className="bg-gray-50 dark:bg-gray-800">
+              <tr>
+                <th className="px-2 sm:px-3 py-2 text-left text-[10px] sm:text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">{t('week')}</th>
+                <th className="px-2 sm:px-3 py-2 text-right text-[10px] sm:text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">{t('income')}</th>
+                <th className="px-2 sm:px-3 py-2 text-right text-[10px] sm:text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">{t('expenses')}</th>
+                <th className="px-2 sm:px-3 py-2 text-right text-[10px] sm:text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">{t('profit')}</th>
+                <th className="hidden sm:table-cell px-3 py-2 text-center text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">●</th>
+              </tr>
+            </thead>
+            <tbody className="bg-white dark:bg-gray-900 divide-y divide-gray-100 dark:divide-gray-700">
+              {weekData.map((row, i) => (
+                <tr key={i} className="hover:bg-gray-50 dark:hover:bg-gray-800">
+                  <td className="px-2 sm:px-3 py-1.5 sm:py-2 text-[11px] sm:text-xs font-medium text-gray-900 dark:text-gray-100 whitespace-nowrap">{row.label}</td>
+                  <td className="px-2 sm:px-3 py-1.5 sm:py-2 text-right text-[11px] sm:text-xs text-green-600 dark:text-green-400 font-semibold whitespace-nowrap">{formatCurrency(row.ingresos)}</td>
+                  <td className="px-2 sm:px-3 py-1.5 sm:py-2 text-right text-[11px] sm:text-xs text-red-600 dark:text-red-400 font-semibold whitespace-nowrap">{formatCurrency(row.gastos)}</td>
+                  <td className={`px-2 sm:px-3 py-1.5 sm:py-2 text-right text-[11px] sm:text-xs font-semibold whitespace-nowrap ${row.beneficio >= 0 ? 'text-blue-600 dark:text-blue-400' : 'text-orange-600 dark:text-orange-400'}`}>
+                    {formatCurrency(row.beneficio)}
+                  </td>
+                  <td className="hidden sm:table-cell px-3 py-2 text-center">
+                    <div className={`w-2.5 h-2.5 rounded-full mx-auto ${row.beneficio > 0 ? 'bg-green-400' : row.beneficio === 0 ? 'bg-yellow-400' : 'bg-red-400'}`} />
+                  </td>
                 </tr>
-              </thead>
-              <tbody className="bg-white dark:bg-gray-900 divide-y divide-gray-100 dark:divide-gray-700">
-                {weekData.map((row, i) => (
-                  <tr key={i} className="hover:bg-gray-50 dark:hover:bg-gray-800">
-                    <td className="px-3 py-2 text-xs font-medium text-gray-900 dark:text-gray-100 whitespace-nowrap">{row.label}</td>
-                    <td className="px-3 py-2 text-right text-xs text-green-600 dark:text-green-400 font-semibold whitespace-nowrap">{formatCurrency(row.ingresos)}</td>
-                    <td className="px-3 py-2 text-right text-xs text-red-600 dark:text-red-400 font-semibold whitespace-nowrap">{formatCurrency(row.gastos)}</td>
-                    <td className={`px-3 py-2 text-right text-xs font-semibold whitespace-nowrap ${row.beneficio >= 0 ? 'text-blue-600 dark:text-blue-400' : 'text-orange-600 dark:text-orange-400'}`}>
-                      {formatCurrency(row.beneficio)}
-                    </td>
-                    <td className="px-3 py-2 text-center">
-                      <div className={`w-2.5 h-2.5 rounded-full mx-auto ${
-                        row.beneficio > 0 ? 'bg-green-400' :
-                        row.beneficio === 0 ? 'bg-yellow-400' : 'bg-red-400'
-                      }`} />
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+              ))}
+            </tbody>
+          </table>
         </div>
       )}
 

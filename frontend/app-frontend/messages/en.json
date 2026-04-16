@@ -997,7 +997,8 @@
       "dailyPerformanceTitle": "Daily Performance",
       "bestWeek": "Best Week",
       "perWeek": "/week",
-      "scrollToSeeMore": "Scroll to see more days"
+      "scrollToSeeMore": "Scroll to see more days",
+      "weeklyBreakdownTitle": "Weekly Breakdown"
     },
     "topTransactions": {
       "title": "Top Transactions",

@@ -238,32 +238,30 @@ export default function ReportsOverview({ startDate, endDate }: ReportsOverviewP
       {!loading && chartData.length > 0 && (
         <>
           <h4 className="text-sm font-semibold text-gray-900 dark:text-gray-100 mb-3">{t('dailyBreakdown')}</h4>
-          <div className="overflow-x-auto -mx-4 sm:mx-0">
-            <table className="min-w-full sm:w-full">
-              <thead className="bg-gray-50 dark:bg-gray-800">
-                <tr>
-                  {[t('period'), t('income'), t('expenses'), t('profit')].map(h => (
-                    <th key={h} className="px-3 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider whitespace-nowrap">{h}</th>
-                  ))}
-                </tr>
-              </thead>
-              <tbody className="bg-white dark:bg-gray-900 divide-y divide-gray-100 dark:divide-gray-700">
-                {chartData.map((row, i) => {
-                  const net = row.profit !== 0 ? row.profit : row.loss
-                  return (
-                    <tr key={i} className="hover:bg-gray-50 dark:hover:bg-gray-800">
-                      <td className="px-3 py-2 text-xs font-medium text-gray-900 dark:text-gray-100 whitespace-nowrap">{row.name}</td>
-                      <td className="px-3 py-2 text-xs text-green-600 dark:text-green-400 font-semibold whitespace-nowrap">{formatCurrency(row.ingresos)}</td>
-                      <td className="px-3 py-2 text-xs text-red-600 dark:text-red-400 font-semibold whitespace-nowrap">{formatCurrency(row.gastos)}</td>
-                      <td className={`px-3 py-2 text-xs font-semibold whitespace-nowrap ${net >= 0 ? 'text-blue-600 dark:text-blue-400' : 'text-orange-600 dark:text-orange-400'}`}>
-                        {formatCurrency(net)}
-                      </td>
-                    </tr>
-                  )
-                })}
-              </tbody>
-            </table>
-          </div>
+          <table className="w-full">
+            <thead className="bg-gray-50 dark:bg-gray-800">
+              <tr>
+                {[t('period'), t('income'), t('expenses'), t('profit')].map((h, i) => (
+                  <th key={h} className={`px-2 sm:px-3 py-2 text-[10px] sm:text-xs font-medium text-gray-500 dark:text-gray-400 uppercase ${i === 0 ? 'text-left' : 'text-right'}`}>{h}</th>
+                ))}
+              </tr>
+            </thead>
+            <tbody className="bg-white dark:bg-gray-900 divide-y divide-gray-100 dark:divide-gray-700">
+              {chartData.map((row, i) => {
+                const net = row.profit !== 0 ? row.profit : row.loss
+                return (
+                  <tr key={i} className="hover:bg-gray-50 dark:hover:bg-gray-800">
+                    <td className="px-2 sm:px-3 py-1.5 sm:py-2 text-[11px] sm:text-xs font-medium text-gray-900 dark:text-gray-100 whitespace-nowrap">{row.name}</td>
+                    <td className="px-2 sm:px-3 py-1.5 sm:py-2 text-right text-[11px] sm:text-xs text-green-600 dark:text-green-400 font-semibold whitespace-nowrap">{formatCurrency(row.ingresos)}</td>
+                    <td className="px-2 sm:px-3 py-1.5 sm:py-2 text-right text-[11px] sm:text-xs text-red-600 dark:text-red-400 font-semibold whitespace-nowrap">{formatCurrency(row.gastos)}</td>
+                    <td className={`px-2 sm:px-3 py-1.5 sm:py-2 text-right text-[11px] sm:text-xs font-semibold whitespace-nowrap ${net >= 0 ? 'text-blue-600 dark:text-blue-400' : 'text-orange-600 dark:text-orange-400'}`}>
+                      {formatCurrency(net)}
+                    </td>
+                  </tr>
+                )
+              })}
+            </tbody>
+          </table>
         </>
       )}
 
