@@ -1729,5 +1729,10 @@
       "drawerEmpty": "¡Todo revisado!",
       "drawerFooter": "Las transacciones personales se descartan · Las de negocio se agregan a tus registros"
     }
+  },
+  "checkout": {
+    "verifying": "Verificando tu cuenta...",
+    "preparingSubscription": "Preparando tu suscripción...",
+    "redirectingDashboard": "Redirigiendo al dashboard..."
   }
 }

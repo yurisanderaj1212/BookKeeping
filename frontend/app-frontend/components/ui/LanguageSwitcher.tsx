@@ -32,9 +32,13 @@ function LanguageSwitcherInner({ variant = 'compact', className = '' }: Language
       if (user) {
         await supabase.auth.updateUser({ data: { preferred_locale: newLocale } })
       }
-    } catch { /* silencioso — cookie is enough for now */ }
-    // 3. Navigate to same page with new locale
-    router.replace(pathname as any, { locale: newLocale })
+    } catch { /* silencioso */ }
+    // 3. Force full page reload with new locale prefix so middleware picks up the cookie
+    const currentPath = window.location.pathname
+    // Strip existing locale prefix if present
+    const stripped = currentPath.replace(/^\/(en|es)(\/|$)/, '/') || '/'
+    const newPath = newLocale === 'en' ? stripped : `/es${stripped === '/' ? '' : stripped}`
+    window.location.href = newPath
   }
 
   if (variant === 'full') {

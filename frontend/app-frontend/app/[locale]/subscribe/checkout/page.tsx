@@ -3,17 +3,12 @@
 import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { Loader2 } from 'lucide-react'
-import { createCheckoutSession } from '@/lib/subscriptionService'
 import { getSupabase } from '@/lib/supabaseClient'
+import { useTranslations } from 'next-intl'
 
-/**
- * Checkout gate — called after OAuth login or email verification.
- * Waits for Supabase session via onAuthStateChange, then:
- * - If user has stripe_customer_id → dashboard
- * - If not → Stripe Checkout (monthly trial)
- */
 export default function CheckoutGatePage() {
   const router = useRouter()
+  const t = useTranslations('checkout')
   const [status, setStatus] = useState<'checking' | 'redirecting' | 'error'>('checking')
   const [errorMsg, setErrorMsg] = useState('')
 
@@ -26,24 +21,17 @@ export default function CheckoutGatePage() {
       handled = true
 
       try {
-        // Check subscriptions table directly
-        const { data: sub, error: subError } = await supabase
+        const { data: sub } = await supabase
           .from('subscriptions')
           .select('stripe_customer_id')
           .eq('user_id', userId)
           .single()
 
-        // DEBUG: show what we found
-        console.log('[checkout-gate] userId:', userId)
-        console.log('[checkout-gate] sub row:', sub, 'error:', subError?.code)
-
         if (sub?.stripe_customer_id) {
-          console.log('[checkout-gate] has stripe_customer_id → dashboard')
           router.replace('/dashboard')
           return
         }
 
-        console.log('[checkout-gate] no stripe_customer_id → calling Stripe')
         setStatus('redirecting')
 
         const supabaseUrl  = process.env.NEXT_PUBLIC_SUPABASE_URL!
@@ -70,31 +58,19 @@ export default function CheckoutGatePage() {
       }
     }
 
-    // Listen for auth state — fires immediately if session already exists
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
-      if (session?.user) {
-        handleSession(session.user.id, session.access_token)
-      }
+      if (session?.user) handleSession(session.user.id, session.access_token)
     })
 
-    // Also check immediately in case session is already in localStorage
     supabase.auth.getSession().then(({ data }) => {
-      if (data.session?.user) {
-        handleSession(data.session.user.id, data.session.access_token)
-      }
+      if (data.session?.user) handleSession(data.session.user.id, data.session.access_token)
     })
 
-    // Timeout fallback — if no session after 8s, go to login
     const timeout = setTimeout(() => {
-      if (!handled) {
-        router.replace('/auth/login')
-      }
+      if (!handled) router.replace('/auth/login')
     }, 8000)
 
-    return () => {
-      subscription.unsubscribe()
-      clearTimeout(timeout)
-    }
+    return () => { subscription.unsubscribe(); clearTimeout(timeout) }
   }, [router])
 
   return (
@@ -103,13 +79,13 @@ export default function CheckoutGatePage() {
         {status === 'error' ? (
           <>
             <p className="text-red-400 text-sm mb-2">Error: {errorMsg}</p>
-            <p className="text-white/40 text-xs">Redirigiendo al dashboard...</p>
+            <p className="text-white/40 text-xs">{t('redirectingDashboard')}</p>
           </>
         ) : (
           <>
             <Loader2 className="w-10 h-10 text-[#81ecff] animate-spin mx-auto mb-4" />
             <p className="text-white/60 text-sm">
-              {status === 'checking' ? 'Verificando tu cuenta...' : 'Preparando tu suscripción...'}
+              {status === 'checking' ? t('verifying') : t('preparingSubscription')}
             </p>
           </>
         )}
