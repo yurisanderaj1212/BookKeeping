@@ -993,7 +993,9 @@
       "annualInfoDesc": "Shows your total revenue, expenses and profit for each month of the year. Use this to identify your best and worst months and spot seasonal trends in your business.",
       "dailyBreakdown": "Period Breakdown",
       "period": "Period",
-      "dailyPerformanceTitle": "Daily Performance"
+      "dailyPerformanceTitle": "Daily Performance",
+      "bestWeek": "Best Week",
+      "perWeek": "/week"
     },
     "topTransactions": {
       "title": "Top Transactions",

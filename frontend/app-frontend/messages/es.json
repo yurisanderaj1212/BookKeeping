@@ -993,7 +993,9 @@
       "annualInfoDesc": "Muestra tus ingresos, gastos y beneficio totales por cada mes del año. Úsalo para identificar tus mejores y peores meses y detectar tendencias estacionales en tu negocio.",
       "dailyBreakdown": "Desglose del Período",
       "period": "Período",
-      "dailyPerformanceTitle": "Rendimiento Diario"
+      "dailyPerformanceTitle": "Rendimiento Diario",
+      "bestWeek": "Mejor Semana",
+      "perWeek": "/semana"
     },
     "topTransactions": {
       "title": "Top Transacciones",
