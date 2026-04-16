@@ -50,6 +50,32 @@ function mapStripeStatus(stripeStatus: string): number {
   }
 }
 
+/** Safely convert a Unix timestamp (seconds) to ISO string, returns null if invalid */
+function toISO(ts: number | null | undefined): string | null {
+  if (!ts || typeof ts !== 'number' || isNaN(ts)) return null
+  try {
+    const d = new Date(ts * 1000)
+    if (isNaN(d.getTime())) return null
+    return d.toISOString()
+  } catch {
+    return null
+  }
+}
+
+/** Get current_period_start — new Stripe API may put it on the item level */
+function getPeriodStart(sub: Stripe.Subscription): string | null {
+  const ts = (sub as any).current_period_start
+    ?? sub.items?.data?.[0]?.current_period_start
+  return toISO(ts)
+}
+
+/** Get current_period_end — new Stripe API may put it on the item level */
+function getPeriodEnd(sub: Stripe.Subscription): string | null {
+  const ts = (sub as any).current_period_end
+    ?? sub.items?.data?.[0]?.current_period_end
+  return toISO(ts)
+}
+
 Deno.serve(async (req) => {
   if (req.method === 'OPTIONS') {
     return new Response('ok', { headers: corsHeaders })
@@ -94,9 +120,9 @@ Deno.serve(async (req) => {
             stripe_customer_id:     session.customer as string,
             stripe_subscription_id: session.subscription as string,
             stripe_price_id:        priceId,
-            trial_ends_at:          sub.trial_end ? new Date(sub.trial_end * 1000).toISOString() : null,
-            current_period_start:   new Date(sub.current_period_start * 1000).toISOString(),
-            current_period_end:     new Date(sub.current_period_end   * 1000).toISOString(),
+            trial_ends_at:          toISO(sub.trial_end),
+            current_period_start:   getPeriodStart(sub),
+            current_period_end:     getPeriodEnd(sub),
             updated_at:             new Date().toISOString(),
           }, { onConflict: 'user_id' })
         }
@@ -114,9 +140,9 @@ Deno.serve(async (req) => {
             status,
             plan,
             stripe_price_id:      priceId,
-            trial_ends_at:        sub.trial_end ? new Date(sub.trial_end * 1000).toISOString() : null,
-            current_period_start: new Date(sub.current_period_start * 1000).toISOString(),
-            current_period_end:   new Date(sub.current_period_end   * 1000).toISOString(),
+            trial_ends_at:        toISO(sub.trial_end),
+            current_period_start: getPeriodStart(sub),
+            current_period_end:   getPeriodEnd(sub),
             updated_at:           new Date().toISOString(),
           })
           .eq('stripe_subscription_id', sub.id)
@@ -150,8 +176,8 @@ Deno.serve(async (req) => {
           await supabase.from('subscriptions')
             .update({
               status:               mapStripeStatus(sub.status),
-              current_period_start: new Date(sub.current_period_start * 1000).toISOString(),
-              current_period_end:   new Date(sub.current_period_end   * 1000).toISOString(),
+              current_period_start: getPeriodStart(sub),
+              current_period_end:   getPeriodEnd(sub),
               updated_at:           new Date().toISOString(),
             })
             .eq('stripe_subscription_id', sub.id)
