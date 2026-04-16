@@ -183,39 +183,30 @@ export default function ReportsOverview({ startDate, endDate }: ReportsOverviewP
         </div>
       ) : (
         <>
-          {/* Scrollable chart when many days — min 44px per day group */}
-          {(() => {
-            const needsScroll = chartData.length > 14
-            const chartWidth  = needsScroll ? Math.max(chartData.length * 44, 600) : undefined
-            return (
-              <div className={needsScroll ? 'overflow-x-auto -mx-2 px-2 pb-2' : ''}>
-                <div style={{ height: 240, width: chartWidth ?? '100%', minWidth: needsScroll ? chartWidth : undefined }}>
-                  <ResponsiveContainer width="100%" height={240}>
-                    <BarChart data={chartData} margin={{ top: 8, right: 8, left: 0, bottom: 0 }} barCategoryGap="15%" barGap={2}>
-                      <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" vertical={false} />
-                      <XAxis dataKey="name" axisLine={false} tickLine={false}
-                        tick={{ fontSize: needsScroll ? 9 : 10, fill: '#6b7280' }}
-                        interval={0} />
-                      <YAxis axisLine={false} tickLine={false} tick={{ fontSize: 10, fill: '#6b7280' }} width={56}
-                        tickFormatter={(v) => {
-                          if (v === 0) return '$0'
-                          if (Math.abs(v) >= 1000) return `${(v / 1000).toFixed(0)}k`
-                          return `${v}`
-                        }} />
-                      <Tooltip content={<CustomTooltip />} />
-                      <Bar dataKey="ingresos" fill="#10b981" radius={[3, 3, 0, 0]} name={t('income')}   animationDuration={1200} />
-                      <Bar dataKey="gastos"   fill="#ef4444" radius={[3, 3, 0, 0]} name={t('expenses')} animationDuration={1200} animationBegin={200} />
-                      <Bar dataKey="profit"   fill="#60a5fa" radius={[3, 3, 0, 0]} name={t('profit')}   animationDuration={1200} animationBegin={400} />
-                      <Bar dataKey="loss"     fill="#f97316" radius={[0, 0, 3, 3]} name={t('loss')}     animationDuration={1200} animationBegin={400} />
-                    </BarChart>
-                  </ResponsiveContainer>
-                </div>
-                {needsScroll && (
-                  <p className="text-xs text-gray-400 dark:text-gray-500 text-center mt-1">← {t('scrollToSeeMore')} →</p>
-                )}
-              </div>
-            )
-          })()}
+          {/* Always use min 60px per day — scroll on mobile when needed */}
+          <div className="overflow-x-auto -mx-2 px-2 pb-1 mb-4">
+            <div style={{ height: 240, width: Math.max(chartData.length * 60, 320), minWidth: '100%' }}>
+              <ResponsiveContainer width="100%" height={240}>
+                <BarChart data={chartData} margin={{ top: 8, right: 8, left: 0, bottom: 0 }} barCategoryGap="20%" barGap={2}>
+                  <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" vertical={false} />
+                  <XAxis dataKey="name" axisLine={false} tickLine={false}
+                    tick={{ fontSize: 10, fill: '#6b7280' }}
+                    interval={0} />
+                  <YAxis axisLine={false} tickLine={false} tick={{ fontSize: 10, fill: '#6b7280' }} width={52}
+                    tickFormatter={(v) => {
+                      if (v === 0) return '$0'
+                      if (Math.abs(v) >= 1000) return `${(v / 1000).toFixed(0)}k`
+                      return `${v}`
+                    }} />
+                  <Tooltip content={<CustomTooltip />} />
+                  <Bar dataKey="ingresos" fill="#10b981" radius={[3, 3, 0, 0]} name={t('income')}   animationDuration={1200} />
+                  <Bar dataKey="gastos"   fill="#ef4444" radius={[3, 3, 0, 0]} name={t('expenses')} animationDuration={1200} animationBegin={200} />
+                  <Bar dataKey="profit"   fill="#60a5fa" radius={[3, 3, 0, 0]} name={t('profit')}   animationDuration={1200} animationBegin={400} />
+                  <Bar dataKey="loss"     fill="#f97316" radius={[0, 0, 3, 3]} name={t('loss')}     animationDuration={1200} animationBegin={400} />
+                </BarChart>
+              </ResponsiveContainer>
+            </div>
+          </div>
 
           {/* Legend */}
           <div className="flex items-center justify-center gap-5 mb-6">
