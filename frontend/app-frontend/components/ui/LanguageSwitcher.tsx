@@ -22,6 +22,8 @@ function LanguageSwitcherInner({ variant = 'compact', className = '' }: Language
 
   const switchLocale = (newLocale: string) => {
     if (newLocale === locale) return
+    // Save preference in NEXT_LOCALE cookie — next-intl reads this automatically
+    document.cookie = `NEXT_LOCALE=${newLocale}; path=/; max-age=31536000; SameSite=Lax`
     router.replace(pathname as any, { locale: newLocale })
   }
 

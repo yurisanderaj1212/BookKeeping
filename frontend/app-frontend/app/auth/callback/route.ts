@@ -15,9 +15,11 @@ export async function GET(request: Request) {
   const proto = request.headers.get('x-forwarded-proto') ?? 'https'
   const baseUrl = `${proto}://${host}`
 
-  // Detect locale from referer
-  const referer = request.headers.get('referer') ?? ''
-  const locale  = referer.includes('/en/') ? 'en' : 'es'
+  // Detect locale: cookie first, then URL path, then default 'en'
+  const localeCookie = request.cookies.get('NEXT_LOCALE')?.value
+  const locale = (localeCookie === 'en' || localeCookie === 'es')
+    ? localeCookie
+    : request.headers.get('referer')?.includes('/es/') ? 'es' : 'en'
 
   const cookieStore = await cookies()
   const supabase = createServerClient(

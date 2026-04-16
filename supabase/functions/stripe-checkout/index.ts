@@ -198,7 +198,7 @@ Deno.serve(async (req) => {
       if (existingSub?.stripe_subscription_id && (existingSub.status === 0 || existingSub.status === 1)) {
         const portal = await stripe.billingPortal.sessions.create({
           customer:   existingSub.stripe_customer_id,
-          return_url: `${SITE_URL}/es/settings/billing`,
+          return_url: `${SITE_URL}/settings/billing`,
         })
         return json({ url: portal.url, sessionId: null, isPortal: true })
       }
@@ -218,9 +218,10 @@ Deno.serve(async (req) => {
         line_items:           [{ price: priceId, quantity: 1 }],
         subscription_data:    { trial_period_days: TRIAL_DAYS, metadata: { user_id: user.id } },
         metadata:             { user_id: user.id },
-        success_url:          `${SITE_URL}/es/subscribe/success?session_id={CHECKOUT_SESSION_ID}`,
-        cancel_url:           `${SITE_URL}/es/subscribe/cancel`,
+        success_url:          `${SITE_URL}/subscribe/success?session_id={CHECKOUT_SESSION_ID}`,
+        cancel_url:           `${SITE_URL}/subscribe/cancel`,
         allow_promotion_codes: true,
+        locale:               'auto',
       })
 
       return json({ url: session.url, sessionId: session.id })
@@ -243,7 +244,7 @@ Deno.serve(async (req) => {
 
       const portal = await stripe.billingPortal.sessions.create({
         customer:   customerId,
-        return_url: `${SITE_URL}/es/settings/billing`,
+        return_url: `${SITE_URL}/settings/billing`,
       })
 
       return json({ url: portal.url })

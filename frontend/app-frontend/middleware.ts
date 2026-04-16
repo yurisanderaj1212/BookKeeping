@@ -1,11 +1,22 @@
 import createIntlMiddleware from 'next-intl/middleware'
 import { routing } from './i18n/routing'
+import { NextRequest } from 'next/server'
 
-// El middleware solo maneja i18n (detección de locale y routing).
-// La protección de rutas la maneja useAuth en el cliente,
-// que usa supabase.auth.getSession() directamente — más confiable
-// que intentar leer las cookies de Supabase desde el edge.
-export default createIntlMiddleware(routing)
+const intlMiddleware = createIntlMiddleware({
+  ...routing,
+  // next-intl will check Accept-Language header automatically
+  // We also check our custom locale cookie below
+})
+
+export default function middleware(request: NextRequest) {
+  // Check for user's saved locale preference cookie
+  const savedLocale = request.cookies.get('NEXT_LOCALE')?.value
+  if (savedLocale && (savedLocale === 'en' || savedLocale === 'es')) {
+    // If URL doesn't already have a locale prefix, let intl middleware handle it
+    // The cookie will be read by next-intl automatically via NEXT_LOCALE cookie
+  }
+  return intlMiddleware(request)
+}
 
 export const config = {
   matcher: [
