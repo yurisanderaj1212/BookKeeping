@@ -22,7 +22,7 @@ function LanguageSwitcherInner({ variant = 'compact', className = '' }: Language
 
   const switchLocale = async (newLocale: string) => {
     if (newLocale === locale) return
-    // 1. Save in cookie — next-intl reads NEXT_LOCALE automatically (persists 1 year)
+    // 1. Save in NEXT_LOCALE cookie — next-intl middleware reads this on every request
     document.cookie = `NEXT_LOCALE=${newLocale}; path=/; max-age=31536000; SameSite=Lax`
     // 2. Save in Supabase user_metadata if authenticated (syncs across devices)
     try {
@@ -33,12 +33,8 @@ function LanguageSwitcherInner({ variant = 'compact', className = '' }: Language
         await supabase.auth.updateUser({ data: { preferred_locale: newLocale } })
       }
     } catch { /* silencioso */ }
-    // 3. Force full page reload with new locale prefix so middleware picks up the cookie
-    const currentPath = window.location.pathname
-    // Strip existing locale prefix if present
-    const stripped = currentPath.replace(/^\/(en|es)(\/|$)/, '/') || '/'
-    const newPath = newLocale === 'en' ? stripped : `/es${stripped === '/' ? '' : stripped}`
-    window.location.href = newPath
+    // 3. Use next-intl router — correctly handles locale prefix in URL
+    router.replace(pathname as any, { locale: newLocale })
   }
 
   if (variant === 'full') {
