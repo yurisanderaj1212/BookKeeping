@@ -229,29 +229,33 @@ export default function WeeklyClosureAnalysis({ startDate, endDate }: WeeklyClos
         </div>
       </div>
 
-      {/* Chart */}
-      <div className="w-full mb-4" style={{ height: 280 }}>
+      {/* Chart — scrollable with min 80px per week */}
+      <div className="mb-4">
         {loading ? (
-          <div className="w-full h-full flex items-center justify-center bg-gray-50 dark:bg-gray-800 rounded-lg">
+          <div className="h-[280px] flex items-center justify-center bg-gray-50 dark:bg-gray-800 rounded-lg">
             <div className="text-gray-400">{t('loadingChart')}</div>
           </div>
         ) : (
-          <ResponsiveContainer width="100%" height={280}>
-            <BarChart data={weekData} margin={{ top: 10, right: 8, left: 0, bottom: 0 }}>
-              <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" vertical={false} />
-              <XAxis dataKey="label" axisLine={false} tickLine={false} tick={{ fontSize: 10, fill: '#6b7280' }} interval={0} />
-              <YAxis axisLine={false} tickLine={false} tick={{ fontSize: 10, fill: '#6b7280' }} width={56}
-                tickFormatter={v => v === 0 ? '$0' : Math.abs(v) >= 1000 ? `${(v/1000).toFixed(0)}k` : `${v}`} />
-              <Tooltip content={<CustomTooltip />} />
-              <Bar dataKey="ingresos"  fill="#10b981" radius={[3,3,0,0]} name={t('income')}   animationDuration={1200} />
-              <Bar dataKey="gastos"    fill="#ef4444" radius={[3,3,0,0]} name={t('expenses')} animationDuration={1200} animationBegin={200} />
-              <Bar dataKey="beneficio" radius={[3,3,0,0]} name={t('profit')} animationDuration={1200} animationBegin={400}>
-                {weekData.map((entry, index) => (
-                  <Cell key={`cell-${index}`} fill={entry.beneficio >= 0 ? '#60a5fa' : '#f97316'} />
-                ))}
-              </Bar>
-            </BarChart>
-          </ResponsiveContainer>
+          <div className="overflow-x-auto -mx-2 px-2 pb-1">
+            <div style={{ height: 280, width: Math.max(weekData.length * 80, 280), minWidth: '100%' }}>
+              <ResponsiveContainer width="100%" height={280}>
+                <BarChart data={weekData} margin={{ top: 10, right: 8, left: 0, bottom: 0 }} barCategoryGap="20%" barGap={2}>
+                  <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" vertical={false} />
+                  <XAxis dataKey="label" axisLine={false} tickLine={false} tick={{ fontSize: 10, fill: '#6b7280' }} interval={0} />
+                  <YAxis axisLine={false} tickLine={false} tick={{ fontSize: 10, fill: '#6b7280' }} width={52}
+                    tickFormatter={v => v === 0 ? '$0' : Math.abs(v) >= 1000 ? `${(v/1000).toFixed(0)}k` : `${v}`} />
+                  <Tooltip content={<CustomTooltip />} />
+                  <Bar dataKey="ingresos"  fill="#10b981" radius={[3,3,0,0]} name={t('income')}   animationDuration={1200} />
+                  <Bar dataKey="gastos"    fill="#ef4444" radius={[3,3,0,0]} name={t('expenses')} animationDuration={1200} animationBegin={200} />
+                  <Bar dataKey="beneficio" radius={[3,3,0,0]} name={t('profit')} animationDuration={1200} animationBegin={400}>
+                    {weekData.map((entry, index) => (
+                      <Cell key={`cell-${index}`} fill={entry.beneficio >= 0 ? '#60a5fa' : '#f97316'} />
+                    ))}
+                  </Bar>
+                </BarChart>
+              </ResponsiveContainer>
+            </div>
+          </div>
         )}
       </div>
 
