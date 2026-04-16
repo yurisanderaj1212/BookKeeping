@@ -20,10 +20,20 @@ function LanguageSwitcherInner({ variant = 'compact', className = '' }: Language
   const router   = useRouter()
   const pathname = usePathname()
 
-  const switchLocale = (newLocale: string) => {
+  const switchLocale = async (newLocale: string) => {
     if (newLocale === locale) return
-    // Save preference in NEXT_LOCALE cookie — next-intl reads this automatically
+    // 1. Save in cookie — next-intl reads NEXT_LOCALE automatically (persists 1 year)
     document.cookie = `NEXT_LOCALE=${newLocale}; path=/; max-age=31536000; SameSite=Lax`
+    // 2. Save in Supabase user_metadata if authenticated (syncs across devices)
+    try {
+      const { getSupabase } = await import('@/lib/supabaseClient')
+      const supabase = getSupabase()
+      const { data: { user } } = await supabase.auth.getUser()
+      if (user) {
+        await supabase.auth.updateUser({ data: { preferred_locale: newLocale } })
+      }
+    } catch { /* silencioso — cookie is enough for now */ }
+    // 3. Navigate to same page with new locale
     router.replace(pathname as any, { locale: newLocale })
   }
 

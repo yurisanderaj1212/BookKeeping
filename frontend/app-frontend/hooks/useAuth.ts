@@ -61,6 +61,11 @@ export function useAuth() {
         // Reset session start on new login
         if (_event === 'SIGNED_IN') {
           localStorage.setItem('cn_session_start', String(Date.now()))
+          // Apply saved locale from user_metadata across devices
+          const savedLocale = u.user_metadata?.preferred_locale
+          if (savedLocale === 'en' || savedLocale === 'es') {
+            document.cookie = `NEXT_LOCALE=${savedLocale}; path=/; max-age=31536000; SameSite=Lax`
+          }
         }
         // Don't auto-redirect here — let the login page handle the redirect
         // so it can go through the checkout gate
