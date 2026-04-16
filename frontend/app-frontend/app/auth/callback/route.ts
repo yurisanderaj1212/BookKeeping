@@ -15,8 +15,10 @@ export async function GET(request: Request) {
   const proto = request.headers.get('x-forwarded-proto') ?? 'https'
   const baseUrl = `${proto}://${host}`
 
-  // Detect locale: cookie first, then URL path, then default 'en'
-  const localeCookie = request.cookies.get('NEXT_LOCALE')?.value
+  // Detect locale: cookie header first, then referer, then default 'en'
+  const cookieHeader = request.headers.get('cookie') ?? ''
+  const localeCookieMatch = cookieHeader.match(/NEXT_LOCALE=([^;]+)/)
+  const localeCookie = localeCookieMatch?.[1]
   const locale = (localeCookie === 'en' || localeCookie === 'es')
     ? localeCookie
     : request.headers.get('referer')?.includes('/es/') ? 'es' : 'en'
