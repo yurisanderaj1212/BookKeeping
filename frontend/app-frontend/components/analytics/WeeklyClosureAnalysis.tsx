@@ -197,7 +197,7 @@ export default function WeeklyClosureAnalysis({ startDate, endDate }: WeeklyClos
           <div className="flex items-center gap-1.5 mb-1.5">
             <TrendingUp className={`w-3.5 h-3.5 ${totalProfit >= 0 ? 'text-blue-600 dark:text-blue-400' : 'text-orange-600 dark:text-orange-400'}`} />
             <span className={`text-xs font-medium ${totalProfit >= 0 ? 'text-blue-600 dark:text-blue-400' : 'text-orange-600 dark:text-orange-400'}`}>
-              {t('annualProfit')}
+              {t('monthlyProfit')}
             </span>
           </div>
           <p className={`text-base sm:text-xl font-bold ${totalProfit >= 0 ? 'text-blue-700 dark:text-blue-300' : 'text-orange-700 dark:text-orange-300'}`}>

@@ -871,6 +871,7 @@
       "annualIncome": "Annual Revenue",
       "annualExpenses": "Annual Expenses",
       "annualProfit": "Annual Profit",
+      "monthlyProfit": "Monthly Profit",
       "bestMonth": "Best Month",
       "average": "Average",
       "perMonth": "/month",
