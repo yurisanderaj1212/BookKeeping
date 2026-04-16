@@ -248,6 +248,9 @@ Deno.serve(async (req) => {
         cancel_url:           `${SITE_URL}/subscribe/cancel`,
         allow_promotion_codes: true,
         locale:               'auto',
+        custom_text: {
+          submit: { message: '🔒 Secure payment powered by Stripe' },
+        },
       })
 
       return json({ url: session.url, sessionId: session.id })
