@@ -9,6 +9,7 @@ import { useNotifications } from '@/hooks/useNotifications'
 import AppLogo from '@/components/ui/AppLogo'
 import LanguageSwitcher from '@/components/ui/LanguageSwitcher'
 import AuthFlipCard from '@/components/auth/AuthFlipCard'
+import { ArrowLeft } from 'lucide-react'
 
 // Lista de empleos comunes en Estados Unidos
 const US_JOBS = [
@@ -304,7 +305,12 @@ export default function RegisterPage() {
         <div className="mx-auto w-full max-w-sm lg:w-96">
           {/* Logo + language switcher */}
           <div className="flex items-center justify-between mb-2">
-            <AppLogo size={28} variant="full" />
+            <div className="flex items-center gap-2">
+              <Link href="/" className="p-1.5 rounded-lg text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors">
+                <ArrowLeft className="w-4 h-4" />
+              </Link>
+              <AppLogo size={28} variant="full" />
+            </div>
             <LanguageSwitcher variant="compact" />
           </div>
 
