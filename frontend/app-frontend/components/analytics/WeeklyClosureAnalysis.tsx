@@ -7,6 +7,7 @@ import { useTranslations, useLocale } from 'next-intl'
 import { useCurrency } from '@/hooks/useCurrency'
 import { getSupabase } from '@/lib/supabaseClient'
 import InfoTooltip from '@/components/ui/InfoTooltip'
+import { getWeeksForMonth } from '@/lib/weekUtils'
 
 interface WeeklyClosureAnalysisProps {
   startDate: string | null
@@ -45,64 +46,54 @@ export default function WeeklyClosureAnalysis({ startDate, endDate }: WeeklyClos
       try {
         const supabase = getSupabase()
 
-        // Always show the full month derived from startDate
-        const monthStart = `${refYear}-${String(refMonth + 1).padStart(2, '0')}-01`
-        const monthEnd   = new Date(refYear, refMonth + 1, 0).toISOString().split('T')[0]
+        // Use canonical week definitions (same logic as dashboard) so cross-month
+        // weeks (e.g. Mar 29-Apr 4) include transactions from the real start date,
+        // not just from the 1st of the month.
+        const weekDefs = getWeeksForMonth(refYear, refMonth + 1) // month is 1-based
+
+        // Fetch transactions for the full range covered by these weeks
+        const rangeStart = weekDefs[0].startDate
+        const rangeEnd   = weekDefs[weekDefs.length - 1].endDate
 
         const { data } = await supabase
           .from('transactions')
           .select('type, amount, date')
-          .gte('date', monthStart)
-          .lte('date', monthEnd)
+          .gte('date', rangeStart)
+          .lte('date', rangeEnd)
           .or('is_from_plaid.eq.false,is_business_transaction.eq.true')
 
         if (cancelled) return
         const rows = data ?? []
 
-        // Build weeks: Sunday-based, covering the full month
-        const firstOfMonth = new Date(refYear, refMonth, 1)
-        const firstSunday  = new Date(firstOfMonth)
-        firstSunday.setDate(firstOfMonth.getDate() - firstOfMonth.getDay())
-
-        const fmtD = (d: Date) =>
-          `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`
-
-        const fmtLabel = (s: Date, e: Date) => {
+        const fmtLabel = (startStr: string, endStr: string) => {
+          const s = new Date(startStr + 'T00:00:00')
+          const e = new Date(endStr   + 'T00:00:00')
           const mName = s.toLocaleDateString(locale === 'en' ? 'en-US' : 'es-ES', { month: 'short' })
+          if (s.getMonth() !== e.getMonth()) {
+            const eMName = e.toLocaleDateString(locale === 'en' ? 'en-US' : 'es-ES', { month: 'short' })
+            return `${mName} ${s.getDate()}-${eMName} ${e.getDate()}`
+          }
           return `${mName} ${s.getDate()}-${e.getDate()}`
         }
 
-        const weeks: WeekData[] = []
-        for (let i = 0; i < 6; i++) {
-          const wStart = new Date(firstSunday)
-          wStart.setDate(firstSunday.getDate() + i * 7)
-          const wEnd = new Date(wStart)
-          wEnd.setDate(wStart.getDate() + 6)
-
-          // Only include weeks that overlap with the month
-          const monthEndDate = new Date(refYear, refMonth + 1, 0)
-          if (wStart > monthEndDate) break
-
-          const wStartStr = fmtD(wStart)
-          const wEndStr   = fmtD(wEnd)
-
+        const weeks: WeekData[] = weekDefs.map(({ startDate: wStartStr, endDate: wEndStr }) => {
           const weekRows = rows.filter(r => {
             const d = (r.date ?? '').substring(0, 10)
             return d >= wStartStr && d <= wEndStr
           })
 
-          const ing = weekRows.filter(r => r.type === 1).reduce((s, r) => s + r.amount, 0)
-          const gas = weekRows.filter(r => r.type === 2).reduce((s, r) => s + r.amount, 0)
+          const ing = weekRows.filter(r => r.type === 1).reduce((s, r) => s + Number(r.amount), 0)
+          const gas = weekRows.filter(r => r.type === 2).reduce((s, r) => s + Number(r.amount), 0)
 
-          weeks.push({
-            label:     fmtLabel(wStart, wEnd),
+          return {
+            label:     fmtLabel(wStartStr, wEndStr),
             ingresos:  ing,
             gastos:    gas,
             beneficio: ing - gas,
             start:     wStartStr,
             end:       wEndStr,
-          })
-        }
+          }
+        })
 
         if (!cancelled) setWeekData(weeks)
       } catch { /* silencioso */ }
