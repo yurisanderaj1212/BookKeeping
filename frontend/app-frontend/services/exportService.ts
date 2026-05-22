@@ -7,8 +7,17 @@ import * as transactionService from '@/services/transactionService'
 
 // ─── Locale detection (no React needed) ──────────────────────────────────────
 function getLocale(): 'en' | 'es' {
-  if (typeof window === 'undefined') return 'es'
-  return window.location.pathname.startsWith('/en') ? 'en' : 'es'
+  if (typeof window === 'undefined') return 'en'
+  // Check localStorage preference first (set from Settings page or language switcher)
+  try {
+    const stored = localStorage.getItem('bookkeeping_preferences')
+    if (stored) {
+      const prefs = JSON.parse(stored)
+      if (prefs.language === 'en' || prefs.language === 'es') return prefs.language
+    }
+  } catch { /* ignore */ }
+  // Detect from URL: Spanish has /es/ prefix, English is the default (no prefix)
+  return window.location.pathname.startsWith('/es') ? 'es' : 'en'
 }
 
 // ─── Labels dictionary ────────────────────────────────────────────────────────
