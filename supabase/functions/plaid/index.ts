@@ -250,15 +250,6 @@ Deno.serve(async (req) => {
         if (match) accountMap.set(match[1], acc.id)
       }
 
-      // If no accounts mapped, reset cursor to force full re-sync
-      if (accountMap.size === 0) {
-        console.log('No mapped accounts found — resetting cursor for full re-sync')
-        await adminSupabase
-          .from('plaid_items')
-          .update({ transactions_cursor: null })
-          .eq('id', itemId)
-      }
-
       const result = await syncTransactions(item.plaid_access_token, itemId, user.id, adminSupabase, accountMap, item.sync_start_date ?? null)
       return json(result)
     }
@@ -500,29 +491,21 @@ async function syncTransactions(
       const type   = tx.amount > 0 ? 2 : 1
       const amount = Math.abs(tx.amount)
       const txAccountId = accountMap?.get(tx.account_id) ?? null
-      const { error } = await supabase.from('transactions').upsert({
-        user_id:                 userId,
+
+      // Only update financial data — never touch status or is_business_transaction
+      // so already-reviewed transactions (status 0=confirmed, 2=discarded) are not
+      // reverted back to pending (status 1) by a Plaid modification event.
+      const { error } = await supabase.from('transactions').update({
         type,
         amount,
-        category_id:             21, // Other
-        account_id:              txAccountId,
-        description:             tx.merchant_name ?? tx.name ?? 'Transacción bancaria',
-        date:                    tx.authorized_date ?? tx.date,
-        status:                  1, // Keep as pending review
-        is_from_plaid:           true,
-        is_business_transaction: null,
-        merchant_name:           tx.merchant_name ?? null,
-        plaid_transaction_id:    tx.transaction_id,
-        notes:                   null,
-      }, { onConflict: 'plaid_transaction_id', ignoreDuplicates: false })
+        description:  tx.merchant_name ?? tx.name ?? 'Transacción bancaria',
+        date:         txDate,
+        merchant_name: tx.merchant_name ?? null,
+        account_id:   txAccountId,
+        updated_at:   new Date().toISOString(),
+      }).eq('plaid_transaction_id', tx.transaction_id)
       if (error) console.error(`TX modified error: ${error.message}`)
       else modified++
-      if (txAccountId) {
-        await supabase.from('transactions')
-          .update({ account_id: txAccountId })
-          .eq('plaid_transaction_id', tx.transaction_id)
-          .is('account_id', null)
-      }
     }
 
     for (const tx of data.removed ?? []) {
