@@ -84,7 +84,8 @@
         "emailInvalid": "El formato del email no es válido",
         "passwordRequired": "La contraseña es requerida",
         "passwordMin": "La contraseña debe tener al menos 8 caracteres",
-        "invalidCredentials": "Email o contraseña incorrectos"
+        "invalidCredentials": "Email o contraseña incorrectos",
+        "captchaRequired": "Por favor completa la verificación de seguridad"
       },
       "panelBadge": "Calificación 4.9/5 por más de 10,000 usuarios",
       "panelTitle": "Gestiona tus finanzas con confianza",
@@ -159,7 +160,8 @@
         "agreeToTermsRequired": "Debes aceptar los términos y condiciones",
         "connectionError": "Error de conexión. Verifica tu internet e intenta de nuevo.",
         "registerFailed": "Error al registrarse. Intenta de nuevo.",
-        "unknown": "Error desconocido"
+        "unknown": "Error desconocido",
+        "captchaRequired": "Por favor completa la verificación de seguridad"
       }
     },
     "forgotPassword": {
@@ -1624,7 +1626,8 @@
     "weekAlreadyClosed": "Esta semana ya está cerrada.",
     "weekAlreadyOpen": "Esta semana ya está abierta.",
     "categoryNotFound": "Categoría no encontrada.",
-    "categoriesFixed": "Las categorías son fijas y no pueden modificarse."
+    "categoriesFixed": "Las categorías son fijas y no pueden modificarse.",
+    "captchaRequired": "Por favor completa la verificación de seguridad antes de continuar."
   },
   "billing": {
     "title": "Facturación y suscripción",

@@ -10,6 +10,8 @@ import AppLogo from '@/components/ui/AppLogo'
 import LanguageSwitcher from '@/components/ui/LanguageSwitcher'
 import AuthFlipCard from '@/components/auth/AuthFlipCard'
 import { ArrowLeft } from 'lucide-react'
+import TurnstileWidget from '@/components/ui/TurnstileWidget'
+import { useTurnstile } from '@/hooks/useTurnstile'
 
 // Inline wrapper needed because LanguageSwitcher uses Suspense internally
 function LanguageSwitcherInline() {
@@ -32,6 +34,7 @@ function LoginForm() {
   const [isLoading, setIsLoading] = useState(false)
   const [errors, setErrors] = useState<Record<string, string>>({})
   const [lockedMessage, setLockedMessage] = useState('')
+  const { isVerified, isVerifying, error: turnstileError, handleVerify, handleExpire, handleError: handleTurnstileError } = useTurnstile()
 
   const justRegistered = searchParams.get('registered') === '1'
   const justVerified   = searchParams.get('verified') === '1'
@@ -88,6 +91,13 @@ function LoginForm() {
     setIsLoading(true)
     setErrors({})
     setLockedMessage('')
+
+    // Verificar Turnstile antes de cualquier llamada a Supabase
+    if (!isVerified) {
+      setErrors({ captcha: t('errors.captchaRequired') })
+      setIsLoading(false)
+      return
+    }
     
     // Validaciones del frontend que coinciden con el backend (LoginRequest)
     const newErrors: Record<string, string> = {}
@@ -312,9 +322,20 @@ function LoginForm() {
               </div>
 
               <div>
+                <TurnstileWidget
+                  onVerify={handleVerify}
+                  onExpire={handleExpire}
+                  onError={handleTurnstileError}
+                />
+                {(turnstileError || errors.captcha) && (
+                  <p className="mt-1 text-xs text-red-600">{turnstileError ?? errors.captcha}</p>
+                )}
+              </div>
+
+              <div>
                 <button
                   type="submit"
-                  disabled={isLoading}
+                  disabled={isLoading || isVerifying}
                   className="w-full flex justify-center items-center py-2 px-4 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-primary-500 hover:bg-primary-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
                 >
                   {isLoading ? (
