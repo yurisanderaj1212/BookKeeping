@@ -9,6 +9,8 @@ import { getSupabase } from '@/lib/supabaseClient'
 import AppLogo from '@/components/ui/AppLogo'
 import LanguageSwitcher from '@/components/ui/LanguageSwitcher'
 import { Suspense } from 'react'
+import TurnstileWidget from '@/components/ui/TurnstileWidget'
+import { useTurnstile } from '@/hooks/useTurnstile'
 
 type Step = 'request' | 'sent' | 'reset' | 'done'
 
@@ -21,6 +23,7 @@ function ForgotPasswordForm() {
   const [showPass, setShowPass]   = useState(false)
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError]         = useState('')
+  const { isVerified, isVerifying, error: turnstileError, handleVerify, handleExpire, handleError: handleTurnstileError } = useTurnstile()
 
   const t    = useTranslations('auth.forgotPassword')
   const tReg = useTranslations('auth.register')
@@ -41,6 +44,11 @@ function ForgotPasswordForm() {
     const emailRegex = /^[^@\s]+@[^@\s]+\.[^@\s]+$/
     if (!emailRegex.test(email)) {
       setError(tErr('emailInvalid'))
+      return
+    }
+
+    if (!isVerified) {
+      setError(tErr('captchaRequired'))
       return
     }
 
@@ -140,9 +148,18 @@ function ForgotPasswordForm() {
                   </div>
                 )}
 
+                <TurnstileWidget
+                  onVerify={handleVerify}
+                  onExpire={handleExpire}
+                  onError={handleTurnstileError}
+                />
+                {turnstileError && (
+                  <p className="text-xs text-red-600 dark:text-red-400">{turnstileError}</p>
+                )}
+
                 <button
                   type="submit"
-                  disabled={isLoading}
+                  disabled={isLoading || isVerifying}
                   className="w-full py-2.5 px-4 bg-primary-500 hover:bg-primary-600 text-white text-sm font-semibold rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   {isLoading ? t('sending') : t('submit')}

@@ -10,6 +10,8 @@ import AppLogo from '@/components/ui/AppLogo'
 import LanguageSwitcher from '@/components/ui/LanguageSwitcher'
 import AuthFlipCard from '@/components/auth/AuthFlipCard'
 import { ArrowLeft } from 'lucide-react'
+import TurnstileWidget from '@/components/ui/TurnstileWidget'
+import { useTurnstile } from '@/hooks/useTurnstile'
 
 // Lista de empleos comunes en Estados Unidos
 const US_JOBS = [
@@ -43,6 +45,7 @@ export default function RegisterPage() {
   const [passwordStrength, setPasswordStrength] = useState(0)
   const [isLoading, setIsLoading] = useState(false)
   const [errors, setErrors] = useState<Record<string, string>>({})
+  const { isVerified, isVerifying, error: turnstileError, handleVerify, handleExpire, handleError: handleTurnstileError } = useTurnstile()
 
   useEffect(() => {
     if (isAuthenticated) {
@@ -160,6 +163,13 @@ export default function RegisterPage() {
     e.preventDefault()
     setIsLoading(true)
     setErrors({})
+
+    // Verificar que Turnstile pasó antes de cualquier otra validación
+    if (!isVerified) {
+      setErrors({ captcha: t('errors.captchaRequired') })
+      setIsLoading(false)
+      return
+    }
     
     // Validaciones del frontend que coinciden con el backend
     const newErrors: Record<string, string> = {}
@@ -610,9 +620,20 @@ export default function RegisterPage() {
               </div>
 
               <div>
+                <TurnstileWidget
+                  onVerify={handleVerify}
+                  onExpire={handleExpire}
+                  onError={handleTurnstileError}
+                />
+                {(turnstileError || errors.captcha) && (
+                  <p className="mt-1 text-xs text-red-600 dark:text-red-400">{turnstileError ?? errors.captcha}</p>
+                )}
+              </div>
+
+              <div>
                 <button
                   type="submit"
-                  disabled={!formData.agreeToTerms || formData.password !== formData.confirmPassword || isLoading}
+                  disabled={!formData.agreeToTerms || formData.password !== formData.confirmPassword || isLoading || isVerifying}
                   className="w-full flex justify-center items-center py-2 px-4 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-primary-500 hover:bg-primary-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
                 >
                   {isLoading ? (

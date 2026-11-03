@@ -84,7 +84,8 @@
         "emailInvalid": "Invalid email format",
         "passwordRequired": "Password is required",
         "passwordMin": "Password must be at least 8 characters",
-        "invalidCredentials": "Incorrect email or password"
+        "invalidCredentials": "Incorrect email or password",
+        "captchaRequired": "Please complete the security verification"
       },
       "panelBadge": "Rated 4.9/5 by over 10,000 users",
       "panelTitle": "Manage your finances with confidence",
@@ -159,7 +160,8 @@
         "agreeToTermsRequired": "You must accept the terms and conditions",
         "connectionError": "Connection error. Check your internet and try again.",
         "registerFailed": "Registration failed. Please try again.",
-        "unknown": "Unknown error"
+        "unknown": "Unknown error",
+        "captchaRequired": "Please complete the security verification"
       }
     },
     "forgotPassword": {
@@ -1607,7 +1609,8 @@
     "weekAlreadyClosed": "This week is already closed.",
     "weekAlreadyOpen": "This week is already open.",
     "categoryNotFound": "Category not found.",
-    "categoriesFixed": "Categories are fixed and cannot be modified."
+    "categoriesFixed": "Categories are fixed and cannot be modified.",
+    "captchaRequired": "Please complete the security verification before continuing."
   },
   "legal": {
     "signIn": "Sign in",
