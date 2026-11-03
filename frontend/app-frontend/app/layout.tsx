@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 
@@ -21,6 +21,15 @@ export const metadata: Metadata = {
     "apple-mobile-web-app-capable": "yes",
     "apple-mobile-web-app-status-bar-style": "black-translucent",
   },
+}
+
+// Viewport separado de metadata — requerido en Next.js 13+
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  // Previene el zoom automático en iOS Safari al enfocar inputs
+  // sin bloquear el zoom manual del usuario (accesibilidad)
+  maximumScale: 1,
 };
 
 export default function RootLayout({

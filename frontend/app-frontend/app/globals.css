@@ -117,9 +117,18 @@ body {
 }
 
 /* Fix iOS Safari input text color — prevents light gray text on iPhone */
+/* font-size: 16px prevents iOS Safari auto-zoom on input focus (zoom triggers below 16px) */
 input, textarea, select {
   color: #111827;
   -webkit-text-fill-color: #111827;
+  font-size: 16px;
+}
+
+/* On larger screens, restore the smaller Tailwind sizes (text-sm = 14px) */
+@media (min-width: 640px) {
+  input, textarea, select {
+    font-size: inherit;
+  }
 }
 
 /* Dark mode inputs, selects, textareas */
