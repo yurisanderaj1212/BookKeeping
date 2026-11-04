@@ -13,8 +13,12 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Chill Numbers - Simple Business Accounting Software",
-  description: "Manage your business finances with ease. No accounting knowledge required. Track income, expenses, and grow your business with confidence.",
+  title: {
+    default:  'Chill Numbers — Software de Contabilidad para Pequeñas Empresas',
+    template: '%s — Chill Numbers',
+  },
+  description: 'Gestiona tus finanzas con confianza. Control de ingresos, gastos, empleados y reportes financieros. Prueba gratis 30 días.',
+  metadataBase: new URL('https://chillnumbers.com'),
   themeColor: "#0c0e12",
   other: {
     // iOS Safari status bar

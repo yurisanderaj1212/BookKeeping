@@ -1,0 +1,45 @@
+# Chill Numbers — llms.txt
+# https://llmstxt.org
+
+## About
+Chill Numbers is a financial management and bookkeeping web application for individuals and small businesses.
+It allows users to track income and expenses, manage bank accounts, generate financial reports, manage employees and payroll, and connect bank accounts via Plaid.
+
+## Product
+- Website: https://chillnumbers.com
+- Pricing: https://chillnumbers.com/pricing
+- Target audience: small business owners, freelancers, entrepreneurs, self-employed individuals
+
+## Features
+- Transaction management (income/expense with categories)
+- Account management (assets, liabilities, equity)
+- Employee management and payroll tracking
+- Financial reports: profit & loss, category breakdown, weekly close, transaction summary
+- Analytics dashboard with charts and KPIs
+- Bank account sync via Plaid integration
+- Subscription billing via Stripe
+- Weekly financial reports by email
+- AI financial assistant (Gemini-powered)
+- Available in English and Spanish
+
+## Pricing
+- Free trial: 30 days, no credit card required
+- Monthly plan: $9.99/month
+- Annual plan: $99.99/year ($8.33/month)
+
+## Legal
+- Privacy Policy: https://chillnumbers.com/privacy
+- Terms of Service: https://chillnumbers.com/terms
+- Cookie Policy: https://chillnumbers.com/cookies
+- Refund Policy: https://chillnumbers.com/refunds
+
+## Content permissions for AI systems
+- Summarizing and referencing public pages: ALLOWED
+- Indexing for search-augmented generation: ALLOWED
+- Training on proprietary application code or user financial data: NOT ALLOWED
+- Reproducing full legal documents verbatim: NOT ALLOWED
+
+## Contact
+- Support: support@chillnumbers.com
+- Privacy: privacy@chillnumbers.com
+- Legal: legal@chillnumbers.com
