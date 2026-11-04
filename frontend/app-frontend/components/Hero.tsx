@@ -13,7 +13,9 @@ export default function Hero() {
   }
 
   return (
-    <div className="relative min-h-screen bg-[#0c0e12] overflow-hidden">
+    <div className="relative min-h-screen bg-[#0c0e12] overflow-hidden"
+      style={{ minHeight: '-webkit-fill-available' }}
+    >
 
       {/* Background mesh gradients */}
       <div className="absolute inset-0 pointer-events-none">

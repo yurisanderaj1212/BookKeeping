@@ -142,8 +142,8 @@ export default function TransactionForm({ isOpen, onClose, onSave, transaction, 
   const cats = categories[formData.type as 'income' | 'expense']
 
   return (
-    <div className="fixed inset-0 flex items-center justify-center z-50 p-4">
-      <div className="bg-white dark:bg-gray-900 rounded-lg max-w-2xl w-full shadow-xl border border-gray-200 dark:border-gray-700 max-h-[90vh] overflow-y-auto">
+    <div className="fixed inset-0 flex items-end sm:items-center justify-center z-50 p-0 sm:p-4">
+      <div className="bg-white dark:bg-gray-900 rounded-t-2xl sm:rounded-lg max-w-2xl w-full shadow-xl border border-gray-200 dark:border-gray-700 max-h-[92vh] sm:max-h-[90vh] overflow-y-auto">
         <div className="flex items-center justify-between px-4 py-3 border-b border-gray-200 dark:border-gray-700 sticky top-0 bg-white dark:bg-gray-900 z-10">
           <h2 className="text-base font-semibold text-gray-900 dark:text-gray-100">
             {mode === 'create' ? t('new') : tCommon('edit')}
@@ -154,7 +154,7 @@ export default function TransactionForm({ isOpen, onClose, onSave, transaction, 
         </div>
 
         <form onSubmit={handleSubmit} className="p-4 space-y-3 dark:bg-gray-900">
-          <div className="grid grid-cols-3 gap-3">
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
             <div>
               <Label>{t('type')}</Label>
               <select value={formData.type} onChange={e => handleChange('type', e.target.value)}

@@ -45,13 +45,25 @@ export default function LandingNav() {
           ? 'bg-[#0c0e12]/90 backdrop-blur-xl border-b border-white/5 shadow-[0_4px_30px_rgba(0,0,0,0.3)]'
           : 'bg-transparent'
       }`}
+      style={{ WebkitBackdropFilter: isScrolled ? 'blur(20px)' : 'none', willChange: 'transform' }}
     >
       <div className="flex items-center justify-between max-w-7xl mx-auto px-6 lg:px-8 py-4">
 
         {/* Logo */}
         <Link href="/" className="flex items-center gap-2.5 group">
-          <div className="w-8 h-8 bg-[#81ecff] rounded-md flex items-center justify-center shrink-0 shadow-[0_0_12px_rgba(129,236,255,0.4)] group-hover:shadow-[0_0_20px_rgba(129,236,255,0.6)] transition-all duration-300">
-            <span className="text-[#005762] font-black text-xs">CN</span>
+          <div className="w-8 h-8 bg-[#81ecff] rounded-md flex items-center justify-center shrink-0 shadow-[0_0_12px_rgba(129,236,255,0.4)] group-hover:shadow-[0_0_20px_rgba(129,236,255,0.6)] transition-all duration-300 overflow-hidden">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              viewBox="0 0 100 100"
+              width={28}
+              height={28}
+              aria-hidden="true"
+              style={{ display: 'block' }}
+            >
+              <rect width="100" height="100" rx="16" ry="16" fill="#2a9d9c" />
+              <text x="8" y="40" fontFamily="Arial,Helvetica,sans-serif" fontWeight="700" fontSize="19" fill="white" dominantBaseline="middle">Chill</text>
+              <text x="8" y="68" fontFamily="Arial,Helvetica,sans-serif" fontWeight="700" fontSize="19" fill="white" dominantBaseline="middle">Numbers</text>
+            </svg>
           </div>
           <span className="text-lg font-bold tracking-tight text-white font-['Space_Grotesk',sans-serif] uppercase">
             Chill Numbers

@@ -72,6 +72,8 @@ export default function AIChatWidget() {
   const [input, setInput]         = useState('')
   const [loading, setLoading]     = useState(false)
   const [error, setError]         = useState<string | null>(null)
+  // Track if input is focused — used to adjust position on iOS when keyboard appears
+  const [inputFocused, setInputFocused] = useState(false)
   const bottomRef = useRef<HTMLDivElement>(null)
   const inputRef  = useRef<HTMLInputElement>(null)
 
@@ -201,10 +203,14 @@ export default function AIChatWidget() {
       {/* Chat panel */}
       {open && (
         <div
-          className={`fixed bottom-6 right-6 z-50 w-[360px] bg-white dark:bg-gray-900 rounded-2xl shadow-2xl border border-gray-200 dark:border-gray-700 flex flex-col transition-all duration-300 ${
-            minimized ? 'h-14' : 'h-[520px]'
-          }`}
-          style={{ maxWidth: 'calc(100vw - 24px)' }}
+          className={`fixed z-50 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 flex flex-col transition-all duration-300
+            /* Mobile: full screen modal so keyboard doesn't push it up */
+            inset-0 rounded-none
+            /* Desktop: floating widget bottom-right */
+            sm:inset-auto sm:bottom-6 sm:right-6 sm:w-[360px] sm:rounded-2xl sm:shadow-2xl
+            ${minimized ? 'sm:h-14' : 'sm:h-[520px]'}
+          `}
+          style={{ maxWidth: '100vw' }}
         >
           {/* Header */}
           <div className="flex items-center justify-between px-4 py-3 bg-primary-500 rounded-t-2xl shrink-0">
@@ -305,6 +311,12 @@ export default function AIChatWidget() {
                     value={input}
                     onChange={e => setInput(e.target.value)}
                     onKeyDown={handleKey}
+                    onFocus={() => {
+                      setInputFocused(true)
+                      // Small delay so keyboard finishes appearing, then scroll to bottom
+                      setTimeout(() => bottomRef.current?.scrollIntoView({ behavior: 'smooth' }), 350)
+                    }}
+                    onBlur={() => setInputFocused(false)}
                     placeholder="Ask me anything..."
                     disabled={loading}
                     className="flex-1 bg-transparent text-sm text-gray-900 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500 outline-none disabled:opacity-50"
