@@ -14,11 +14,11 @@ const securityHeaders = [
     key: 'Content-Security-Policy',
     value: [
       "default-src 'self'",
-      "script-src 'self' 'unsafe-eval' 'unsafe-inline' https://cdn.plaid.com https://challenges.cloudflare.com",
+      "script-src 'self' 'unsafe-eval' 'unsafe-inline' https://cdn.plaid.com https://challenges.cloudflare.com https://www.googletagmanager.com",
       "style-src 'self' 'unsafe-inline'",
       "img-src 'self' data: blob: https:",
       "font-src 'self' data:",
-      "connect-src 'self' https://*.supabase.co wss://*.supabase.co https://api.stripe.com https://checkout.stripe.com https://production.plaid.com https://sandbox.plaid.com https://*.plaid.com https://*.plaid.io https://challenges.cloudflare.com",
+      "connect-src 'self' https://*.supabase.co wss://*.supabase.co https://api.stripe.com https://checkout.stripe.com https://production.plaid.com https://sandbox.plaid.com https://*.plaid.com https://*.plaid.io https://challenges.cloudflare.com https://www.google-analytics.com https://analytics.google.com https://www.googletagmanager.com",
       "frame-src 'self' https://js.stripe.com https://hooks.stripe.com https://cdn.plaid.com https://challenges.cloudflare.com",
     ].join('; '),
   },
