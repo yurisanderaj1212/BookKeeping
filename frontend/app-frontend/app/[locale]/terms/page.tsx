@@ -120,7 +120,13 @@ export default function TermsPage() {
                 <li>Los pagos se procesan de forma segura a través de Stripe</li>
                 <li>Las suscripciones se renuevan automáticamente salvo que se cancelen</li>
                 <li>Puedes cancelar tu suscripción en cualquier momento desde tu perfil</li>
-                <li>La política de reembolsos específica se detallará en la página de precios</li>
+                <li>
+                  Consulta nuestra{' '}
+                  <Link href="/refunds" className="text-primary-600 hover:text-primary-700 underline">
+                    Política de Reembolsos
+                  </Link>{' '}
+                  para conocer las condiciones de devolución aplicables a cada plan
+                </li>
               </ul>
             </Section>
 
@@ -202,6 +208,7 @@ export default function TermsPage() {
         <div className="mt-8 flex flex-wrap justify-center gap-6 text-sm text-slate-500 dark:text-gray-400">
           <Link href="/privacy" className="hover:text-primary-600 transition-colors">{t('privacy')}</Link>
           <Link href="/cookies" className="hover:text-primary-600 transition-colors">{t('cookies')}</Link>
+          <Link href="/refunds" className="hover:text-primary-600 transition-colors">Reembolsos</Link>
           <Link href="/" className="hover:text-primary-600 transition-colors">{t('backHome')}</Link>
         </div>
       </main>

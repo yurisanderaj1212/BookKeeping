@@ -87,7 +87,7 @@
         "invalidCredentials": "Incorrect email or password",
         "captchaRequired": "Please complete the security verification"
       },
-      "panelBadge": "Rated 4.9/5 by over 10,000 users",
+      "panelBadge": "Built for small businesses and entrepreneurs",
       "panelTitle": "Manage your finances with confidence",
       "panelSubtitle": "Join thousands of businesses already simplifying their accounting with our intuitive and secure platform.",
       "panelFeature1Title": "Real-time Dashboard",
@@ -116,6 +116,7 @@
       "terms": "Terms of Service",
       "and": "and the",
       "privacy": "Privacy Policy",
+      "agreeToMarketing": "I want to receive weekly financial reports and product updates by email (optional, unsubscribe anytime)",
       "submit": "Create account",
       "submitting": "Creating account...",
       "hasAccount": "Already have an account?",

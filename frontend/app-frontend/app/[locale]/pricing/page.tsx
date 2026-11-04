@@ -174,8 +174,13 @@ export default function PricingPage() {
             <p>Procesados por Stripe. Nunca almacenamos datos de tu tarjeta.</p>
           </div>
           <div>
-            <p className="text-white font-semibold mb-1">Soporte incluido</p>
-            <p>Respuesta en menos de 24 horas para todos los planes.</p>
+            <p className="text-white font-semibold mb-1">Garantía de satisfacción</p>
+            <p>
+              Reembolso disponible dentro de los primeros 7 días.{' '}
+              <Link href="/refunds" className="text-blue-400 hover:underline">
+                Ver política de reembolsos
+              </Link>
+            </p>
           </div>
         </div>
       </main>
@@ -184,6 +189,7 @@ export default function PricingPage() {
         <div className="flex justify-center gap-4 mb-2">
           <Link href="/terms"   className="hover:text-slate-300 transition-colors">Términos</Link>
           <Link href="/privacy" className="hover:text-slate-300 transition-colors">Privacidad</Link>
+          <Link href="/refunds" className="hover:text-slate-300 transition-colors">Reembolsos</Link>
           <Link href="/cookies" className="hover:text-slate-300 transition-colors">Cookies</Link>
         </div>
         © {new Date().getFullYear()} BookKeeping. Todos los derechos reservados.

@@ -38,7 +38,8 @@ export default function RegisterPage() {
     email: '',
     password: '',
     confirmPassword: '',
-    agreeToTerms: false
+    agreeToTerms: false,
+    agreeToMarketing: false,
   })
   const [showPassword, setShowPassword] = useState(false)
   const [showConfirmPassword, setShowConfirmPassword] = useState(false)
@@ -239,8 +240,22 @@ export default function RegisterPage() {
     try {
       const { signUp } = await import('@/services/authService')
       await signUp(formData.email, formData.password, formData.firstName, formData.lastName)
-      // Supabase sends verification email → user clicks link → /auth/callback
-      // → /subscribe/checkout → Stripe Checkout → Dashboard
+      // Guardar preferencia de marketing en email_preferences via upsert
+      // (se hace en background, no bloquea el flujo de registro)
+      if (formData.agreeToMarketing) {
+        import('@/lib/supabaseClient').then(({ getSupabase }) => {
+          const supabase = getSupabase()
+          supabase.auth.getUser().then(({ data }) => {
+            if (data.user) {
+              void supabase.from('email_preferences').upsert({
+                user_id:       data.user.id,
+                weekly_report: true,
+                language:      'es',
+              })
+            }
+          })
+        })
+      }
       router.push('/auth/login?registered=1')
 
     } catch (error: unknown) {
@@ -615,6 +630,25 @@ export default function RegisterPage() {
                     <Link href="/privacy" className="font-medium text-primary-600 dark:text-primary-400 hover:text-primary-500">
                       {t('privacy')}
                     </Link>
+                  </label>
+                </div>
+              </div>
+
+              {/* Consentimiento de reportes semanales por email (opcional) */}
+              <div className="flex items-start">
+                <div className="flex items-center h-4">
+                  <input
+                    id="agreeToMarketing"
+                    name="agreeToMarketing"
+                    type="checkbox"
+                    checked={formData.agreeToMarketing}
+                    onChange={handleInputChange}
+                    className="h-3 w-3 text-primary-600 focus:ring-primary-500 border-slate-300 rounded"
+                  />
+                </div>
+                <div className="ml-2 text-xs">
+                  <label htmlFor="agreeToMarketing" className="text-slate-700 dark:text-gray-300">
+                    {t('agreeToMarketing')}
                   </label>
                 </div>
               </div>

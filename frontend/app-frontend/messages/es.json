@@ -87,7 +87,7 @@
         "invalidCredentials": "Email o contraseña incorrectos",
         "captchaRequired": "Por favor completa la verificación de seguridad"
       },
-      "panelBadge": "Calificación 4.9/5 por más de 10,000 usuarios",
+      "panelBadge": "Diseñado para pequeñas empresas y emprendedores",
       "panelTitle": "Gestiona tus finanzas con confianza",
       "panelSubtitle": "Únete a miles de negocios que ya simplifican su contabilidad con nuestra plataforma intuitiva y segura.",
       "panelFeature1Title": "Dashboard en tiempo real",
@@ -116,6 +116,7 @@
       "terms": "Términos de Servicio",
       "and": "y la",
       "privacy": "Política de Privacidad",
+      "agreeToMarketing": "Quiero recibir reportes financieros semanales y novedades del producto por email (opcional, puedes cancelar en cualquier momento)",
       "submit": "Crear cuenta",
       "submitting": "Creando cuenta...",
       "hasAccount": "¿Ya tienes una cuenta?",

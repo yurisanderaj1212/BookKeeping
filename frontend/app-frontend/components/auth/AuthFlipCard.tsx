@@ -13,10 +13,10 @@ const BARS = [
 ]
 
 const STATS = [
-  { label: 'Total Revenue',    value: '$1,429,203', change: '+24.8%', up: true  },
-  { label: 'Active Businesses', value: '10,000+',   change: '+12.3%', up: true  },
-  { label: 'Transactions',     value: '2M+',        change: '+8.1%',  up: true  },
-  { label: 'Satisfaction',     value: '98%',        change: '+0.4%',  up: true  },
+  { label: 'Net Profit',        value: '+$4,820',  change: '+18.3%', up: true  },
+  { label: 'Monthly Expenses',  value: '$2,340',   change: '-6.1%',  up: false },
+  { label: 'Transactions',      value: '142',      change: '+8.1%',  up: true  },
+  { label: 'Weekly Close',      value: '✓ Done',   change: 'On time', up: true  },
 ]
 
 export default function AuthFlipCard() {

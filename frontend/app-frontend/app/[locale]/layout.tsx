@@ -7,6 +7,7 @@ import GlobalToastContainer from '@/components/notifications/GlobalToastContaine
 import ErrorBoundary from '@/components/ui/ErrorBoundary'
 import SessionGuard from '@/components/ui/SessionGuard'
 import AIChatWidgetLoader from '@/components/ui/AIChatWidgetLoader'
+import CookieConsentBanner from '@/components/ui/CookieConsentBanner'
 
 // Genera los parámetros estáticos para los locales soportados
 export function generateStaticParams() {
@@ -42,6 +43,7 @@ export default async function LocaleLayout({
             <GlobalToastContainer />
             <SessionGuard />
             <AIChatWidgetLoader />
+            <CookieConsentBanner />
           </div>
         </ErrorBoundary>
       </NotificationProvider>
