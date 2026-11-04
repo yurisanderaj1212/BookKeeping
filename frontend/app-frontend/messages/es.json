@@ -1214,7 +1214,8 @@
     "success": "Éxito",
     "error": "Error",
     "warning": "Aviso",
-    "info": "Info"
+    "info": "Info",
+    "dismiss": "Cerrar notificación"
   },
   "legal": {
     "signIn": "Iniciar sesión",

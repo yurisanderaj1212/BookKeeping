@@ -1665,7 +1665,8 @@
     "success": "Success",
     "error": "Error",
     "warning": "Warning",
-    "info": "Info"
+    "info": "Info",
+    "dismiss": "Dismiss notification"
   },
   "notificationEvents": {
     "NOTIFY_TRANSACTION_CREATED_TITLE": "New Transaction Recorded",

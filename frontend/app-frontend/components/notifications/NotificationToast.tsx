@@ -73,6 +73,9 @@ function ToastItem({ toast, onRemove }: { toast: Toast; onRemove: (id: string) =
 
   return (
     <div
+      role="alert"
+      aria-live={toast.type === 'error' ? 'assertive' : 'polite'}
+      aria-atomic="true"
       style={{
         width: '340px',
         background: '#ffffff',
@@ -100,11 +103,13 @@ function ToastItem({ toast, onRemove }: { toast: Toast; onRemove: (id: string) =
 
       <div style={{ display: 'flex', alignItems: 'flex-start', gap: '12px', padding: '14px 14px 16px 14px' }}>
         {/* Icon */}
-        <div style={{
-          width: '36px', height: '36px', borderRadius: '8px',
-          background: cfg.iconBg, display: 'flex', alignItems: 'center',
-          justifyContent: 'center', flexShrink: 0,
-        }}>
+        <div
+          aria-hidden="true"
+          style={{
+            width: '36px', height: '36px', borderRadius: '8px',
+            background: cfg.iconBg, display: 'flex', alignItems: 'center',
+            justifyContent: 'center', flexShrink: 0,
+          }}>
           <Icon style={{ width: '18px', height: '18px', color: cfg.iconFg }} />
         </div>
 
@@ -139,6 +144,7 @@ function ToastItem({ toast, onRemove }: { toast: Toast; onRemove: (id: string) =
         {/* Close */}
         <button
           onClick={dismiss}
+          aria-label={t('dismiss')}
           style={{
             flexShrink: 0, width: '24px', height: '24px', borderRadius: '6px',
             display: 'flex', alignItems: 'center', justifyContent: 'center',

@@ -158,7 +158,8 @@ export default function Sidebar({ onLogout }: SidebarProps) {
         <button
           onClick={toggleSidebar}
           className={`p-1.5 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-full transition-colors shrink-0 ${isCollapsed ? 'mx-auto mt-2' : ''}`}
-          title={isCollapsed ? 'Expandir' : 'Colapsar'}
+          aria-label={isCollapsed ? t('common.expand') : t('common.collapse')}
+          aria-expanded={!isCollapsed}
         >
           {isCollapsed
             ? <ChevronRight className="w-4 h-4 text-gray-500 dark:text-gray-400" />
@@ -170,7 +171,7 @@ export default function Sidebar({ onLogout }: SidebarProps) {
       {/* moved to bottom — see user section */}
 
       {/* ── Navigation ── */}
-      <nav className="flex-1 px-3 py-4 flex flex-col">
+      <nav className="flex-1 px-3 py-4 flex flex-col" aria-label={t('nav.mainNavigation') ?? 'Navegación principal'}>
         <div className="flex-1">
           <ul className="space-y-1">
             {menuItems.map((item) => {
@@ -180,6 +181,7 @@ export default function Sidebar({ onLogout }: SidebarProps) {
                 <li key={item.id}>
                   <Link
                     href={item.href}
+                    aria-current={isActive ? 'page' : undefined}
                     className={`flex items-center space-x-3 px-3 py-2.5 rounded-lg transition-all duration-200 group relative ${
                       isActive
                         ? 'bg-primary-50 dark:bg-primary-900/20 text-primary-600 dark:text-primary-400'
@@ -217,6 +219,7 @@ export default function Sidebar({ onLogout }: SidebarProps) {
                 <li key={item.id}>
                   <Link
                     href={item.href}
+                    aria-current={isActive ? 'page' : undefined}
                     className={`flex items-center space-x-3 px-3 py-2.5 rounded-lg transition-all duration-200 group relative ${
                       isActive
                         ? 'bg-primary-50 dark:bg-primary-900/20 text-primary-600 dark:text-primary-400'
@@ -279,6 +282,7 @@ export default function Sidebar({ onLogout }: SidebarProps) {
             </div>
             <button
               onClick={onLogout}
+              aria-label={t('nav.logout')}
               className="w-full flex items-center space-x-3 px-3 py-2 text-gray-600 dark:text-gray-400 hover:bg-red-50 dark:hover:bg-red-900/20 hover:text-red-600 dark:hover:text-red-400 rounded-lg transition-all duration-200 group mb-2"
             >
               <LogOut className="w-4 h-4 group-hover:text-red-600 dark:group-hover:text-red-400 shrink-0" />
@@ -316,7 +320,7 @@ export default function Sidebar({ onLogout }: SidebarProps) {
             <button
               onClick={onLogout}
               className="p-2 text-gray-600 dark:text-gray-400 hover:bg-red-50 dark:hover:bg-red-900/20 hover:text-red-600 dark:hover:text-red-400 rounded-lg transition-all duration-200"
-              title={t('nav.logout')}
+              aria-label={t('nav.logout')}
             >
               <LogOut className="w-4 h-4" />
             </button>
